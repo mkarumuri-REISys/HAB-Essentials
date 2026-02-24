@@ -1,0 +1,11 @@
+<Config>
+	<loginPage>Interface/common/accesscontrol/login.aspx</loginPage>
+  <IsHttpsEnabled>true</IsHttpsEnabled>
+    <logoutURLs>
+    <CorePredefinedPageId userType="5">7E8724BF-9CC3-4A96-832A-CB06369B5F30</CorePredefinedPageId>
+    <CorePredefinedPageId userType="6">D1C6774D-BCCD-4A47-A018-9DE82F317F8C</CorePredefinedPageId>
+    <CorePredefinedPageId userType="7">5F447076-862D-41A5-B4F4-6FB834FDF4AD</CorePredefinedPageId>
+    <CorePredefinedPageId userType="8">61C13573-3FD7-499A-BBB5-1505E9154671</CorePredefinedPageId>
+    <CorePredefinedPageId userType="9">C20D9C48-6F88-4496-AC6D-E7FD95CA21EF</CorePredefinedPageId>
+  </logoutURLs>
+</Config>

@@ -1,0 +1,8 @@
+﻿<config>
+  <itemMax>20</itemMax>
+  <!-- milliseconds -->
+  <dueTime>5000</dueTime>
+  <nowThreshold>5</nowThreshold>
+  <!-- milliseconds -->
+  <pollingInterval>30000</pollingInterval>
+</config>

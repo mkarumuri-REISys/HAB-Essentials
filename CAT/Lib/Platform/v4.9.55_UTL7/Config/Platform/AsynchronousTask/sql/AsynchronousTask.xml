@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+
+    <statement name="ItemProcessed">
+        <param id="TableName" required="true"/>
+        <param id="ItemId" required="true" type="Guid"/>
+        <param id="ItemStatusCode" required="true" type="Int32"/>
+        <param id="TaskStatusCode" required="true" type="Int32"/>
+        <param id="Priority" required="true" type="Int32"/>
+        <param id="ProcessTypeCode" required="true" type="Int32"/>
+        <param id="ResourceTypeCode" type="Int32" default="null"/>
+        <param id="ResourceValue" default="null"/>
+        <param id="CreatorId" type="Guid" required="true"/>
+        <param id="CustomXml" required="true"/>
+        <sql>
+            insert into <dynamic paramId="TableName"/>
+            (ItemId, ItemStatusCode, TaskStatusCode, CustomXml, Priority, ProcessTypeCode, ResourceTypeCode, ResourceValue,  CreatorId, CreatedDate, LastUpdateId, LastUpdateDate)
+            values
+            (
+            <exp paramId="ItemId"/>,
+            <exp paramId="ItemStatusCode"/>,
+            <exp paramId="TaskStatusCode"/>,
+            <exp paramId="CustomXml"/>,
+            <exp paramId="Priority"/>,
+            <exp paramId="ProcessTypeCode"/>,
+            <exp paramId="ResourceTypeCode"/>,
+            <exp paramId="ResourceValue"/>,
+            <exp paramId="CreatorId"/>,
+            getdate(),
+            <exp paramId="CreatorId"/>,
+            getdate()
+            )
+        </sql>
+    </statement>
+
+    <statement name="AddError">
+        <param id="ErrorTable"/>
+        <param id="ItemId" type="Guid" required="true"/>
+        <param id="ResourceTypeCode" type="Int32" required="true"/>
+        <param id="ResourceValue" required="true"/>
+        <param id="ProcessTypeCode" required="true"/>
+        <param id="Priority" required="true"/>
+        <param id="ItemStatusCode" required="true" type="Int32"/>
+        <param id="TaskStatusCode" required="true"/>
+        <param id="Time" type="DateTime" required="true"/>
+        <param id="TaskTypeName" required="true"/>
+        <param id="Message" required="true"/>
+        <param id="CreatorId" type="Guid" required="true"/>
+        <param id="CustomXml" required="true"/>
+        <sql>
+            insert into <dynamic paramId="ErrorTable"/>
+            (ItemId, ResourceTypeCode, ResourceValue, ProcessTypeCode, ItemStatusCode, TaskStatusCode, Priority, Time, TaskTypeName, Message, CustomXml, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate)
+            values
+            (
+            <exp paramId="ItemId"/>,
+            <exp paramId="ResourceTypeCode"/>,
+            <exp paramId="ResourceValue"/>,
+            <exp paramId="ProcessTypeCode"/>,
+            <exp paramId="ItemStatusCode"/>,
+            <exp paramId="TaskStatusCode"/>,
+            <exp paramId="Priority"/>,
+            <exp paramId="Time"/>,
+            <exp paramId="TaskTypeName"/>,
+            <exp paramId="Message"/>,
+            <exp paramId="CustomXml"/>,
+            <exp paramId="CreatorId"/>,
+            getdate(),
+            <exp paramId="CreatorId"/>,
+            getdate()
+            )
+        </sql>
+    </statement>
+    
+    <statement name="AddContinuousProcessError">
+        <param id="ProcessTypeCode" type="Int32"/>
+        <param id="TaskName"/>
+        <param id="ErrorMessage"/>
+        <param id="UserId" type="Guid"/>
+        <sql>
+            insert into AsynchronousTaskContinuousProcessError values
+            (
+            <exp paramId="ProcessTypeCode"/>,
+            <exp paramId="TaskName"/>,
+            getdate(),
+            <exp paramId="ErrorMessage"/>,
+            <exp paramId="UserId"/>,
+            getdate(),
+            <exp paramId="UserId"/>,
+            getdate()
+            )
+        </sql>
+    </statement>
+
+  <statement name="LogToDatabase" connection="Common">
+    <param id="AsynchronousTaskServiceId" type="Guid"  required="true"/>
+    <param id="UserId" type="Guid"/>
+    <param id="HostName" type="String"/>
+    <param id="ServiceDetail" type="String"/>
+    <param id="StopDateTime"/>
+    <param id="Comments" type="String"/>
+    IF NOT EXISTS (SELECT * FROM PFM_AsynchronousTaskServiceLog_P WHERE [AsynchronousTaskServiceId]=<exp paramId="AsynchronousTaskServiceId"/>)
+        BEGIN
+          INSERT INTO PFM_AsynchronousTaskServiceLog_P (
+          [AsynchronousTaskServiceId],
+          [HostName],
+          [ServiceDetail],
+          [Comments],
+          [StartDateTime],
+          [StopDateTime],
+          [CreatorId],
+          [LastUpdateId],
+          [CreatedDate],
+          [LastUpdateDate]
+          )
+          VALUES
+          (
+          <exp paramId="AsynchronousTaskServiceId"/>,
+          <exp paramId="HostName"/>,
+          <exp paramId="ServiceDetail"/>,
+          <exp paramId="Comments"/>,
+          GETDATE(),
+          NULL,
+          <exp paramId="UserId"/>,
+          <exp paramId="UserId"/>,
+          GETDATE(),
+          GETDATE()
+          )
+        END
+      ELSE
+        BEGIN
+          UPDATE PFM_AsynchronousTaskServiceLog_P
+          SET Comments=<exp paramId="Comments"/>,       
+          <optional depends="StopDateTime">
+            StopDateTime=<exp paramId="StopDateTime"/>,
+          </optional>
+          LastUpdateDate =GETDATE()
+          WHERE [AsynchronousTaskServiceId]=<exp paramId="AsynchronousTaskServiceId"/>
+        END
+  </statement>
+</statements>

@@ -1,0 +1,201 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+
+
+  <statement name="GetGridLayouts" connection = "Common">
+    <param id="CreatorId" type="Guid"  />
+    <param id="GroupName" type="string" />
+    <param id="RunTimePageId" type="string" />
+    <param id ="IncludeRunTimePage" type ="Int16"/>
+    <sql>
+      SELECT
+      GridLayoutId  as 'Id'
+      ,Name  as 'Name'
+      ,GroupName as 'GroupName'
+      ,IsDefault as 'IsDefault'
+      ,RunTimePageId as 'RunTimePageId'
+      ,ColumnDetails  as 'ColumnDetails'
+      ,[CreatorId]   as 'CreatorId'
+      ,[CreatedDate]  as 'CreatedDate'
+      ,[LastUpdateId]  as 'LastUpdateId'
+      ,[LastUpdateDate]  as 'LastUpdateDate'
+      FROM PFM_COMP_GridLayout
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="CreatorId" paramId="CreatorId" />
+          <exp op="=" dbField="GroupName" paramId="GroupName" />
+        </exp>
+      </where>
+      <optional depends="IncludeRunTimePage == 1">
+        AND RunTimePageId = <exp paramId="RunTimePageId" />
+      </optional>
+      <optional depends="IncludeRunTimePage == 0">
+        AND RuntimePageId is null
+      </optional>
+      order by LastUpdateDate
+
+
+
+    </sql>
+  </statement>
+
+  <statement name="GetGridLayout" connection = "Common">
+    <param id="GridLayoutId" type="Guid" />
+    <sql>
+      SELECT
+      GridLayoutId  as 'Id'
+      ,Name  as 'Name'
+      ,GroupName as 'GroupName'
+      ,IsDefault as 'IsDefault'
+      ,RunTimePageId as 'RunTimePageId'
+      ,ColumnDetails  as 'ColumnDetails'
+      ,[CreatorId]   as 'CreatorId'
+      ,[CreatedDate]  as 'CreatedDate'
+      ,[LastUpdateId]  as 'LastUpdateId'
+      ,[LastUpdateDate]  as 'LastUpdateDate'
+      FROM PFM_COMP_GridLayout
+      <where>
+        <exp op="=" dbField="GridLayoutId" paramId="GridLayoutId" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="ExistGridLayout" connection = "Common">
+    <param id="Name" type="string" />
+    <param id="CreatorId" type="Guid"  />
+    <param id="GroupName" type="string" />
+    <param id="RunTimePageId" type="string" />
+    <param id="GridLayoutId" type="string" />
+    <sql>
+      SELECT
+      count(GridLayoutId)
+      FROM PFM_COMP_GridLayout
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="Name" paramId="Name" />
+          <exp op="=" dbField="CreatorId" paramId="CreatorId" />
+          <exp op="=" dbField="GroupName" paramId="GroupName" />
+        </exp>
+      </where>
+      <optional depends="RunTimePageId">
+        AND RunTimePageId = <exp paramId="RunTimePageId" />
+      </optional>
+      <optional depends="GridLayoutId">
+        AND GridLayoutId != <exp paramId="GridLayoutId" />
+      </optional>
+    </sql>
+  </statement>
+
+  <statement name ="InsertGridLayout" connection = "Common">
+    <param id ="GridLayoutId" type ="Guid" default=""/>
+    <param id ="Name" type="String"/>
+    <param id ="GroupName" type ="String"/>
+    <param id ="IsDefault" type ="Boolean"/>
+    <param id ="RunTimePageId" type ="String"/>
+    <param id ="ColumnDetails" type ="String"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id ="IncludeRunTimePage" type ="Int16"/>
+    <sql>
+
+      DECLARE @active AS BIT
+      SET @active = <exp paramId="IsDefault" />
+      IF @active = 1
+      BEGIN
+      Update PFM_COMP_GridLayout
+      SET IsDefault = 0
+      <where>
+        <exp op="and">
+          <exp op ="=" dbField ="GroupName" paramId ="GroupName"/>
+          <exp op ="=" dbField ="CreatorId" paramId ="CreatorId"/>
+        </exp>
+      </where>
+      <optional depends="IncludeRunTimePage == 1">
+        AND RunTimePageId = <exp paramId="RunTimePageId" />
+      </optional>
+      <optional depends="IncludeRunTimePage == 0">
+        AND RunTimePageId is null
+      </optional>
+      END
+
+
+      INSERT INTO PFM_COMP_GridLayout
+      <columns mode ="insert">
+        <column dbField ="GridLayoutId" paramId ="GridLayoutId"/>
+        <column dbField ="Name" paramId ="Name"/>
+        <column dbField ="GroupName" paramId ="GroupName"/>
+        <column dbField ="IsDefault" paramId ="IsDefault"/>
+        <column dbField ="RunTimePageId" paramId ="RunTimePageId"/>
+        <column dbField ="ColumnDetails" paramId ="ColumnDetails"/>
+        <column dbField ="CreatorId" paramId ="CreatorId"/>
+        <column dbField ="CreatedDate" paramId ="CreatedDate"/>
+        <column dbField ="LastUpdateId" paramId ="LastUpdateId"/>
+        <column dbField ="LastUpdateDate" paramId ="LastUpdateDate"/>
+      </columns>
+
+    </sql>
+
+  </statement>
+
+  <statement name ="UpdateGridLayout" connection = "Common">
+    <param id ="GridLayoutId" type ="Guid" required="true" />
+    <param id ="Name" type="String"/>
+    <param id ="GroupName" type ="String"/>
+    <param id ="IsDefault" type ="Boolean"/>
+    <param id ="RunTimePageId" type ="String"/>
+    <param id ="ColumnDetails" type ="String"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id ="IncludeRunTimePage" type ="Int16"/>
+    <sql>
+
+      DECLARE @active AS BIT
+      SET @active = <exp paramId="IsDefault" />
+      IF @active = 1
+      BEGIN
+        Update PFM_COMP_GridLayout
+        SET IsDefault = 0
+        <where>
+          <exp op="and">
+            <exp op ="=" dbField ="GroupName" paramId ="GroupName"/>
+            <exp op ="=" dbField ="LastUpdateId" paramId ="LastUpdateId"/>
+          </exp>
+        </where>
+        <optional depends="IncludeRunTimePage == 1">
+          AND RunTimePageId = <exp paramId="RunTimePageId" />
+        </optional>
+      <optional depends="IncludeRunTimePage == 0">
+        AND RunTimePageId is null
+      </optional>
+      END
+
+      UPDATE PFM_COMP_GridLayout
+      <columns mode ="update">
+        <column dbField ="Name" paramId ="Name"/>
+        <!--<column dbField ="GroupName" paramId ="GroupName"/>-->
+        <column dbField ="IsDefault" paramId ="IsDefault"/>
+        <!--<column dbField ="RunTimePageId" paramId ="RunTimePageId"/>-->
+        <column dbField ="ColumnDetails" paramId ="ColumnDetails"/>
+        <column dbField ="LastUpdateId" paramId ="LastUpdateId"/>
+        <column dbField ="LastUpdateDate" paramId ="LastUpdateDate"/>
+      </columns>
+      <where>
+        <exp op ="=" dbField ="GridLayoutId" paramId ="GridLayoutId"/>
+      </where>
+
+    </sql>
+  </statement>
+
+  <statement name="DeleteGridLayout" connection = "Common">
+    <param id="GridLayoutId" type ="Guid" />
+    <sql>
+      DELETE FROM PFM_COMP_GridLayout
+      <where>
+        <exp op ="=" dbField ="GridLayoutId" paramId ="GridLayoutId"/>
+      </where>
+    </sql>
+  </statement>
+
+
+</statements>

@@ -1,0 +1,18 @@
+<lookup>
+	<definitions>
+		<!--<definition name="State" type="EIS" schemaName="lookupState" />-->
+    <definition name="PlatformAttachmentPurpose" type="DB" statmentName="GetAttachmentPurposeLookupGems" documentMapXPath="platformlookup" />
+
+    <definition name="ContributionStatuses" type="DB" statementName="ContributionStatuses" documentMapXPath="contribution"/>
+    <definition name="PlatformExternalSystemDimensionValues" type="DB" statmentName="GetExternalSystemDimensionValues" documentMapXPath="platformlookup" />
+    <definition name="DB_Configuration" type="DB" statementName="GetDB_Configuration" documentMapXPath="platformlookup"/>
+    <definition name="PFM_Countries" type="DB" statementName="GetCountries" documentMapXPath="addressControl"/>
+    <definition name="PFM_States" type="DB" statementName="GetStatesOrdered" documentMapXPath="addressControl"/>
+    <definition name="PFM_SecondaryIdentifiers" type="DB" statementName="GetSecondaryIdentifierTypes" documentMapXPath="addressControl"/>
+    <definition name="PFM_RuralRouteTypes" type="DB" statementName="GetRuralRouteTypes" documentMapXPath="addressControl"/>
+    <definition name="PFM_LookupResourceType" type="DB" statementName="GetLookupResourceType" documentMapXPath="platformlookup" />
+    <definition name="LU_PFM_NoteType" type="DB"  statmentName="GetNoteType" documentMapXPath="platformlookup"/>
+    <definition name="Roles" statmentName="GetLookupRoles" type="DB" documentMapXPath="platformlookup" />
+    <definition name="LookupUserType" statmentName="GetLookupUserType" type="DB" documentMapXPath="platformlookup" />
+  </definitions>
+</lookup>

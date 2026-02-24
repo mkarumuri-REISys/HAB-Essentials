@@ -1,0 +1,17 @@
+{
+  "Errors": {
+    "Fatal": [
+      "System.OutOfMemoryException",
+      "System.StackOverflowException",
+      "System.UnauthorizedAccessException",
+      "System.BadImageFormatException",
+      "System.InsuficientExecutionStackException",
+      "System.InvalidProgramException",
+      "System.NotImplementedException",
+      "System.Data.SqlClient.SqlException",
+      "System.NotSupportedException",
+      "System.IO.IOException",
+      "System.Security.SecurityException"
+    ]
+  }
+}

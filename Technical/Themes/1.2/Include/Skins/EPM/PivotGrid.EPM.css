@@ -1,0 +1,1134 @@
+/*Telerik RadPivotGrid Common CSS*/
+
+/*global*/
+
+.RadPivotGrid .rpgTable,
+.RadPivotGrid .rpgTableWrapper
+{
+	border-collapse: separate;
+	border-spacing: 0;
+	width: 100%;
+}
+
+.RadPivotGrid .rpgPagePrev,
+.RadPivotGrid .rpgPageNext,
+.RadPivotGrid .rpgPageFirst,
+.RadPivotGrid .rpgPageLast,
+.RadPivotGrid .rpgExpand,
+.RadPivotGrid .rpgCollapse
+{
+	width: 16px;
+	height: 16px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+	font-size: 1px;
+	cursor: pointer;
+}
+
+.RadPivotGrid th,
+.RadPivotGrid td,
+.RadPivotGrid .rpgOuterTableWrapper td
+{
+	padding: 3px 8px 3px 7px;
+	text-align: left;
+	vertical-align: top;
+	border-style: solid;
+	border-width: 0 0 1px 1px;
+}
+
+.RadPivotGrid .rpgDimensionRow td
+{
+	padding: 0;
+	border: 0;
+	height: 0;
+}
+
+.RadPivotGrid,
+.RadPivotGrid .rpgContentZoneDiv,
+.RadPivotGrid .rpgColumnHeaderDiv,
+.RadPivotGrid .rpgRowHeaderZoneDiv
+{
+	overflow: hidden;
+}
+
+.rpgContentZone .rpgTable,
+.rpgColumnHeaderZone .rpgTable,
+.rpgRowHeaderZone .rpgTable
+{
+	margin-left: -1px;
+}
+
+.RadPivotGrid .rpgContentZone
+{
+	vertical-align: top;
+}
+
+.RadPivotGrid td.rpgColumnHeaderZone
+{
+	border-bottom: 0;
+}
+
+div.RadPivotGrid .rpgRowsZone,
+div.RadPivotGrid .rpgRowHeaderZone,
+div.RadPivotGrid .rpgPagerCell,
+div.RadPivotGrid .rpgDataZone,
+div.RadPivotGrid .rpgFilterZone,
+div.RadPivotGrid .rpgHorizontalScroll
+{
+	border-left: 0 none;
+}
+
+.RadPivotGrid .rpgDataZone
+{
+	white-space: nowrap
+}
+
+.rpgContentZoneDiv
+{
+	margin-bottom: -1px;
+}
+
+
+.rpgRowHeaderZone table
+{
+	width: 100%
+}
+
+.rpgRowHeaderZone .rpgTable,
+.rpgContentZone .rpgTable,
+.rpgColumnHeaderZone .rpgTable
+{
+	table-layout: auto;
+}
+
+/*End Data Zone Containers*/
+
+div.RadPivotGrid .rpgRowHeaderZone,
+div.RadPivotGrid .rpgColumnHeaderZone,
+div.RadPivotGrid .rpgContentZone,
+div.RadPivotGrid .rpgVerticalScroll,
+div.RadPivotGrid .rpgHorizontalScroll
+{
+	padding: 0;
+}
+
+.RadPivotGrid td.rpgVerticalScroll
+{
+	vertical-align: top;
+	border-left: 0 none;
+}
+
+/*Headers*/
+.RadPivotGrid .rpgColumnHeader
+{
+	font-weight: 400;
+}
+
+.RadPivotGrid .rpgRowHeaderTotal,
+.RadPivotGrid .rpgRowHeaderGrandTotal,
+.RadPivotGrid .rpgColumnHeaderTotal,
+.RadPivotGrid .rpgColumnHeaderGrandTotal,
+.RadPivotGrid .rpgColumnTotalDataCell,
+.RadPivotGrid .rpgRowGrandTotalDataCell,
+.RadPivotGrid .rpgColumnGrandTotalDataCell
+{
+	font-weight: 800;
+}
+/*End Headers*/
+
+
+/*pager*/
+.RadPivotGrid .rpgPager .rpgPagerCell
+{
+	padding: 5px 0 4px;
+}
+
+.RadPivotGrid .rpgPager td
+{
+	border: 0;
+	padding: 0;
+}
+
+.RadPivotGrid .rpgFilterZone,
+.RadPivotGrid td.rpgPagerTop
+{
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+
+.RadPivotGrid .rpgWrap
+{
+	float: left;
+	padding: 0 10px;
+	line-height: 22px;
+	white-space: nowrap;
+}
+
+.RadPivotGrid .rpgArrPart1
+{
+	padding-right: 0;
+}
+
+.RadPivotGrid .rpgArrPart2
+{
+	padding-left: 0;
+}
+
+.RadPivotGrid .rpgInfoPart
+{
+	float: right;
+}
+
+.RadPivotGrid .rpgInfoPart strong
+{
+	font-weight: normal;
+}
+
+.RadPivotGrid .rpgArrPart1 img,
+.RadPivotGrid .rpgArrPart2 img
+{
+	border: 0;
+	margin: -3px 8px 0;
+}
+
+.RadPivotGrid .rpgPageFirst,
+.RadPivotGrid .rpgPagePrev,
+.RadPivotGrid .rpgPageNext,
+.RadPivotGrid .rpgPageLast
+{
+	width: 22px;
+	height: 22px;
+	vertical-align: top;
+}
+
+.RadPivotGrid .NextPrev .rpgPageFirst,
+.RadPivotGrid .NextPrev .rpgPagePrev,
+.RadPivotGrid .NextPrev .rpgPageNext,
+.RadPivotGrid .NextPrev .rpgPageLast
+{
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgPageFirst,
+.RadPivotGrid .rpgPagePrev
+{
+	margin-right: 1px;
+}
+
+.RadPivotGrid .rpgPageNext,
+.RadPivotGrid .rpgPageLast
+{
+	margin-left: 1px;
+}
+
+.RadPivotGrid .rpgPager .rpgPagerButton
+{
+	height: 22px;
+	border-style: solid;
+	border-width: 1px;
+	margin: 0 14px 0 0;
+	padding: 0 4px 2px;
+	font-size: 12px;
+	line-height: 12px;
+	vertical-align: top;
+	cursor: pointer;
+}
+
+.RadPivotGrid .rpgNumPart
+{
+	padding: 0;
+}
+
+.RadPivotGrid .NumericPages .rpgNumPart
+{
+	padding: 0 10px;
+}
+
+.RadPivotGrid .rpgNumPart a
+{
+	float: left;
+	line-height: 22px;
+	margin: 0;
+	padding: 0 5px 0 0;
+	text-decoration: none;
+}
+
+.RadPivotGrid .rpgNumPart span
+{
+	float: left;
+	padding: 0 0 0 5px;
+}
+
+.RadPivotGrid .rpgNumPart a:hover span
+{
+	cursor: pointer;
+}
+
+.RadPivotGrid .rpgNumPart a.rpgCurrentPage,
+.RadPivotGrid .rpgNumPart a.rpgCurrentPage:hover,
+.RadPivotGrid .rpgNumPart a.rpgCurrentPage span,
+.RadPivotGrid .rpgNumPart a.rpgCurrentPage:hover span
+{
+	cursor: default;
+}
+
+.RadPivotGrid .NextPrevNumericAndAdvanced .rpgAdvPart
+{
+	float: none;
+	text-align: center;
+}
+
+.RadPivotGrid .rpgPager .RadSlider
+{
+	float: left;
+	margin: 0 10px 0 0;
+}
+
+.RadPivotGrid .rpgPagerLabel,
+.RadPivotGrid .rpgPager .RadComboBox,
+.RadPivotGrid .rpgPager .RadInput
+{
+	margin: 0 4px 0 0;
+	vertical-align: top;
+}
+* + html .RadPivotGrid .rpgPagerLabel,
+* + html .RadPivotGrid .rpgPager .RadComboBox,
+* + html .RadPivotGrid .rpgPager .RadInput
+{
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgPager .RadInput
+{
+	display: inline-block;
+}
+
+.RadPivotGrid .rpgPager .riTextBox
+{
+	height: 15px;
+}
+
+.rpgPager .riSingle .riTextBox
+{
+	height: 22px;
+}
+
+*+html .RadPivotGrid .rpgPager .RadComboBox{margin-top: -1px;}
+* html .RadPivotGrid .rpgPager .RadComboBox{margin-top: -1px;padding: 1px 0;}
+
+.RadPivotGrid .rpgPagerTextBox
+{
+	text-align: center;
+}
+
+
+.RadPivotGrid .rpgFieldItem,
+.RadPivotGrid .rpgUpdateButton
+{
+	height: 25px;
+	line-height: 25px;
+	padding: 0 5px 0 8px;
+	margin-right: 4px;
+	display: inline-block;
+	white-space: nowrap;
+	vertical-align: middle;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+}
+
+/*Filter Window*/
+.PivotGridWindow .RadMenu
+{
+	float: none;
+	margin-bottom: 25px;
+}
+
+.PivotGridWindow .RadButton
+{
+	margin-bottom: 5px;
+	margin-right: 5px;
+}
+
+.PivotGridWindow .RadListBox
+{
+	display: block;
+	margin-bottom: 10px;
+	width: 172px;
+}
+
+.PivotGridWindow .rlbGroup
+{
+	max-height: 250px;
+	overflow: auto;
+}
+
+.PivotGridWindow .rpgFilterWindowContainer
+{
+	padding: 5px;
+}
+
+.PivotGridWindow .rpgFilterButtonOk,
+.PivotGridWindow .rpgFilterButtonCancel
+{
+	border-style: solid;
+	border-width: 1px;
+	cursor: pointer;
+	height: 28px;
+	margin-right: 14px;
+	vertical-align: top;
+	width: 100px;
+	border-radius: 2px;
+}
+
+.PivotGridWindow .rpgFilterButtonOk
+{
+	width: 58px;
+}
+
+.PivotGridWindow .RadListBox .rlbList 
+{
+	height: auto;
+}
+		
+.PivotGridWindow .riTextBox
+{
+	height: 22px;
+}
+		
+.PivotGridWindow .RadComboBox
+{
+	margin-right: 10px;
+	margin-bottom: 10px;
+	vertical-align: top;
+}
+
+.rpgFilterCheckboxes
+{
+	display: inline-block;
+	margin-bottom: 5px;
+	clear: left;
+}
+
+.rpgFilterCheckboxes input,
+.rpgFilterCheckboxes label
+{
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+
+.RadPivotGrid .rpgFieldItem a
+{
+	text-decoration: none;
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgFilter,
+.RadPivotGrid .rpgSortAsc,
+.RadPivotGrid .rpgSortDesc
+{
+	width: 14px;
+	height: 11px;
+	margin: 0 0 0 2px;
+	padding: 0;
+	border: 0 none;
+	cursor: pointer;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgFilter
+{
+	width: 22px;
+	height: 20px;
+}
+
+.RadPivotGrid.rpgDragItem
+{
+	border: 0 none;
+	background: none;
+}
+
+div.rpgFieldsWindow,
+.rpgFieldsWindow .rpgFieldsWindowConfigurationPanel
+{
+	height: 100%;
+	border: 0;
+}
+
+.rpgFieldsWindow .rpgFieldItem,
+.rpgConfigurationPanel .rpgFieldItem
+{
+	display: block;
+	margin: 2px 3px;
+	padding: 0 3px;
+	overflow: hidden;
+}
+
+.PivotGridReorderLeft,
+.PivotGridReorderRight,
+.PivotGridReorderTop,
+.PivotGridReorderBottom
+{
+	width:12px;
+	height:12px;
+	padding:0;
+}
+
+.PivotGridReorderTop,
+.PivotGridReorderBottom
+{
+	margin:0 0 0 -5px;
+}
+
+/*Compact Layout*/
+.rpgCompact th,
+.rpgCompact td,
+.rpgCompact .rpgOuterTableWrapper td
+{
+	border-width: 1px 0 0 1px;
+}
+
+.rpgTableWrapper td
+{
+	border-width: 0;
+	padding: 0;
+}
+
+.rpgCompact .rpgContentZone,
+.rpgCompact .rpgColumnHeader,
+.rpgCompact .rpgRowHeaderZone
+{
+	overflow: hidden;
+}
+
+.rpgCompact .rpgContentZoneDiv,
+.rpgCompact .rpgColumnHeaderDiv,
+.rpgCompact .rpgRowHeaderZoneDiv
+{
+	margin-top: -1px;
+}
+
+.rpgCompact tr.rpgPager:first-child td,
+.rpgCompact td.rpgEC
+{
+	border-top: 0;
+}
+
+div.rpgCompact .rpgFilterZone
+{
+	border: 0;
+}
+/*End Compact Layout*/
+
+.rpgConfigurationPanel
+{
+	padding: 10px 0;
+}
+
+.rpgConfigurationPanel
+{
+	padding: 10px 0;
+}
+
+.RadPivotGrid .rpgOuterTableWrapper
+{
+	overflow: hidden;
+	border-style: solid;
+	border-width: 0;
+}
+
+.rpgTopConfigurationPanel .rpgOuterTableWrapper
+{
+	border-top-width: 1px;
+}
+
+.rpgRightConfigurationPanel .rpgOuterTableWrapper
+{
+	border-right-width: 1px;
+}
+
+.rpgTopConfigurationPanel .rpgOuterTableWrapper
+{
+	border-top-width: 1px;
+}
+
+.rpgLeftConfigurationPanel .rpgOuterTableWrapper
+{
+	border-left-width: 1px;
+}
+
+.rpgLeftConfigurationPanel .rpgConfigurationPanel,
+.rpgRightConfigurationPanel .rpgConfigurationPanel
+{
+	width: 300px;
+}
+
+.rpgLeftConfigurationPanel .rpgFieldsWrapper,
+.rpgRightConfigurationPanel .rpgFieldsWrapper
+{
+	overflow: hidden;
+}
+
+.rpgTopConfigurationPanel.rpgStackedConfigurationPanel .rpgFieldsWrapper,
+.rpgBottomConfigurationPanel.rpgStackedConfigurationPanel .rpgFieldsWrapper
+{
+	width: 800px;
+}
+
+.rpgConfigurationPanel .rpgFieldsContainer
+{
+	height: 180px;
+	overflow: auto;
+}
+
+.rpgConfigurationPanel .rpgAllFieldsContainer,
+.rpgConfigurationPanel .rpgFilterFieldsContainer,
+.rpgConfigurationPanel .rpgRowFieldsContainer,
+.rpgConfigurationPanel .rpgColumnFieldsContainer,
+.rpgConfigurationPanel .rpgAggregateFieldsContainer
+{
+	float: left;
+	margin-bottom: 15px;
+	margin-left: 10px;
+}
+
+.rpgUpdate,
+.RadWindow .rpgUpdate
+{
+	clear: both;
+	padding: 0 10px;
+	height: 30px;
+}
+
+.rpgUpdate label,
+.RadWindow .rpgUpdate label
+{
+	margin: 0 5px;
+	vertical-align: middle;
+}
+
+.rpgUpdate input,
+.RadWindow .rpgUpdate input
+{
+	vertical-align: middle;
+}
+
+div.RadPivotGrid .rpgUpdateButton
+{
+	cursor: pointer;
+	background-repeat: repeat-x;
+}
+
+.rpgLeftConfigurationPanel .rpgUpdate input,
+.rpgRightConfigurationPanel .rpgUpdate input,
+.RadWindow .rpgUpdate input,
+.rpgLeftConfigurationPanel .rpgUpdate label,
+.rpgRightConfigurationPanel .rpgUpdate label,
+.RadWindow .rpgUpdate label
+{
+	float: left;
+	margin: 0;
+}
+
+.rpgLeftConfigurationPanel .rpgUpdate .rpgUpdateButton,
+.rpgRightConfigurationPanel .rpgUpdate .rpgUpdateButton,
+.RadWindow .rpgUpdate .rpgUpdateButton
+{
+	float: right;
+	margin-right: 0;
+}
+
+.RadPivotGrid .rpgUpdateButton[disabled]
+{
+	cursor: default;
+	opacity: 0.5;
+	-moz-opacity:0.5;
+	filter:alpha(opacity=50);
+}
+
+.RadPivotGrid .rpgPager .rpgPagerCell
+{
+	border-bottom-width: 1px;
+}
+
+div.rpgAllFieldsContainer .rpgFieldItem
+{
+	background: none;
+	border-color: transparent;
+}
+
+div.rpgAllFieldsContainer .rpgFieldItem input
+{
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgChangeLayoutButton,
+.RadWindow .rpgChangeLayoutButton
+{
+	cursor: pointer;
+	display: block;
+	color: transparent; /*IE 7*/
+}
+
+.RadPivotGrid .rpgItemContextMenu,
+.RadPivotGrid .rpgChangeLayoutButton
+{
+	width: 39px;
+	height: 24px;
+	text-indent: -9999px;
+	background-color: transparent;
+	border: 0 none;
+	vertical-align: middle;
+}
+
+.RadPivotGrid .rpgChangeLayoutButton
+{
+	margin-left: 10px;
+	margin-bottom: 12px;
+}
+
+.RadPivotGrid .rpgItemContextMenu
+{
+	width: 15px;
+	height: 15px;
+	margin-left: 3px;
+}
+
+.RadPivotGrid .rpgAllFieldsIcon,
+.RadPivotGrid .rpgFilterFieldsIcon,
+.RadPivotGrid .rpgRowFieldsIcon,
+.RadPivotGrid .rpgColumnFieldsIcon,
+.RadPivotGrid .rpgAggregateFieldsIcon
+{
+	display: inline-block;
+	padding-left: 20px;
+	margin-bottom: 5px;
+	height: 20px;
+	font-size: 13px;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+
+/*Layouts*/
+
+	/*Left and Right Side*/
+	.RadPivotGrid .rpgFieldsContainer
+	{
+		width: 133px;
+		height: 100px;
+	}
+
+	.rpgLeftConfigurationPanel.rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer,
+	.rpgRightConfigurationPanel.rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer
+	{
+		height: 115px;
+		width: 278px;
+	}
+
+		/*SideBySide*/
+		.rpgLeftConfigurationPanel.rpgSideBySideConfigurationPanel .rpgFieldsContainer,
+		.rpgRightConfigurationPanel.rpgSideBySideConfigurationPanel .rpgFieldsContainer
+		{
+			width: 278px;
+			height: 75px;
+		}
+
+		/*OneByFour*/
+		.rpgLeftConfigurationPanel.rpgOneByFourConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer,
+		.rpgRightConfigurationPanel.rpgOneByFourConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer
+		{
+			width: 133px;
+			height: 526px;
+		}
+
+		/*TwoByTwo*/
+		.rpgTwoByTwoConfigurationPanel .rpgAllFieldsContainer
+		{
+			display: none;
+		}
+
+		.rpgLeftConfigurationPanel.rpgTwoByTwoConfigurationPanel .rpgFieldsContainer,
+		.rpgRightConfigurationPanel.rpgTwoByTwoConfigurationPanel .rpgFieldsContainer
+		{
+			height: 170px;
+		}
+
+
+	/*Top and Bottom Side*/
+	.rpgTopConfigurationPanel .rpgFieldsContainer,
+	.rpgBottomConfigurationPanel .rpgFieldsContainer
+	{
+		width: 200px;
+	}
+
+	.rpgTopConfigurationPanel .rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer,
+	.rpgBottomConfigurationPanel .rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer	
+	{
+		height: 402px;
+	}
+
+	.rpgLeftConfigurationPanel .rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer,
+	.rpgRightConfigurationPanel .rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer
+	{
+		height: 115px;
+		width: 278px;
+	}
+
+	div.rpgContextMenuTop span.rmLeftImage,
+	div.rpgContextMenuBottom span.rmLeftImage
+	{
+		width: 20px;
+	}
+
+		/*SideBySide*/
+		.rpgTopConfigurationPanel.rpgSideBySideConfigurationPanel .rpgAllFieldsContainer,
+		.rpgBottomConfigurationPanel.rpgSideBySideConfigurationPanel .rpgAllFieldsContainer
+		{
+			display: none;
+		}
+
+		/*OneByFour*/
+
+		/*TwoByTwo*/
+		.rpgTwoByTwoConfigurationPanel .rpgAllFieldsContainer
+		{
+			display: none;
+		}
+
+		.rpgTwoByTwoConfigurationPanel .rpgColumnFieldsContainer
+		{
+			clear: left;
+		}
+
+
+	/*FieldsWindow*/
+	.PivotGridWindow .rpgFieldsContainer
+	{
+		width: 200px;
+		height: 115px;
+	}
+
+		/*Stacked*/
+		.PivotGridWindow .rpgStackedConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer
+		{
+			width: 412px;
+		}
+		
+		/*SideBySide*/
+		.PivotGridWindow .rpgSideBySideConfigurationPanel .rpgAllFieldsContainer
+		{
+			display: none;
+		}
+
+		.PivotGridWindow .rpgSideBySideConfigurationPanel .rpgFieldsContainer
+		{
+			width: 412px;
+			height: 75px;
+		}
+
+		/*TwoByTwo*/
+		.PivotGridWindow .rpgTwoByTwoConfigurationPanel .rpgAllFieldsContainer
+		{
+			display: none;
+		}
+		
+		.PivotGridWindow .rpgTwoByTwoConfigurationPanel .rpgFieldsContainer
+		{
+			height: 195px;
+		}
+
+		/*OneByFour*/
+
+		.PivotGridWindow .rpgOneByFourConfigurationPanel .rpgFieldsContainer
+		{
+			height: 76px;
+		}
+
+		.PivotGridWindow .rpgOneByFourConfigurationPanel .rpgAllFieldsContainer .rpgFieldsContainer
+		{
+			height: 430px;
+		}
+
+/*Layouts*/
+
+
+/*Telerik RadPivotGrid Windows7 Skin*/
+/*global*/
+.RadPivotGrid_EPM {
+  border: 1px solid #c2cedb;
+  background: white;
+  color: black;
+  font-size: 12px;
+  line-height: 16px;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  /* Pager */
+  /* filter */
+  /* Expand and Collaps Buttons */ }
+  .RadPivotGrid_EPM th,
+  .RadPivotGrid_EPM td,
+  .RadPivotGrid_EPM .rpgOuterTableWrapper {
+    border-color: #c2cedb; }
+  .RadPivotGrid_EPM td:first-child[collspan] {
+    border-left: 0 none; }
+  .RadPivotGrid_EPM .rpgPager,
+  .RadPivotGrid_EPM .rpgPagePrev,
+  .RadPivotGrid_EPM .rpgPageNext,
+  .RadPivotGrid_EPM .rpgPageFirst,
+  .RadPivotGrid_EPM .rpgPageLast,
+  .RadPivotGrid_EPM .rpgFilterZone,
+  .RadPivotGrid_EPM .rpgRowsZone,
+  .RadPivotGrid_EPM .rpgColumnsZone,
+  .RadPivotGrid_EPM .rpgDataZone,
+  .RadPivotGrid_EPM .rpgColumnHeader,
+  .RadPivotGrid_EPM .rpgColumnHeaderTotal,
+  .RadPivotGrid_EPM .rpgColumnHeaderGrandTotal,
+  .RadPivotGrid_EPM .rpgContentZoneDiv th,
+  .RadPivotGrid_EPM .rpgNumPart a:hover,
+  .RadPivotGrid_EPM .rpgNumPart a:hover span,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage span,
+  .RadPivotGrid_EPM .rpgFilter,
+  .RadPivotGrid_EPM .rpgSortAsc,
+  .RadPivotGrid_EPM .rpgSortDesc,
+  .RadPivotGrid_EPM .rpgExpand,
+  .RadPivotGrid_EPM .rpgCollapse,
+  .RadPivotGrid_EPM .rpgFieldItem {
+    background-image: url('PivotGrid/sprite.png'); }
+  .RadPivotGrid_EPM .rpgContentZoneDiv td {
+    border-color: #c2cedb; }
+  .RadPivotGrid_EPM .rpgRowHeaderZoneDiv {
+    background-color: #f1f5fb; }
+  .RadPivotGrid_EPM .rpgColumnHeader,
+  .RadPivotGrid_EPM .rpgColumnHeaderTotal,
+  .RadPivotGrid_EPM .rpgColumnHeaderGrandTotal,
+  .RadPivotGrid_EPM .rpgRowHeaderTotal,
+  .RadPivotGrid_EPM .rpgRowHeader {
+    color: #4c607a; }
+  .RadPivotGrid_EPM .rpgRowTotalDataCell,
+  .RadPivotGrid_EPM .rpgColumnTotalDataCell,
+  .RadPivotGrid_EPM .rpgRowGrandTotalDataCell,
+  .RadPivotGrid_EPM .rpgColumnGrandTotalDataCell {
+    background-color: #ebeff3; }
+  .RadPivotGrid_EPM .rpgRowTotalDataCell {
+    border-bottom-color: #c1c6cb; }
+  .RadPivotGrid_EPM .rpgRowHeaderTotal,
+  .RadPivotGrid_EPM .rpgRowTotalDataCell.rpgColumnTotalDataCell {
+    background-color: #c2cedb; }
+  .RadPivotGrid_EPM .rpgFilterZone,
+  .RadPivotGrid_EPM .rpgRowsZone,
+  .RadPivotGrid_EPM .rpgColumnsZone,
+  .RadPivotGrid_EPM .rpgDataZone,
+  .RadPivotGrid_EPM .rpgColumnHeader,
+  .RadPivotGrid_EPM .rpgColumnHeaderTotal,
+  .RadPivotGrid_EPM .rpgColumnHeaderGrandTotal,
+  .RadPivotGrid_EPM .rpgContentZoneDiv th {
+    background-color: #f1f5fb;
+    background-position: 0 -2000px;
+    background-repeat: repeat-x; }
+  .RadPivotGrid_EPM .rpgPager {
+    background-color: #f1f5fb;
+    background-position: 0 -1700px;
+    background-repeat: repeat-x;
+    color: #5a6779; }
+  .RadPivotGrid_EPM .rpgInfoPart {
+    color: #5a6779; }
+  .RadPivotGrid_EPM .rpgPageFirst {
+    margin: 0 3px 0 0;
+    background-position: 0 -240px; }
+  .RadPivotGrid_EPM .rpgPageFirst:hover {
+    background-position: 0 -290px; }
+  .RadPivotGrid_EPM .rpgPagePrev {
+    margin: 0 3px 0 0;
+    background-position: 0 -340px; }
+  .RadPivotGrid_EPM .rpgPagePrev:hover {
+    background-position: 0 -390px; }
+  .RadPivotGrid_EPM .rpgPageNext {
+    margin: 0 0 0 3px;
+    background-position: 0 -440px; }
+  .RadPivotGrid_EPM .rpgPageNext:hover {
+    background-position: 0 -490px; }
+  .RadPivotGrid_EPM .rpgPageLast {
+    margin: 0 0 0 3px;
+    background-position: 0 -540px; }
+  .RadPivotGrid_EPM .rpgPageLast:hover {
+    background-position: 0 -590px; }
+  .RadPivotGrid_EPM .rpgPager .rpgPagerButton {
+    border-color: #a4abb2;
+    background: #f0f0f0;
+    color: #5a6779;
+    font-size: 12px;
+    line-height: 16px;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif; }
+  .RadPivotGrid_EPM .rpgNumPart a:hover,
+  .RadPivotGrid_EPM .rpgNumPart a:hover span,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage span {
+    background-repeat: no-repeat; }
+  .RadPivotGrid_EPM .rpgNumPart a {
+    color: #3b3b3b; }
+  .RadPivotGrid_EPM .rpgNumPart a:hover {
+    background-position: 100% -690px;
+    color: #000; }
+  .RadPivotGrid_EPM .rpgNumPart a:hover span {
+    background-position: 0 -640px; }
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage:hover {
+    background-position: 100% -790px; }
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage span,
+  .RadPivotGrid_EPM .rpgNumPart a.rpgCurrentPage:hover span {
+    background-position: 0 -740px; }
+  .RadPivotGrid_EPM .rpgFieldItem,
+  .RadPivotGrid_EPM .rpgUpdateButton {
+    background-color: #dde8f6;
+    background-position: 0 -1400px;
+    background-repeat: repeat-x;
+    border-color: #c2cedb;
+    color: black; }
+  .RadPivotGrid_EPM .rpgFieldItem a {
+    color: black; }
+  .RadPivotGrid_EPM .rpgSortAsc,
+  .RadPivotGrid_EPM .rpgSortDesc {
+    vertical-align: middle;
+    margin-left: 2px; }
+  .RadPivotGrid_EPM .rpgSortDesc {
+    background-position: 4px -47px; }
+  .RadPivotGrid_EPM .rpgSortAsc {
+    background-position: 4px -91px; }
+  .RadPivotGrid_EPM .rpgFilter {
+    background-position: 3px 5px; }
+  .RadPivotGrid_EPM .rpgExpand,
+  .RadPivotGrid_EPM .rpgCollapse {
+    background-position: 6px -135px;
+    background-repeat: no-repeat; }
+  .RadPivotGrid_EPM .rpgExpand {
+    background-position: 6px -182px; }
+
+.rpgCompact td.rpgEC {
+  background-color: #f1f5fb; }
+.rpgCompact .rpgRowHeaderField {
+  background-color: #fafbfc; }
+
+.PivotGridReorderLeft_EPM,
+.PivotGridReorderRight_EPM,
+.PivotGridReorderTop_EPM,
+.PivotGridReorderBottom_EPM {
+  background: url('PivotGrid/sprite.png') no-repeat -20px -140px; }
+
+.PivotGridReorderLeft_EPM {
+  background-position: -20px -72px; }
+
+.PivotGridReorderRight_EPM {
+  background-position: 0 -66px; }
+
+.PivotGridReorderBottom_EPM {
+  background-position: -20px -159px; }
+
+.PivotGridWindow_EPM .rpgFilterButtonOk,
+.PivotGridWindow_EPM .rpgFilterButtonCancel {
+  background: #dde8f6 url('PivotGrid/sprite.png') repeat-x 0 -1400px;
+  border-color: #b8cbde;
+  color: black; }
+
+.RadPivotGrid_EPM .rpgConfigurationPanel,
+.RadPivotGrid_EPM table.rpgTableWrapper {
+  color: black;
+  background: #fafbfc; }
+
+.RadPivotGrid_EPM .rpgUpdateButton,
+.RadPivotGrid_EPM .rpgChangeLayoutButton,
+.RadPivotGrid_EPM .rpgAllFieldsIcon,
+.RadPivotGrid_EPM .rpgFilterFieldsIcon,
+.RadPivotGrid_EPM .rpgRowFieldsIcon,
+.RadPivotGrid_EPM .rpgColumnFieldsIcon,
+.RadPivotGrid_EPM .rpgAggregateFieldsIcon,
+.RadPivotGrid_EPM .rpgItemContextMenu,
+.PivotGridContextMenu_EPM span.rmLeftImage {
+  background-image: url('PivotGrid/sprite.png');
+  background-repeat: no-repeat; }
+
+.RadPivotGrid_EPM .rpgFieldItem:hover,
+.PivotGridWindow_EPM .rpgFilterButtonOk:hover,
+.PivotGridWindow_EPM .rpgFilterButtonCancel:hover {
+  background-position: 0 -1500px;
+  background-color: #e6ecf5;
+  border-color: #c2dbfb;
+  color: black; }
+
+.RadPivotGrid_EPM .rpgFieldItem:hover a {
+  color: black; }
+
+.RadPivotGrid_EPM .rpgChangeLayoutButton {
+  background-position: 9px -837px;
+  background-color: #ebeff3;
+  border: 1px solid #b8cbde; }
+
+.RadPivotGrid_EPM .rpgConfigurationPanel .rpgFieldsContainer {
+  border: 1px solid #b8cbde; }
+
+/* Context Menu */
+.RadPivotGrid_EPM .rpgItemContextMenu {
+  background-position: 0 -1325px; }
+
+.RadPivotGrid_EPM .rpgConfigurationPanel .rpgFieldItem:hover .rpgItemContextMenu {
+  background-position: 0 -1354px; }
+
+.RadPivotGrid_EPM .rpgConfigurationPanel .rpgFieldItem:hover .rpgSortAsc {
+  background-position: -21px -91px; }
+
+.RadPivotGrid_EPM .rpgConfigurationPanel .rpgFieldItem:hover .rpgSortDesc {
+  background-position: -21px -47px; }
+
+div.PivotGridContextMenu_EPM .rmGroup .rmFocused {
+  background-color: #c2cedb; }
+
+.PivotGridContextMenu_EPM .rpgStacked .rmLeftImage {
+  background-position: 0 -890px; }
+
+.PivotGridContextMenu_EPM .rpgSideBySide .rmLeftImage {
+  background-position: 0 -914px; }
+
+.PivotGridContextMenu_EPM .rpgTwoByTwo .rmLeftImage {
+  background-position: 0 -938px; }
+
+.PivotGridContextMenu_EPM .rpgOneByFour .rmLeftImage {
+  background-position: 0 -965px; }
+
+.PivotGridContextMenu_EPM.rpgContextMenuTop .rpgStacked .rmLeftImage,
+.PivotGridContextMenu_EPM.rpgContextMenuBottom .rpgStacked .rmLeftImage {
+  background-position: 0 -988px; }
+
+.PivotGridContextMenu_EPM.rpgContextMenuTop .rpgSideBySide .rmLeftImage,
+.PivotGridContextMenu_EPM.rpgContextMenuBottom .rpgSideBySide .rmLeftImage {
+  background-position: 0 -1010px; }
+
+.PivotGridContextMenu_EPM.rpgContextMenuTop .rpgTwoByTwo .rmLeftImage,
+.PivotGridContextMenu_EPM.rpgContextMenuBottom .rpgTwoByTwo .rmLeftImage {
+  background-position: 0 -1037px; }
+
+.PivotGridContextMenu_EPM.rpgContextMenuTop .rpgOneByFour .rmLeftImage,
+.PivotGridContextMenu_EPM.rpgContextMenuBottom .rpgOneByFour .rmLeftImage {
+  background-position: 0 -1059px; }
+
+/* Container's icons*/
+.RadPivotGrid_EPM .rpgAllFieldsIcon {
+  background-position: -14px -1089px; }
+
+.RadPivotGrid_EPM .rpgFilterFieldsIcon {
+  background-position: -14px -1114px; }
+
+.RadPivotGrid_EPM .rpgRowFieldsIcon {
+  background-position: -14px -1139px; }
+
+.RadPivotGrid_EPM .rpgColumnFieldsIcon {
+  background-position: -14px -1164px; }
+
+.RadPivotGrid_EPM .rpgAggregateFieldsIcon {
+  background-position: -15px -1189px; }

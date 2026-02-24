@@ -1,0 +1,1685 @@
+﻿<statements>
+
+  <statement name="CreateUpdateTaskProcess" connection="Common">
+    <param id ="TaskProcessId" type ="Guid"/>
+    <param id ="TaskProcessTypeCode" type ="Int32"/>
+    <param id ="ClientTaskId" type="Guid"/>
+    <param id ="EntityNumber" type ="String"/>
+    <param id ="TrackingNumber" type ="String"/>
+    <param id ="OrganizationName" type ="String"/>
+    <param id ="OrganizationId" type ="String"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id="PF1" type="String" />
+    <param id="PF2" type="String" />
+    <param id="PF3" type="String" />
+    <param id="PF4" type="String" />
+    <param id="PF5" type="String" />
+    <param id="PF6" type="String" />
+    <param id="PF7" type="String" />
+    <param id="PF8" type="String" />
+    <param id="PF9" type="String" />
+    <param id="PF10" type="String" />
+    <param id="PF11" type="String" />
+    <param id="PF12" type="String" />
+    <param id="PF13" type="String" />
+    <param id="PF14" type="String" />
+    <param id="PF15" type="String" />
+    <param id="PF16" type="String" />
+    <param id="PF17" type="String" />
+    <param id="PF18" type="String" />
+    <param id="PF19" type="String" />
+    <param id="PF20" type="String" />
+    <param id="PF21" type="String" />
+    <param id="PF22" type="String" />
+    <param id="PF23" type="String" />
+    <param id="PF24" type="String" />
+    <param id="PF25" type="String" />
+    <param id="PF26" type="String" />
+    <param id="PF27" type="String" />
+    <param id="PF28" type="String" />
+    <param id="PF29" type="String" />
+    <param id="PF30" type="String" />
+    <param id="TaskProcessIdOutput" type="String"  size="1000" direction="output"/>
+
+
+
+    <!--IF NOT EXISTS (
+    SELECT TaskProcessId FROM PFM_EXT_TaskProcess
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+        <exp op="=" dbField="TaskProcessTypeCode" paramId="TaskProcessTypeCode" />
+      </exp>
+    </where>
+    )-->
+    DECLARE @tempTaskProcessId AS UNIQUEIDENTIFIER
+    SELECT @tempTaskProcessId = TaskProcessId FROM dbo.PFM_EXT_TaskProcess
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+        <exp op="=" dbField="TaskProcessTypeCode" paramId="TaskProcessTypeCode" />
+      </exp>
+    </where>
+    IF @tempTaskProcessId is null
+    BEGIN    <!--For Creating New instance of Task Process and Task Process Fields-->
+
+
+    INSERT INTO PFM_EXT_TaskProcess
+    <columns mode ="insert">
+      <column dbField="TaskProcessId" paramId="TaskProcessId" />
+      <column dbField="ClientTaskId" paramId="ClientTaskId" />
+      <column dbField="TaskProcessTypeCode" paramId="TaskProcessTypeCode" />
+      <column dbField="EntityNumber" paramId="EntityNumber" />
+      <column dbField="TrackingNumber" paramId="TrackingNumber" />
+      <column dbField="OrganizationName" paramId="OrganizationName" />
+      <column dbField="OrganizationId" paramId="OrganizationId" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+
+    INSERT INTO PFM_EXT_TaskProcessFields
+    <columns mode ="insert">
+      <column dbField="TaskProcessId" paramId="TaskProcessId" />
+      <column dbField="PF1" paramId="PF1" />
+      <column dbField="PF2" paramId="PF2" />
+      <column dbField="PF3" paramId="PF3" />
+      <column dbField="PF4" paramId="PF4" />
+      <column dbField="PF5" paramId="PF5" />
+      <column dbField="PF6" paramId="PF6" />
+      <column dbField="PF7" paramId="PF7" />
+      <column dbField="PF8" paramId="PF8" />
+      <column dbField="PF9" paramId="PF9" />
+      <column dbField="PF10" paramId="PF10" />
+      <column dbField="PF11" paramId="PF11" />
+      <column dbField="PF12" paramId="PF12" />
+      <column dbField="PF13" paramId="PF13" />
+      <column dbField="PF14" paramId="PF14" />
+      <column dbField="PF15" paramId="PF15" />
+      <column dbField="PF16" paramId="PF16" />
+      <column dbField="PF17" paramId="PF17" />
+      <column dbField="PF18" paramId="PF18" />
+      <column dbField="PF19" paramId="PF19" />
+      <column dbField="PF20" paramId="PF20" />
+      <column dbField="PF21" paramId="PF21" />
+      <column dbField="PF22" paramId="PF22" />
+      <column dbField="PF23" paramId="PF23" />
+      <column dbField="PF24" paramId="PF24" />
+      <column dbField="PF25" paramId="PF25" />
+      <column dbField="PF26" paramId="PF26" />
+      <column dbField="PF27" paramId="PF27" />
+      <column dbField="PF28" paramId="PF28" />
+      <column dbField="PF29" paramId="PF29" />
+      <column dbField="PF30" paramId="PF30" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+
+    set @tempTaskProcessId = <exp paramId="TaskProcessId"></exp>
+    END
+    ELSE     <!--For Updating Task Process Instance and Task Process Fields-->
+    BEGIN
+    UPDATE PFM_EXT_TaskProcess
+    <columns mode ="update">
+      <column dbField="EntityNumber" paramId="EntityNumber" />
+      <column dbField="TrackingNumber" paramId="TrackingNumber" />
+      <column dbField="OrganizationName" paramId="OrganizationName" />
+      <column dbField="OrganizationId" paramId="OrganizationId" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+    <where>
+      <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+    </where>
+    UPDATE PFM_EXT_TaskProcessFields
+    <columns mode ="update">
+      <column dbField="PF1" paramId="PF1" />
+      <column dbField="PF2" paramId="PF2" />
+      <column dbField="PF3" paramId="PF3" />
+      <column dbField="PF4" paramId="PF4" />
+      <column dbField="PF5" paramId="PF5" />
+      <column dbField="PF6" paramId="PF6" />
+      <column dbField="PF7" paramId="PF7" />
+      <column dbField="PF8" paramId="PF8" />
+      <column dbField="PF9" paramId="PF9" />
+      <column dbField="PF10" paramId="PF10" />
+      <column dbField="PF11" paramId="PF11" />
+      <column dbField="PF12" paramId="PF12" />
+      <column dbField="PF13" paramId="PF13" />
+      <column dbField="PF14" paramId="PF14" />
+      <column dbField="PF15" paramId="PF15" />
+      <column dbField="PF16" paramId="PF16" />
+      <column dbField="PF17" paramId="PF17" />
+      <column dbField="PF18" paramId="PF18" />
+      <column dbField="PF19" paramId="PF19" />
+      <column dbField="PF20" paramId="PF20" />
+      <column dbField="PF21" paramId="PF21" />
+      <column dbField="PF22" paramId="PF22" />
+      <column dbField="PF23" paramId="PF23" />
+      <column dbField="PF24" paramId="PF24" />
+      <column dbField="PF25" paramId="PF25" />
+      <column dbField="PF26" paramId="PF26" />
+      <column dbField="PF27" paramId="PF27" />
+      <column dbField="PF28" paramId="PF28" />
+      <column dbField="PF29" paramId="PF29" />
+      <column dbField="PF30" paramId="PF30" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+    <where>
+      <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+    </where>
+    END
+    SET <exp paramId="TaskProcessIdOutput" /> = @tempTaskProcessId
+  </statement>
+
+  <statement name="CreateTask" connection="Common">
+    <param id ="TaskId" type ="Guid"/>
+    <param id ="TaskTypeCode" type ="Int32"/>
+    <param id ="TaskStatusCode" type ="Int32"/>
+    <param id ="TaskProcessId" type ="Guid"/>
+    <param id ="PermissionResourceValue" />
+    <param id ="TaskDescription" type ="String"/>
+    <param id ="AdditionalInformation" type ="String"/>
+    <param id ="ClientTaskId" type="Guid"/>
+    <param id ="AvailableDate" type ="DateTime"/>
+    <param id ="DueDate" type ="DateTime"/>
+    <param id ="StartedDate" type ="DateTime"/>
+    <param id ="StartedUserId" type="Guid"/>
+    <param id ="CompletedDate" type="DateTime"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id ="IsPopUp" type ="Boolean" default=""/>
+    <param id="F1" type="String" />
+    <param id="F2" type="String" />
+    <param id="F3" type="String" />
+    <param id="F4" type="String" />
+    <param id="F5" type="String" />
+    <param id="F6" type="String" />
+    <param id="F7" type="String" />
+    <param id="F8" type="String" />
+    <param id="F9" type="String" />
+    <param id="F10" type="String" />
+    <param id="F11" type="String" />
+    <param id="F12" type="String" />
+    <param id="F13" type="String" />
+    <param id="F14" type="String" />
+    <param id="F15" type="String" />
+    <param id="F16" type="String" />
+    <param id="F17" type="String" />
+    <param id="F18" type="String" />
+    <param id="F19" type="String" />
+    <param id="F20" type="String" />
+    <param id="F21" type="String" />
+    <param id="F22" type="String" />
+    <param id="F23" type="String" />
+    <param id="F24" type="String" />
+    <param id="F25" type="String" />
+    <param id="F26" type="String" />
+    <param id="F27" type="String" />
+    <param id="F28" type="String" />
+    <param id="F29" type="String" />
+    <param id="F30" type="String" />
+
+    <param id ="EntityNumber" type ="String"/>
+    <param id ="TrackingNumber" type ="String"/>
+    <param id ="OrganizationName" type ="String"/>
+    <param id ="OrganizationId" type ="String"/>
+    <param id="PF1" type="String" />
+    <param id="PF2" type="String" />
+    <param id="PF3" type="String" />
+    <param id="PF4" type="String" />
+    <param id="PF5" type="String" />
+    <param id="PF6" type="String" />
+    <param id="PF7" type="String" />
+    <param id="PF8" type="String" />
+    <param id="PF9" type="String" />
+    <param id="PF10" type="String" />
+    <param id="PF11" type="String" />
+    <param id="PF12" type="String" />
+    <param id="PF13" type="String" />
+    <param id="PF14" type="String" />
+    <param id="PF15" type="String" />
+    <param id="PF16" type="String" />
+    <param id="PF17" type="String" />
+    <param id="PF18" type="String" />
+    <param id="PF19" type="String" />
+    <param id="PF20" type="String" />
+    <param id="PF21" type="String" />
+    <param id="PF22" type="String" />
+    <param id="PF23" type="String" />
+    <param id="PF24" type="String" />
+    <param id="PF25" type="String" />
+    <param id="PF26" type="String" />
+    <param id="PF27" type="String" />
+    <param id="PF28" type="String" />
+    <param id="PF29" type="String" />
+    <param id="PF30" type="String" />
+
+    <param id="TaskProcessInstanceFieldExist" type="String"/>
+    <param id="TaskProcessFieldExist" type="String"/>
+    <param id="TaskErrorCode" type="String" size="1000" direction="output"/>
+    DECLARE @tempTaskProcessId AS UNIQUEIDENTIFIER, @tempTaskId AS UNIQUEIDENTIFIER, @tempTaskProcessTypeCode AS INT, @TaskTypeIsPopUp AS BIT
+    <!--DECLARE @Result AS VARCHAR(1000)-->
+    SELECT @tempTaskProcessId= tp.TaskProcessId, @tempTaskId = t.TaskId, @tempTaskProcessTypeCode= tt.TaskProcessTypeCode,
+    @TaskTypeIsPopUp = tt.IsPopUp
+    FROM PFM_EXT_TaskProcess tp WITH (NOLOCK)
+    INNER JOIN LU_PFM_EXT_TaskType tt WITH (NOLOCK) on tp.TaskProcessTypeCode = tt.TaskProcessTypeCode
+    LEFT JOIN dbo.PFM_EXT_Task t WITH (NOLOCK) ON tp.TaskProcessId = t.TaskProcessId
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+        <exp op="=" dbField="tp.ClientTaskId" paramId="ClientTaskId" />
+        <exp op="!=" dbField="t.TaskStatusCode" >3</exp>
+        <exp op="=" dbField="t.LatestFlag">1</exp>
+      </exp>
+    </where>
+    <!--WHERE tt.LookupCode = <exp paramId="TaskTypeCode" /> AND tp.ClientTaskId = <exp paramId="ClientTaskId" />-->
+
+
+    IF @tempTaskProcessId is null
+    BEGIN    <!--For Creating New instance of Task Process, Task Process Fields, Task Instance and Task Fields-->
+    SET @tempTaskProcessId = newid()
+    SELECT @tempTaskProcessTypeCode = TaskProcessTypeCode
+    FROM LU_PFM_EXT_TaskType WITH (NOLOCK)
+    <where>
+      <exp op="=" dbField="LookupCode" paramId="TaskTypeCode" ></exp>
+    </where>
+    INSERT INTO PFM_EXT_TaskProcess
+    <columns mode ="insert">
+      <column dbField="TaskProcessId" >@tempTaskProcessId</column>
+      <column dbField="ClientTaskId" paramId="ClientTaskId" />
+      <column dbField="TaskProcessTypeCode" >@tempTaskProcessTypeCode</column>
+      <column dbField="EntityNumber" paramId="EntityNumber" />
+      <column dbField="TrackingNumber" paramId="TrackingNumber" />
+      <column dbField="OrganizationName" paramId="OrganizationName" />
+      <column dbField="OrganizationId" paramId="OrganizationId" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+
+    INSERT INTO PFM_EXT_TaskProcessFields
+    <columns mode ="insert">
+      <column dbField="TaskProcessId" >@tempTaskProcessId</column>
+      <column dbField="PF1" paramId="PF1" />
+      <column dbField="PF2" paramId="PF2" />
+      <column dbField="PF3" paramId="PF3" />
+      <column dbField="PF4" paramId="PF4" />
+      <column dbField="PF5" paramId="PF5" />
+      <column dbField="PF6" paramId="PF6" />
+      <column dbField="PF7" paramId="PF7" />
+      <column dbField="PF8" paramId="PF8" />
+      <column dbField="PF9" paramId="PF9" />
+      <column dbField="PF10" paramId="PF10" />
+      <column dbField="PF11" paramId="PF11" />
+      <column dbField="PF12" paramId="PF12" />
+      <column dbField="PF13" paramId="PF13" />
+      <column dbField="PF14" paramId="PF14" />
+      <column dbField="PF15" paramId="PF15" />
+      <column dbField="PF16" paramId="PF16" />
+      <column dbField="PF17" paramId="PF17" />
+      <column dbField="PF18" paramId="PF18" />
+      <column dbField="PF19" paramId="PF19" />
+      <column dbField="PF20" paramId="PF20" />
+      <column dbField="PF21" paramId="PF21" />
+      <column dbField="PF22" paramId="PF22" />
+      <column dbField="PF23" paramId="PF23" />
+      <column dbField="PF24" paramId="PF24" />
+      <column dbField="PF25" paramId="PF25" />
+      <column dbField="PF26" paramId="PF26" />
+      <column dbField="PF27" paramId="PF27" />
+      <column dbField="PF28" paramId="PF28" />
+      <column dbField="PF29" paramId="PF29" />
+      <column dbField="PF30" paramId="PF30" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+    END
+    <optional depends="TaskProcessInstanceFieldExist || TaskProcessFieldExist">
+    ELSE  IF @tempTaskId is NULL
+      BEGIN
+      <!--For Updating Task Process Instance and Task Process Fields-->
+      <!--Updating Task Process Instance-->
+      <optional depends ="TaskProcessInstanceFieldExist">
+        UPDATE PFM_EXT_TaskProcess
+        <columns mode ="update">
+          <column dbField="EntityNumber" paramId="EntityNumber" />
+          <column dbField="TrackingNumber" paramId="TrackingNumber" />
+          <column dbField="OrganizationName" paramId="OrganizationName" />
+          <column dbField="OrganizationId" paramId="OrganizationId" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+        </columns>
+        <where>
+          <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+        </where>
+      </optional>
+      <!--Updating Task Process Instance Fields if only provided any values-->
+      <optional depends ="TaskProcessFieldExist">
+        UPDATE PFM_EXT_TaskProcessFields
+        <columns mode ="update">
+          <column dbField="PF1" paramId="PF1" />
+          <column dbField="PF2" paramId="PF2" />
+          <column dbField="PF3" paramId="PF3" />
+          <column dbField="PF4" paramId="PF4" />
+          <column dbField="PF5" paramId="PF5" />
+          <column dbField="PF6" paramId="PF6" />
+          <column dbField="PF7" paramId="PF7" />
+          <column dbField="PF8" paramId="PF8" />
+          <column dbField="PF9" paramId="PF9" />
+          <column dbField="PF10" paramId="PF10" />
+          <column dbField="PF11" paramId="PF11" />
+          <column dbField="PF12" paramId="PF12" />
+          <column dbField="PF13" paramId="PF13" />
+          <column dbField="PF14" paramId="PF14" />
+          <column dbField="PF15" paramId="PF15" />
+          <column dbField="PF16" paramId="PF16" />
+          <column dbField="PF17" paramId="PF17" />
+          <column dbField="PF18" paramId="PF18" />
+          <column dbField="PF19" paramId="PF19" />
+          <column dbField="PF20" paramId="PF20" />
+          <column dbField="PF21" paramId="PF21" />
+          <column dbField="PF22" paramId="PF22" />
+          <column dbField="PF23" paramId="PF23" />
+          <column dbField="PF24" paramId="PF24" />
+          <column dbField="PF25" paramId="PF25" />
+          <column dbField="PF26" paramId="PF26" />
+          <column dbField="PF27" paramId="PF27" />
+          <column dbField="PF28" paramId="PF28" />
+          <column dbField="PF29" paramId="PF29" />
+          <column dbField="PF30" paramId="PF30" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+        </columns>
+        <where>
+          <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+        </where>
+      </optional>
+      END
+    </optional>
+
+
+    IF @tempTaskId is NULL
+    BEGIN
+
+    <!--updating latest existing tasks set to latest flag = 0 because creating new task is set to latest.-->
+    Update PFM_EXT_Task
+    <columns mode ="update">
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+      <column dbField="LatestFlag">0</column>
+    </columns>
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="LatestFlag">1</exp>
+        <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode" />
+        <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+      </exp>
+    </where>
+
+    INSERT INTO PFM_EXT_Task
+    <columns mode ="insert">
+      <column dbField="TaskId" paramId="TaskId" />
+      <column dbField="TaskTypeCode" paramId="TaskTypeCode" />
+      <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+      <column dbField="TaskProcessId" >@tempTaskProcessId</column>
+      <column dbField="PermissionResourceValue" paramId="PermissionResourceValue" />
+      <column dbField="ClientTaskId" paramId="ClientTaskId" />
+      <column dbField="AvailableDate" paramId="AvailableDate" />
+      <column dbField ="TaskDescription" paramId ="TaskDescription"/>
+      <column dbField ="AdditionalInformation" paramId ="AdditionalInformation"/>
+      <column dbField="DueDate" paramId="DueDate" />
+      <column dbField="StartedDate" paramId="StartedDate" />
+      <column dbField="StartedUserId" paramId="StartedUserId" />
+      <column dbField="CompletedDate" paramId="CompletedDate" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+      <column dbField="IsPopUp" >
+        isnull(<exp paramId="IsPopUp" />,@TaskTypeIsPopUp )
+      </column>
+    </columns>
+
+    INSERT INTO PFM_EXT_TaskFields
+    <columns mode ="insert">
+      <column dbField="TaskId" paramId="TaskId" />
+      <column dbField="F1" paramId="F1" />
+      <column dbField="F2" paramId="F2" />
+      <column dbField="F3" paramId="F3" />
+      <column dbField="F4" paramId="F4" />
+      <column dbField="F5" paramId="F5" />
+      <column dbField="F6" paramId="F6" />
+      <column dbField="F7" paramId="F7" />
+      <column dbField="F8" paramId="F8" />
+      <column dbField="F9" paramId="F9" />
+      <column dbField="F10" paramId="F10" />
+      <column dbField="F11" paramId="F11" />
+      <column dbField="F12" paramId="F12" />
+      <column dbField="F13" paramId="F13" />
+      <column dbField="F14" paramId="F14" />
+      <column dbField="F15" paramId="F15" />
+      <column dbField="F16" paramId="F16" />
+      <column dbField="F17" paramId="F17" />
+      <column dbField="F18" paramId="F18" />
+      <column dbField="F19" paramId="F19" />
+      <column dbField="F20" paramId="F20" />
+      <column dbField="F21" paramId="F21" />
+      <column dbField="F22" paramId="F22" />
+      <column dbField="F23" paramId="F23" />
+      <column dbField="F24" paramId="F24" />
+      <column dbField="F25" paramId="F25" />
+      <column dbField="F26" paramId="F26" />
+      <column dbField="F27" paramId="F27" />
+      <column dbField="F28" paramId="F28" />
+      <column dbField="F29" paramId="F29" />
+      <column dbField="F30" paramId="F30" />
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="CreatedDate" paramId="CreatedDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+
+
+    END
+    ELSE
+    BEGIN
+
+
+    SET <exp paramId="TaskErrorCode" /> = 'More than one task found for particular Task Type Code and Client Task Id'
+
+    END
+  </statement>
+
+  <statement name="GetLookupFields" connection="Common">
+    <param id ="TaskProcessTypeCodes" type ="String"/>
+    <param id ="TaskTypeCodes" type ="String"/>
+    <param id ="FieldNames" type ="String"/>
+
+    
+    
+
+    SELECT ttf.TaskTypeCode as 'TypeCode', ttf.TaskTypeCode, tt.TaskProcessTypeCode as 'TaskProcessTypeCode', ttf.FieldCode, ttf.FieldColumn, f.LookupCode, f.FieldName, f.DisplayText,  'TaskField' as 'FieldType'
+    FROM dbo.PFM_EXT_TaskType_Fields_R ttf
+    INNER JOIN dbo.LU_PFM_EXT_TaskType tt ON tt.LookupCode = ttf.TaskTypeCode
+    INNER JOIN dbo.LU_PFM_EXT_Field f ON f.LookupCode = ttf.FieldCode
+
+    <where>
+      <exp op="AND">
+        <exp op="IN" dbField="f.FieldName" paramId="FieldNames"></exp>
+        <exp op="IN" dbField="TaskTypeCode" paramId="TaskTypeCodes" />
+      </exp>
+
+    </where>
+
+    UNION
+
+    SELECT tpf.TaskProcessTypeCode as 'TypeCode', tt.LookupCode as 'TaskTypeCode', tpf.TaskProcessTypeCode, tpf.FieldCode, tpf.FieldColumn ,f.LookupCode, f.FieldName, f.DisplayText, 'TaskProcessField' as 'FieldType'
+    FROM dbo.PFM_EXT_TaskProcessType_Fields_R tpf
+    INNER JOIN dbo.LU_PFM_EXT_TaskType tt ON tt.TaskProcessTypeCode = tpf.TaskProcessTypeCode
+    INNER JOIN dbo.LU_PFM_EXT_Field f ON f.LookupCode = tpf.FieldCode
+
+    <where>
+      <exp op="AND">
+        <exp op="IN" dbField="f.FieldName" paramId="FieldNames"></exp>
+        <exp op="OR">
+          <exp op="IN" dbField="tt.TaskProcessTypeCode" paramId="TaskProcessTypeCodes" />
+          <exp op="IN" dbField="tt.TaskProcessTypeCode" >
+            <sql>
+              select Distinct TaskProcessTypeCode
+              from LU_PFM_EXT_TaskType
+              <where>
+                <exp op="IN" dbField="LookupCode" paramId="TaskTypeCodes" />
+              </where>
+            </sql>
+          </exp>
+        </exp>
+      </exp>
+
+    </where>
+    order by FieldName
+
+    
+  </statement>
+
+  <statement name="StartTask" connection="Common">
+    <param id ="TaskId" type ="Guid"/>
+    <param id ="ClientTaskId" type ="Guid"/>
+    <param id ="TaskTypeCode" type="Int32"/>
+    <param id ="TaskStatusCode" type="Int32"/>
+    <param id ="UserId" type ="Guid"/>
+    <param id ="StartedUserId" type ="Guid"/>
+
+    Update PFM_EXT_TASK
+    <columns mode ="update">
+      <column dbField="StartedDate" >getdate()</column>
+      <column dbField="StartedUserId" paramId="StartedUserId" />
+      <column dbField="LastUpdateId" paramId="UserId" />
+      <column dbField="LastUpdateDate" >getdate()</column>
+      <column dbField="TaskStatusCode" paramId="TaskStatusCode"></column>
+    </columns>
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="LatestFlag">1</exp>
+        <exp op="in" dbField="TaskStatusCode">('1','4')   </exp>
+        <exp op="OR">
+          <exp op="AND">
+            <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+            <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode" />
+          </exp>
+          <exp op="=" dbField="TaskId" paramId="TaskId" />
+        </exp>
+
+      </exp>
+    </where>
+
+  </statement>
+
+  <statement name="CompleteTask" connection="Common">
+    <param id ="TaskId" type ="Guid"/>
+    <param id ="ClientTaskId" type ="Guid"/>
+    <param id ="TaskTypeCode" type="Int32"/>
+    <param id ="TaskStatusCode" type="Int32"/>
+    <param id ="UserId" type ="Guid"/>
+    Update PFM_EXT_TASK
+    <columns mode ="update">
+      <column dbField="TaskStatusCode" paramId="TaskStatusCode"></column>
+      <column dbField="LastUpdateId" paramId="UserId" />
+      <column dbField="LastUpdateDate" >getdate()</column>
+      <column dbField="CompletedDate" >getdate()</column>
+    </columns>
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="LatestFlag">1</exp>
+        <exp op="in" dbField="TaskStatusCode">('1', '2', '3', '4')   </exp>
+        <exp op="OR">
+          <exp op="AND">
+            <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+            <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode" />
+          </exp>
+          <exp op="=" dbField="TaskId" paramId="TaskId" />
+        </exp>
+      </exp>
+    </where>
+
+  </statement>
+
+  <statement name="CompleteTaskProcess" connection="Common">
+    <param id ="TaskProcessId" type ="Guid"/>
+    <param id ="ClientTaskId" type ="Guid"/>
+    <param id ="TaskProcessTypeCode" type="Int32"/>
+    <param id ="TaskStatusCode" type="Int32"/>
+    <param id ="UserId" type ="Guid"/>
+
+
+    UPDATE t
+    <columns mode ="update">
+      <column dbField="TaskStatusCode" paramId="TaskStatusCode"></column>
+      <column dbField="LastUpdateId" paramId="UserId" />
+      <column dbField="LastUpdateDate" >getdate()</column>
+      <column dbField="CompletedDate" >getdate()</column>
+    </columns>
+    from dbo.PFM_EXT_Task t
+    inner join dbo.PFM_EXT_TaskProcess tp ON t.TaskProcessId = t.TaskProcessId
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="LatestFlag">1</exp>
+        <exp op="!=" dbField="TaskStatusCode">3</exp>
+        <exp op="OR">
+          <exp op="AND">
+            <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+            <exp op="=" dbField="tp.TaskProcessTypeCode" paramId="TaskProcessTypeCode" />
+          </exp>
+          <exp op="=" dbField="tp.TaskProcessId" paramId="TaskProcessId" />
+        </exp>
+      </exp>
+    </where>
+
+
+
+
+  </statement>
+
+  <statement name="GetTasks" connection="Common">
+    <param id ="TaskId"  />
+    <param id ="TaskTypeCode"  />
+    <param id ="TaskStatusCode"  />
+    <param id ="TaskProcessId"  />
+    <param id ="TaskDescription"  />
+    <param id ="AdditionalInformation"  />
+    <param id ="PermissionResourceValue"  />
+    <param id ="ClientTaskId"  />
+    <param id ="AvailableDate"  />
+    <param id ="DueDate"  />
+    <param id ="StartedDate"  />
+    <param id ="StartedUserId"  />
+    <param id ="CompletedDate"  />
+    <param id ="LatestFlag"  />
+    <param id ="CreatorId"  />
+    <param id ="CreatedDate"  />
+    <param id ="LastUpdateId"  />
+    <param id ="LastUpdatedDate"  />
+    <param id ="CreatedBy"  />
+    <param id ="LastUpdatedBy"  />
+    <param id ="StartedBy"  />
+    <param id ="TaskProcessTypeCode"  />
+    <param id ="TaskTypeDescription"  />
+    <param id ="TaskStatusDescription"  />
+    <param id ="TaskProcessDescription"  />
+    <param id ="EntityTypeCode"  />
+    <param id ="EntityName"  />
+    <param id ="EntityNumber"  />
+    <param id ="TrackingNumber"  />
+    <param id ="OrganizationName"  />
+    <param id ="OrganizationId"  />
+    <param id ="CorePredefinedPageId"  />
+
+    <param id ="F1"  />
+    <param id ="F2"  />
+    <param id ="F3"  />
+    <param id ="F4"  />
+    <param id ="F5"  />
+    <param id ="F6"  />
+    <param id ="F7"  />
+    <param id ="F8"  />
+    <param id ="F9"  />
+    <param id ="F10"  />
+    <param id ="F11"  />
+    <param id ="F12"  />
+    <param id ="F13"  />
+    <param id ="F14"  />
+    <param id ="F15"  />
+    <param id ="F16"  />
+    <param id ="F17"  />
+    <param id ="F18"  />
+    <param id ="F19"  />
+    <param id ="F20"  />
+    <param id ="F21"  />
+    <param id ="F22"  />
+    <param id ="F23"  />
+    <param id ="F24"  />
+    <param id ="F25"  />
+    <param id ="F26"  />
+    <param id ="F27"  />
+    <param id ="F28"  />
+    <param id ="F29"  />
+    <param id ="F30"  />
+    <param id ="PF1"  />
+    <param id ="PF2"  />
+    <param id ="PF3"  />
+    <param id ="PF4"  />
+    <param id ="PF5"  />
+    <param id ="PF6"  />
+    <param id ="PF7"  />
+    <param id ="PF8"  />
+    <param id ="PF9"  />
+    <param id ="PF10"  />
+    <param id ="PF11"  />
+    <param id ="PF12"  />
+    <param id ="PF13"  />
+    <param id ="PF14"  />
+    <param id ="PF15"  />
+    <param id ="PF16"  />
+    <param id ="PF17"  />
+    <param id ="PF18"  />
+    <param id ="PF19"  />
+    <param id ="PF20"  />
+    <param id ="PF21"  />
+    <param id ="PF22"  />
+    <param id ="PF23"  />
+    <param id ="PF24"  />
+    <param id ="PF25"  />
+    <param id ="PF26"  />
+    <param id ="PF27"  />
+    <param id ="PF28"  />
+    <param id ="PF29"  />
+    <param id ="PF30"  />
+
+    <param id ="TaskId_OPERATION"  />
+    <param id ="TaskTypeCode_OPERATION"  />
+    <param id ="TaskStatusCode_OPERATION"  />
+    <param id ="TaskProcessId_OPERATION"  />
+    <param id ="TaskDescription_OPERATION"  />
+    <param id ="AdditionalInformation_OPERATION"  />
+    <param id ="PermissionResourceValue_OPERATION"  />
+    <param id ="ClientTaskId_OPERATION"  />
+    <param id ="AvailableDate_OPERATION"  />
+    <param id ="DueDate_OPERATION"  />
+    <param id ="StartedDate_OPERATION"  />
+    <param id ="StartedUserId_OPERATION"  />
+    <param id ="CompletedDate_OPERATION"  />
+    <param id ="LatestFlag_OPERATION"  />
+    <param id ="CreatorId_OPERATION"  />
+    <param id ="CreatedDate_OPERATION"  />
+    <param id ="LastUpdateId_OPERATION"  />
+    <param id ="LastUpdatedDate_OPERATION"  />
+    <param id ="CreatedBy_OPERATION"  />
+    <param id ="LastUpdatedBy_OPERATION"  />
+    <param id ="StartedBy_OPERATION"  />
+    <param id ="TaskProcessTypeCode_OPERATION"  />
+    <param id ="TaskTypeDescription_OPERATION"  />
+    <param id ="TaskStatusDescription_OPERATION"  />
+    <param id ="TaskProcessDescription_OPERATION"  />
+    <param id ="EntityTypeCode_OPERATION"  />
+    <param id ="EntityName_OPERATION"  />
+    <param id ="EntityNumber_OPERATION"  />
+    <param id ="TrackingNumber_OPERATION"  />
+    <param id ="OrganizationName_OPERATION"  />
+    <param id ="OrganizationId_OPERATION"  />
+
+    <param id ="CorePredefinedPageId_OPERATION"  />
+
+    <param id ="F1_OPERATION"  />
+    <param id ="F2_OPERATION"  />
+    <param id ="F3_OPERATION"  />
+    <param id ="F4_OPERATION"  />
+    <param id ="F5_OPERATION"  />
+    <param id ="F6_OPERATION"  />
+    <param id ="F7_OPERATION"  />
+    <param id ="F8_OPERATION"  />
+    <param id ="F9_OPERATION"  />
+    <param id ="F10_OPERATION"  />
+    <param id ="F11_OPERATION"  />
+    <param id ="F12_OPERATION"  />
+    <param id ="F13_OPERATION"  />
+    <param id ="F14_OPERATION"  />
+    <param id ="F15_OPERATION"  />
+    <param id ="F16_OPERATION"  />
+    <param id ="F17_OPERATION"  />
+    <param id ="F18_OPERATION"  />
+    <param id ="F19_OPERATION"  />
+    <param id ="F20_OPERATION"  />
+    <param id ="F21_OPERATION"  />
+    <param id ="F22_OPERATION"  />
+    <param id ="F23_OPERATION"  />
+    <param id ="F24_OPERATION"  />
+    <param id ="F25_OPERATION"  />
+    <param id ="F26_OPERATION"  />
+    <param id ="F27_OPERATION"  />
+    <param id ="F28_OPERATION"  />
+    <param id ="F29_OPERATION"  />
+    <param id ="F30_OPERATION"  />
+    <param id ="PF1_OPERATION"  />
+    <param id ="PF2_OPERATION"  />
+    <param id ="PF3_OPERATION"  />
+    <param id ="PF4_OPERATION"  />
+    <param id ="PF5_OPERATION"  />
+    <param id ="PF6_OPERATION"  />
+    <param id ="PF7_OPERATION"  />
+    <param id ="PF8_OPERATION"  />
+    <param id ="PF9_OPERATION"  />
+    <param id ="PF10_OPERATION"  />
+    <param id ="PF11_OPERATION"  />
+    <param id ="PF12_OPERATION"  />
+    <param id ="PF13_OPERATION"  />
+    <param id ="PF14_OPERATION"  />
+    <param id ="PF15_OPERATION"  />
+    <param id ="PF16_OPERATION"  />
+    <param id ="PF17_OPERATION"  />
+    <param id ="PF18_OPERATION"  />
+    <param id ="PF19_OPERATION"  />
+    <param id ="PF20_OPERATION"  />
+    <param id ="PF21_OPERATION"  />
+    <param id ="PF22_OPERATION"  />
+    <param id ="PF23_OPERATION"  />
+    <param id ="PF24_OPERATION"  />
+    <param id ="PF25_OPERATION"  />
+    <param id ="PF26_OPERATION"  />
+    <param id ="PF27_OPERATION"  />
+    <param id ="PF28_OPERATION"  />
+    <param id ="PF29_OPERATION"  />
+    <param id ="PF30_OPERATION"  />
+    <param id ="DuplicateParameterExpression"  />
+    <param id ="ListPermissionFlag" type="String" />
+    <param id="SortParam" type="String" required="false" default="CreatedDate" />
+    <param id ="UserId"  type ="Guid"/>
+    <sql>
+      
+      
+      
+      <select>
+        main.*
+
+      </select>
+      From
+      (
+      Select
+
+      t.TaskId  as 'TaskId',
+
+      t.TaskTypeCode  as 'TaskTypeCode',
+      t.TaskDescription as 'TaskDescription',
+      t.AdditionalInformation as 'AdditionalInformation',
+      t.TaskStatusCode  as 'TaskStatusCode',
+      t.TaskProcessId  as 'TaskProcessId',
+      t.PermissionResourceValue  as 'PermissionResourceValue',
+      t.ClientTaskId  as 'ClientTaskId',
+      t.AvailableDate  as 'AvailableDate',
+      t.DueDate  as 'DueDate',
+      Privileges as 'Privileges',
+      t.StartedDate  as 'StartedDate',
+      t.StartedUserId  as 'StartedUserId',
+      t.CompletedDate  as 'CompletedDate',
+      t.LatestFlag  as 'LatestFlag',
+      t.CreatorId  as 'CreatorId',
+      t.CreatedDate  as 'CreatedDate',
+      t.LastUpdateId  as 'LastUpdateId',
+      t.LastUpdateDate  as 'LastUpdateDate',
+      e.LookupCode  as 'EntityTypeCode',
+      e.DisplayValue  as 'EntityName',
+      tpt.LookupCode  as 'TaskProcessTypeCode',
+      tpt.DisplayValue  as 'TaskProcessDescription',
+      ts.DisplayValue  as 'TaskStatusDescription',
+      tt.DisplayValue  as 'TaskTypeDescription',
+      tt.CorePredefinedPageId  as 'CorePredefinedPageId',
+      CAST(ES.DimensionValue AS VARCHAR(100)) + SUBSTRING (CP.RelativeURL ,4,LEN(RelativeURL))  as 'CorePredefinePageURL',
+      tt.Permissions as 'Permissions',
+      tt.LayoutXML as 'LayoutXML',
+      tp.EntityNumber  as 'EntityNumber',
+      tp.TrackingNumber  as 'TrackingNumber',
+      tp.OrganizationName  as 'OrganizationName',
+      tp.OrganizationId  as 'OrganizationId',
+      cr.LastName + ', ' + cr.FirstName as 'CreatedBy',
+      la.LastName + ', ' + la.FirstName as 'LastUpdatedBy',
+      st.LastName + ', ' + st.FirstName as 'StartedBy',
+      tf.F1  as 'F1',
+      tf.F2  as 'F2',
+      tf.F3  as 'F3',
+      tf.F4  as 'F4',
+      tf.F5  as 'F5',
+      tf.F6  as 'F6',
+      tf.F7  as 'F7',
+      tf.F8  as 'F8',
+      tf.F9  as 'F9',
+      tf.F10  as 'F10',
+      tf.F11  as 'F11',
+      tf.F12  as 'F12',
+      tf.F13  as 'F13',
+      tf.F14  as 'F14',
+      tf.F15  as 'F15',
+      tf.F16  as 'F16',
+      tf.F17  as 'F17',
+      tf.F18  as 'F18',
+      tf.F19  as 'F19',
+      tf.F20  as 'F20',
+      tf.F21  as 'F21',
+      tf.F22  as 'F22',
+      tf.F23  as 'F23',
+      tf.F24  as 'F24',
+      tf.F25  as 'F25',
+      tf.F26  as 'F26',
+      tf.F27  as 'F27',
+      tf.F28  as 'F28',
+      tf.F29  as 'F29',
+      tf.F30  as 'F30',
+      tpf.PF1  as 'PF1',
+      tpf.PF2  as 'PF2',
+      tpf.PF3  as 'PF3',
+      tpf.PF4  as 'PF4',
+      tpf.PF5  as 'PF5',
+      tpf.PF6  as 'PF6',
+      tpf.PF7  as 'PF7',
+      tpf.PF8  as 'PF8',
+      tpf.PF9  as 'PF9',
+      tpf.PF10  as 'PF10',
+      tpf.PF11  as 'PF11',
+      tpf.PF12  as 'PF12',
+      tpf.PF13  as 'PF13',
+      tpf.PF14  as 'PF14',
+      tpf.PF15  as 'PF15',
+      tpf.PF16  as 'PF16',
+      tpf.PF17  as 'PF17',
+      tpf.PF18  as 'PF18',
+      tpf.PF19  as 'PF19',
+      tpf.PF20  as 'PF20',
+      tpf.PF21  as 'PF21',
+      tpf.PF22  as 'PF22',
+      tpf.PF23  as 'PF23',
+      tpf.PF24  as 'PF24',
+      tpf.PF25  as 'PF25',
+      tpf.PF26  as 'PF26',
+      tpf.PF27  as 'PF27',
+      tpf.PF28  as 'PF28',
+      tpf.PF29  as 'PF29',
+      tpf.PF30  as 'PF30',
+      t.IsPopUp as 'IsPopUp'
+
+
+
+
+      FROM   dbo.PFM_EXT_Task t
+      INNER JOIN dbo.PFM_EXT_TaskProcess tp ON t.TaskProcessId = tp.TaskProcessId
+      INNER JOIN dbo.PFM_EXT_TaskFields tf on t.TaskId = tf.TaskId
+      INNER JOIN dbo.PFM_EXT_TaskProcessFields tpf ON t.TaskProcessId = tpf.TaskProcessId
+      INNER JOIN dbo.LU_PFM_EXT_TaskStatus ts ON t.TaskStatusCode = ts.LookupCode
+      INNER JOIN dbo.LU_PFM_EXT_TaskType tt ON t.TaskTypeCode = tt.LookupCode
+      INNER JOIN dbo.PFM_CORE_PreDefinedPage CP ON tt.CorePredefinedPageId = CP.CorePredefinedPageId
+      INNER JOIN ExternalSystemDimensionValue ES ON CP.ExternalSystemCode=ES.ExternalSystemCode and CP.ExternalSystemDimensionCode = ES.ExternalSystemDimensionCode
+      INNER JOIN dbo.LU_PFM_EXT_TaskProcessType tpt on tt.TaskProcessTypeCode = tpt.LookupCode
+      INNER JOIN dbo.LU_PFM_EXT_Entity e on tpt.EntityTypeCode = e.LookupCode
+      LEFT OUTER JOIN dbo.People la on t.LastUpdateId = la.UserId
+      LEFT OUTER JOIN dbo.People cr on t.CreatorId = cr.UserId
+      Left Outer Join dbo.People st on t.StartedUserId = st.UserId
+      INNER JOIN (
+      SELECT TaskId, stuff(
+      (SELECT ',' + cast(ac.PrivilegeId AS VARCHAR(3))
+      from dbo.AC_Permission ac
+      INNER JOIN dbo.PFM_EXT_TaskTypePrivileges_R ttp ON ttp.TaskTypeCode = b.TaskTypeCode AND ttp.PrivilegeId = ac.PrivilegeId
+      WHERE ac.UserId = <exp paramId="UserId"/> and ac.ResourceValue = b.PermissionResourceValue
+      <optional depends="ListPermissionFlag">
+        and ttp.ListPermissionFlag = 0
+        and ((ac.StartDateTime IS NULL OR ac.StartDateTime &lt;= GETDATE()) AND (ac.EndDateTime IS NULL OR ac.EndDateTime &gt;= GETDATE()))
+      </optional>
+      ORDER BY ac.UserId, ac.ResourceValue
+      FOR XML PATH('')), 1, 1, '' ) as Privileges
+      FROM dbo.PFM_EXT_Task b
+      ) as pre ON t.TaskId = pre.TaskId AND pre.Privileges IS NOT null
+
+
+      <where>
+        <exp op="and">
+          <!--<exp op="=" dbField="ac.UserId" paramId="UserId" />-->
+          <exp op="&lt;=" dbField="t.AvailableDate">getdate()</exp>
+          <exp op="=" dbField="t.LatestFlag">1</exp>
+          <optional depends="TaskId">
+            t.TaskId <dynamic paramId="TaskId_OPERATION"/>  <exp paramId="TaskId"/>
+          </optional>
+          <optional depends="TaskTypeCode">
+            t.TaskTypeCode <dynamic paramId="TaskTypeCode_OPERATION"/>  <exp paramId="TaskTypeCode"/>
+          </optional>
+          <optional depends="TaskStatusCode">
+            t.TaskStatusCode <dynamic paramId="TaskStatusCode_OPERATION"/>  <exp paramId="TaskStatusCode"/>
+          </optional>
+          <optional depends="TaskProcessId">
+            t.TaskProcessId <dynamic paramId="TaskProcessId_OPERATION"/>  <exp paramId="TaskProcessId"/>
+          </optional>
+          <optional depends="PermissionResourceValue">
+            t.PermissionResourceValue <dynamic paramId="PermissionResourceValue_OPERATION"/>  <exp paramId="PermissionResourceValue"/>
+          </optional>
+          <optional depends="ClientTaskId">
+            t.ClientTaskId <dynamic paramId="ClientTaskId_OPERATION"/>  <exp paramId="ClientTaskId"/>
+          </optional>
+          <!--<optional depends="AvailableDate">
+            t.AvailableDate <dynamic paramId="AvailableDate_OPERATION"/>  <exp paramId="AvailableDate"/>
+          </optional>-->
+          <!--<optional depends="DueDate">
+            t.DueDate <dynamic paramId="DueDate_OPERATION"/>  <exp paramId="DueDate"/>
+          </optional>-->
+          <!--<optional depends="StartedDate">
+            t.StartedDate <dynamic paramId="StartedDate_OPERATION"/>  <exp paramId="StartedDate"/>
+          </optional>-->
+          <optional depends="StartedUserId">
+            t.StartedUserId <dynamic paramId="StartedUserId_OPERATION"/>  <exp paramId="StartedUserId"/>
+          </optional>
+          <!--<optional depends="CompletedDate">
+            t.CompletedDate <dynamic paramId="CompletedDate_OPERATION"/>  <exp paramId="CompletedDate"/>
+          </optional>-->
+          <optional depends="LatestFlag">
+            t.LatestFlag <dynamic paramId="LatestFlag_OPERATION"/>  <exp paramId="LatestFlag"/>
+          </optional>
+          <optional depends="CreatorId">
+            t.CreatorId <dynamic paramId="CreatorId_OPERATION"/>  <exp paramId="CreatorId"/>
+          </optional>
+          <!--<optional depends="CreatedDate">
+            t.CreatedDate <dynamic paramId="CreatedDate_OPERATION"/>  <exp paramId="CreatedDate"/>
+          </optional>-->
+          <optional depends="LastUpdateId">
+            t.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"/>  <exp paramId="LastUpdateId"/>
+          </optional>
+          <!--<optional depends="LastUpdateDate">
+            t.LastUpdateDate <dynamic paramId="LastUpdateDate_OPERATION"/>  <exp paramId="LastUpdateDate"/>
+          </optional>-->
+          <optional depends="EntityTypeCode">
+            e.LookupCode <dynamic paramId="EntityTypeCode_OPERATION"/>  <exp paramId="EntityTypeCode"/>
+          </optional>
+          <optional depends="EntityName">
+            e.DisplayValue <dynamic paramId="EntityName_OPERATION"/>  <exp paramId="EntityName"/>
+          </optional>
+          <optional depends="TaskProcessTypeCode">
+            tpt.LookupCode <dynamic paramId="TaskProcessTypeCode_OPERATION"/>  <exp paramId="TaskProcessTypeCode"/>
+          </optional>
+          <optional depends="TaskProcessDescription">
+            tpt.DisplayValue <dynamic paramId="TaskProcessDescription_OPERATION"/>  <exp paramId="TaskProcessDescription"/>
+          </optional>
+          <optional depends="TaskStatusDescription">
+            ts.DisplayValue <dynamic paramId="TaskStatusDescription_OPERATION"/>  <exp paramId="TaskStatusDescription"/>
+          </optional>
+          <optional depends="TaskTypeDescription">
+            tt.DisplayValue <dynamic paramId="TaskTypeDescription_OPERATION"/>  <exp paramId="TaskTypeDescription"/>
+          </optional>
+          <optional depends="CorePredefinedPageId">
+            tt.CorePredefinedPageId <dynamic paramId="CorePredefinedPageId_OPERATION"/>  <exp paramId="CorePredefinedPageId"/>
+          </optional>
+          <optional depends="EntityNumber">
+            tp.EntityNumber <dynamic paramId="EntityNumber_OPERATION"/>  <exp paramId="EntityNumber"/>
+          </optional>
+          <optional depends="TrackingNumber">
+            tp.TrackingNumber <dynamic paramId="TrackingNumber_OPERATION"/>  <exp paramId="TrackingNumber"/>
+          </optional>
+          <optional depends="OrganizationName">
+            tp.OrganizationName <dynamic paramId="OrganizationName_OPERATION"/>  <exp paramId="OrganizationName"/>
+          </optional>
+          <optional depends="OrganizationId">
+            tp.OrganizationId <dynamic paramId="OrganizationId_OPERATION"/>  <exp paramId="OrganizationId"/>
+          </optional>
+          <optional depends="F1">
+            tf.F1 <dynamic paramId="F1_OPERATION"/>  <exp paramId="F1"/>
+          </optional>
+          <optional depends="F2">
+            tf.F2 <dynamic paramId="F2_OPERATION"/>  <exp paramId="F2"/>
+          </optional>
+          <optional depends="F3">
+            tf.F3 <dynamic paramId="F3_OPERATION"/>  <exp paramId="F3"/>
+          </optional>
+          <optional depends="F4">
+            tf.F4 <dynamic paramId="F4_OPERATION"/>  <exp paramId="F4"/>
+          </optional>
+          <optional depends="F5">
+            tf.F5 <dynamic paramId="F5_OPERATION"/>  <exp paramId="F5"/>
+          </optional>
+          <optional depends="F6">
+            tf.F6 <dynamic paramId="F6_OPERATION"/>  <exp paramId="F6"/>
+          </optional>
+          <optional depends="F7">
+            tf.F7 <dynamic paramId="F7_OPERATION"/>  <exp paramId="F7"/>
+          </optional>
+          <optional depends="F8">
+            tf.F8 <dynamic paramId="F8_OPERATION"/>  <exp paramId="F8"/>
+          </optional>
+          <optional depends="F9">
+            tf.F9 <dynamic paramId="F9_OPERATION"/>  <exp paramId="F9"/>
+          </optional>
+          <optional depends="F10">
+            tf.F10 <dynamic paramId="F10_OPERATION"/>  <exp paramId="F10"/>
+          </optional>
+          <optional depends="F11">
+            tf.F11 <dynamic paramId="F11_OPERATION"/>  <exp paramId="F11"/>
+          </optional>
+          <optional depends="F12">
+            tf.F12 <dynamic paramId="F12_OPERATION"/>  <exp paramId="F12"/>
+          </optional>
+          <optional depends="F13">
+            tf.F13 <dynamic paramId="F13_OPERATION"/>  <exp paramId="F13"/>
+          </optional>
+          <optional depends="F14">
+            tf.F14 <dynamic paramId="F14_OPERATION"/>  <exp paramId="F14"/>
+          </optional>
+          <optional depends="F15">
+            tf.F15 <dynamic paramId="F15_OPERATION"/>  <exp paramId="F15"/>
+          </optional>
+          <optional depends="F16">
+            tf.F16 <dynamic paramId="F16_OPERATION"/>  <exp paramId="F16"/>
+          </optional>
+          <optional depends="F17">
+            tf.F17 <dynamic paramId="F17_OPERATION"/>  <exp paramId="F17"/>
+          </optional>
+          <optional depends="F18">
+            tf.F18 <dynamic paramId="F18_OPERATION"/>  <exp paramId="F18"/>
+          </optional>
+          <optional depends="F19">
+            tf.F19 <dynamic paramId="F19_OPERATION"/>  <exp paramId="F19"/>
+          </optional>
+          <optional depends="F20">
+            tf.F20 <dynamic paramId="F20_OPERATION"/>  <exp paramId="F20"/>
+          </optional>
+          <optional depends="F21">
+            tf.F21 <dynamic paramId="F21_OPERATION"/>  <exp paramId="F21"/>
+          </optional>
+          <optional depends="F22">
+            tf.F22 <dynamic paramId="F22_OPERATION"/>  <exp paramId="F22"/>
+          </optional>
+          <optional depends="F23">
+            tf.F23 <dynamic paramId="F23_OPERATION"/>  <exp paramId="F23"/>
+          </optional>
+          <optional depends="F24">
+            tf.F24 <dynamic paramId="F24_OPERATION"/>  <exp paramId="F24"/>
+          </optional>
+          <optional depends="F25">
+            tf.F25 <dynamic paramId="F25_OPERATION"/>  <exp paramId="F25"/>
+          </optional>
+          <!--<optional depends="F26">
+            tf.F26 <dynamic paramId="F26_OPERATION"/>  <exp paramId="F26"/>
+          </optional>
+          <optional depends="F27">
+            tf.F27 <dynamic paramId="F27_OPERATION"/>  <exp paramId="F27"/>
+          </optional>
+          <optional depends="F28">
+            tf.F28 <dynamic paramId="F28_OPERATION"/>  <exp paramId="F28"/>
+          </optional>
+          <optional depends="F29">
+            tf.F29 <dynamic paramId="F29_OPERATION"/>  <exp paramId="F29"/>
+          </optional>
+          <optional depends="F30">
+            tf.F30 <dynamic paramId="F30_OPERATION"/>  <exp paramId="F30"/>
+          </optional>-->
+          <optional depends="PF1">
+            tpf.PF1 <dynamic paramId="PF1_OPERATION"/>  <exp paramId="PF1"/>
+          </optional>
+          <optional depends="PF2">
+            tpf.PF2 <dynamic paramId="PF2_OPERATION"/>  <exp paramId="PF2"/>
+          </optional>
+          <optional depends="PF3">
+            tpf.PF3 <dynamic paramId="PF3_OPERATION"/>  <exp paramId="PF3"/>
+          </optional>
+          <optional depends="PF4">
+            tpf.PF4 <dynamic paramId="PF4_OPERATION"/>  <exp paramId="PF4"/>
+          </optional>
+          <optional depends="PF5">
+            tpf.PF5 <dynamic paramId="PF5_OPERATION"/>  <exp paramId="PF5"/>
+          </optional>
+          <optional depends="PF6">
+            tpf.PF6 <dynamic paramId="PF6_OPERATION"/>  <exp paramId="PF6"/>
+          </optional>
+          <optional depends="PF7">
+            tpf.PF7 <dynamic paramId="PF7_OPERATION"/>  <exp paramId="PF7"/>
+          </optional>
+          <optional depends="PF8">
+            tpf.PF8 <dynamic paramId="PF8_OPERATION"/>  <exp paramId="PF8"/>
+          </optional>
+          <optional depends="PF9">
+            tpf.PF9 <dynamic paramId="PF9_OPERATION"/>  <exp paramId="PF9"/>
+          </optional>
+          <optional depends="PF10">
+            tpf.PF10 <dynamic paramId="PF10_OPERATION"/>  <exp paramId="PF10"/>
+          </optional>
+          <optional depends="PF11">
+            tpf.PF11 <dynamic paramId="PF11_OPERATION"/>  <exp paramId="PF11"/>
+          </optional>
+          <optional depends="PF12">
+            tpf.PF12 <dynamic paramId="PF12_OPERATION"/>  <exp paramId="PF12"/>
+          </optional>
+          <optional depends="PF13">
+            tpf.PF13 <dynamic paramId="PF13_OPERATION"/>  <exp paramId="PF13"/>
+          </optional>
+          <optional depends="PF14">
+            tpf.PF14 <dynamic paramId="PF14_OPERATION"/>  <exp paramId="PF14"/>
+          </optional>
+          <optional depends="PF15">
+            tpf.PF15 <dynamic paramId="PF15_OPERATION"/>  <exp paramId="PF15"/>
+          </optional>
+          <optional depends="PF16">
+            tpf.PF16 <dynamic paramId="PF16_OPERATION"/>  <exp paramId="PF16"/>
+          </optional>
+          <optional depends="PF17">
+            tpf.PF17 <dynamic paramId="PF17_OPERATION"/>  <exp paramId="PF17"/>
+          </optional>
+          <optional depends="PF18">
+            tpf.PF18 <dynamic paramId="PF18_OPERATION"/>  <exp paramId="PF18"/>
+          </optional>
+          <optional depends="PF19">
+            tpf.PF19 <dynamic paramId="PF19_OPERATION"/>  <exp paramId="PF19"/>
+          </optional>
+          <optional depends="PF20">
+            tpf.PF20 <dynamic paramId="PF20_OPERATION"/>  <exp paramId="PF20"/>
+          </optional>
+          <optional depends="PF21">
+            tpf.PF21 <dynamic paramId="PF21_OPERATION"/>  <exp paramId="PF21"/>
+          </optional>
+          <optional depends="PF22">
+            tpf.PF22 <dynamic paramId="PF22_OPERATION"/>  <exp paramId="PF22"/>
+          </optional>
+          <optional depends="PF23">
+            tpf.PF23 <dynamic paramId="PF23_OPERATION"/>  <exp paramId="PF23"/>
+          </optional>
+          <optional depends="PF24">
+            tpf.PF24 <dynamic paramId="PF24_OPERATION"/>  <exp paramId="PF24"/>
+          </optional>
+          <optional depends="PF25">
+            tpf.PF25 <dynamic paramId="PF25_OPERATION"/>  <exp paramId="PF25"/>
+          </optional>
+          <!--<optional depends="PF26">
+            tpf.PF26 <dynamic paramId="PF26_OPERATION"/>  <exp paramId="PF26"/>
+          </optional>
+          <optional depends="PF27">
+            tpf.PF27 <dynamic paramId="PF27_OPERATION"/>  <exp paramId="PF27"/>
+          </optional>
+          <optional depends="PF28">
+            tpf.PF28 <dynamic paramId="PF28_OPERATION"/>  <exp paramId="PF28"/>
+          </optional>
+          <optional depends="PF29">
+            tpf.PF29 <dynamic paramId="PF29_OPERATION"/>  <exp paramId="PF29"/>
+          </optional>
+          <optional depends="PF30">
+            tpf.PF30 <dynamic paramId="PF30_OPERATION"/>  <exp paramId="PF30"/>
+          </optional>-->
+          <optional depends="DuplicateParameterExpression">
+            <dynamic paramId="DuplicateParameterExpression"/>
+          </optional>
+        </exp>
+      </where>
+      ) main
+      <sort paramId="SortParam"/>
+
+      
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteTask" connection="Common">
+    <param id="TaskId" type="Guid" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="ClientTaskId" type="Guid" />
+    <sql>
+
+      DECLARE @TaskCount AS INT
+      DECLARE @TaskProcessId AS UniqueIdentifier
+
+      SELECT @TaskProcessId = t.TaskProcessId FROM dbo.PFM_EXT_TaskProcess tp
+      inner join PFM_EXT_Task t on t.TaskProcessId = tp.TaskProcessId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+          <exp op="=" dbField="t.TaskId" paramId="TaskId" />
+        </exp>
+      </where>
+      SELECT @TaskCount = count(TaskId)
+      from PFM_EXT_Task t
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+          <exp op="=" dbField="t.TaskId" paramId="TaskId" />
+        </exp>
+      </where>
+
+      DELETE tf FROM dbo.PFM_EXT_TaskFields tf
+      inner join PFM_EXT_Task t on t.Taskid = tf.TaskId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+          <exp op="=" dbField="t.TaskId" paramId="TaskId" />
+        </exp>
+      </where>
+
+      DELETE FROM dbo.PFM_EXT_Task
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode" />
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId" />
+          <exp op="=" dbField="TaskId" paramId="TaskId" />
+        </exp>
+      </where>
+      IF @TaskCount = 1
+      BEGIN
+      delete from dbo.PFM_EXT_TaskProcessFields WHERE TaskProcessId = @TaskProcessId
+      delete from dbo.PFM_EXT_TaskProcess WHERE TaskProcessId = @TaskProcessId
+      END
+
+    </sql>
+  </statement>
+
+
+  <statement name="GetTask" connection="Common">
+    <param id ="TaskId" type ="Guid" />
+    <param id ="TaskTypeCode"  type="Int32"/>
+    <param id ="ClientTaskId"  type ="Guid"/>
+
+    <sql>
+      
+      
+
+      <select>
+        t.TaskId  as 'TaskId',
+
+        t.TaskTypeCode  as 'TaskTypeCode',
+        t.TaskDescription as 'TaskDescription',
+        t.AdditionalInformation as 'AdditionalInformation',
+        t.TaskStatusCode  as 'TaskStatusCode',
+        t.TaskProcessId  as 'TaskProcessId',
+        t.PermissionResourceValue  as 'PermissionResourceValue',
+        t.ClientTaskId  as 'ClientTaskId',
+        t.AvailableDate  as 'AvailableDate',
+        t.DueDate  as 'DueDate',
+        '' as 'Privileges',
+        t.StartedDate  as 'StartedDate',
+        t.StartedUserId  as 'StartedUserId',
+        t.CompletedDate  as 'CompletedDate',
+        t.LatestFlag  as 'LatestFlag',
+        t.CreatorId  as 'CreatorId',
+        t.CreatedDate  as 'CreatedDate',
+        t.LastUpdateId  as 'LastUpdateId',
+        t.LastUpdateDate  as 'LastUpdateDate',
+        e.LookupCode  as 'EntityTypeCode',
+        e.DisplayValue  as 'EntityName',
+        tpt.LookupCode  as 'TaskProcessTypeCode',
+        tpt.DisplayValue  as 'TaskProcessDescription',
+        ts.DisplayValue  as 'TaskStatusDescription',
+        tt.DisplayValue  as 'TaskTypeDescription',
+        tt.CorePredefinedPageId  as 'CorePredefinedPageId',
+        CAST(ES.DimensionValue AS VARCHAR(100)) + SUBSTRING (CP.RelativeURL ,4,LEN(RelativeURL))  as 'CorePredefinePageURL',
+        tt.Permissions as 'Permissions',
+        tt.LayoutXML as 'LayoutXML',
+        tp.EntityNumber  as 'EntityNumber',
+        tp.TrackingNumber  as 'TrackingNumber',
+        tp.OrganizationName  as 'OrganizationName',
+        tp.OrganizationId  as 'OrganizationId',
+        cr.LastName + ', ' + cr.FirstName as 'CreatedBy',
+        la.LastName + ', ' + la.FirstName as 'LastUpdatedBy',
+        st.LastName + ', ' + st.FirstName as 'StartedBy',
+        tf.F1  as 'F1',
+        tf.F2  as 'F2',
+        tf.F3  as 'F3',
+        tf.F4  as 'F4',
+        tf.F5  as 'F5',
+        tf.F6  as 'F6',
+        tf.F7  as 'F7',
+        tf.F8  as 'F8',
+        tf.F9  as 'F9',
+        tf.F10  as 'F10',
+        tf.F11  as 'F11',
+        tf.F12  as 'F12',
+        tf.F13  as 'F13',
+        tf.F14  as 'F14',
+        tf.F15  as 'F15',
+        tf.F16  as 'F16',
+        tf.F17  as 'F17',
+        tf.F18  as 'F18',
+        tf.F19  as 'F19',
+        tf.F20  as 'F20',
+        tf.F21  as 'F21',
+        tf.F22  as 'F22',
+        tf.F23  as 'F23',
+        tf.F24  as 'F24',
+        tf.F25  as 'F25',
+        tf.F26  as 'F26',
+        tf.F27  as 'F27',
+        tf.F28  as 'F28',
+        tf.F29  as 'F29',
+        tf.F30  as 'F30',
+        tpf.PF1  as 'PF1',
+        tpf.PF2  as 'PF2',
+        tpf.PF3  as 'PF3',
+        tpf.PF4  as 'PF4',
+        tpf.PF5  as 'PF5',
+        tpf.PF6  as 'PF6',
+        tpf.PF7  as 'PF7',
+        tpf.PF8  as 'PF8',
+        tpf.PF9  as 'PF9',
+        tpf.PF10  as 'PF10',
+        tpf.PF11  as 'PF11',
+        tpf.PF12  as 'PF12',
+        tpf.PF13  as 'PF13',
+        tpf.PF14  as 'PF14',
+        tpf.PF15  as 'PF15',
+        tpf.PF16  as 'PF16',
+        tpf.PF17  as 'PF17',
+        tpf.PF18  as 'PF18',
+        tpf.PF19  as 'PF19',
+        tpf.PF20  as 'PF20',
+        tpf.PF21  as 'PF21',
+        tpf.PF22  as 'PF22',
+        tpf.PF23  as 'PF23',
+        tpf.PF24  as 'PF24',
+        tpf.PF25  as 'PF25',
+        tpf.PF26  as 'PF26',
+        tpf.PF27  as 'PF27',
+        tpf.PF28  as 'PF28',
+        tpf.PF29  as 'PF29',
+        tpf.PF30  as 'PF30',
+        t.IsPopUp as 'IsPopUp'
+      </select>
+
+
+
+      FROM   dbo.PFM_EXT_Task t
+      INNER JOIN dbo.PFM_EXT_TaskProcess tp ON t.TaskProcessId = tp.TaskProcessId
+      INNER JOIN dbo.PFM_EXT_TaskFields tf on t.TaskId = tf.TaskId
+      INNER JOIN dbo.PFM_EXT_TaskProcessFields tpf ON t.TaskProcessId = tpf.TaskProcessId
+      INNER JOIN dbo.LU_PFM_EXT_TaskStatus ts ON t.TaskStatusCode = ts.LookupCode
+      INNER JOIN dbo.LU_PFM_EXT_TaskType tt ON t.TaskTypeCode = tt.LookupCode
+      INNER JOIN dbo.PFM_CORE_PreDefinedPage CP ON tt.CorePredefinedPageId = CP.CorePredefinedPageId
+      INNER JOIN ExternalSystemDimensionValue ES ON CP.ExternalSystemCode=ES.ExternalSystemCode and CP.ExternalSystemDimensionCode = ES.ExternalSystemDimensionCode
+      INNER JOIN dbo.LU_PFM_EXT_TaskProcessType tpt on tt.TaskProcessTypeCode = tpt.LookupCode
+      INNER JOIN dbo.LU_PFM_EXT_Entity e on tpt.EntityTypeCode = e.LookupCode
+      LEFT OUTER JOIN dbo.People la on t.LastUpdateId = la.UserId
+      LEFT OUTER JOIN dbo.People cr on t.CreatorId = cr.UserId
+      Left Outer Join dbo.People st on t.StartedUserId = st.UserId
+
+
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="LatestFlag">1</exp>
+          <exp op="OR">
+            <exp op="AND">
+              <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+              <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+            </exp>
+            <exp op="=" dbField="t.TaskId" paramId="TaskId" />
+          </exp>
+        </exp>
+      </where>
+
+    
+    </sql>
+  </statement>
+
+
+  <statement name="UpdateTask" connection="Common">
+    <param id ="TaskId" type ="Guid"/>
+    <param id ="TaskTypeCode" type ="Int32"/>
+    <param id ="TaskStatusCode" type ="Int32"/>
+    <param id ="TaskProcessId" type ="Guid"/>
+    <param id ="PermissionResourceValue" />
+    <param id ="TaskDescription" type ="String"/>
+    <param id ="AdditionalInformation" type ="String"/>
+    <param id ="ClientTaskId" type="Guid"/>
+    <param id ="AvailableDate" type ="DateTime"/>
+    <param id ="DueDate" type ="DateTime"/>
+    <param id ="StartedDate" type ="DateTime"/>
+    <param id ="StartedUserId" type="Guid"/>
+    <param id ="CompletedDate" type="DateTime"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id ="IsPopUp" type ="Boolean" default=""/>
+    <param id="F1" type="String" />
+    <param id="F2" type="String" />
+    <param id="F3" type="String" />
+    <param id="F4" type="String" />
+    <param id="F5" type="String" />
+    <param id="F6" type="String" />
+    <param id="F7" type="String" />
+    <param id="F8" type="String" />
+    <param id="F9" type="String" />
+    <param id="F10" type="String" />
+    <param id="F11" type="String" />
+    <param id="F12" type="String" />
+    <param id="F13" type="String" />
+    <param id="F14" type="String" />
+    <param id="F15" type="String" />
+    <param id="F16" type="String" />
+    <param id="F17" type="String" />
+    <param id="F18" type="String" />
+    <param id="F19" type="String" />
+    <param id="F20" type="String" />
+    <param id="F21" type="String" />
+    <param id="F22" type="String" />
+    <param id="F23" type="String" />
+    <param id="F24" type="String" />
+    <param id="F25" type="String" />
+    <param id="F26" type="String" />
+    <param id="F27" type="String" />
+    <param id="F28" type="String" />
+    <param id="F29" type="String" />
+    <param id="F30" type="String" />
+
+    <param id ="EntityNumber" type ="String"/>
+    <param id ="TrackingNumber" type ="String"/>
+    <param id ="OrganizationName" type ="String"/>
+    <param id ="OrganizationId" type ="String"/>
+    <param id="PF1" type="String" />
+    <param id="PF2" type="String" />
+    <param id="PF3" type="String" />
+    <param id="PF4" type="String" />
+    <param id="PF5" type="String" />
+    <param id="PF6" type="String" />
+    <param id="PF7" type="String" />
+    <param id="PF8" type="String" />
+    <param id="PF9" type="String" />
+    <param id="PF10" type="String" />
+    <param id="PF11" type="String" />
+    <param id="PF12" type="String" />
+    <param id="PF13" type="String" />
+    <param id="PF14" type="String" />
+    <param id="PF15" type="String" />
+    <param id="PF16" type="String" />
+    <param id="PF17" type="String" />
+    <param id="PF18" type="String" />
+    <param id="PF19" type="String" />
+    <param id="PF20" type="String" />
+    <param id="PF21" type="String" />
+    <param id="PF22" type="String" />
+    <param id="PF23" type="String" />
+    <param id="PF24" type="String" />
+    <param id="PF25" type="String" />
+    <param id="PF26" type="String" />
+    <param id="PF27" type="String" />
+    <param id="PF28" type="String" />
+    <param id="PF29" type="String" />
+    <param id="PF30" type="String" />
+
+    <param id="TaskProcessInstanceFieldExist" type="String"/>
+    <param id="TaskProcessFieldExist" type="String"/>
+    <param id="TaskErrorCode" type="String" size="1000" direction="output"/>
+    DECLARE @tempTaskProcessId AS UNIQUEIDENTIFIER, @tempTaskId AS UNIQUEIDENTIFIER, @tempTaskProcessTypeCode AS INT
+
+    SELECT @tempTaskProcessId= tp.TaskProcessId, @tempTaskId = t.TaskId
+    FROM PFM_EXT_TaskProcess tp
+    inner JOIN dbo.PFM_EXT_Task t ON tp.TaskProcessId = t.TaskProcessId
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+        <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId" />
+        <exp op="=" dbField="t.LatestFlag">1</exp>
+      </exp>
+    </where>
+    if @tempTaskProcessId is not null and @tempTaskId is not null
+    begin
+    <optional depends ="TaskProcessInstanceFieldExist">
+      UPDATE PFM_EXT_TaskProcess
+      <columns mode ="update">
+        <column dbField="EntityNumber" paramId="EntityNumber" />
+        <column dbField="TrackingNumber" paramId="TrackingNumber" />
+        <column dbField="OrganizationName" paramId="OrganizationName" />
+        <column dbField="OrganizationId" paramId="OrganizationId" />
+        <column dbField="LastUpdateId" paramId="LastUpdateId" />
+        <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+      </columns>
+      <where>
+        <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+      </where>
+    </optional>
+    <!--Updating Task Process Instance Fields if only provided any values-->
+    <optional depends ="TaskProcessFieldExist">
+      UPDATE PFM_EXT_TaskProcessFields
+      <columns mode ="update">
+        <column dbField="PF1" paramId="PF1" />
+        <column dbField="PF2" paramId="PF2" />
+        <column dbField="PF3" paramId="PF3" />
+        <column dbField="PF4" paramId="PF4" />
+        <column dbField="PF5" paramId="PF5" />
+        <column dbField="PF6" paramId="PF6" />
+        <column dbField="PF7" paramId="PF7" />
+        <column dbField="PF8" paramId="PF8" />
+        <column dbField="PF9" paramId="PF9" />
+        <column dbField="PF10" paramId="PF10" />
+        <column dbField="PF11" paramId="PF11" />
+        <column dbField="PF12" paramId="PF12" />
+        <column dbField="PF13" paramId="PF13" />
+        <column dbField="PF14" paramId="PF14" />
+        <column dbField="PF15" paramId="PF15" />
+        <column dbField="PF16" paramId="PF16" />
+        <column dbField="PF17" paramId="PF17" />
+        <column dbField="PF18" paramId="PF18" />
+        <column dbField="PF19" paramId="PF19" />
+        <column dbField="PF20" paramId="PF20" />
+        <column dbField="PF21" paramId="PF21" />
+        <column dbField="PF22" paramId="PF22" />
+        <column dbField="PF23" paramId="PF23" />
+        <column dbField="PF24" paramId="PF24" />
+        <column dbField="PF25" paramId="PF25" />
+        <column dbField="PF26" paramId="PF26" />
+        <column dbField="PF27" paramId="PF27" />
+        <column dbField="PF28" paramId="PF28" />
+        <column dbField="PF29" paramId="PF29" />
+        <column dbField="PF30" paramId="PF30" />
+        <column dbField="LastUpdateId" paramId="LastUpdateId" />
+        <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+      </columns>
+      <where>
+        <exp op="=" dbField="TaskProcessId">@tempTaskProcessId</exp>
+      </where>
+    </optional>
+
+    UPDATE PFM_EXT_Task
+    <columns mode ="update">
+      <column dbField="AvailableDate" paramId="AvailableDate" />
+      <column dbField="DueDate" paramId="DueDate" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+      <column dbField ="TaskDescription" paramId ="TaskDescription"/>
+      <column dbField ="AdditionalInformation" paramId ="AdditionalInformation"/>
+      <column dbField="IsPopUp" paramId="IsPopUp"/>
+
+    </columns>
+    <where>
+      <exp op="=" dbField="TaskId">@tempTaskId</exp>
+    </where>
+    UPDATE PFM_EXT_TaskFields
+    <columns mode ="update">
+      <column dbField="F1" paramId="F1" />
+      <column dbField="F2" paramId="F2" />
+      <column dbField="F3" paramId="F3" />
+      <column dbField="F4" paramId="F4" />
+      <column dbField="F5" paramId="F5" />
+      <column dbField="F6" paramId="F6" />
+      <column dbField="F7" paramId="F7" />
+      <column dbField="F8" paramId="F8" />
+      <column dbField="F9" paramId="F9" />
+      <column dbField="F10" paramId="F10" />
+      <column dbField="F11" paramId="F11" />
+      <column dbField="F12" paramId="F12" />
+      <column dbField="F13" paramId="F13" />
+      <column dbField="F14" paramId="F14" />
+      <column dbField="F15" paramId="F15" />
+      <column dbField="F16" paramId="F16" />
+      <column dbField="F17" paramId="F17" />
+      <column dbField="F18" paramId="F18" />
+      <column dbField="F19" paramId="F19" />
+      <column dbField="F20" paramId="F20" />
+      <column dbField="F21" paramId="F21" />
+      <column dbField="F22" paramId="F22" />
+      <column dbField="F23" paramId="F23" />
+      <column dbField="F24" paramId="F24" />
+      <column dbField="F25" paramId="F25" />
+      <column dbField="F26" paramId="F26" />
+      <column dbField="F27" paramId="F27" />
+      <column dbField="F28" paramId="F28" />
+      <column dbField="F29" paramId="F29" />
+      <column dbField="F30" paramId="F30" />
+      <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+    </columns>
+    <where>
+      <exp op="=" dbField="TaskId">@tempTaskId</exp>
+    </where>
+
+    end
+  </statement>
+</statements>

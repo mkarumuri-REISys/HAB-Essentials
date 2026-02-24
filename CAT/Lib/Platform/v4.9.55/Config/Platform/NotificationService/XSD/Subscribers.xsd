@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:include schemaLocation="Common.xsd" />
+	<xs:element name="Subscribers">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" name="Subscriber">
+					<xs:complexType>
+						<xs:choice>
+							<xs:sequence>
+								<xs:element name="FirstName" type="xs:string"  />
+								<xs:element name="LastName" type="xs:string"/>
+								<xs:element name="EmailAddress" type="C-50MUSTHAVE1"  />
+							</xs:sequence>
+							<xs:element name="UserId" type="xs:string"  />
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

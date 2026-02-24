@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="pageType">
+		<xs:restriction base="xs:string" >
+			<xs:enumeration value="CustomHtml" />
+			<xs:enumeration value="Custom" />
+			<xs:enumeration value="List" />
+			<xs:enumeration value="Edit" />
+			<xs:enumeration value="Add" />
+			<xs:enumeration value="Confirm" />
+			<xs:enumeration value="Delete" />
+			<xs:enumeration value="Cancel" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="reiBoolean">
+		<xs:restriction base="xs:string" >
+			<xs:enumeration value="true" />
+			<xs:enumeration value="false" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="commonRuleType">
+		<xs:attribute name="message" type="xs:string" />
+		<xs:attribute name="pass" type="yesNoType" />
+		<xs:attribute name="editCode" type="xs:string" />
+		<xs:attribute name="longDescription" type="xs:string" />
+		<xs:attribute name="defaultValue" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="sRuleType">
+		<xs:complexContent>
+			<xs:extension base="commonRuleType">
+				<xs:attribute name="id" type="xs:string" />
+				<xs:attribute name="vCode" type="sRuleVCodeType" />
+				<xs:attribute name="CompareValue" type="xs:string" />
+				<xs:attribute name="empty" type="yesNoType" />
+				<xs:attribute name="validationPlaceHolder" type="xs:string" />
+				<xs:attribute name="isFieldLevelError" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="cRuleType">
+		<xs:complexContent>
+			<xs:extension base="commonRuleType">
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:sequence>
+						<xs:element name="sRule" type="sRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="cRule" type="cRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="fRule" type="fRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="sqlRule" type="sqlRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="repeatingRule" type="repeatingRuleType" />
+					</xs:sequence>
+				</xs:choice>
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="vCode" type="cRuleVCodeType" />
+				<xs:attribute name="validationPlaceHolder" type="xs:string"  />
+				<xs:attribute name="isFieldLevelError" type="xs:string" />
+				<xs:attribute name="empty" type="yesNoType" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="fRuleType">
+		<xs:complexContent>
+			<xs:extension base="commonRuleType">
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:sequence>
+						<xs:element name="sRule" type="sRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="cRule" type="cRuleType" />
+					</xs:sequence>
+					<xs:choice minOccurs="1">
+						<xs:element name="fRule" type="fRuleType" />
+						<xs:element name="op" type="opType" />
+					</xs:choice>
+					<xs:sequence>
+						<xs:element name="sqlRule" type="sqlRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="repeatingRule" type="repeatingRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="param" type="paramType" />
+					</xs:sequence>
+				</xs:choice>
+				<xs:attribute name="id" type="xs:string" />
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="vCode" type="fRuleVCodeType" />
+				<xs:attribute name="isFieldLevelError" type="xs:string" />
+				<xs:attribute name="validationPlaceHolder" type="xs:string" />
+				<xs:attribute name="empty" type="yesNoType" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="sqlRuleType">
+		<xs:complexContent>
+			<xs:extension base="commonRuleType">
+				<xs:sequence minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="param" type="paramType" />
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="vCode" type="sqlRuleVCodeType" />
+				<xs:attribute name="CompareValue" type="xs:string" />
+				<xs:attribute name="component" type="xs:string" />
+				<xs:attribute name="statement" type="xs:string" />
+				<xs:attribute name="id" type="xs:string" use="required" />
+				<xs:attribute name="empty" type="yesNoType" use="required" />
+				<xs:attribute name="validationPlaceHolder" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+
+	<xs:complexType name="opType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="param" type="paramType" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="vCode" type="opVCodeType" />
+	</xs:complexType>
+
+	<xs:complexType name="repeatingRuleType">
+		<xs:complexContent>
+			<xs:extension base="commonRuleType">
+				<xs:choice maxOccurs="unbounded">
+					<xs:sequence>
+						<xs:element name="sRule" type="sRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="cRule" type="cRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="fRule" type="fRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="sqlRule" type="sqlRuleType" />
+					</xs:sequence>
+					<xs:sequence>
+						<xs:element name="repeatingRule" type="repeatingRuleType" />
+					</xs:sequence>
+				</xs:choice>
+				<xs:attribute name="id" type="xs:string" />
+				<xs:attribute name="vCode" type="repeatingRuleVCodeType" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="paramType">
+		<xs:attribute name="id" type="xs:string" />
+		<xs:attribute name="defaultValue" type="xs:string" />
+	</xs:complexType>
+	<xs:simpleType name="yesNoType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+			<xs:enumeration value="Warning"/>
+			<xs:enumeration value="Information"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="sRuleVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NUMERIC"/>
+			<xs:enumeration value="EQ"/>
+			<xs:enumeration value="GT"/>
+			<xs:enumeration value="LT"/>
+			<xs:enumeration value="GE"/>
+			<xs:enumeration value="LE"/>
+			<xs:enumeration value="NE"/>
+			<xs:enumeration value="MAXLEN"/>
+			<xs:enumeration value="MINLEN"/>
+			<xs:enumeration value="EXPRESSION"/>
+			<xs:enumeration value="Date"/>
+			<xs:enumeration value="Phone"/>
+			<xs:enumeration value="Email"/>
+			<xs:enumeration value="Money"/>
+			<xs:enumeration value="SSN"/>
+			<xs:enumeration value="Integer"/>
+			<xs:enumeration value="Floating"/>
+			<xs:enumeration value="Password"/>
+      <xs:enumeration value="SingleEmail"/>
+      <xs:enumeration value="MultipleEmail"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="cRuleVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="THEN"/>
+			<xs:enumeration value="NOT"/>
+			<xs:enumeration value="AND"/>
+			<xs:enumeration value="OR"/>
+			<xs:enumeration value="XOR"/>
+			<xs:enumeration value="NAND"/>
+			<xs:enumeration value="NOR"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="fRuleVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EQ"/>
+			<xs:enumeration value="GT"/>
+			<xs:enumeration value="LT"/>
+			<xs:enumeration value="GE"/>
+			<xs:enumeration value="LE"/>
+			<xs:enumeration value="NE"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="sqlRuleVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NUMERIC"/>
+			<xs:enumeration value="EQ"/>
+			<xs:enumeration value="GT"/>
+			<xs:enumeration value="LT"/>
+			<xs:enumeration value="GE"/>
+			<xs:enumeration value="LE"/>
+			<xs:enumeration value="NE"/>
+			<xs:enumeration value="MAXLEN"/>
+			<xs:enumeration value="MINLEN"/>
+			<xs:enumeration value="EXPRESSION"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="repeatingRuleVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AND"/>
+			<xs:enumeration value="OR"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:simpleType name="opVCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADD"/>
+			<xs:enumeration value="SUB"/>
+			<xs:enumeration value="MUL"/>
+			<xs:enumeration value="DIV"/>
+			<xs:enumeration value="ABS"/>
+			<xs:enumeration value="AVG"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="validationRuleType" mixed="true">
+		<xs:choice minOccurs="1" maxOccurs="1">
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="sRule" type="sRuleType"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="cRule" type="cRuleType"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="fRule" type="fRuleType"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="sqlRule" type="sqlRuleType"/>
+			</xs:sequence>
+		</xs:choice>
+		<xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="accumulateMessages" type="xs:boolean" use="optional" />
+  </xs:complexType>
+
+
+	<xs:simpleType name="validationSourcetype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="database" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="validationLoadtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PostBack" />
+			<xs:enumeration value="Always" />
+			<xs:enumeration value="NotPostBack" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="validationOrGroupRuleType" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="validator" type="validationRuleType"/>
+			</xs:sequence>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="group" type="validationGroupRuleType"/>
+			</xs:sequence>
+		</xs:choice>
+		<xs:attribute name="source" type="validationSourcetype" />
+		<xs:attribute name="loadValidation" type="validationLoadtype" default="Always" use="optional" />
+	</xs:complexType>
+	<xs:complexType name="validationGroupRuleType" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="validator" type="validationRuleType"/>
+			</xs:sequence>
+		</xs:choice>
+		<xs:attribute name="name" type="xs:string" />
+	</xs:complexType>
+	<xs:simpleType name="commaDelimitedIntegerList">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				A comma delimited string of integers, each representing a valid selection.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+	<xs:simpleType name="mode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Expand" />
+			<xs:enumeration value="Collapse" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="config">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="userControl" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="validation" type="validationOrGroupRuleType" minOccurs="0" maxOccurs="1">
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

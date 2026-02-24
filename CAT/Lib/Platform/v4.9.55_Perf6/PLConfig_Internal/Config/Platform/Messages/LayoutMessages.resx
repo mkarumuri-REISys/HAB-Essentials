@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HideFieldValidationList" xml:space="preserve">
+    <value>Hide additional errors</value>
+  </data>
+  <data name="NonRigidAlternateText" xml:space="preserve">
+    <value>To mark section complete, this error must be fixed</value>
+  </data>
+  <data name="NonRigidImage" xml:space="preserve">
+    <value>Platform/Include/images/NonRigidError.gif</value>
+    <comment>Non rigid validation error message</comment>
+  </data>
+  <data name="RigidAlternateText" xml:space="preserve">
+    <value>To save data, this error must be fixed</value>
+  </data>
+  <data name="RigidImage" xml:space="preserve">
+    <value>Platform/Include/images/RigidError.gif</value>
+    <comment>Rigid validation error message</comment>
+  </data>
+  <data name="WarningAlternateText" xml:space="preserve">
+    <value>Data is saved but this warning is recommended to be fixed.</value>
+  </data>
+  <data name="WarningImage" xml:space="preserve">
+    <value>~/Platform/Include/Skins/{0}/Images/explain.png</value>
+    <comment>Warning message</comment>
+  </data>
+  <data name="ShowFieldValidationList" xml:space="preserve">
+    <value>View additional errors</value>
+  </data>
+  <data name="HideOtherValidationErrorMsges" xml:space="preserve">
+    <value>Hide all other validation errors</value>
+  </data>
+  <data name="ShowOtherValidationErrorMsges" xml:space="preserve">
+    <value>Show all validation errors</value>
+  </data>
+  <data name="HideOtherSummaryValidationErrorMsges" xml:space="preserve">
+    <value>Hide all other summary validation errors</value>
+  </data>
+  <data name="ShowOtherSummaryValidationErrorMsges" xml:space="preserve">
+    <value>Show all summary validation errors</value>
+  </data>
+  <data name="SuccessAlternateText" xml:space="preserve">
+    <value>Operation is successful</value>
+  </data>
+  <data name="SuccessImage" xml:space="preserve">
+    <value>Platform/Include/images/Success.gif</value>
+  </data>
+  <data name="SuccessMessage" xml:space="preserve">
+    <value>Information entered on the '#PAGE#' page was saved successfully. The Section status is #STATUS#.</value>
+  </data>
+  <data name="ValidationInfoAlternateText" xml:space="preserve">
+    <value>Data will not be saved until the errors with {0} are fixed on the page. Section will not be completed until the errors with {1} are fixed on the page. Data is saved but the warnings with {2} are recommended to be fixed.</value>
+  </data>
+  <data name="ValidationInfoImage" xml:space="preserve">
+    <value>Platform/Include/images/note.gif</value>
+  </data>
+  <data name="ValidationSummaryHeader" xml:space="preserve">
+    <value>&lt;span class="msgFail" tabindex="-1" &gt;Error:&lt;/span&gt; &lt;span class="msgFailsub"&gt;One or more errors have occurred. &lt;span class="hidden-offscreen"&gt;  (Data will not be saved until the fields marked with rigid errors icon are fixed on this page. The section will not be completed until the fields marked with non-rigid error icon are fixed on this page. Items marked with warning icon do not prevent you from saving data on this page, but it is recommended that you fix them.) &lt;/span&gt;&lt;/span&gt;</value>
+  </data>
+  <data name="DoesNotHaveAValidExternalSystemCode" xml:space="preserve">
+    <value> does not have a valid ExternalSystemCode.</value>
+  </data>
+  <data name="DoesNotHaveAValidExternalSystemDimensionCode" xml:space="preserve">
+    <value> does not have a valid ExternalSystemDimensionCode.</value>
+  </data>
+  <data name="GlobalNavigationModelEmpty" xml:space="preserve">
+    <value>Global Navigation Model must have at least one item in Items.</value>
+  </data>
+  <data name="LeftMenuNavigationModelEmpty" xml:space="preserve">
+    <value>Left Menu Navigation Model must have at least one item in Items if its currentMarkupId is not null or empty.</value>
+  </data>
+  <data name="LeftNavigationModelEmpty" xml:space="preserve">
+    <value>Left Navigation Model must have at least one item in Items.</value>
+  </data>
+  <data name="GlobalNavigationSelectedMarkupIdNotFound" xml:space="preserve">
+    <value>Global Navigation contentTab currentMarkupId was not found in the content tab tree.</value>
+  </data>
+  <data name="LeftMenuNavigationSelectedMarkupIdNotFound" xml:space="preserve">
+    <value>Left Navigation contentTab currentMarkupId was not found in the content tab tree.</value>
+  </data>
+  <data name="UnableToDisplayBreadcrumb" xml:space="preserve">
+    <value>Unable to display breadcrumb: </value>
+  </data>
+  <data name="ExtensionDivider" xml:space="preserve">
+    <value> Ext:</value>
+    <comment>Text between a phone number an an extension when displayed.</comment>
+  </data>
+  <data name="PageTitleSeparator" xml:space="preserve">
+    <value> - </value>
+    <comment>String to be used to separate business page title from the page type, if one is to be displayed</comment>
+  </data>
+</root>

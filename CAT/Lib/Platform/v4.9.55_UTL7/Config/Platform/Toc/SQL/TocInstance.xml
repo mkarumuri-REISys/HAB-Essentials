@@ -1,0 +1,395 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+	<statement name="archive">
+		<param id="ResourceValue" type="String" size="50" />
+		<param id="ResourceTypeCode" type="Int32" />
+		<param id="TOCDefinitionCode" type="Int32" />
+		<sql>
+			DECLARE @nextVer int;
+			DECLARE @existenceAugment int;
+			SELECT
+				@existenceAugment=
+					CASE WHEN EXISTS
+									(
+										SELECT
+											ResourceInstance
+										FROM
+											hist_tocInstance
+										<where>
+											<exp op="and">
+												<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+												<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+												<!--Added TOCDefinitionCode as an additional filter. 22 April 2010. awimberly. PFM-969.-->
+												<optional depends="TOCDefinitionCode != null">
+													<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+												</optional>
+											</exp>
+										</where>
+									)
+								THEN
+									0
+								ELSE
+									1
+								END
+			SELECT
+				@nextVer =
+								CASE
+									WHEN ResourceInstance IS NULL THEN 0
+									WHEN ResourceInstance &lt;= 1 AND @existenceAugment = 1 THEN 0
+									ELSE ResourceInstance
+								END
+								+
+								@existenceAugment
+			FROM
+				tocInstance
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+					<!--Added TOCDefinitionCode as an additional filter. 22 April 2010. awimberly. PFM-969.-->
+					<optional depends="TOCDefinitionCode != null">
+						<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+					</optional>
+				</exp>
+			</where>
+
+			INSERT INTO
+				hist_tocInstance (TOCId,ResourceValue,ResourceInstance,TOCDefinitionCode,ResourceTypeCode,TOCXML,CreatorId,CreatedDate,LastUpdateId,LastUpdateDate)
+			SELECT
+				TOCId,
+				ResourceValue,
+				@nextVer,
+				TOCDefinitionCode,
+				ResourceTypeCode,
+				TOCXML,
+				CreatorId,
+				CreatedDate,
+				LastUpdateId,
+				LastUpdateDate
+			FROM
+				tocInstance
+			<where>
+				<exp op="and">
+					<!--Added TOCDefinitionCode as an additional filter. 22 April 2010. awimberly. PFM-969.-->
+					<optional depends="TOCDefinitionCode != null">
+						<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+					</optional>
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>
+			UPDATE
+				tocInstance
+			SET
+				ResourceInstance=@nextVer
+			<where>
+				<exp op="and">
+					<!--Added TOCDefinitionCode as an additional filter. 22 April 2010. awimberly. PFM-969.-->
+					<optional depends="TOCDefinitionCode != null">
+						<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+					</optional>
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="@existenceAugment">1</exp>
+				</exp>
+		</where>
+				
+		</sql>
+	</statement>
+	<statement name="reopen">
+		<param id="ResourceValue" type="String" size="50" />
+		<param id="ResourceTypeCode" type="Int32" />
+		<sql>
+
+			UPDATE
+				TOCInstance
+			SET
+				ResourceInstance=ResourceInstance+1
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>
+			
+		</sql>	
+		
+		
+	</statement>
+	<statement name="get">
+		<param id="ResourceValue" type="String" size="50" />
+		<param id="ResourceInstance" type="Int32" />
+		<sql>
+			SET NOCOUNT ON;
+			<optional depends="ResourceInstance == 0" >
+				SELECT cast(TOCId as varchar(36)) TOCId,
+				ResourceValue,
+				ResourceInstance,
+				ResourceTypeCode,
+				Convert(varchar(25), LastUpdateDate, 121) LastUpdateDate,
+				TOCXML
+				FROM TOCInstance
+				<where>
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+				</where>
+			</optional>
+			<optional depends="ResourceInstance != 0">
+				SELECT cast(TOCId as varchar(36)) TOCId,
+				ResourceValue,
+				ResourceInstance,
+				ResourceTypeCode,
+				Convert(varchar(25), LastUpdateDate, 121) LastUpdateDate,
+				TOCXML
+				FROM Hist_TOCInstance
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+						<exp op="=" dbField="ResourceInstance" paramId="ResourceInstance" />
+					</exp>
+				</where>
+			</optional>
+			;SET NOCOUNT OFF
+		</sql>
+	</statement>
+	<statement name="update">
+		<sql>
+			<param id="ResourceValue" type="String" size="50"  />
+			<param id="ResourceInstance" type="Int32" />
+			<param id="tocId" type="String" required="true"/>
+			<param id="resourceTypeCode" type="Int32" />
+			<param id="tocXml" type="String"/>
+			<param id="lastUpdateId" type="String"  size="36"/>
+			<param id="lastUpdateDate" type="datetime"/>
+			update TOCInstance
+			<columns mode="update">
+				<column dbField="ResourceValue"  paramId="ResourceValue"/>
+				<column dbField="ResourceInstance"  paramId="ResourceInstance"/>
+				<column dbField="tocId"  paramId="tocId"/>
+				<column dbField="resourceTypeCode"  paramId="resourceTypeCode"/>
+				<column dbField="tocXml"  paramId="tocXml"/>
+				<column dbField="lastUpdateId"  paramId="lastUpdateId"/>
+				<column dbField="lastUpdateDate"  paramId="lastUpdateDate"/>
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="tocId" paramId="tocId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="CreateTocDefinition">
+		<param id="LookupCode" type="Int32"/>
+		<param id="Description" type ="String"/>
+		<param id="TOCXML" type ="String"/>
+		<param id ="UserId" type ="String" size ="50"/>
+		<sql>
+			<optional depends ="LookupCode != ''">
+				INSERT INTO LookupTOCDefinition
+				<columns mode ="insert">
+					<column dbField ="Description" paramId ="Description"/>
+					<column dbField ="TOCXML" paramId ="TOCXML"/>
+					<column dbField="CreatorId" paramId="UserId"/>
+					<column dbField="CreatedDate">getdate()</column>
+					<column dbField="LastUpdateId" paramId="UserId"/>
+					<column dbField="LastUpdateDate">getdate()</column>
+				</columns>;
+				SELECT <exp paramId ="LookupCode" op ="="/> @@IDENTITY
+			</optional>
+		</sql>
+	</statement>
+	<statement name="CreateTocInstance">
+		<param id="TOCId" type="String" size="50"/>
+		<param id="ResourceValue" type="String" size="50"/>
+		<param id="ResourceTypeCode" type="Int32"/>
+		<param id="TOCXML" type="String" />
+		<param id="TOCDefinitionCode" type="Int32"/>
+		<param id="UserId" type="String" size="50"/>
+		<sql>
+			INSERT INTO TOCInstance
+			<columns mode="insert">
+				<column dbField="TOCId">
+					CONVERT(UniqueIdentifier, <exp paramId="TOCId" />)
+				</column>
+				<column dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"  />
+				<column dbField="ResourceValue"  paramId="ResourceValue"/>
+				<column dbField="ResourceInstance">-1</column>
+				<column dbField="ResourceTypeCode"  paramId="ResourceTypeCode"/>
+				<column dbField="TOCXML" paramId="TOCXML"/>
+				<column dbField="CreatorId" paramId="UserId"/>
+				<column dbField="CreatedDate">getdate()</column>
+				<column dbField="LastUpdateId" paramId="UserId"/>
+				<column dbField="LastUpdateDate">getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="CopyTocInstance">
+		<param id="TOCId" type="String" size="50"/>
+		<param id="SourceResourceValue" type="String" size="50"/>
+		<param id="SourceResourceInstance" type="Int32"/>
+		<param id="SourceResourceTypeCode" type="Int32"/>
+		<param id="DestResourceValue" type="String" size="50"/>
+		<param id="DestResourceInstance" type="Int32"/>
+		<param id="DestResourceTypeCode" type="Int32"/>
+		<param id="UserId" type="String" size="50"/>
+		<sql>
+			DECLARE @TOCXML nvarchar(max);
+			DECLARE @TOCDefinitionCode int;
+
+			SELECT @TOCXML = TOCXML, @TOCDefinitionCode = TOCDefinitionCode FROM dbo.TOCInstance
+			<where>
+				<exp op ="AND">
+					<exp op ="=" dbField ="ResourceValue" paramId ="SourceResourceValue"/>
+					<exp op ="=" dbField ="ResourceInstance" paramId ="SourceResourceInstance"/>
+					<exp op ="=" dbField ="ResourceTypeCode" paramId ="SourceResourceTypeCode"/>
+				</exp>
+			</where>
+
+			INSERT INTO dbo.TOCInstance
+			<columns mode ="insert">
+				<column dbField ="TOCId" paramId ="TOCId"/>
+				<column dbField ="TOCDefinitionCode">@TOCDefinitionCode</column>
+				<column dbField ="ResourceValue" paramId ="DestResourceValue"/>
+				<column dbField ="ResourceInstance" paramId ="DestResourceInstance"/>
+				<column dbField ="ResourceTypeCode" paramId ="DestResourceTypeCode"/>
+				<column dbField ="TOCXML">@TOCXML</column>
+				<column dbField ="CreatorId" paramId ="UserId"/>
+				<column dbField ="CreatedDate">getdate()</column>
+				<column dbField ="LastUpdateId">NULL</column>
+				<column dbField ="LastUpdateDate">NULL</column>
+			</columns>
+
+		</sql>
+	</statement>
+	<statement name="DeleteTocInstance">
+		<param id="TOCId" type="String" size="50"/>
+		<param id="ResourceValue" type="String" size="50"/>
+		<param id="ResourceInstance" type="Int32"/>
+		<param id="ResourceTypeCode" type="Int32"/>
+		<sql>
+			<optional depends="TOCId != ''" >
+				DELETE FROM TOCInstance
+				<where>
+						<exp op="=" dbField="TOCId" paramId="TOCId" />
+				</where>
+			</optional>
+			<optional depends="TOCId == ''">
+				DELETE FROM TOCInstance
+				<where>
+					<exp op="AND">
+						<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+						<exp op="=" dbField="ResourceInstance" paramId="ResourceInstance" />
+						<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+					</exp>
+				</where>
+			</optional>
+		</sql>
+	</statement>
+	<statement name="GetLookupTOC">
+		<param id="LookupCode" type="Int32" required="true"/>
+		<param id="Description" type="String"/>
+		<sq>
+			SET NOCOUNT ON;
+			SELECT LookupCode,
+			Description,
+			TOCXML
+			FROM LookupTOCDefinition
+			<where>
+				<optional depends="Description == ''">
+					<exp op="=" dbField="LookupCode" paramId="LookupCode" />
+				</optional>
+				<optional depends="Description != ''">
+					<exp op="AND">
+						<exp op="=" dbField="LookupCode" paramId="LookupCode" />
+						<exp op="=" dbField="Description" paramId="Description" />
+					</exp>
+				</optional>
+			</where>
+			SET NOCOUNT OFF;
+		</sq>
+	</statement>
+	<statement name="GetTocInstance">
+		<param id="ResourceValue" type="String" size="50" />
+		<param id="ResourceInstance" type="Int32" />
+		<param id="ResourceTypeCode" type="Int32"/>
+		<param id="TOCDefinitionCode" type="Int32" />
+		<sql>
+			SET NOCOUNT ON;
+			<optional depends="ResourceInstance == -1" >
+				SELECT cast(TOCId as varchar(36)) TOCId,
+				ResourceValue,
+				ResourceInstance,
+				ResourceTypeCode,
+				Convert(varchar(25), LastUpdateDate, 121) LastUpdateDate,
+				TOCXML
+				FROM TOCInstance
+				<where>
+					<exp op="AND">
+						<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+						<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+						<!-- In some cases, multiple TOCInstances can have the same ResourceTypeCode and 
+						ResourceValue so this is an additional filter to help distinguish between them.
+						TOCId can and probaly should be used to uniqely retrieve a TOCInstance but as for
+						now, the filter doesn't have to be that specific. 20 April 2010. awimberly. PFM-960.
+						-->
+						<optional depends="TOCDefinitionCode != null">
+							<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+						</optional>
+					</exp>
+				</where>
+			</optional>
+			<optional depends="ResourceInstance != -1">
+				SELECT cast(TOCId as varchar(36)) TOCId,
+				ResourceValue,
+				ResourceInstance,
+				ResourceTypeCode,
+				Convert(varchar(25), LastUpdateDate, 121) LastUpdateDate,
+				TOCXML
+				FROM Hist_TOCInstance
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+						<exp op="=" dbField="ResourceInstance" paramId="ResourceInstance" />
+						<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+						<!-- In some cases, multiple TOCInstances can have the same ResourceTypeCode and 
+						ResourceValue so this is an additional filter to help distinguish between them.
+						TOCId can and probaly should be used to uniqely retrieve a TOCInstance but as for
+						now, the filter doesn't have to be that specific. 20 April 2010. awimberly. PFM-960.
+						-->
+						<optional depends="TOCDefinitionCode != null">
+							<exp op="=" dbField="TOCDefinitionCode" paramId="TOCDefinitionCode"/>
+						</optional>
+					</exp>
+				</where>
+			</optional>
+			;SET NOCOUNT OFF
+		</sql>
+	</statement>
+	<statement name="UpdateTocInstance">
+		<param id="ResourceValue" type="String" size="50"  />
+		<param id="ResourceInstance" type="Int32" />
+		<param id="TOCId" type="String" required="true"/>
+		<param id="ResourceTypeCode" type="Int32" />
+		<param id="TOCXML" type="String"/>
+		<param id="LastUpdateId" type="String"  size="36"/>
+		<sql>
+			IF EXISTS (SELECT * FROM TOCInstance
+			<where>
+				<exp op="=" dbField ="TOCId" paramId ="TOCId"/>
+			</where>)
+			BEGIN
+			UPDATE TOCInstance
+			<columns mode="update">
+				<column dbField="ResourceValue"  paramId="ResourceValue"/>
+				<column dbField="ResourceInstance"  paramId="ResourceInstance"/>
+				<column dbField="TOCId"  paramId="TOCId"/>
+				<column dbField="ResourceTypeCode"  paramId="ResourceTypeCode"/>
+				<column dbField="TOCXML"  paramId="TOCXML"/>
+				<column dbField="LastUpdateId"  paramId="LastUpdateId"/>
+				<column dbField="lastUpdateDate">getdate()</column>
+			</columns>
+			<where>
+				<exp op="=" dbField="TOCId"  paramId="TOCId"/>
+			</where>
+			END
+		</sql>
+	</statement>
+</statements>

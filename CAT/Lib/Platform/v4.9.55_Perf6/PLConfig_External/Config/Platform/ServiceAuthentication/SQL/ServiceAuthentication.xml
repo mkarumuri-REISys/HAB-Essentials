@@ -1,0 +1,14 @@
+﻿<statements>
+  <statement name="GetSystemPassword" connection="Common">
+    <param id="SystemCode" type="Int32" />
+    <sql>
+      select password from lookupexternalSystems
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="Lookupcode" paramId="SystemCode"/>
+          current_timestamp &gt;= ActiveDate and current_timestamp &lt;= isnull(InactiveDate,current_timestamp)
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>

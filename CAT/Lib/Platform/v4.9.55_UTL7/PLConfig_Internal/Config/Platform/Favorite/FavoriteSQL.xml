@@ -1,0 +1,470 @@
+﻿<statements>
+    <statement name="GetUserFavorites" connection="Common">
+        <param id="UserId" type="string" />
+        <sql>
+            SELECT		F.FAVRItemId as FavoriteId
+            ,F.Description
+            ,UF.DisplayText
+            ,F.PageTypeCode
+            ,UF.UserId
+            ,UF.FAVRUserItemId as UserFavoriteId
+            ,UF.AdditionalParams
+            ,U.RelativeURL as URL
+            ,U.ExternalSystemCode
+            ,U.ExternalSystemDimensionCode
+            ,E.DimensionValue as ExternalSystemDimensionValue
+            ,CG.LookupCode as FavoriteCategoryCode
+            ,CG.DisplayValue as CategoryDescription
+            ,DATEADD(DAY, DATEDIFF(DAY, 0, UF.CreatedDate), 0) as CreatedDate
+            ,CG.DisplayOrder as CategoryDisplayOrder
+            ,F.WindowType
+            ,UF.FAVRTypeCode as FavoriteTypeCode
+            ,T.DisplayValue as FavoriteTypeDesc
+
+            FROM LU_PFM_FAVR_Item F
+            Join PFM_CORE_PredefinedPage U on U.COREPredefinedPageID = F.COREPredefinedPageID
+            Join dbo.ExternalSystemDimensionValue E
+            on U.ExternalSystemCode = E.ExternalSystemCode and
+            U.ExternalSystemDimensionCode = E.ExternalSystemDimensionCode
+            Join PFM_FAVR_UserItem UF on UF.FAVRItemId = F.FAVRItemId
+            join LU_PFM_FAVR_Category CG on CG.LookupCode = F.CategoryCode
+            join LU_PFM_FAVR_Type T on T.LookupCode = UF.FAVRTypeCode
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="UF.UserId" paramId="UserId" />
+                </exp>
+            </where>
+          AND UF.DisplayText is not null
+        </sql>
+    </statement>
+
+  <statement name="GetTopUserFavorites" connection="Common">
+    <param id="UserId" type="string" />
+    <param id="count" default="10" type="Int32" />
+    <sql>
+      SELECT *
+      FROM
+      (
+      SELECT  F.FAVRItemId as FavoriteId,
+      F.Description
+      ,UF.DisplayText
+      ,F.PageTypeCode
+      ,UF.UserId
+      ,UF.FAVRUserItemId as UserFavoriteId
+      ,UF.AdditionalParams
+      ,U.RelativeURL as URL
+      ,U.ExternalSystemCode
+      ,U.ExternalSystemDimensionCode
+      ,E.DimensionValue as ExternalSystemDimensionValue
+      ,CG.LookupCode as FavoriteCategoryCode
+      ,CG.DisplayValue as CategoryDescription
+      ,DATEADD(DAY, DATEDIFF(DAY, 0, UF.CreatedDate), 0) as CreatedDate
+      ,CG.DisplayOrder as CategoryDisplayOrder
+      ,F.WindowType
+      ,UF.FAVRTypeCode as FavoriteTypeCode
+      ,T.DisplayValue as FavoriteTypeDesc, Row_Number() over (Partition BY F.CategoryCode ORDER BY UF.CreatedDate DESC ) AS Rank
+      FROM LU_PFM_FAVR_Item F
+      Join PFM_CORE_PredefinedPage U on U.COREPredefinedPageID = F.COREPredefinedPageID
+      Join dbo.ExternalSystemDimensionValue E
+      on U.ExternalSystemCode = E.ExternalSystemCode and
+      U.ExternalSystemDimensionCode = E.ExternalSystemDimensionCode
+      Join PFM_FAVR_UserItem UF on UF.FAVRItemId = F.FAVRItemId
+      join LU_PFM_FAVR_Category CG on CG.LookupCode = F.CategoryCode
+      join LU_PFM_FAVR_Type T on T.LookupCode = UF.FAVRTypeCode AND FAVRTypeCode=1
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UF.UserId" paramId="UserId" />
+        </exp>
+      </where> AND UF.DisplayText is not null
+      ) rs
+
+      <where>
+        <exp op="&lt;=" dbField="Rank" paramId="count" />
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="GetFavoriteItem" connection="Common">
+    <param id="FAVRItemId" type="string" />
+    <sql>
+      SELECT *, pt.DisplayValue as DisplayValue 
+      FROM LU_PFM_FAVR_Item item
+      JOIN LU_PFM_FAVR_PageType pt on pt.LookupCode = item.PageTypeCode
+      <where>
+        <exp op="=" dbField="item.FAVRItemId" paramId="FAVRItemId" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUserItemFavorite" connection="Common">
+    <param id="UserId" type="string" required ="true" />
+    <param id="FavrItemId" type="string" required ="true" />
+    <param id="AdditionalParams" type="string" required ="true" />
+
+    <sql>
+      DECLARE @pageTypeCode as int
+
+      SET  @pageTypeCode =
+      (
+      SELECT PageTypeCode
+      FROM LU_PFM_FAVR_Item
+      <where>
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+      </where>
+      )
+
+      IF (@pageTypeCode = 0)
+      BEGIN
+      <!--static - need to match favoriteId(FAVRItemId) and UserId in PFM_FAVR_UserItem-->
+      SELECT *, 0 as PageTypeCode, 'Static' as PageTypeDisplayValue
+      FROM PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+        </exp>
+      </where>
+      END
+      ELSE
+      BEGIN
+      <!--dynamic -  need to match favoriteId(FAVRItemId), UserId, and AdditionalParmas in PFM_FAVR_UserItem-->
+      SELECT *, 0 as PageTypeCode, 'Dynamic' as PageTypeDisplayValue
+      FROM PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+          <exp op="=" dbField="AdditionalParams" paramId="AdditionalParams" />
+        </exp>
+      </where>
+      END
+    </sql>
+  </statement>
+  
+    <statement name="AddUserFavorite" connection="Common">
+        <param id="UserFavoriteId" type="string" />
+        <param id="FavoriteId" type="string" />
+        <param id="UserId" type="string" />
+        <param id="AdditionalParams" type="string" />
+        <param id="MaxTopFavoritesPerCategory" type="Int32" default="10" />
+        <sql>
+            DECLARE @categoryFavoriteCount int
+            DECLARE @maxTopFavoritesPerCategory int
+            <!--SET @maxTopFavoritesPerCategory = <dynamic paramId="MaxTopFavoritesPerCategory" />-->
+            
+            if Not Exists(
+            select * from PFM_FAVR_UserItem
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="UserId" paramId="UserId" />
+                    <exp op="=" dbField="FAVRItemId" paramId="FavoriteId" />
+                </exp>
+            </where>
+            )
+            BEGIN
+            if Exists(
+            select * from LU_PFM_FAVR_Item
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="FAVRItemId" paramId="FavoriteId" />
+                </exp>
+            </where>
+            )
+                   
+            SELECT @categoryFavoriteCount = Count(1)
+            FROM PFM_FAVR_UserItem U , LU_PFM_FAVR_Item I
+                WHERE U.FAVRItemId=I.FAVRItemId and UserId = '<dynamic paramId="UserId" />'
+            GROUP BY CategoryCode
+            HAVING categorycode=(SELECT categorycode FROM LU_PFM_FAVR_Item WHERE FAVRItemId='<dynamic paramId="FavoriteId"/>')
+            
+            set @categoryFavoriteCount = ISNull(@categoryFavoriteCount,0)
+            
+            INSERT INTO PFM_FAVR_UserItem
+            <columns mode="insert">
+                <!--<column dbField="FAVRUserItemId" paramId="UserFavoriteId" />-->
+                <column dbField="FAVRUserItemId" >newid()</column>
+                <column dbField="FAVRItemId" paramId="FavoriteId" />
+                <column dbField="AdditionalParams" paramId="AdditionalParams" />
+                <column dbField="UserId" paramId="UserId" />
+                <column dbField="CreatorId" paramId="UserId" />
+                <column dbField="CreatedDate">GetDate()</column>
+                <column dbField="LastUpdateId" paramId="UserId" />
+                <column dbField="LastUpdateDate">GetDate()</column>
+                <column dbField="FAVRTypeCode">                    
+                    CASE
+                        WHEN (@categoryFavoriteCount &lt; <dynamic paramId="MaxTopFavoritesPerCategory" />) THEN 1
+                        ELSE 2
+                    END
+                </column>
+            </columns>
+            END            
+        </sql>
+    </statement>
+
+  <statement name="AddUserFavoritePinned" connection="Common">
+    <param id="UserFavoriteId" type="string" />
+    <param id="FavoriteId" type="string" />
+    <param id="UserId" type="string" />
+    <param id="AdditionalParams" type="string" />
+    <param id="MaxTopFavoritesPerCategory" type="Int32" default="10" />
+    <sql>
+      DECLARE @categoryFavoriteCount int
+      DECLARE @maxTopFavoritesPerCategory int
+      <!--SET @maxTopFavoritesPerCategory = <dynamic paramId="MaxTopFavoritesPerCategory" />-->
+
+      if Not Exists(
+      select * from PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="FAVRItemId" paramId="FavoriteId" />
+        </exp>
+      </where>
+      )
+      BEGIN
+      if Exists(
+      select * from LU_PFM_FAVR_Item
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="FAVRItemId" paramId="FavoriteId" />
+        </exp>
+      </where>
+      )
+
+      SELECT @categoryFavoriteCount = Count(1)
+      FROM PFM_FAVR_UserItem U , LU_PFM_FAVR_Item I
+      WHERE U.FAVRItemId=I.FAVRItemId and UserId = '<dynamic paramId="UserId" />'
+      GROUP BY CategoryCode
+      HAVING categorycode=(SELECT categorycode FROM LU_PFM_FAVR_Item WHERE FAVRItemId='<dynamic paramId="FavoriteId"/>')
+
+      set @categoryFavoriteCount = ISNull(@categoryFavoriteCount,0)
+
+      INSERT INTO PFM_FAVR_UserItem
+      <columns mode="insert">
+        <!--<column dbField="FAVRUserItemId" paramId="UserFavoriteId" />-->
+        <column dbField="FAVRUserItemId" >newid()</column>
+        <column dbField="FAVRItemId" paramId="FavoriteId" />
+        <column dbField="AdditionalParams" paramId="AdditionalParams" />
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GetDate()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GetDate()</column>
+        <column dbField="FAVRTypeCode">
+          CASE
+          WHEN (@categoryFavoriteCount &lt; 5) THEN 1
+          ELSE 2
+          END
+        </column>
+      </columns>
+      END
+    </sql>
+  </statement>
+
+  <statement name="AddUserDynamicFavorite" connection="Common">
+    <param id="UserId" type="string" required ="true" />
+    <param id="FavrItemId" type="string" required ="true" />
+    <param id="AdditionalParams" type="string" required ="true" />
+    <param id="DisplayText" type="string" required ="true" />
+    <param id="MaxTopFavoritesPerCategory" type="Int32" default="10" required="false" />
+    <sql>
+      DECLARE @pageTypeCode as int
+      DECLARE @topFavoritesCategoryCount int
+      DECLARE @categoryCode int
+      DECLARE @favrTypeCode int
+
+      SET  @pageTypeCode =
+      (
+      SELECT PageTypeCode
+      FROM LU_PFM_FAVR_Item
+      <where>
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+      </where>
+      )
+
+      SET  @categoryCode =
+      (
+      SELECT CategoryCode
+      FROM LU_PFM_FAVR_Item
+      <where>
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+      </where>
+      )
+
+      SET  @topFavoritesCategoryCount =
+      (
+      SELECT count(FAVRTypeCode)
+      FROM PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+        </exp>
+      </where>
+      AND FAVRTypeCode = 1
+      GROUP BY FAVRTypeCode
+      )
+
+      set @topFavoritesCategoryCount = ISNull(@topFavoritesCategoryCount,0)
+
+      <!--IF (@pageTypeCode = 1)
+      BEGIN-->
+      <!--dynamic -  need to match favoriteId(FAVRItemId), UserId, and AdditionalParmas in PFM_FAVR_UserItem-->
+      <!--Confirm favorite not in PFM_FAVR_UserItem-->
+      if Not Exists(
+      select * from PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+          <exp op="=" dbField="AdditionalParams" paramId="AdditionalParams" />
+        </exp>
+      </where>
+      )
+      BEGIN
+      INSERT INTO PFM_FAVR_UserItem
+      <columns mode="insert">
+        <column dbField="FAVRUserItemId">newid()</column>
+        <column dbField="FAVRItemId" paramId="FavrItemId" />
+        <column dbField="AdditionalParams" paramId="AdditionalParams" />
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GetDate()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GetDate()</column>
+        <column dbField="DisplayText" paramId="DisplayText" />
+        <column dbField="FAVRTypeCode">
+          CASE
+          WHEN (@topFavoritesCategoryCount &lt;= <dynamic paramId="MaxTopFavoritesPerCategory" />) THEN 1
+          ELSE 2
+          END
+        </column>
+      </columns>
+      END
+      <!--END-->
+    </sql>
+  </statement>
+  <statement name="AddUserDynamicFavoritePinned" connection="Common">
+    <param id="UserId" type="string" required ="true" />
+    <param id="FavrItemId" type="string" required ="true" />
+    <param id="AdditionalParams" type="string" required ="true" />
+    <param id="DisplayText" type="string" required ="true" />
+    <param id="MaxTopFavoritesPerCategory" type="Int32" default="10" required="false" />
+    <sql>
+      DECLARE @pageTypeCode as int
+      DECLARE @topFavoritesCategoryCount int
+      DECLARE @categoryCode int
+      DECLARE @favrTypeCode int
+
+      SET  @pageTypeCode =
+      (
+      SELECT PageTypeCode
+      FROM LU_PFM_FAVR_Item
+      <where>
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+      </where>
+      )
+
+      SET  @categoryCode =
+      (
+      SELECT CategoryCode
+      FROM LU_PFM_FAVR_Item
+      <where>
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+      </where>
+      )
+
+      SET  @topFavoritesCategoryCount =
+      (
+      SELECT count(FAVRTypeCode)
+      FROM PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+        </exp>
+      </where>
+      AND FAVRTypeCode = 1
+      GROUP BY FAVRTypeCode
+      )
+
+      set @topFavoritesCategoryCount = ISNull(@topFavoritesCategoryCount,0)
+
+      <!--IF (@pageTypeCode = 1)
+      BEGIN-->
+      <!--dynamic -  need to match favoriteId(FAVRItemId), UserId, and AdditionalParmas in PFM_FAVR_UserItem-->
+      <!--Confirm favorite not in PFM_FAVR_UserItem-->
+      if Not Exists(
+      select * from PFM_FAVR_UserItem
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+          <exp op="=" dbField="AdditionalParams" paramId="AdditionalParams" />
+        </exp>
+      </where>
+      )
+      BEGIN
+      INSERT INTO PFM_FAVR_UserItem
+      <columns mode="insert">
+        <column dbField="FAVRUserItemId">newid()</column>
+        <column dbField="FAVRItemId" paramId="FavrItemId" />
+        <column dbField="AdditionalParams" paramId="AdditionalParams" />
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GetDate()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GetDate()</column>
+        <column dbField="DisplayText" paramId="DisplayText" />
+        <column dbField="FAVRTypeCode">
+          CASE
+          WHEN (@topFavoritesCategoryCount &lt; 5) THEN 1
+          ELSE 2
+          END
+        </column>
+      </columns>
+      END
+      <!--END-->
+    </sql>
+  </statement>
+
+
+  <statement name="RemoveUserFavorite" connection="Common">
+        <param id="FavoriteId" type="string" required="true" />
+        <param id="UserId" type="string" required="true" />
+        Delete from PFM_FAVR_UserItem
+        <where>
+            <exp op="and">
+                <!-- This combination should never duplicate. Frankly speaking, we don't even need the FAVRUserItemId column. It should be a composite key.
+        Look at the filter for GetUserFavorites. It uses the same where clause to find an individual favorite. -->
+                <exp op="=" dbField="FAVRItemId" paramId="FavoriteId" />
+                <exp op="=" dbField="UserId" paramId="UserId" />
+            </exp>
+        </where>
+    </statement>
+
+  <statement name="RemoveUserDynamicFavorite" connection="Common">
+    <param id="FavrItemId" type="string" required="true" />
+    <param id="UserId" type="string" required="true" />
+    <param id="AdditionalParams" type="string" required ="true" />
+    Delete from PFM_FAVR_UserItem
+    <where>
+      <exp op="and">
+        <exp op="=" dbField="FAVRItemId" paramId="FavrItemId" />
+        <exp op="=" dbField="UserId" paramId="UserId" />
+        <exp op="=" dbField="AdditionalParams" paramId="AdditionalParams" />
+      </exp>
+    </where>
+  </statement>
+
+    <statement name="UpdateUserFavorite" connection="Common">
+        <param id="FAVRUserItemId" type="string" required="true" />
+        <param id="FavoriteTypeCode" type="Int32" required="true" />
+        Update PFM_FAVR_UserItem
+        set
+        FAVRTypeCode =  <exp paramId="FavoriteTypeCode" />
+        <where>
+            <exp op="=" dbField="FAVRUserItemId" paramId="FAVRUserItemId" />
+        </where>
+    </statement>
+  
+</statements>

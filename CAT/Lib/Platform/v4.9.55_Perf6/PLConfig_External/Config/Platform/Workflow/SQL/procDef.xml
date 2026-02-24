@@ -1,0 +1,146 @@
+<statements>
+	
+	<statement name="get" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="desc" type="String" size="30" />
+		<param id="version" type="String" size="5" />
+		<param id="typeId" type="Int32" />		
+		<sql>
+			select cast(process_definition_id as varchar(36)) as id, 
+				process_desc as description, 
+				cast(author_id as varchar(36)) as authorID, 
+				version, 
+				create_datetime as creationDate,  
+				process_type_id as typeID, 
+				cast(responsible_participant_id as varchar(36)) as ResponsibleID
+			from LU_PROCESS_DEFINITION
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="process_definition_id" paramId="id" />
+					<exp op="=" dbField="process_desc" paramId="desc" />
+					<exp op="=" dbField="version" paramId="version" />
+					<exp op="=" dbField="process_type_id" paramId="typeId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	
+	<statement name="createActivityInstancesSS" connection="Workflow">
+		<param id="procDefId" type="String" size="36" required="true"/>
+		<param id="procInstId" type="String" size="36" required="true"/>
+		<param id="userId" type="String" size="36" required="true" />
+		<!--param id="currDatetime" type="String" size="25" useCurrTime="true" /-->
+		<sql>
+			insert into workflow.dbo.FACT_ACTIVITY_INSTANCE
+			(
+			activity_instance_id,
+			activity_definition_id,
+			process_instance_id,
+			current_state_id,
+			sub_process_definition_id,
+			priority,
+			activity_desc,
+			activity_implementation_id,
+			loop_condition,
+			start_mode_id,
+			finish_mode_id,
+			automated_class_name,
+			transition_restriction_id,
+			work_item_limit,
+			required_work_item_count,
+			required_ancestor_count,
+			client_status_msg_xml,
+			created_by,
+			create_datetime
+			)
+			select newid(),
+			activity_definition_id,
+			<exp paramId="procInstId" />,
+			3,
+			sub_process_definition_id,
+			priority,
+			activity_desc,
+			activity_implementation_id,
+			loop_condition,
+			start_mode_id,
+			finish_mode_id,
+			automated_class_name,
+			transition_restriction_id,
+			work_item_limit,
+			required_work_item_count,
+			required_ancestor_count,
+			client_status_msg_xml,
+			<exp paramId="userId" />,
+			current_timestamp
+			from workflow.dbo.LU_ACTIVITY_DEFINITION
+			<where>
+				<exp op="=" dbField="process_definition_id" paramId="procDefId" />
+			</where>;
+			insert into workflow.dbo.REL_ACTIVITY_PARTICIPANT_RUNTIME
+			(
+			activity_instance_id,
+			participant_id,
+			participant_type_id,
+			created_by,
+			create_datetime
+			)
+			select fai.activity_instance_id,
+			rap.participant_id,
+			rap.participant_type_id,
+			<exp paramId="userId" />,
+			current_timestamp
+			from workflow.dbo.REL_ACTIVITY_PARTICIPANT rap
+			inner join workflow.dbo.FACT_ACTIVITY_INSTANCE fai on rap.activity_definition_id = fai.activity_definition_id
+			<where>
+				<exp op="=" dbField="fai.process_instance_id" paramId="procInstId" />
+			</where>
+		</sql>
+	</statement>
+
+
+	<statement name="createTransitionInstancesSS" connection="Workflow">
+		<param id="procDefId" type="String" size="36" required="true"/>
+		<param id="procInstId" type="String" size="36" required="true"/>
+		<param id="userId" type="String" size="36" required="true" /> 
+		<!--param id="currDatetime" type="String" size="25" useCurrTime="true" /-->
+		<sql>
+			insert into workflow.dbo.FACT_TRANSITION_RUNTIME
+			(
+				transition_runtime_id,
+				transition_desc,
+				process_instance_id,
+				current_state_id,
+				base_transition_id,
+				transition_type_id,
+				from_activity_instance_id,
+				to_activity_instance_id,
+				condition,
+				created_by,
+				create_datetime
+			)
+			select newid(),
+				transition_desc,
+				<exp paramId="procInstId" />,
+				10,
+				transition_id,
+				transition_type_id,
+				faiFrom.activity_instance_id,
+				faiTo.activity_instance_id,
+				condition,
+				<exp paramId="userId" />,
+				current_timestamp
+			from workflow.dbo.LU_TRANSITION lt
+			inner join workflow.dbo.FACT_ACTIVITY_INSTANCE faiFrom on lt.from_activity_id = faiFrom.activity_definition_id
+			inner join workflow.dbo.FACT_ACTIVITY_INSTANCE faiTo on lt.TO_ACTIVITY_ID = faiTo.ACTIVITY_DEFINITION_ID
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="lt.process_definition_id" paramId="procDefId" />
+					<exp op="=" dbField="faiFrom.process_instance_id" paramId="procInstId" />
+					<exp op="=" dbField="faiTo.process_instance_id" paramId="procInstId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>
+

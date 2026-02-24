@@ -1,0 +1,73 @@
+﻿<statements>  
+  <statement name="CheckCertExceptionForSession" connection = "Common">
+    <param id="SessionId" type="String" required="true" />
+    select count(1) from [PFM_AUTH_CERTBYPASS] CE
+    Inner Join Ac_session S on CE.UserId = S.UserID
+    where StartDateTime &lt;= getdate() and EndDateTime >= getdate() and Status=1
+    and S.SessionId = <exp paramId="SessionId"/>    
+  </statement>
+
+  <statement name="AddCertException" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="StartDateTime" type="Date" required="true"/>
+    <param id="EndDateTime" type="Date" required="true"/>
+    <param id="CreatorId" type="Guid" required="true"/>
+    <!--<param id="LastUpdateId" type="Guid" />-->
+    <sql>
+      insert into PFM_AUTH_CERTBYPASS
+      <columns mode="insert">
+        <column paramId="Id" dbField="CertExceptionId" />
+        <column paramId="UserId" dbField="UserId" />
+        <column paramId="StartDateTime" dbField="StartDateTime"/>
+        <column paramId="EndDateTime" dbField="EndDateTime"/>
+        <column dbField="Status">1</column> <!-- Default Active -->
+        <column paramId="CreatorId" dbField="CreatorId"/>
+        <column dbField="CreatedDate">getdate()</column>
+        <!--<column paramId="LastUpdateId" dbField="LastUpdateId"/>        
+        <column dbField="LastUpdateDate">getdate()</column>-->        
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="UpdateCertException" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>    
+    <param id="Status" type="Int32" required="true"/>
+    <param id="LastUpdateId" type="Guid" required="true"/>
+    <sql>
+      Update PFM_AUTH_CERTBYPASS
+      <columns mode="update">        
+        <column paramId="Status" dbField="Status"/>
+        <column paramId="LastUpdateId" dbField="LastUpdateId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="CertExceptionId" paramId="Id" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUserExceptions" connection = "Common">
+    <param id="Status" type="int32" required="false" />
+    select isnull(AU.UserName,'') UserName,
+    isnull(P.FirstName,'') FirstName,
+    isnull(P.MiddleName,'') MiddleName,
+    isnull(P.LastName,'') LastName,
+    PAC.CertExceptionId, PAC.UserId, StartDateTime,EndDateTime,[Status],PAC.CreatedDate
+    From [PFM_AUTH_CERTBYPASS] PAC
+    Inner Join AC_User AU on PAC.UserId=AU.UserId
+    Inner Join People P on AU.UserId=P.UserId
+    <where>
+      <exp op="and">
+        EnddateTime >= getdate()
+       <optional depends="Status">
+        <exp op="="  dbField="[Status]" paramId="Status" />
+       </optional>
+     </exp>
+    </where>
+  </statement>  
+</statements>

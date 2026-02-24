@@ -1,0 +1,11 @@
+<root>
+  <connections>
+    <connection name="Gems" connectionString="hGPuBs/X2CGVbhoboJhNT96kfxsFsWO67FUiaQoC35mAo+ctaSca5PaMPx+/w2ZsW7ijEcB/AOSPiPWF3+9d0Q1suaT26pLbhEvrCAxurIg=" provider="SqlClient" />				 
+    <connection name="Common" connectionString="hGPuBs/X2CGVbhoboJhNT96kfxsFsWO67FUiaQoC35mAo+ctaSca5PaMPx+/w2ZsW7ijEcB/AOSPiPWF3+9d0Q1suaT26pLbhEvrCAxurIg=" provider="SqlClient" />				 
+    <connection name="Workflow" connectionString="CYlORYe30UO6S1tr+hIO3ca/GJiJrlfI2WWqOlly/cu4xxabHE3ZExJBvqd9NAGXv6KXLoReMiNo99KYMgxH23xNJRitOl1S6A8FGkEMANU=" provider="SqlClient" />
+  </connections>
+  <defaultConnection name="Gems" />
+  <statements delimiter=";" />
+  <!--<parameters maintainParamState="true" />-->
+  <parameters metadata="true" />
+</root>

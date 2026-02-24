@@ -1,0 +1,57 @@
+﻿<response>
+  <settings>
+    <setting>
+      <name>Street</name>
+      <value>waterside view drive </value>
+    </setting>
+    <setting>
+      <name>City</name>
+      <value>reston</value>
+    </setting>
+    <setting>
+      <name>State</name>
+      <value>va</value>
+    </setting>
+    <setting>
+      <name>Zip</name>
+      <value>20194</value>
+    </setting>
+    <setting>
+      <name>Provider</name>
+      <value>HDW</value>
+    </setting>
+  </settings>
+
+  <inputaddress>
+    <street>waterside view drive </street>
+    <city>reston</city>
+    <state>va</state>
+    <zip>20194</zip>
+  </inputaddress>
+  <standardaddress>
+    <street>waterside view drive </street>
+    <city>reston</city>
+    <state>va</state>
+    <zip>20194</zip>
+  </standardaddress>
+
+  <geocodingresult>
+    <candidates count="2">
+      <candidate>
+        <matchaddress>12004 WATERSIDE VIEW DR, RESTON, VA, 20194</matchaddress>
+        <lat>38.9680068224871</lat>
+        <lon>-77.3594225065022</lon>
+        <score>81</score>
+        <locatorname>Street Address</locatorname>
+      </candidate>
+      <candidate>
+        <matchaddress>12004 WATERSIDE VIEW DR, RESTON, VA, 20194</matchaddress>
+        <lat>38.9680068220779</lat>
+        <lon>-77.3594225068233</lon>
+        <score>81</score>
+        <locatorname>Street Address</locatorname>
+      </candidate>
+    </candidates>
+  </geocodingresult>
+
+</response>

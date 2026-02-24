@@ -1,0 +1,285 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+	<statement name="GetSavedSearchByName" connection="Common">
+		<param id="CurrentUserId" type="String" />
+		<param id="GroupName" type="String" size="500" />
+		<param id="SearchName" type="String" size="50" />
+		<sql>
+      select SavedSearchId, CurrentUserId, GroupName,
+             SearchName, SearchParams, DisplayText, RuntimePageId, 
+             DefaultSearch, CreatorId, CreatedDate, LastUpdateId, 
+             LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+				<exp op="AND">
+					<exp op="=" dbField="CurrentUserId" paramId="CurrentUserId" />
+					<exp op="=" dbField="GroupName" paramId="GroupName" />
+					<exp op="=" dbField="SearchName" paramId="SearchName" />
+          <exp op="IS" dbField="RuntimePageId">NULL</exp>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="GetSavedSearchById" connection="Common">
+		<param id="SavedSearchId" type="String" />
+		<sql>
+      select SavedSearchId, CurrentUserId, GroupName,
+             SearchName, SearchParams, DisplayText, RuntimePageId, 
+             DefaultSearch, CreatorId, CreatedDate, LastUpdateId, 
+             LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SavedSearchId" paramId="SavedSearchId" />
+          <exp op="IS" dbField="RuntimePageId">NULL</exp>
+        </exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="GetSavedSearchesByUserAndGroup" connection="Common">
+		<param id="CurrentUserId" type="String" />
+		<param id="GroupName" type="String" size="500" />
+		<sql>
+      
+      
+      
+      select SavedSearchId, CurrentUserId, GroupName,
+      SearchName, SearchParams, DisplayText, RuntimePageId,
+      DefaultSearch, CreatorId, CreatedDate, LastUpdateId,
+      LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+				<exp op="AND">
+					<exp op="=" dbField="CurrentUserId" paramId="CurrentUserId" />
+					<exp op="=" dbField="GroupName" paramId="GroupName" />
+          <exp op="IS" dbField="RuntimePageId">NULL</exp>
+				</exp>
+			</where>
+
+      
+    </sql>
+	</statement>
+
+  <statement name="GetSavedSearches" connection="Common">
+    <param id="CurrentUserId" type="String" />
+    <sql>
+      select SavedSearchId, CurrentUserId, GroupName,
+             SearchName, SearchParams, DisplayText, RuntimePageId, 
+             DefaultSearch, CreatorId, CreatedDate, LastUpdateId, 
+             LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+        <exp op="IS" dbField="RuntimePageId">NULL</exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetDefaultSavedSearch" connection="Common">
+    <param id="CurrentUserId" type="String" />
+    <param id="GroupName" type="String" size="500" />
+    <sql>
+      select SavedSearchId, CurrentUserId, GroupName,
+      SearchName, SearchParams, DisplayText, RuntimePageId,
+      DefaultSearch, CreatorId, CreatedDate, LastUpdateId,
+      LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="CurrentUserId" paramId="CurrentUserId" />
+          <exp op="=" dbField="GroupName" paramId="GroupName" />
+          <exp op="IS" dbField="RuntimePageId">NULL</exp>
+          <exp op="=" dbField="DefaultSearch">1</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetRecentSearches" connection="Common">
+    <param id="UserId" type="Guid" required="true" />
+    <sql>
+      select top 5 * from PFM_SRCH_SavedSearch
+      <where>
+        <exp op="AND">
+          <exp dbField="CurrentUserId" op="=" paramId="UserId" />
+          <exp dbField="RuntimePageId" op="IS NOT">NULL</exp>
+        </exp>
+      </where>
+      order by LastUpdateDate desc
+    </sql>
+  </statement>
+
+  <statement name="GetRecentSearchById" connection="Common">
+    <param id="SavedSearchId" type="String" />
+    <sql>
+      select SavedSearchId, CurrentUserId, GroupName,
+      SearchName, SearchParams, DisplayText, RuntimePageId,
+      CreatorId, CreatedDate, LastUpdateId, LastUpdateDate
+      from PFM_SRCH_SavedSearch
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SavedSearchId" paramId="SavedSearchId" />
+          <exp op="IS" dbField="RuntimePageId">NOT NULL</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetRuntimePageId" connection="Common">
+    <param id="RelativeURL" type="String" required="true" />
+    <param id="PageTypeCode" type="Int32" required="true" />
+    <sql>
+      declare @runtimeId uniqueidentifier
+      select Top 1 @runtimeId = CORERuntimePageId
+      from PFM_CORE_RuntimePage
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="RelativeURL" paramId="RelativeURL" />
+          <exp op="=" dbField="PageTypeCode" paramId="PageTypeCode" />
+        </exp>
+      </where>
+      select @runtimeId as CORERuntimePageId
+    </sql>
+  </statement>
+
+  <statement name="SaveRuntimePageInfo" connection="Common">
+    <param id="RunTimePageId" type="String" />
+    <param id="Description" type="String" />
+    <param id="ExternalSystemCode" type="Int32" />
+    <param id="ExternalSystemDimensionCode" type="Int32" />
+    <param id="RelativeURL" type="String" />
+    <param id="PageTypeCode" type="Int32" />
+    <param id="RuntimePageId" type="String" />
+    <param id="CreatorId" type="String" />
+    <param id="LastUpdateId" type="String" />
+    <sql>
+      BEGIN
+      INSERT PFM_CORE_RuntimePage
+      <columns mode="insert">
+        <column dbField="CORERuntimePageId" paramId="RunTimePageId"/>
+        <column dbField="Description" paramId="Description"/>
+        <column dbField="ExternalSystemCode" paramId="ExternalSystemCode" />
+        <column dbField="ExternalSystemDimensionCode" paramId="ExternalSystemDimensionCode" />
+        <column dbField="RelativeURL" paramId="RelativeURL" />
+        <column dbField="PageTypeCode" paramId="PageTypeCode" />
+        <column dbField="RuntimePageId" paramId="RuntimePageId" />
+        <column dbField="CreatorId" paramId="CreatorId"/>
+        <column dbField="CreatedDate">getdate()</column>
+        <column dbField="LastUpdateId" paramId="LastUpdateId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+      END
+    </sql>
+  </statement>
+
+	<statement name="SaveSearch" connection="Common">
+		<param id="SavedSearchId" type="String"  />
+		<param id="CurrentUserId" type="String"  />
+		<param id="GroupName" type="String" size="500" />
+		<param id="SearchName" type="String" size="50" />
+		<param id="SearchParams" type="String" />
+    <param id="DisplayText" type="String" />
+    <param id="RuntimePageId" type="String" />
+    <param id="CreatorId" type="String" />
+    <param id="LastUpdateId" type="String" />
+		<sql>
+      BEGIN
+      INSERT PFM_SRCH_SavedSearch
+      <columns mode="insert">
+				<column dbField="SavedSearchId" paramId="SavedSearchId"/>
+				<column dbField="CurrentUserId" paramId="CurrentUserId"/>
+				<column dbField="GroupName" paramId="GroupName" />
+				<column dbField="SearchName" paramId="SearchName" />
+				<column dbField="SearchParams" paramId="SearchParams" />
+        <column dbField="DisplayText" paramId="DisplayText" />
+        <column dbField="RuntimePageId" paramId="RuntimePageId" />
+        <column dbField="CreatorId" paramId="CreatorId"/>
+        <column dbField="CreatedDate">getdate()</column>
+        <column dbField="LastUpdateId" paramId="LastUpdateId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+			</columns>
+			END
+		</sql>
+	</statement>
+
+	<statement name="UpdateSavedSearchById" connection="Common">
+		<param id="SavedSearchId" type="String"  />
+		<param id="CurrentUserId" type="String"  />
+		<param id="GroupName" type="String" size="500" />
+		<param id="SearchName" type="String" size="50" />
+		<param id="SearchParams" type="String" />
+    <param id="DisplayText" type="String" />
+    <param id="LastUpdateId" type="String" />
+		<sql>
+      BEGIN
+      UPDATE PFM_SRCH_SavedSearch
+      <columns mode="update">
+				<column dbField="CurrentUserId" paramId="CurrentUserId"/>
+				<column dbField="GroupName" paramId="GroupName" />
+				<column dbField="SearchName" paramId="SearchName" />
+				<column dbField="SearchParams" paramId="SearchParams" />
+        <column dbField="DisplayText" paramId="DisplayText" />
+        <column dbField="LastUpdateId" paramId="LastUpdateId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+			<where>
+				<exp op="=" dbField="SavedSearchId" paramId="SavedSearchId" />
+			</where>
+			END
+		</sql>
+	</statement>
+
+	<statement name="DeleteSavedSearchByName" connection="Common">
+		<param id="CurrentUserId" type="String" />
+		<param id="GroupName" type="String" size="500" />
+		<param id="SearchName" type="String" size="50" />
+		<sql>
+      DELETE PFM_SRCH_SavedSearch
+      <where>
+				<exp op="AND">
+					<exp op="=" dbField="CurrentUserId" paramId="CurrentUserId" />
+					<exp op="=" dbField="GroupName" paramId="GroupName" />
+					<exp op="=" dbField="SearchName" paramId="SearchName" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="DeleteSavedSearchById" connection="Common">
+		<param id="SavedSearchId" type="String" />
+		<sql>
+      DELETE PFM_SRCH_SavedSearch
+      <where>
+				<exp op="=" dbField="SavedSearchId" paramId="SavedSearchId" />
+			</where>
+		</sql>
+	</statement>
+
+  <statement name="SetSavedSearchDefaultById" connection="Common">
+    <param id="SavedSearchId" type="String" />
+    <sql>
+      update d
+      set DefaultSearch = 0
+      from
+          (
+            select *
+            from PFM_SRCH_SavedSearch a
+            <where>
+              <exp op="=" dbField="a.SavedSearchId" paramId="SavedSearchId" />
+            </where>
+          ) b
+          join
+          (
+            select *
+            from PFM_SRCH_SavedSearch c
+          ) d
+            on b.GroupName = d.GroupName and b.CurrentUserId = d.CurrentUserId;
+            
+         update PFM_SRCH_SavedSearch
+         set PFM_SRCH_SavedSearch.DefaultSearch = 1
+         <where>
+				   <exp op="=" dbField="SavedSearchId" paramId="SavedSearchId" />
+			   </where>
+    </sql>
+  </statement>
+</statements>

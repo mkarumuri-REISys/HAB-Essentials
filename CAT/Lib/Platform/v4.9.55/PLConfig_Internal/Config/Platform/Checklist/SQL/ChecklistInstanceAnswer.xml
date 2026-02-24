@@ -1,0 +1,257 @@
+<statements>
+	<statement name="get">
+		<param id="checklistInstanceAnswerId" 	type="String" size="36" />
+		<param id="checklistInstanceId" 		type="String" size="36" />
+		<param id="questionId" 					type="String" size="36" />
+		<param id="fieldId" 					type="String" size="36" />
+		<param id="answer" 						type="AnsiString" />
+		<param id="resourceInstance" 			type="int32"/>
+		<sql>
+			SELECT ChecklistInstanceAnswerId,
+			ChecklistInstanceId,
+			QuestionId,
+			Answer,
+			CreatorId,
+			CreatedDate,
+			LastUpdateId,
+			LastUpdateDate,
+			FieldId
+			FROM 
+			<optional depends="resourceInstance == null">
+				ChecklistInstanceAnswer
+			</optional>
+			<optional depends="resourceInstance != null">
+				Hist_ChecklistInstanceAnswer
+			</optional>
+		    <where>
+				<exp op="and">
+					<exp op="=" dbField="ChecklistInstanceAnswerId" paramId="checklistInstanceAnswerId" />
+					<exp op="=" dbField="ChecklistInstanceId" paramId="checklistInstanceId" />
+					<exp op="=" dbField="QuestionId" paramId="questionId" />
+					<exp op="=" dbField="FieldId" paramId="fieldId" />
+					<exp op="LIKE" dbField="Answer" paramId="answer" />
+					<optional depends="resourceInstance != null">
+						<exp op="=" dbField="resourceInstance" paramId="resourceInstance" />			   
+					</optional>
+				</exp>
+				
+			</where>
+		</sql>
+	</statement>
+	
+	<statement name="getLastUpdateDate">
+		<param id="checklistInstanceId" 		type="String" size="36" />		
+		<sql>
+			SELECT Top 1 LastUpdateDate			
+			FROM ChecklistInstanceAnswer
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ChecklistInstanceId" paramId="checklistInstanceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	<statement name="new">
+		<param id="checklistInstanceAnswerId" 	type="String" size="36" />
+		<param id="checklistInstanceId" 		type="String" size="36" />
+		<param id="questionId" 					type="String" size="36" />
+		<param id="fieldId" 					type="String" size="36" />
+		<param id="answer" 						type="AnsiString" />
+		<param id="creatorId"					type="String" size="36" />
+		<param id="createdDate"					type="String" size="25" />
+		<param id="lastUpdateId"				type="String" size="36" />
+		<param id="lastUpdateDate"				type="String" size="25" />
+		<sql>
+			INSERT INTO ChecklistInstanceAnswer
+			<columns mode="insert">
+				<column dbField="checklistInstanceAnswerId" paramId="checklistInstanceAnswerId" />
+				<column dbField="checklistInstanceId" paramId="checklistInstanceId" />
+				<column dbField="questionId" paramId="questionId" />
+				<column dbField="fieldId" paramId="fieldId" />
+				<column dbField="answer" paramId="answer" />
+				<column dbField="creatorId" paramId="creatorId" />
+				<column dbField="createdDate" paramId="createdDate" />
+				<column dbField="LastUpdateId" paramId="creatorId" />
+				<column dbField="LastUpdateDate" paramId="createdDate" />		
+			</columns>
+		</sql>
+	</statement>
+	
+	<statement name="ArchiveAnswers">
+		<param id="checklistInstanceId" 		type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="resourceValue" 		type="String" size="36" />
+		<param id="resourceInstance" 		type="Int32"/>
+		<param id="lastUpdateId"				type="String" size="36" />
+		<param id="lastUpdateDate"				type="String" size="25" />
+		
+		<sql>
+
+			set nocount on;
+
+			INSERT INTO Hist_ChecklistInstanceAnswer
+			(ResourceInstance
+			,ChecklistInstanceAnswerId
+			,ChecklistInstanceId
+			,QuestionId
+			,Answer
+			,CreatorId
+			,CreatedDate
+			,LastUpdateId
+			,LastUpdateDate
+			,FieldId)
+			
+			select <exp paramId="resourceInstance" />
+			,cia.ChecklistInstanceAnswerId
+			,cia.ChecklistInstanceId
+			,cia.QuestionId
+			,cia.Answer
+			,cia.CreatorId
+			,cia.CreatedDate
+			,cia.LastUpdateId
+			,cia.LastUpdateDate
+			,cia.FieldId
+			from checklistinstance ci
+			inner join checklistinstanceanswer cia
+			on ci.checklistinstanceid = cia.checklistinstanceid
+					 
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ci.checklistinstanceid" paramId="checklistInstanceId" />
+					<exp op="=" dbField="ci.resourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="ci.checklistDefinitionId" paramId="checklistDefinitionId" />
+				</exp>
+			</where>
+
+			<!--update cia
+			<columns mode="update">
+				<column dbField="cia.lastUpdateId" paramId="lastUpdateId" />
+				<column dbField="cia.lastUpdateDate" paramId="lastUpdateDate" />
+			</columns>		 
+			from checklistinstance ci
+			inner join checklistinstanceanswer cia
+			on ci.checklistinstanceid = cia.checklistinstanceid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ci.checklistinstanceid" paramId="checklistInstanceId" />
+					<exp op="=" dbField="ci.resourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="ci.checklistDefinitionId" paramId="checklistDefinitionId" />
+				</exp>
+			</where>-->
+
+			update ChecklistInstance
+			<columns mode="update">
+					<column dbField="resourceInstance" paramId="resourceInstance" />
+					<!--<column dbField="lastUpdateId" paramId="lastUpdateId" />
+					<column dbField="lastUpdateDate" paramId="lastUpdateDate" />-->
+				</columns>
+				<where>
+					<exp op="and">
+							<exp op="=" dbField="checklistInstanceId" paramId="checklistInstanceId" />
+							<exp op="=" dbField="resourceValue" paramId="resourceValue" />
+							<exp op="=" dbField="checklistDefinitionId" paramId="checklistDefinitionId" />
+					</exp>
+				</where>
+			set nocount off;
+			
+					
+		</sql>
+	</statement>
+
+	<statement name="update">
+		<param id="checklistInstanceAnswerId" 	type="String" size="36" />
+		<param id="checklistInstanceId" 		type="String" size="36" />
+		<param id="questionId" 					type="String" size="36" />
+		<param id="fieldId" 					type="String" size="36" />
+		<param id="answer" 						type="AnsiString" />
+		<param id="lastUpdateId"				type="String" size="36" />
+		<param id="lastUpdateDate"				type="String" size="50" />
+		<param id="lastUpdateDateFromDB" 		type="String" size="50" />
+		<sql>
+			update ChecklistInstanceAnswer with (repeatableread)
+			<columns mode="update">
+				<column dbField="questionId" paramId="questionId" />
+				<column dbField="fieldId" paramId="fieldId" />
+				<column dbField="answer" paramId="answer" />
+				<column dbField="lastUpdateId" paramId="lastUpdateId" />
+				<column dbField="lastUpdateDate" paramId="lastUpdateDate" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="checklistInstanceAnswerId" paramId="checklistInstanceAnswerId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+    <statement name="SaveSpecificAnswers">
+    <param id="checklistInstanceAnswerId" type="String"/>
+    <param id="checklistInstanceId" type="String" size="36" />
+    <param id="questionId" type="String" />
+    <param id="fieldId" type="String"/>
+    <param id="answer" type="AnsiString" default=""/>
+    <param id="lastUpdateId" type="String" size="36" />
+    <param id="lastUpdateDate" type="DateTime" />
+    <sql>
+		update ChecklistInstanceAnswer with (repeatableread)
+		<columns mode="update">
+        <column dbField="answer" paramId="answer" />
+        <column dbField="lastUpdateId" paramId="lastUpdateId" />
+        <column dbField="lastUpdateDate" paramId="lastUpdateDate" />
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="checklistInstanceAnswerId" paramId="checklistInstanceAnswerId" />
+          <exp op="=" dbField="questionId" paramId="questionId" />
+          <exp op="=" dbField="fieldId" paramId="fieldId" />
+          <exp op="=" dbField="ChecklistInstanceId" paramId="checklistInstanceId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+	<statement name="delete">
+		<param id="resourceValue" 			type="String" size="36" />
+		<param id="resourceTypeCode" 		type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="definitionVersionId" type="Int32" />
+		<sql>
+			DELETE a
+			FROM dbo.ChecklistInstance i
+				INNER JOIN dbo.ChecklistInstanceAnswer a ON i.ChecklistInstanceId = a.ChecklistInstanceId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="i.ResourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="i.ResourceTypeCode" paramId="resourceTypeCode" />
+					<exp op="=" dbField="i.ChecklistDefinitionId" paramId="checklistDefinitionId" />
+					<optional depends="definitionVersionId != null">
+						<exp op="=" dbField="i.definitionVersion" paramId="definitionVersionId" />
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="deleteHistory">
+		<param id="resourceValue" 			type="String" size="36" />
+		<param id="resourceTypeCode" 		type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="definitionVersionId" type="Int32" />
+		<sql>
+			DELETE h
+			FROM dbo.ChecklistInstance i
+				INNER JOIN Hist_ChecklistInstanceAnswer h ON i.ChecklistInstanceId = h.ChecklistInstanceId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="i.ResourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="i.ResourceTypeCode" paramId="resourceTypeCode" />
+					<exp op="=" dbField="i.ChecklistDefinitionId" paramId="checklistDefinitionId" />
+					<optional depends="definitionVersionId != null">
+						<exp op="=" dbField="i.definitionVersion" paramId="definitionVersionId" />
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

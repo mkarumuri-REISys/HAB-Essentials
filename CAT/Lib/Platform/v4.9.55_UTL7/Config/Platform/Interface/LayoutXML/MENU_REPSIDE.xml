@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<reports>
+	<section id="1">
+		<title>QuickLinks</title>
+		<subsection id="3">
+			<title>Reports</title>
+		</subsection>
+		<subsection id="1">
+			<title>Top 5 Favorites</title>			
+		</subsection>
+		<subsection id="2">
+			<title>Recently Viewed</title>
+		</subsection>
+	</section>
+</reports>

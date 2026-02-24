@@ -1,0 +1,119 @@
+/* CSS Document */
+#search-block { margin-top: -75px;  float:right; }
+.pagenote {margin-top: 5px}
+#navigation {width: 80%; margin-top: 9px}	
+#mainarea #mainleft .rss{margin-top: -20px; margin-right: 10px;}
+#mainarea #homeareatraining{width: 96%; margin-left: 4%; margin-top: 10px}
+#topnav {right:0px;	}
+#colleft #hidePanel { margin-top: 0px}
+.fg-alerts{width: 200px !Important;}
+.sectionlink {padding-left: 10px}
+.sectiontoggle {margin-top: -20px; padding-right: 10px}
+.sectionCM, .sectionCMlast{padding-left: 10px}
+.section_table td {padding-left: 20px; }
+input.hrsaSkinnedgobtn {margin-top: 0px; padding: 0px 2px 4px 2px;}
+input.hrsaSkinnedButton[type="submit"],
+input.hrsaSkinnedButton[type="reset"],
+input.hrsaSkinnedButton[type="button"] {
+	padding: 2px 6px 4px 6px;
+	margin:0px 0px 0px 0px}
+.modal, .reimodal{ padding-top:0px;}
+.modal .mtitle {margin-top:0px}
+.filter-area, .ITfilter-area {height: 20px; padding-bottom: 5px  }
+.RadComboBox {margin-bottom: 6px;margin-right: 2px;}
+.fiterimg {padding-bottom: 0px}
+.SideMenuFilter {width: 150px}
+.hrsaSkingreybtn, .hrsaSkinnedgobtn {
+        width: auto;max-width: auto; overflow: visible
+}
+
+.alertbase_close{margin-top:-20px;}
+
+/******* IE7 Fixes to Navigation ******/
+
+ul.lmBase
+{position:relative !important;
+ margin-left:0px !important;
+ padding-top:0px !important;
+ }
+
+.lmTitle
+{line-height:26px !important;
+ display:block !important;
+ background-position: 0px -3446px !important;
+ padding-top:0px !important;
+ }
+
+.lmBase a
+{padding-top:0px !important;
+ width:auto !important;
+ margin-top:0px !important;
+ }
+
+
+.lmBase A SPAN { left:-5px !important;}
+
+UL.lmBase UL
+{ margin-left:0px;}
+
+ UL.lmBase UL UL
+ { padding-left:0px !important;}
+ 
+ UL.lmBase UL SPAN {font-weight:normal; display:inline !important;}
+ 
+ ul.lmBase ul a:hover
+{
+	padding-left:0px !important;
+	margin-left:-1px !important;
+	background-color:#e2effd;
+	color:#660000;
+	padding-top:1px !important;
+	padding-bottom:1px !important;
+	width:auto !important;
+	height:100% !important;
+	margin-top:0px  !important;
+	position:relative !important;
+	padding-top:1px !important;
+	padding-left:10px !important;
+}
+ul.lmBase ul a:focus { padding:inherit !important; margin:inherit !important;}
+ul.lmBase ul a{padding-left:10px !important; margin-top:1px !important; padding-top:1px;}
+
+.lmBase ul a.selected
+{
+	border:1px solid #8fb0d6 !important;
+	border-left:3px solid #8fb0d6 !important;
+	background-color:#e2effd !important;
+	padding:0px 0px 1px 5px !important;
+	margin-top:0px !important;
+	margin-left:5px !important;
+	color:#660000 !important;
+	font-weight:bold !important;
+	padding-left:0px !important;
+	width:auto !important;
+	height:100% !important;
+	position:relative !important;
+	/*left:-5px !important;*/
+	margin-bottom:0px  !important;
+}
+.lmBase ul a.selected span {padding-left:7px !important;}
+.lmBase ul a.selected:hover { margin:0px 0px 0px 0px !important; padding:0px 0px 1px 0px !important; left:0px !important; }
+/*.lmBase ul a.selected:hover
+{
+	border:1px solid #8fb0d6;
+	border-left:3px solid #8fb0d6;
+	background-color:#e2effd;
+	padding:1px 0px 1px 7px;
+	margin-top:-2px;
+	margin-left:-10px;
+	color:#660000;
+	font-weight:bold;
+	padding-left:5px;
+	width:auto;
+}*/
+.lmBase .lmIcon
+{
+	padding-right:5px !important;
+	margin-top:0px !important;
+	float:none !important;
+}

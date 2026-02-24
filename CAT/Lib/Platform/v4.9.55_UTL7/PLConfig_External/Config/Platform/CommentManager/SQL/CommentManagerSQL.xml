@@ -1,0 +1,270 @@
+<statements>
+  <statement name="GetNamesFromUserIDs" connection="Common">
+    <param id="UserIDCommaDelimStringElemsQuoted" type="String" required="true"></param>
+    <sql>
+      SELECT DISTINCT
+      UserId,
+      FirstName + ' ' + LastName AS DisplayName
+      FROM
+      People
+      WHERE
+      UserId IN (<dynamic paramId="UserIDCommaDelimStringElemsQuoted"/>)
+    </sql>
+  </statement>
+  <statement name="LoadCommentManager">
+    <param id="ResourceValue" type="String" size="36" required="false" />
+    <param id="ResourceTypeCode" type="Int32" required="false" />
+    <param id="ResourceInstance" type="Int32" required="false" />
+    <param id="UserId" type="String" size="36" required="false" />
+    <param id="CommentUserId" type="String" size="36" required="false" />
+    <param id="RoleId" type="Int32"  required="false" />
+    <param id="CommentQuestionCode" type="Int32" required="false" />
+    <param id="SortBy" type="String" />
+    <param id="CommentAnswerID" type="String" size="36" required="false" />
+
+    <sql>
+      ------------------------------------------------------------------
+      -- Get latest instance
+      Declare @ri int
+      Declare @maxResourceInstance int
+      select @maxResourceInstance = max(ResourceInstance) FROM
+      PFM_CMN_CommentAnswer_P A (NOLOCK)
+      LEFT JOIN
+      LU_PFM_CMN_CommentQuestion Q (NOLOCK)
+      ON
+      A.CommentQuestionCode = Q.LookupCode
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="A.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="A.ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+          <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          <optional depends="CommentUserId != null">
+            <exp op="=" dbField="UserId" paramId="CommentUserId"/>
+          </optional>
+          <optional depends="CommentAnswerID != null">
+            <exp op="=" dbField="CommentAnswerId" paramId="CommentAnswerID"/>
+          </optional>
+        </exp>
+      </where>
+
+      --------------------------------------------------------------------
+      -- Find the resource instance
+      if(<exp paramId="ResourceInstance"/> IS NOT NULL AND <exp paramId="ResourceInstance"/> >= 0)
+      BEGIN
+        SET @ri = <exp paramId="ResourceInstance"/>;
+      END
+      ELSE
+      BEGIN
+      SET @ri =  @maxResourceInstance;
+      END
+
+      SELECT
+      Q.LookupCode AS LookupCode,
+      Q.DetailedQuestion AS DetailedQuestion,
+      Q.SummaryQuestion AS SummaryQuestion,
+      Q.Title AS Title,
+      A.CommentAnswerId AS CommentAnswerId,
+      A.ResourceValue AS ResourceValue,
+      A.ResourceTypeCode AS ResourceTypeCode,
+      A.ResourceInstance AS ResourceInstance,
+      A.RoleId AS RoleID,
+      A.UserId as UserId,
+      A.Comment AS Comment,
+      A.LastUpdateId AS PersonID,
+      A.LastUpdateDate AS SortDate
+      FROM
+      PFM_CMN_CommentAnswer_P A (NOLOCK)
+      LEFT JOIN
+      LU_PFM_CMN_CommentQuestion Q (NOLOCK)
+      ON
+      A.CommentQuestionCode = Q.LookupCode
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="A.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="A.ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+          <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          <optional depends="CommentUserId != null">
+            <exp op="=" dbField="UserId" paramId="CommentUserId"/>
+          </optional>
+          <optional depends="CommentAnswerID != null">
+            <exp op="=" dbField="CommentAnswerId" paramId="CommentAnswerID"/>
+          </optional>
+        </exp>
+      </where>
+      and ResourceInstance = @ri
+      <sort paramId="SortBy"/>
+    </sql>
+  </statement>
+  <statement name="UpdateCommentManager">
+    <param id="ResourceValue" type="String" size="36" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="ResourceInstance" type="Int32" required="true" />
+    <param id="CommentQuestionCode" type="Int32" required="true" />
+    <param id="Comment" type="String" default="" />
+    <param id="UserId" type="String" size="36" required="false"/>
+    <param id="CommentUserId" type="String" size="36" required="false"/>
+    <param id="RoleId" type="Int32" required="false" />
+    <param id="CommentAnswerID" type="String" size="36" required="false" />
+    <sql>
+
+      ------------------------------------------------------------------
+      -- Get latest instance
+      Declare @ri int
+      Declare @maxResourceInstance int
+      select @maxResourceInstance = isnull(max(ResourceInstance),-1) FROM
+      PFM_CMN_CommentAnswer_P A (NOLOCK)
+      LEFT JOIN
+      LU_PFM_CMN_CommentQuestion Q (NOLOCK)
+      ON
+      A.CommentQuestionCode = Q.LookupCode
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="A.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="A.ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+          <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          <optional depends="CommentUserId != null">
+            <exp op="=" dbField="UserId" paramId="CommentUserId"/>
+          </optional>
+          <optional depends="CommentAnswerID != null">
+            <exp op="=" dbField="CommentAnswerId" paramId="CommentAnswerID"/>
+          </optional>
+        </exp>
+      </where>
+
+      --------------------------------------------------------------------
+      -- Find the resource instance
+      if(<exp paramId="ResourceInstance"/> IS NOT NULL AND <exp paramId="ResourceInstance"/> >= 0)
+      BEGIN
+      SET @ri = <exp paramId="ResourceInstance"/>;
+      END
+      ELSE
+      BEGIN
+      SET @ri =  @maxResourceInstance;
+      END
+      
+      ------------------------------------------------------------------
+      -- Insert new comment instance
+      INSERT PFM_CMN_CommentAnswer_P
+      <columns mode="insert">
+        <column dbField="CommentAnswerId">newid()</column>
+        <column dbField="Comment" paramId="Comment"/>
+        <column dbField="ResourceValue" paramId="ResourceValue" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="ResourceInstance" >@ri + 1</column>
+        <optional depends="RoleId != null">
+          <column dbField="RoleId" paramId="RoleId"/>
+        </optional>
+        <column dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateDate">GETDATE()</column>
+        <column dbField="CreatorId" paramId="UserId" />
+        <optional depends="CommentUserId != null">
+          <column dbField="UserId" paramId="CommentUserId" />
+          <column dbField="LastUpdateId" paramId="CommentUserId" />
+        </optional>
+      </columns>
+    </sql>
+  </statement>
+  <statement name="UpdateCommentManagerInstance">
+    <param id="ResourceValue" type="String" size="36" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="ResourceInstance" type="Int32" required="true" />
+    <param id="CommentQuestionCode" type="Int32" required="true" />
+    <param id="Comment" type="String" default="" />
+    <param id="UserId" type="String" size="36" required="false"/>
+    <param id="CommentUserId" type="String" size="36" required="false"/>
+    <param id="RoleId" type="Int32" required="false" />
+    <param id="CommentAnswerID" type="String" size="36" required="false" />
+    <sql>
+      UPDATE PFM_CMN_CommentAnswer_P
+      <columns mode="update">
+        <column dbField="Comment" paramId="Comment" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+          <optional depends="RoleId == null">
+            <exp op="is" dbField="RoleId">null</exp>
+          </optional>
+          <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          <optional depends="CommentUserId != null">
+            <exp op="=" dbField="UserId" paramId="CommentUserId"/>
+          </optional>
+          <optional depends="CommentAnswerID != null">
+            <exp op="=" dbField="CommentAnswerId" paramId="CommentAnswerID"/>
+          </optional>
+        </exp>
+      </where>
+      AND ResourceInstance = <exp paramId="ResourceInstance"/>
+    </sql>
+  </statement>
+  <statement name="AddCommentManager">
+    <param id="CommentAnswerId" type="String" size="36"/>
+    <param id="ResourceInstance" type="Int32"/>
+    <param id="ResourceValue" type="String" size="36" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="CommentQuestionCode" type="Int32" required="true" />
+    <param id="Comment" type="String" default="" />
+    <param id="UserId" type="String" size="36" />
+    <param id="RoleId" type="Int32" required="false" />
+    <param id="CommentUserId" type="String" size="36" required="false"/>
+    <sql>
+      INSERT PFM_CMN_CommentAnswer_P
+      <columns mode="insert">
+        <column dbField="CommentAnswerID" paramId="CommentAnswerId" />
+        <column dbField="Comment" paramId="Comment"/>
+        <column dbField="ResourceValue" paramId="ResourceValue" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <optional depends="RoleId != null">
+          <column dbField="RoleId" paramId="RoleId"/>
+        </optional>
+        <optional depends="ResourceInstance">
+          <column dbField="ResourceInstance" paramId="ResourceInstance"/>
+        </optional>
+        <column dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateDate">GETDATE()</column>
+        <column dbField="CreatorId" paramId="UserId" />
+        <optional depends="CommentUserId != null">
+          <column dbField="UserId" paramId="CommentUserId" />
+          <column dbField="LastUpdateId" paramId="CommentUserId" />
+        </optional>
+      </columns>
+    </sql>
+  </statement>
+  <statement name="RemoveCommentManager">
+    <param id="ResourceValue" type="String" size="36" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="CommentQuestionCode" type="Int32" required="true" />
+    <param id="CommentUserId" type="String" size="36" required="false" />
+    <param id="RoleId" type="Int32" required="false" />
+    <param id="CommentAnswerID" type="String" size="36" required="false" />
+    <sql>
+      DELETE FROM PFM_CMN_CommentAnswer_P
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />          
+          <optional depends="RoleId != null">
+            <exp op="=" dbField="RoleId" paramId="RoleId" />
+          </optional>
+          <optional depends="CommentUserId != null">
+            <exp op="=" dbField="UserId" paramId="CommentUserId"/>
+          </optional>
+          <optional depends="CommentAnswerID != null">
+            <exp op="=" dbField="CommentAnswerID" paramId="CommentAnswerID"/>
+          </optional>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+</statements>

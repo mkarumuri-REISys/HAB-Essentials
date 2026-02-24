@@ -1,0 +1,82 @@
+<stateTransitions>
+	<entity type="PROCESS">
+		<state id="2">
+			<toState id="4" internal="true" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+			<toState id="9" internal="true" />
+		</state>
+		<state id="4">
+			<toState id="5" />
+			<toState id="6" internal="true"/>
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="5">
+			<toState id="4" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="6">
+		</state>
+		<state id="7">			
+		</state>
+		<state id="8">			
+		</state>
+		<state id="9">			
+		</state>
+	</entity>
+	<entity type="ACTIVITY">
+		<state id="1">
+			<toState id="3" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="3">
+			<toState id="4" internal="true" />
+			<toState id="5" internal="true" />
+			<toState id="6" internal="true" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+			<toState id="9" internal="true" />
+		</state>
+		<state id="4">
+			<toState id="5" />
+			<toState id="6" />
+			<toState id="7" internal="true" />
+			<toState id="8" />			
+		</state>
+		<state id="5">
+			<toState id="4" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="6">			
+		</state>
+		<state id="7">			
+		</state>
+		<state id="8">			
+		</state>
+		<state id="9">			
+		</state>
+	</entity>
+	<entity type="WORKITEM">		
+		<state id="4">
+			<toState id="5" />
+			<toState id="6" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="5">
+			<toState id="4" />
+			<toState id="7" internal="true" />
+			<toState id="8" />
+		</state>
+		<state id="6">			
+		</state>
+		<state id="7">			
+		</state>
+		<state id="8">			
+		</state>
+	</entity>
+</stateTransitions>

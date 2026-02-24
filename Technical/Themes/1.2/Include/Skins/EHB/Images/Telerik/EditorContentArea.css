@@ -1,0 +1,52 @@
+.RadEWrongWord
+{
+	background-color: yellow;
+}
+.RadEDomMouseOver
+{
+	background-color:#ffffcc;	
+}
+body
+{
+	padding:3px;
+	background-image: none;
+	margin: 0px;
+	text-align: left;
+	word-wrap: break-word;
+}
+form
+{
+	background-color:#efefef;
+	border:1px dashed #555555;
+}
+table
+{
+	BORDER-RIGHT: #999999 1px dashed;
+	BORDER-BOTTOM: #999999 1px dashed;
+}
+table td
+{
+	PADDING: 1px;
+	BORDER-TOP: #999999 1px dashed;
+	BORDER-LEFT: #999999 1px dashed;
+}
+table th
+{
+	PADDING: 1px;
+	BORDER-TOP: #000000 1px dashed;
+	BORDER-LEFT: #000000 1px dashed;
+}
+
+/* editor comments */
+font.reComment_u0, span.reComment_u0
+{
+    border: dashed 2px #FF9933 !important;
+}
+font.reComment_u1, span.reComment_u1
+{
+    border: dashed 2px #ff0101 !important;
+}
+font.reComment_u2, span.reComment_u2
+{
+    border: dashed 2px #0101ff !important;
+}

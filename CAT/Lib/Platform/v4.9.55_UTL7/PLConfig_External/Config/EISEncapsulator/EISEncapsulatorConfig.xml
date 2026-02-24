@@ -1,0 +1,4 @@
+<eisEncapsulatorConfiguration>
+  <logFile filePath="E:\Projects\CATProject\PlatformLiteLogs\" />
+  <errorHandler provider="REISys.EIS.EISEncapsulator.ASPErrorHandler,REISys.PlatformLite.EISEncapsulator" />
+</eisEncapsulatorConfiguration>

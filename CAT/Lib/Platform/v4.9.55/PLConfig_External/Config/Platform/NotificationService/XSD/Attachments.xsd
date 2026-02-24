@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="Attachments">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Attachments" minOccurs="0" maxOccurs ="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="ResourceValue" type="xs:string">
+			</xs:attribute>
+			<xs:attribute name="ResourceTypeCode" type="xs:byte">
+			</xs:attribute>
+			<xs:attribute name="AttachmentInstance" type="xs:byte">
+			</xs:attribute>
+			<xs:attribute name="AttachmentId" type="xs:string">
+			</xs:attribute>
+			<xs:attribute name="CleanUpOriginal" type="xs:byte">
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

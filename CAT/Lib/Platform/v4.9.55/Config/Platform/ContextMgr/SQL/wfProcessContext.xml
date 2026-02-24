@@ -1,0 +1,143 @@
+<statements>	
+	<statement name="getAll" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<sql>
+			select object_type_id as targetObjectType,
+					object_id as targetObjectID
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="insert" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<param id="targetType" type="Int32" required="true"/>
+		<param id="targetId" type="String" size="36" required="true"/>
+		<sql>
+			insert into Workflow.dbo.PROCESS_INSTANCE_CONTEXT
+			<columns mode="insert">
+				<column dbField="process_instance_id" paramId="sourceId" />
+				<column dbField="object_type_id" paramId="targetType" />
+				<column dbField="object_id" paramId="targetId" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name="remove" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<param id="targetType" type="Int32" size="36" />
+		<sql>
+			delete from Workflow.dbo.PROCESS_INSTANCE_CONTEXT
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="process_instance_id" paramId="sourceId" />
+					<exp op="=" dbField="object_type_id" paramId="targetType" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getMsg">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<sql>
+			select mm.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join MAIL_MESSAGE mm on fic.object_id = mm.messageId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">4</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getApp">
+		<param id="sourceId" type="String" size="36" required="true" />		
+		<sql>
+			select app.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join APPLICATIONS app on fic.object_id = app.applicationId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getGrant">
+		<param id="sourceId" type="String" size="36" required="true" />
+		<sql>
+			select gr.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join GRANTS gr on fic.object_id = gr.grantId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">12</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getGrantThruApp">
+		<param id="sourceId" type="String" size="36" required="true" />
+		<sql>
+			select gr.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join APPLICATIONS app on fic.object_id = app.applicationId
+				inner join GRANTS gr on app.grantId = gr.grantId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getProg">
+		<param id="sourceId" type="String" size="36" required="true" />
+		<sql>
+			select prog.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join PROGRAMS prog on fic.object_id = prog.programId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">13</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getProgThruApp">
+		<param id="sourceId" type="String" size="36" required="true" />
+		<sql>
+			select distinct prog.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join APPLICATIONS app on fic.object_id = app.applicationId
+				inner join FUNDINGCYCLES fc on app.fundingCycleId = fc.fundingCycleId
+				inner join PROGRAMS prog on fc.programId = prog.programId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getProgThruGrant">
+		<param id="sourceId" type="String" size="36" required="true" />
+		<sql>
+			select distinct prog.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join GRANTS gr on fic.object_id = gr.grantId
+				inner join PROGRAMS prog on gr.programId = prog.programId
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">12</exp>
+					<exp op="=" dbField="fic.process_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

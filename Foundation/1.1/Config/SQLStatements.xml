@@ -1,0 +1,823 @@
+﻿<statements>
+  <statement name="InsertUser" >
+    <param id="UserInfoId" type="Guid" required="true"/>
+    <param id="FirstName" type="string" size="20" default="DefaultValue" />
+
+    <param id="LastName" type="string" size="20" default=""/>
+    <param id="Date" type="DateTime" useCurrTime = "true" />
+    <param id="Id" type="Guid" newGuid = "true" />
+    <param id="dateAppendDayEndTime" type="DateTime" appendDayEndTime="true" />
+    <param id="ShouldIInsertLastName" type="Boolean" default="true"/>
+    <sql>
+      Insert Into UserInfo
+      <columns mode="insert">
+        <column dbField="FirstName" paramId="FirstName" />
+        <optional depends="ShouldIInsertLastName">
+          <column dbField="LastName"  paramId="LastName" />
+        </optional>
+        <column dbField="UserInfoId" paramId="UserInfoId" />
+        <column dbField="CreatedDate" paramId="Date" />
+        <column dbField="CreatorId" paramId="Id" />
+        <column dbField="LastUpdateDate" paramId="dateAppendDayEndTime" />
+        <column dbField="LastUpdateId" paramId="Id" />
+      </columns>
+    </sql>
+  </statement>
+   <statement name="InsertUserGEMS" connection="GEMS">
+    <param id="UserInfoId" type="Guid" required="true"/>
+    <param id="FirstName" type="string" size="20" default="DefaultValue" />
+
+    <param id="LastName" type="string" size="20" default=""/>
+    <param id="Date" type="DateTime" useCurrTime = "true" />
+    <param id="Id" type="Guid" newGuid = "true" />
+    <param id="dateAppendDayEndTime" type="DateTime" appendDayEndTime="true" />
+    <param id="ShouldIInsertLastName" type="Boolean" default="true"/>
+    <sql>
+      Insert Into UserInfo
+      <columns mode="insert">
+        <column dbField="FirstName" paramId="FirstName" />
+        <optional depends="ShouldIInsertLastName">
+          <column dbField="LastName"  paramId="LastName" />
+        </optional>
+        <column dbField="UserInfoId" paramId="UserInfoId" />
+        <column dbField="CreatedDate" paramId="Date" />
+        <column dbField="CreatorId" paramId="Id" />
+        <column dbField="LastUpdateDate" paramId="dateAppendDayEndTime" />
+        <column dbField="LastUpdateId" paramId="Id" />
+      </columns>
+    </sql>
+  </statement>
+  <statement name="UpdateUser" >
+    <param id="UserInfoId" type="Guid" required="true"/>
+    <param id="FirstName" type="string" size="20" default="DefaultValue" />
+    <param id="LastName" type="string" size="20" default=""/>
+    <param id="Date" type="DateTime" useCurrTime = "true" />
+    <param id="Id" type="Guid" newGuid = "true" />
+    <param id="dateAppendDayEndTime" type="DateTime" appendDayEndTime="true" />
+    <sql>
+      Update UserInfo
+      <columns mode="Update">
+        <column dbField="FirstName" paramId="FirstName" />
+        <optional depends="LastName">
+          <column dbField="LastName"  paramId="LastName" />
+        </optional>
+        <column dbField="CreatedDate" paramId="Date" />
+        <column dbField="CreatorId" paramId="Id" />
+        <column dbField="LastUpdateDate" paramId="dateAppendDayEndTime" />
+        <column dbField="LastUpdateId" paramId="Id" />
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="DeleteUser">
+    <param id="UserInfoId" type="Guid" required="true"/>
+    <sql>
+      Delete From UserInfo
+      <where>
+        <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+    </where>
+    </sql>
+  </statement>
+  <statement name="GetNestedUser">
+    <param id="UserInfoId" type="Guid"/>
+    <statement name="GetUser" />
+    <statement name="GetUser" />
+    <statement name=""/>
+  </statement>
+  <statement name="GetNestedUserTableName">
+    <param id="UserInfoId" type="Guid"/>
+    <statement name="GetUser" tableName="AssignedUsers"/>
+    <statement name="GetUser" tableName="GetMyUsers"/>
+    <statement name="GetUser" tableName="GetFavUsers" alias="GetFavUsersalias" path="IntegrationTest/Config"/>
+  </statement>
+  <statement name="GetUser">
+    <param id="UserInfoId" type="Guid"/>
+    <param id="LastName" type="string"/>
+    <param id="FirstName" type="string"/>
+    <param id="SortExpression" type="String" />
+    <sql>
+      Select FirstName,
+      LastName,
+      UserInfoId,
+      CreatedDate,
+      CreatorId,
+      LastUpdateDate,
+      LastUpdateId
+      FROM UserInfo
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+          <exp op="=" dbField="LastName" paramId="LastName"/>
+          <exp op="=" dbField="FirstName" paramId="FirstName"/>
+        </exp>
+      </where>
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+  <statement name="GetUserNoID">
+    <param id="SortExpression" type="String" default="FirstName"/>
+    <sql>
+      <select>
+        FirstName,
+        LastName,
+        UserInfoId,
+        CreatedDate,
+        CreatorId,
+        LastUpdateDate,
+        LastUpdateId
+      </select>
+      FROM UserInfo
+      <sort paramId ="SortExpression" />
+    </sql>
+  </statement>
+  <statement name="GetUserNoIDFilter">
+    <param id="SortExpression" type="String" default="FirstName"/>
+    <param id="WhereFilterExpression" type="String" />
+    <sql>
+      <select>
+        FirstName,
+        LastName,
+        UserInfoId,
+        CreatedDate,
+        CreatorId,
+        LastUpdateDate,
+        LastUpdateId
+      </select>
+      FROM UserInfo
+      <where>
+        <dynamic paramId="WhereFilterExpression" />
+      </where>
+      <sort paramId ="SortExpression" />
+    </sql>
+  </statement>
+  <statement name="GetCommonUser" connection="BHCMIS">
+    <param id="EHBUserId" type="string"/>
+    <param id="LastName" type="string"/>
+    <param id="FirstName" type="string"/>
+    <sql>
+      SELECT FirstName, LastName, EHBUserId
+      FROM CMN_User_P
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="EHBUserId" paramId="EHBUserId"/>
+          <exp op="=" dbField="LastName" paramId="LastName"/>
+          <exp op="=" dbField="FirstName" paramId="FirstName"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetFirstName" connection="EF">
+    <param id="UserInfoId" type="Guid"/>
+    <param id="LastName" type="string"/>
+    <param id="FirstName" type="string"/>
+    <sql>
+      Select FirstName
+      FROM UserInfo
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+          <exp op="=" dbField="LastName" paramId="LastName"/>
+          <exp op="=" dbField="FirstName" paramId="FirstName"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetUserDataSet">
+    <param id="UserInfoId" type="Guid"/>
+    <param id="LastName" type="string"/>
+    <param id="FirstName" type="string"/>
+    <sql>
+      Select FirstName,LastName,UserInfoId
+      FROM UserInfo
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+          <exp op="=" dbField="LastName" paramId="LastName"/>
+          <exp op="=" dbField="FirstName" paramId="FirstName"/>
+        </exp>
+      </where>
+
+      Select FirstName,LastName,UserInfoId
+      FROM UserInfo
+    </sql>
+  </statement>
+  <statement name="GetUserPagging">
+    <param id="UserInfoId" type="Guid"/>
+    <param id="LastName" type="string"/>
+    <param id="FirstName" type="string"/>
+    <param id="SortExpression" type="String" />
+    <sql>
+      <select>
+        FirstName,LastName,UserInfoId
+      </select>
+      FROM UserInfo
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserInfoId" paramId="UserInfoId"/>
+          <exp op="=" dbField="LastName" paramId="LastName"/>
+          <exp op="=" dbField="FirstName" paramId="FirstName"/>
+        </exp>
+      </where>
+      <sort paramId ="SortExpression" />
+    </sql>
+  </statement>
+  <statement name="GetAllRoles">
+    <param id="FirstName" type="string" size="20"/>
+    <param id="ReturnCode" type="Int32" direction="Output"/>
+    <sp name="IntegrationTest_AC_GetUser" />
+  </statement>
+  <statement name="GetView">
+    <sql>
+      select * from vw_UserInfo
+    </sql>
+  </statement>
+  <statement name="GetFunction">
+    <sql>
+      select dbo.StripWWWandCom('www.google.com')
+    </sql>
+  </statement>
+
+  <statement name="GetTaskDetailsLite" connection="Gems">
+    <param id="UserId" type="String"  />
+    <param id="Roles" type="String"/>
+    <param id="SortExpression"		  type="String" />
+    <param id="WhereFilterExpression" type="String" />
+    <sql>
+      Select
+      T.TaskID,T.TaskStatusCode, T.AssignedOnDate AssignedOn, T.StartedOnDate StartedOn, T.CompletedOnDate CompletedOn, LTPT.Lookupcode ProcessTypeCode,
+      LTPT.DisplayValue ProcessName, LTS.DisplayValue Status, LTT.Description TaskType, LTT.LookupCode TaskTypeCode,
+      R.RoleAbbr SubRoleAbbr, R.RoleID SubRoleId,
+      ISNULL(R1.RoleAbbr,R.RoleAbbr) RoleAbbr, ISNULL(R1.RoleID,R.RoleId) RoleID,
+      trv.FieldValue TrackingNo,
+      U.UserID, P.FirstName, P.LastName, I1.OrgCode as OrgCodeLevel1, I2.OrgCode as OrgCodeLevel2, I3.OrgCode as OrgCodeLevel3, I4.OrgCode as OrgCodeLevel4,
+      pr.ActivityCode, pr.ProgramLongName, gr.GrantNumber, gr.GranteeName, gr.GranteeCity, gr.GranteeState, gr.SerialNumber,
+      fc.AnnouncementNumber, fc.PBPSD, fc.FundingCycleLongName,gr.GrantId,gr.AwardNumber,
+      convert(xml, (select tr2.fieldcode, fieldvalue,LF.DisplayValue FieldName
+      from Activetask t2
+      join RelTaskProcessActiveTask rtpt2 on  t2.TaskId = rtpt2.TaskId
+      join TaskProcess tp2 on tp2.TaskProcessId = rtpt2.TaskProcessId
+      join Activetaskrelatedvalue tr2 on (tr2.sourceProviderid = rtpt2.TaskId or tr2.sourceProviderid = rtpt2.TaskProcessId)
+      JOIN dbo.RelTaskTypeFields rttf ON rttf.FieldCode = tr2.FieldCode AND rttf.TaskTypeCode = t2.TaskTypeCode
+      join LookupField LF on LF.LookupCode = tr2.FieldCode
+      where t2.taskid = T.TaskID
+      ORDER BY rttf.DisplayOrder
+      for xml auto)) as Fields
+      FROM Activetask t
+      join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      join AC_Role R on LTT.RoleId = R.RoleId
+      join LookupTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+      join RelTaskProcessActiveTask rtpt on  t.TaskId = rtpt.TaskId
+      join TaskProcess tp on tp.TaskProcessId = rtpt.TaskProcessId
+      join TaskProcessOtherRelatedObjects tporo on tporo.TaskProcessId = tp.TaskProcessId
+      join LookupTaskProcessType LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      join AC_User U on U.UserId = T.AssigneeId
+      join People P on P.UserId = U.UserId
+      left outer join ActiveTaskRelatedValue trv on (trv.sourceProviderid = rtpt.TaskId or trv.sourceProviderid = rtpt.TaskProcessId) and trv.FieldCode = T.PrimaryFieldCode
+      left outer join AC_Role R1 on R1.RoleID = R.ParentRoleID
+      Left Join (
+      SELECT ProgramId, ActivityCode, ProgramLongName, ProgramShortName, Purpose
+      FROM dbo.Programs pr
+      WHERE (ProgramInstance = (
+      SELECT MAX(ProgramInstance)
+      FROM Programs P
+      WHERE P.ProgramId = IsNull(Pr.ParentProgramId, Pr.ProgramId) AND PR.ProgramId = P.ProgramId))
+      ) pr on pr.ProgramId = tporo.ProgramId
+      Left Join(
+      SELECT aw.GrantId, aw.AwardNumber,SUBSTRING(aw.GrantNumber, 3, 10) AS GrantNumber, GranteeName, ad.City GranteeCity, st.ShortDisplayValue GranteeState, gr.SerialNumber
+      FROM dbo.Grants gr
+      INNER JOIN dbo.Awards aw ON gr.GrantId = aw.GrantId and gr.lastawdnocurrbp = aw.awardnumber
+      Join AwardAddresses ad on ad.GrantId = aw.GrantId and ad.AwardNumber = aw.AwardNumber and AddressPurposeCode = 4 and ad.addresstypecode = 1
+      left outer join lookupstate st on ad.statecode = st.lookupcode
+      ) gr on IsNull(gr.GrantId, '00000000-0000-0000-0000-000000000000') = IsNull(tporo.GrantId, '00000000-0000-0000-0000-000000000000')
+      Left Join (
+      SELECT fc.FundingCycleId, fc.AnnouncementNumber, fc.FundingCycleCode, fc.FundingCycleLongName, fc.ProjectedAwardDateRpt as PBPSD
+      FROM dbo.fundingcycles fc
+      )fc on IsNull(fc.FundingCycleId, '00000000-0000-0000-0000-000000000000') = IsNull(tporo.FundingCycleId, '00000000-0000-0000-0000-000000000000')
+      left outer join RelPeopleInternalOrganizations RP on P.PersonId = RP.PersonId
+      left outer join InternalOrganizations I on I.InternalOrgId = RP.InternalOrgId
+      left outer join InternalOrganizations I1 on I1.InternalOrgId = RP.InternalOrgLevel1
+      left outer join InternalOrganizations I2 on I2.InternalOrgId = RP.InternalOrgLevel2
+      left outer join InternalOrganizations I3 on I3.InternalOrgId = RP.InternalOrgLevel3
+      left outer join InternalOrganizations I4 on I4.InternalOrgId = RP.InternalOrgLevel4
+      <where>
+        <exp op="AND" >
+          <optional depends="UserId" >
+            <exp op="=" dbField="T.AssigneeId" paramId="UserId" />
+          </optional>
+          <optional depends="Roles" >
+            <exp op="IN" dbField="LTT.RoleId" paramId="Roles" />
+          </optional>
+          <exp op="=" dbField="U.UserTypeCode">2</exp>
+          <exp op="in" dbField="T.TaskStatusCode">(1,2)</exp>
+          <dynamic paramId="WhereFilterExpression" />
+        </exp>
+      </where>
+      Order by LTT.RoleId
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+
+  <statement name="GetTaskDetails" connection="Gems">
+    <param id="UserId" type="String" />
+    <param id="OptionalInt" type="Int32" default="1" />
+    <param id="OptionalString" type="string" default="'1'" />
+    <param id="OptionalBool" type="Boolean" default="true" />
+    <param id="Roles" type="String"/>
+    <param id="SortExpression"		  type="String" />
+    <param id="WhereFilterExpression" type="String" />
+    <param id="AssignedDate" type="DateTime" useCurrTime = "true" />
+    <param id="DataSources" type="String" default="1"/>
+    <sql>
+      Select
+      1 as DataSource,T.TaskID,T.TaskStatusCode, T.AssignedOnDate AssignedOn, T.StartedOnDate StartedOn, T.CompletedOnDate CompletedOn, LTPT.Lookupcode ProcessTypeCode,
+      LTPT.DisplayValue ProcessName, LTS.DisplayValue Status, LTT.Description TaskType, LTT.LookupCode TaskTypeCode,
+      R.RoleAbbr SubRoleAbbr, R.RoleID SubRoleId,
+      ISNULL(R1.RoleAbbr,R.RoleAbbr) RoleAbbr, ISNULL(R1.RoleID,R.RoleId) RoleID,
+      trv.FieldValue TrackingNo,
+      U.UserID, P.FirstName, P.LastName, I1.OrgCode as OrgCodeLevel1, I2.OrgCode as OrgCodeLevel2, I3.OrgCode as OrgCodeLevel3, I4.OrgCode as OrgCodeLevel4,
+      pr.ActivityCode, pr.ProgramLongName, gr.GrantNumber, gr.GranteeName, gr.GranteeCity, gr.GranteeState, gr.SerialNumber,
+      fc.AnnouncementNumber, fc.PBPSD, fc.FundingCycleLongName,gr.GrantId,gr.AwardNumber,
+      convert(xml, (select tr2.fieldcode, fieldvalue,LF.DisplayValue FieldName
+      from tasks t2
+      join RelTaskProcessTask rtpt2 on  t2.TaskId = rtpt2.TaskId
+      join TaskProcess tp2 on tp2.TaskProcessId = rtpt2.TaskProcessId
+      join taskrelatedvalue tr2 on (tr2.sourceProviderid = rtpt2.TaskId or tr2.sourceProviderid = rtpt2.TaskProcessId)
+      JOIN dbo.RelTaskTypeFields rttf
+      ON rttf.FieldCode = tr2.FieldCode AND rttf.TaskTypeCode = t2.TaskTypeCode
+      join LookupField LF on LF.LookupCode = tr2.FieldCode
+      where t2.taskid = T.TaskID
+      ORDER BY rttf.DisplayOrder
+      for xml auto)) as Fields
+      FROM tasks t
+      join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      join AC_Role R on LTT.RoleId = R.RoleId
+      left outer join AC_Role R1 on R1.RoleID = R.ParentRoleID
+      join LookupTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+      join RelTaskProcessTask rtpt on  t.TaskId = rtpt.TaskId
+      join TaskProcess tp on tp.TaskProcessId = rtpt.TaskProcessId
+      join LookupTaskProcessType LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      left outer join TaskRelatedValue trv on
+      (trv.sourceProviderid = rtpt.TaskId or trv.sourceProviderid = rtpt.TaskProcessId) and trv.FieldCode = T.PrimaryFieldCode
+      join TaskProcessOtherRelatedObjects tporo on tporo.TaskProcessId = tp.TaskProcessId
+      Left Join
+      (
+      SELECT ProgramId, ActivityCode, ProgramLongName, ProgramShortName, Purpose
+      FROM dbo.Programs pr
+      WHERE (  ProgramInstance =
+      (SELECT MAX(ProgramInstance)
+      FROM Programs P
+      WHERE P.ProgramId = IsNull(Pr.ParentProgramId, Pr.ProgramId) AND PR.ProgramId = P.ProgramId
+      )
+      )
+      ) pr on pr.ProgramId = tporo.ProgramId
+      Left Join
+      (
+      SELECT aw.GrantId, aw.AwardNumber,SUBSTRING(aw.GrantNumber, 3, 10) AS GrantNumber, GranteeName, ad.City GranteeCity, st.ShortDisplayValue GranteeState, gr.SerialNumber
+      FROM dbo.Grants gr
+      INNER JOIN dbo.Awards aw ON gr.GrantId = aw.GrantId and gr.lastawdnocurrbp = aw.awardnumber
+      Join AwardAddresses ad on ad.GrantId = aw.GrantId and ad.AwardNumber = aw.AwardNumber and AddressPurposeCode = 4 and ad.addresstypecode = 1
+      left outer join lookupstate st on ad.statecode = st.lookupcode
+      ) gr on IsNull(gr.GrantId, '00000000-0000-0000-0000-000000000000') = IsNull(tporo.GrantId, '00000000-0000-0000-0000-000000000000')
+      Left Join
+      (
+      SELECT fc.FundingCycleId, fc.AnnouncementNumber, fc.FundingCycleCode, fc.FundingCycleLongName, fc.ProjectedAwardDateRpt as PBPSD
+      FROM dbo.fundingcycles fc
+      )fc on IsNull(fc.FundingCycleId, '00000000-0000-0000-0000-000000000000') = IsNull(tporo.FundingCycleId, '00000000-0000-0000-0000-000000000000')
+      join AC_User U on U.UserId = T.AssigneeId
+      join People P on P.UserId = U.UserId
+      left outer join RelPeopleInternalOrganizations RP on P.PersonId = RP.PersonId
+      left outer join InternalOrganizations I on I.InternalOrgId = RP.InternalOrgId
+      left outer join InternalOrganizations I1 on I1.InternalOrgId = RP.InternalOrgLevel1
+      left outer join InternalOrganizations I2 on I2.InternalOrgId = RP.InternalOrgLevel2
+      left outer join InternalOrganizations I3 on I3.InternalOrgId = RP.InternalOrgLevel3
+      left outer join InternalOrganizations I4 on I4.InternalOrgId = RP.InternalOrgLevel4
+      <where>
+        <exp op="AND" >
+
+          <optional depends="UserId" >
+            <exp op="=" dbField="T.AssigneeId" paramId="UserId" />
+          </optional>
+          <optional depends="Roles" >
+            <exp op="IN" dbField="LTT.RoleId" paramId="Roles" />
+          </optional>
+          <optional depends="(OptionalInt == 1 &amp;&amp; OptionalBool == true) || (OptionalString == '1')" >
+            T.TaskID != null
+          </optional>
+          <optional depends="OptionalString != '1'" >
+            <exp op="AND" >
+              <exp op="=" dbField="T.TaskID">null</exp> 
+              <exp dbField="Isnull(T.TaskID,0)" op=">">-1</exp>
+              
+            </exp>
+          </optional>
+          <optional depends="OptionalString == '1' &amp;&amp; OptionalString == '1'" >
+            T.TaskID != null
+          </optional>
+          <optional depends="DataSources.indexOf('1') != -1">
+            T.TaskID != null
+          </optional>
+          <optional depends="(OptionalInt &lt; 1 )">
+            T.TaskID != null
+          </optional>
+          <optional depends="(OptionalInt != 2 || !OptionalBool || OptionalInt &lt; 1 || OptionalInt &gt; 1 || OptionalInt &gt;= 1 || OptionalInt &lt;= 1)">
+            T.TaskID != null
+          </optional>
+          <exp op="=" dbField="U.UserTypeCode">2</exp>
+          <exp op="in" dbField="T.TaskStatusCode">(1,2)</exp>
+          <exp>1 &lt; 2 and 3 &gt; 2</exp>
+
+          <dynamic paramId="WhereFilterExpression" tablePrefix="gems" />
+
+        </exp>
+      </where>
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+  <statement name="ApplicationsSearch" connection="Gems">
+    <param id="OrgCode" type="String" size="36" required="false"/>
+    <param id="ProgramLongName" type="String" size="36" required="false"/>
+    <param id="ActivityCode" type="String" size="36" required="false"/>
+    <param id="CFDANumber" type="String" size="36" required="false"/>
+    <param id="AnnouncementNumber" type="String" size="36" required="false"/>
+    <param id="FundingCycleLongName" type="String" size="36" required="false"/>
+    <param id="OrgName" type="String" size="36" required="false"/>
+    <param id="DUNS" type="String" size="36" required="false"/>
+    <param id="EmployerIdentificationNo" type="String" size="36" required="false"/>
+    <param id="ApplicationTrackingNo" type="String" size="36" required="false"/>
+    <param id="ApplicationTypeCode" type="Int16" size="36" required="false"/>
+    <param id="Othertrackingno" type="String" size="36" required="false"/>
+    <param id="city" type="String" size="36" required="false"/>
+    <param id="lookupCode" type="String" size="36" required="false"/>
+    <param id="ZipCode" type="String" size="36" required="false"/>
+    <param id="SourceSystemTypeCode" type="String" size="36" required="false"/>
+    <param id="GrantId" type="String" size="36" required="true"/>
+    <param id="WhereFilterExpression" />
+    <param id="SortExpression" default="awd.BudgetPeriodStartDate desc" />
+
+
+    <sql>
+      select
+      awd.AwardReleaseDate as AwardReleaseDate,
+      convert(VARCHAR(36),FMD.FundingMemoId) as FundingMemoId,
+      convert(VARCHAR(36),FMD.FundingMemoLineId) as FundingMemoLineId,
+      FM.FundingMemoTypeCode as FundingMemoTypeCode,
+      prog.ProgramLongName as ProgramLongName,
+      CASE WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      FMD.BudgetPeriodStartDate
+      else
+      awd.BudgetPeriodStartDate
+      end as BudgetPeriodStartDate,
+      CASE WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      FMD.BudgetPeriodEndDate
+      else
+      awd.BudgetPeriodEndDate
+      end as BudgetPeriodEndDate,
+      awd.AwardActionTypeCode,
+      SUBSTRING(awd.grantnumber,3,10) GrantNumber,
+      CASE WHEN fmd.CopiedtoAwardFlag=1 AND fm.Statuscode=2 AND awd.BudgetPeriodStartDate IS NOT NULL AND awd.BudgetPeriodendDate IS NOT null THEN
+      ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodEndDate,101) ,'')
+      WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      ISNULL(CONVERT(VARCHAR(10),FMD.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),FMd.BudgetPeriodEndDate,101) ,'')
+      WHEN gam.GrantActionMemoId IS NOT NULL THEN
+      ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodEndDate,101) ,'')                          END
+      AS BudgetPeriod,
+      Prog.ActivityCode as ActivityCode,
+      fun.AnnouncementCode  as AnnouncementCode ,
+      fun.AnnouncementNumber  as AnnouncementNumber,
+      case(isnull(app.OnlineSubmissionFlag,1))
+      when 0 then 'No'
+      else 'Yes'
+      end
+      as OnlineSubmission,
+      case(isnull(app.ApplicationStatusFlag,0))
+      when  0 then 'In Progress'
+      when  1 then 'Submitted To AO'
+      when   2 then 'Submitted To HRSA'
+      when    5 then 'Edit By HRSA'
+      when  6 then 'Submitted With Exception'
+      else 'No Status Available'
+      end as Applicationstatus,
+      CASE when awd.AwardReleaseDate IS NOT NULL THEN 'Awarded'
+      WHEN  Fm.statuscode=2 THEN 'Approved'
+      END
+      ReviewStatus,
+      awd.AwardNumber,
+      convert(VARCHAR(15),app.ApplicationTrackingNo) as ApplicationTrackingNumber,
+      app.CreatedDate as CreatedDate,
+      app.ApplicationTypeCode as ApplicationTypeCode,
+      app.ApplicationSubmissionDate as SubmittedOn,
+      IsNull('&lt;a class="regText tooltip" href="#" title="'+ substring(convert(varchar(20), app.ApplicationSubmissionDate, 9), 13, 5)+ ' ' + substring(convert(varchar(30), app.ApplicationSubmissionDate, 9), 25, 2)+ '" style="text-decoration: none">' + CONVERT(VARCHAR(10),app.ApplicationSubmissionDate,101) +'&lt;/a>',' ') as SubmittedOnString,
+      lat.ShortDisplayvalue ApplicationType,
+      fun.ApplicationDeadline as ApplicationDeadline,
+      app.ApplicationSubmissionDate,
+      App.ApplicationId as ApplicationId,
+      IsNull(fun.FundingCycleLongName, '') as FundingCycleLongName,
+      IsNull(fun.FundingCycleShortName, '') as FundingCycleShortName,
+      fun.FiscalYear,
+      fun.fundingcyclecode,
+      fun.FundingCycleId as FundingCycleId,
+      fun.Description,
+      isNull(LSST.ShortDisplayValue,'') as ApplicationSource,
+      app.FundingCycleDisciplineCode as FundingCycleDisciplineCode,
+      isNull(app.FundingCycleDisciplineTypeDisplayValue,'') as Discipline,
+      isNull(AE.ApplicationEligibilityTypeCode,1) as ApplicationEligibility,
+      IsNull(app.Othertrackingno, 'N/A') as GrantsTrackingNumber,
+      app.SourceSystemTypeCode,
+      ACE.ApplicationCompletenessEligibilityReviewId,
+      convert(VARCHAR(36),APR.ApplicationPreFundingReviewId) as ApplicationPreFundingReviewId
+      into #TempApplications
+      from
+      programs prog
+      JOIN fundingcycles fun ON   fun.ProgramInstance = prog.ProgramInstance and fun.ProgramId = prog.ProgramId
+      JOIN hist_applications app   ON   fun.FundingCycleId = app.FundingCycleId
+      join applications ap on ap.applicationid=app.applicationid and ap. VersionId=app.VersionId
+      Join lookupapplicationtype lat on lat.lookupcode=app.applicationtypecode
+      LEFT JOIN dbo.GrantActionMemo GAM ON GAM.ApplicationId=app.ApplicationId
+      LEFT JOIN dbo.FundingMemoDetail FMD ON FMd.applicationid=app.applicationid
+      LEFT JOIN dbo.fundingmemo FM ON FM.fundingmemoid=fmd.fundingmemoid
+      LEFT  JOIN awards awd ON (awd.sourceobjectid=gam.GrantActionMemoId)
+      left join
+      (select Awd1.grantnumber,Awd1.Grantid from  grants gt
+      LEFT  JOIN dbo.Awards Awd1 ON Awd1.grantid=gt.Grantid
+      AND gt.LastRelAwdNoLatestBP=awd1.awardnumber
+      <where>
+        <exp op="=" dbField="gt.GrantId" paramId="GrantId"/>
+      </where>
+      ) Awd1 on Awd1.Grantid=Awd.Grantid
+      Left  join LookupSourceSystemType LSST on app.SourceSystemTypeCode = LSST.LookupCode
+      Left  join ApplicationEligibility AE on AE.ApplicationId = App.ApplicationId
+      LEFT  JOIN  dbo.ApplicationCompletenessEligibilityReview ACE ON ACE.applicationid=app.applicationid
+      LEFT  JOIN  dbo.ApplicationPreFundingReview APR ON APr.applicationid=app.applicationid
+
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="awd.GrantId" paramId="GrantId"/>
+          <!--<exp op="=" dbField="prog.ProgramOrgInstance"  >
+						iorg.InternalOrgInstance
+					</exp>-->
+          <exp op="IN" dbField="iorg.OrgCode" paramId="OrgCode"/>
+          <exp op="LIKE" dbField="prog.ProgramLongName" paramId="ProgramLongName"/>
+          <exp op="=" dbField="prog.ActivityCode" paramId="ActivityCode"/>
+          <exp op="=" dbField="CFDA.CFDANumber" paramId="CFDANumber"/>
+          <exp op="LIKE" dbField="fun.AnnouncementNumber" paramId="AnnouncementNumber"/>
+          <exp op="LIKE" dbField="fun.FundingCycleLongName" paramId="FundingCycleLongName"/>
+          <exp op="LIKE" dbField="org.OrgName" paramId="OrgName"/>
+          <exp op="=" dbField="org.DUNS" paramId="DUNS"/>
+          <exp op="=" dbField="org.EmployerIdentificationNo" paramId="EmployerIdentificationNo"/>
+          <exp op="IN" dbField="app.ApplicationTrackingNo" paramId="ApplicationTrackingNo"/>
+          <exp op="IN" dbField="app.ApplicationTypeCode" >(1,2,3,7)</exp>
+          <exp> ((GAM.ApplicationId IS NOT NULL AND Awd.awardreleasedate IS NOT null))</exp>
+          <exp op="=" dbField="app.ApplicationTypeCode" paramId="ApplicationTypeCode"/>
+          <exp op="LIKE" dbField="app.Othertrackingno" paramId="Othertrackingno"/>
+          <exp op="LIKE" dbField="addr.city" paramId="city"/>
+          <exp op="=" dbField="st.lookupCode" paramId="lookupCode"/>
+          <exp op="=" dbField="addr.ZipCode" paramId="ZipCode"/>
+          <exp op="=" dbField="app.SourceSystemTypeCode" paramId="SourceSystemTypeCode"/>
+
+        </exp>
+
+      </where>
+
+      UNION ALL
+
+      SELECT
+      awd.AwardReleaseDate as AwardReleaseDate,
+      convert(VARCHAR(36),FMD.FundingMemoId) as FundingMemoId,
+      convert(VARCHAR(36),FMD.FundingMemoLineId) as FundingMemoLineId,
+      FM.FundingMemoTypeCode as FundingMemoTypeCode,
+      prog.ProgramLongName as ProgramLongName,
+      CASE WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      FMD.BudgetPeriodStartDate
+      else
+      awd.BudgetPeriodStartDate
+      end as BudgetPeriodStartDate,
+      CASE WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      FMD.BudgetPeriodEndDate
+      else
+      awd.BudgetPeriodEndDate
+      end as BudgetPeriodEndDate,
+      awd.AwardActionTypeCode,
+      SUBSTRING(awd.grantnumber,3,10) GrantNumber,
+      CASE WHEN fmd.CopiedtoAwardFlag=1 AND fm.Statuscode=2 AND awd.BudgetPeriodStartDate IS NOT NULL AND awd.BudgetPeriodendDate IS NOT null THEN
+      ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodEndDate,101) ,'')
+      WHEN fm.Statuscode=2 and isnull(fmd.CopiedtoAwardFlag,0)=0 and awd.awardreleasedate is null THEN
+      ISNULL(CONVERT(VARCHAR(10),FMD.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),FMd.BudgetPeriodEndDate,101) ,'')
+      WHEN gam.GrantActionMemoId IS NOT NULL THEN
+      ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodStartDate,101),'') +'-'+ISNULL(CONVERT(VARCHAR(10),awd.BudgetPeriodEndDate,101) ,'')                          END
+      AS BudgetPeriod,
+      Prog.ActivityCode as ActivityCode,
+      fun.AnnouncementCode  as AnnouncementCode ,
+      fun.AnnouncementNumber  as AnnouncementNumber,
+      case(isnull(app.OnlineSubmissionFlag,1))
+      when 0 then 'No'
+      else 'Yes'
+      end
+      as OnlineSubmission,
+      case(isnull(app.ApplicationStatusFlag,0))
+      when  0 then 'In Progress'
+      when  1 then 'Submitted To AO'
+      when   2 then 'Submitted To HRSA'
+      when    5 then 'Edit By HRSA'
+      when  6 then 'Submitted With Exception'
+      else 'No Status Available'
+      end as Applicationstatus,
+      CASE when awd.AwardReleaseDate IS NOT NULL THEN 'Awarded'
+      WHEN  Fm.statuscode=2 THEN 'Approved'
+      END
+      ReviewStatus,
+      awd.AwardNumber,
+      convert(VARCHAR(15),app.ApplicationTrackingNo) as ApplicationTrackingNumber,
+      app.CreatedDate as CreatedDate,
+      app.ApplicationTypeCode as ApplicationTypeCode,
+      app.ApplicationSubmissionDate as SubmittedOn,
+      IsNull('&lt;a class="regText tooltip" href="#" title="'+ substring(convert(varchar(20), app.ApplicationSubmissionDate, 9), 13, 5)+ ' ' + substring(convert(varchar(30), app.ApplicationSubmissionDate, 9), 25, 2)+ '" style="text-decoration: none">' + CONVERT(VARCHAR(10),app.ApplicationSubmissionDate,101) +'&lt;/a>',' ') as SubmittedOnString,
+      lat.ShortDisplayvalue ApplicationType,
+      fun.ApplicationDeadline as ApplicationDeadline,
+      app.ApplicationSubmissionDate,
+      App.ApplicationId as ApplicationId,
+      IsNull(fun.FundingCycleLongName, '') as FundingCycleLongName,
+      IsNull(fun.FundingCycleShortName, '') as FundingCycleShortName,
+      fun.FiscalYear,
+      fun.fundingcyclecode,
+      fun.FundingCycleId as FundingCycleId,
+      fun.Description,
+      isNull(LSST.ShortDisplayValue,'') as ApplicationSource,
+      app.FundingCycleDisciplineCode as FundingCycleDisciplineCode,
+      isNull(app.FundingCycleDisciplineTypeDisplayValue,'') as Discipline,
+      isNull(AE.ApplicationEligibilityTypeCode,1) as ApplicationEligibility,
+      IsNull(app.Othertrackingno, 'N/A') as GrantsTrackingNumber,
+      app.SourceSystemTypeCode,
+      ACE.ApplicationCompletenessEligibilityReviewId,
+      convert(VARCHAR(36),APR.ApplicationPreFundingReviewId) as ApplicationPreFundingReviewId
+
+      from
+      programs prog
+      JOIN fundingcycles fun ON   fun.ProgramInstance = prog.ProgramInstance and fun.ProgramId = prog.ProgramId
+      JOIN hist_applications app   ON   fun.FundingCycleId = app.FundingCycleId
+      join applications ap on ap.applicationid=app.applicationid and ap. VersionId=app.VersionId
+      Join lookupapplicationtype lat on lat.lookupcode=app.applicationtypecode
+      LEFT JOIN dbo.GrantActionMemo GAM ON GAM.ApplicationId=app.ApplicationId
+      LEFT JOIN dbo.FundingMemoDetail FMD ON FMd.applicationid=app.applicationid
+      LEFT JOIN dbo.fundingmemo FM ON FM.fundingmemoid=fmd.fundingmemoid
+      LEFT  JOIN awards awd ON (awd.sourceobjectid=app.applicationid)
+      left join
+      (select Awd1.grantnumber,Awd1.Grantid from  grants gt
+      LEFT  JOIN dbo.Awards Awd1 ON Awd1.grantid=gt.Grantid
+      AND gt.LastRelAwdNoLatestBP=awd1.awardnumber
+      <where>
+        <exp op="=" dbField="gt.GrantId" paramId="GrantId"/>
+      </where>
+      ) Awd1 on Awd1.Grantid=Awd.Grantid
+      Left  join LookupSourceSystemType LSST on app.SourceSystemTypeCode = LSST.LookupCode
+      Left  join ApplicationEligibility AE on AE.ApplicationId = App.ApplicationId
+      LEFT  JOIN  dbo.ApplicationCompletenessEligibilityReview ACE ON ACE.applicationid=app.applicationid
+      LEFT  JOIN  dbo.ApplicationPreFundingReview APR ON APr.applicationid=app.applicationid
+
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="awd.GrantId" paramId="GrantId"/>
+          <!--<exp op="=" dbField="prog.ProgramOrgInstance"  >
+						iorg.InternalOrgInstance
+					</exp>-->
+          <exp op="IN" dbField="iorg.OrgCode" paramId="OrgCode"/>
+          <exp op="LIKE" dbField="prog.ProgramLongName" paramId="ProgramLongName"/>
+          <exp op="=" dbField="prog.ActivityCode" paramId="ActivityCode"/>
+          <exp op="=" dbField="CFDA.CFDANumber" paramId="CFDANumber"/>
+          <exp op="LIKE" dbField="fun.AnnouncementNumber" paramId="AnnouncementNumber"/>
+          <exp op="LIKE" dbField="fun.FundingCycleLongName" paramId="FundingCycleLongName"/>
+          <exp op="LIKE" dbField="org.OrgName" paramId="OrgName"/>
+          <exp op="=" dbField="org.DUNS" paramId="DUNS"/>
+          <exp op="=" dbField="org.EmployerIdentificationNo" paramId="EmployerIdentificationNo"/>
+          <exp op="IN" dbField="app.ApplicationTrackingNo" paramId="ApplicationTrackingNo"/>
+          <exp op="IN" dbField="app.ApplicationTypeCode" >(1,2,3,7)</exp>
+          <exp op="=" dbField="fm.StatusCode">2</exp>
+          <exp op="=" dbField="app.ApplicationTypeCode" paramId="ApplicationTypeCode"/>
+          <exp op="LIKE" dbField="app.Othertrackingno" paramId="Othertrackingno"/>
+          <exp op="LIKE" dbField="addr.city" paramId="city"/>
+          <exp op="=" dbField="st.lookupCode" paramId="lookupCode"/>
+          <exp op="=" dbField="addr.ZipCode" paramId="ZipCode"/>
+          <exp op="=" dbField="app.SourceSystemTypeCode" paramId="SourceSystemTypeCode"/>
+        </exp>
+
+      </where>
+
+      <select>
+        AwardReleaseDate,
+        FundingMemoId,
+        FundingMemoLineId,
+        FundingMemoTypeCode,
+        ProgramLongName,
+        BudgetPeriodStartDate,
+        BudgetPeriodEndDate,
+        AwardActionTypeCode,
+        GrantNumber,
+        BudgetPeriod,
+        ActivityCode,
+        AnnouncementCode ,
+        AnnouncementNumber,
+        OnlineSubmission,
+        Applicationstatus,
+        ReviewStatus,
+        AwardNumber,
+        ApplicationTrackingNumber,
+        CreatedDate,
+        ApplicationTypeCode,
+        SubmittedOn,
+        SubmittedOnString,
+        ApplicationType,
+        ApplicationDeadline,
+        ApplicationSubmissionDate,
+        ApplicationId,
+        FundingCycleLongName,
+        FundingCycleShortName,
+        FiscalYear,
+        fundingcyclecode,
+        FundingCycleId,
+        Description,
+        ApplicationSource,
+        FundingCycleDisciplineCode,
+        Discipline,
+        ApplicationEligibility,
+        GrantsTrackingNumber,
+        SourceSystemTypeCode,
+        ApplicationCompletenessEligibilityReviewId,
+        ApplicationPreFundingReviewId
+
+      </select>
+      from
+      #TempApplications
+      <where>
+        <dynamic paramId="WhereFilterExpression" />
+      </where>
+
+      <sort paramId ="SortExpression" />
+
+    </sql>
+  </statement>
+  <statement name="GetDefaultAssignmentNotification" rootTableName="AssignedUsers" connection="Gems">
+    <statement name="GetNewAssigneeUsers" tableName="AssignedUsers" />
+    <statement name="GetDefaultAssignmentDetails" tableName="DefaultAssignments" />
+    <statement name="GetNewAssignee" tableName="Subscriber" />
+  </statement>
+  <statement name="GetNewAssigneeUsers">
+    <sql>
+      SELECT DISTINCT
+      Lu.userId as UserId,
+      getDate() as TodaysDate
+      from UserRoleWorkAssignments URWA
+      JOIN LU_Users Lu on URWA.UserId = Lu.userId
+      where datediff(dd, URWA.LastUpdateDate, GetDate()) = 0  and NotifyUserFlag = 1
+    </sql>
+  </statement>
+  <statement name="GetDefaultAssignmentDetails">
+    <sql>
+      SELECT URWA.UserID as AssigneeID, URWA.UserRoleWorkAssignmentId AssignmentID, PR.ActivityCode AssignmentName,
+      'Program' as AssignmentType, R.RoleAbbr
+      FROM UserRoleWorkAssignments URWA
+      join Programs PR on convert(varchar(40), PR.ProgramId) = URWA.ResourceValue and URWA.ResourceTypeCode = 13
+      join AC_Role R on R.RoleId = URWA.RoleId
+      where datediff(dd, URWA.LastUpdateDate, GetDate()) = 0 and NotifyUserFlag = 1
+
+      UNION
+
+      SELECT URWA.UserID as AssigneeID, URWA.UserRoleWorkAssignmentId AssignmentID, PR.ActivityCode + ':' + LS.ShortDisplayValue AssignmentName,
+      'State' as AssignmentType, R.RoleAbbr
+      FROM UserRoleWorkAssignments URWA
+      join AC_Role R on R.RoleId = URWA.RoleId
+      join LookupState LS on convert(varchar(40), LS.LookupCode) = URWA.ResourceValue and URWA.ResourceTypeCode = 18
+      join UserRoleWorkAssignmentsContext URWAC on URWA.UserRoleWorkAssignmentId = URWAC.UserRoleWorkAssignmentId
+      join Programs PR on PR.ProgramId = URWAC.ResourceValueCtx and URWAC.ResourceTypeCodeCtx = 13
+      where datediff(dd, URWA.LastUpdateDate, GetDate()) = 0 and NotifyUserFlag = 1
+
+      UNION
+
+      SELECT URWA.UserID as AssigneeID, URWA.UserRoleWorkAssignmentId AssignmentID, AW.GrantNumber AssignmentName,
+      'Grant' as AssignmentType, R.RoleAbbr
+      FROM UserRoleWorkAssignments URWA
+      join Grants GR on convert(varchar(40), GR.GrantId) = URWA.ResourceValue and URWA.ResourceTypeCode = 12
+      join Awards aw on aw.GrantID = GR.GrantID and GR.LastAwdNoCurrBP = aw.awardnumber
+      join AC_Role R on R.RoleId = URWA.RoleId
+      where datediff(dd, URWA.LastUpdateDate, GetDate()) = 0 and NotifyUserFlag = 1
+
+    </sql>
+  </statement>
+  <statement name="GetNewAssignee">
+    <sql>
+      SELECT DISTINCT
+      '1' as ApplicationGroup,
+      Lu.userId as UserId,
+      Lu.FirstName as FirstName,
+      Lu.LastName as LastName,
+      Lu.UserName as Email
+      from UserRoleWorkAssignments URWA
+      JOIN LU_Users Lu on URWA.UserId = Lu.userId
+      where datediff(dd, LastUpdateDate, GetDate()) = 0  and NotifyUserFlag = 1
+    </sql>
+  </statement>
+</statements>

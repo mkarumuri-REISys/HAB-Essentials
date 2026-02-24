@@ -1,0 +1,40 @@
+﻿<root>
+  <!-- Number of invalid login attempts allowed before account is locked. -->
+  <maxInvalidPasswordAttempts>2</maxInvalidPasswordAttempts>
+  <!-- Time in minutes account should be locked before being unlocked. -->
+  <accountLockoutDuration>30</accountLockoutDuration>
+  <authenticationPhases>
+    <add name="DB" type="REISys.Platform.Services.Authentication.GenericAuthenticationFactor" externalSystem="9" externalSystemDimension="23" />
+  </authenticationPhases>
+  
+  <activeDirectory>
+    <adDetails domain="" username="" password="" name="ics"></adDetails>
+    <adDetails domain="" username="" password="" name=""></adDetails>
+  </activeDirectory>
+  
+  <certificateAutentication>    
+    <urlExceptions>
+      <folders>
+        <folder URL="/interface/platform/CertificateAnonymous1"/>
+        <folder URL="/interface/platform/CertificateAnonymous/Specific.aspx"/>
+      </folders>
+    </urlExceptions>
+    <AllowedFilesExtensions>
+      <Extension>aspx</Extension>
+      <Extension>ascx</Extension>
+    </AllowedFilesExtensions>
+  </certificateAutentication>
+
+  <GenericAutentication>
+    <urlExceptions>
+      <folders>
+        <folder URL="/restricted/platform/"/>
+        <folder URL="/restricted/platform/Factor1.aspx"/>
+      </folders>
+    </urlExceptions>
+    <AllowedFilesExtensions>
+      <Extension>aspx</Extension>
+      <Extension>ascx</Extension>
+    </AllowedFilesExtensions>
+  </GenericAutentication>
+</root>

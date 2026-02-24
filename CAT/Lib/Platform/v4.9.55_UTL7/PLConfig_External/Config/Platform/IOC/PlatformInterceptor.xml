@@ -1,0 +1,49 @@
+﻿<configuration>
+  <!--<configSections>
+    <section name="unity" type="Microsoft.Practices.Unity.Configuration.UnityConfigurationSection,Microsoft.Practices.Unity.Configuration"/>
+  </configSections>
+<unity xmlns="http://schemas.microsoft.com/practices/2010/unity">
+  <sectionExtension type="Microsoft.Practices.Unity.InterceptionExtension.Configuration.InterceptionConfigurationExtension,Microsoft.Practices.Unity.Interception.Configuration" />
+  <alias alias="SearchPersistenceService" type="REISys.Platform.Services.SearchPersistence.SearchPersistenceService, REISys.Platform.Services"/>
+  <alias alias="PlatformCacheAttribute"                   type="REISys.Platform.Services.CacheInterceptor.PlatformCacheAttribute, REISys.Platform.Services"/>
+  <alias alias="GetTypeConverter"                 type="REISys.Platform.Services.CacheInterceptor.GetTypeConverter, REISys.Platform.Services"/>
+  <alias alias="CacheHandler" type="REISys.Platform.Services.CacheInterceptor.CacheHandler, REISys.Platform.Services"/>
+  --><!--<typeAliases>
+      <typeAlias alias="SearchPersistenceService" type="REISys.Platform.Services.SearchPersistence.SearchPersistenceService, REISys.Platform.Services"/>
+      <typeAlias alias="CacheHandler" type="REISys.Platform.Services.CacheInterceptor.CacheHandler, REISys.Platform.Services"/>
+
+      <typeAlias alias="VirtualMethodInterceptor"         type="Microsoft.Practices.Unity.InterceptionExtension.VirtualMethodInterceptor, Microsoft.Practices.Unity.Interception"/>
+      <typeAlias alias="CustomAttributeMatchingRule"      type="Microsoft.Practices.Unity.InterceptionExtension.CustomAttributeMatchingRule, Microsoft.Practices.Unity.Interception"/>
+      <typeAlias alias="PropertyMatchingRule"             type="Microsoft.Practices.Unity.InterceptionExtension.PropertyMatchingRule, Microsoft.Practices.Unity.Interception"/>
+      <typeAlias alias="PropertyMatchingOption"           type="Microsoft.Practices.Unity.InterceptionExtension.PropertyMatchingOption, Microsoft.Practices.Unity.Interception"/>
+
+      <typeAlias alias="PlatformCacheAttribute"                   type="REISys.Platform.Services.CacheInterceptor.PlatformCacheAttribute, REISys.Platform.Services"/>
+      <typeAlias alias="GetTypeConverter"                 type="REISys.Platform.Services.CacheInterceptor.GetTypeConverter, REISys.Platform.Services"/>
+
+    </typeAliases>--><!--
+  --><!--<containers>--><!--
+  <container>
+    <extension type="Interception"></extension>
+    <register type="SearchPersistenceService">
+      <interceptor type="VirtualMethodInterceptor"/>
+      <policyInjection />
+    </register>
+    <interception>
+      <policy name="CacheInterceptionPolicy">
+        <matchingRule name="PlatformCacheAttributeRule" type="CustomAttributeMatchingRule">
+          <constructor>
+            <param name="attributeType">
+              <value value="REISys.Platform.Services.CacheInterceptor.PlatformCacheAttribute" typeConverter="GetTypeConverter"/>
+            </param>
+            <param name="inherited">
+              <value value="true"/>
+            </param>
+          </constructor>
+        </matchingRule>
+        <callHandler name="CacheHandler" type="CacheHandler"/>
+      </policy>
+    </interception>
+  </container>
+  --><!--</containers>--><!--
+</unity>-->
+</configuration>

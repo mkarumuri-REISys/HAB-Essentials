@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<messageConfig>
+	<InvalidStatementErr>Statement name passed is not valid in requested SQL Config file.</InvalidStatementErr>
+	<SqlBuildErr>An error occurred while building SQL.</SqlBuildErr>
+	<SqlExecutionErr>An error occured while executing sql statement.</SqlExecutionErr>
+	<ConstraintErr>A Constraint violation occurred</ConstraintErr>
+	<UndefinedParamErr>A parameter must be defined before it could be used in sql statement.</UndefinedParamErr>
+	<InvalidParamErr>Parameter value is not valid.</InvalidParamErr>
+	<MissingParamErr>A required parameter is missing in input.</MissingParamErr>
+	<InvalidParamTypeErr>This parameter type is not supported by REISys.Data.</InvalidParamTypeErr>
+	<InvalidEncryptionTypeErr>This encryption algorithm is not supported by REISys.ApplicationUtilities.Security.</InvalidEncryptionTypeErr>
+	<InvalidDirectionErr>Invalid direction value is used.</InvalidDirectionErr>
+	<EvaluateErr>Error occured while processing optional tag.</EvaluateErr>
+	<UndefinedMessageErr>The error thrown by configuration file is not defined in REISys.ApplicationUtilities.MessageConstants .</UndefinedMessageErr>
+</messageConfig>

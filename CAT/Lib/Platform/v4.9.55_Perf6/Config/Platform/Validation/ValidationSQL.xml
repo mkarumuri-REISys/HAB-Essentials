@@ -1,0 +1,238 @@
+﻿<statements>
+    <statement name="GetValidations">
+        <param id="pageUrl" type="string" />
+        <param id="groupName" type="string" />
+        <!-- default values will be used while loading the validations for page.-->
+        <param id="resourceValue" type="string" default="566FA983-B4D7-4342-9CDD-04180F95525A" />
+        <param id="resourceType" type="int32" default="0" />
+        <param id="sortExpression" type="string" size="8000" />
+        <param id="filterExpression" type="string" size="8000" />
+        <sql>
+            Select
+            PFM_VALD_Group.VALDGroupId,
+            PFM_VALD_Page.VALDPageId,
+            PFM_VALD_Rule_PFM_VALD_Group_R.VALDRuleId
+            into #TempValidationBeforeFilter
+            FROM PFM_VALD_Page
+            INNER JOIN PFM_VALD_Page_PFM_VALD_Group_R
+            ON PFM_VALD_Page_PFM_VALD_Group_R.VALDPageId = PFM_VALD_Page.VALDPageId
+            Inner Join PFM_VALD_Group
+            ON PFM_VALD_Group.VALDGroupId = PFM_VALD_Page_PFM_VALD_Group_R.VALDGroupId
+            INNER JOIN PFM_VALD_Rule_PFM_VALD_Group_R
+            ON PFM_VALD_Rule_PFM_VALD_Group_R.VALDGroupId=PFM_VALD_Group.VALDGroupId
+            <where>
+                <exp op="AND">
+                    <exp op="in" dbField="PFM_VALD_Page.PageUrl" paramId="pageUrl"/>
+                    <exp op="in" dbField="PFM_VALD_Group.GroupName" paramId="groupName"/>
+                </exp>
+            </where>
+            except
+            Select VALDGroupId,VALDPageId,VALDRuleId
+            from dbo.PFM_VALD_Exception
+            where ResourceValue =<exp paramId="resourceValue" />
+            and ResourceType =<exp paramId="resourceType" />
+
+            Select tvbf.VALDGroupId,
+            tvbf.VALDPageId,
+            tvbf.VALDRuleId
+            into #TempValidations
+            from #TempValidationBeforeFilter tvbf
+            inner join PFM_VALD_Page  on PFM_VALD_Page.VALDPageId=tvbf.VALDPageId
+            inner join PFM_VALD_Rule on PFM_VALD_Rule.VALDRuleId=tvbf.VALDRuleId
+            Left Outer join PFM_VALD_Transaction_P on (PFM_VALD_Transaction_P.VALDRuleId=tvbf.VALDRuleId
+            and PFM_VALD_Transaction_P.VALDPageId=tvbf.VALDPageId
+            and PFM_VALD_Transaction_P.VALDGroupId=tvbf.VALDGroupId
+            and PFM_VALD_Transaction_P.ResourceValue=<exp paramId="resourceValue" />
+            and PFM_VALD_Transaction_P.ResourceType=<exp paramId="resourceType" />)
+            <optional depends="filterExpression">
+                where  <dynamic paramId="filterExpression"/>
+            </optional>
+            <optional depends="sortExpression">
+                order by <dynamic paramId="sortExpression"/>
+            </optional>
+            
+
+
+            DROP TABLE #TempValidationBeforeFilter
+
+            Select
+            PFM_VALD_Page.VALDPageId as "@pageId",
+            PFM_VALD_Page.PageName as "@pageName",
+            PFM_VALD_Page.PageUrl as "@pageUrl",
+            (Select
+            PFM_VALD_Group.VALDGroupId as "@groupId",
+            PFM_VALD_Group.GroupName as "@name",
+            (Select
+            ValidatorId as "validator/@id",
+            'database' as "validator/@source",
+            CAST(PFM_VALD_Rule.VALDRuleId as varchar(36)) as "validator/@valRuleid",
+            PFM_VALD_Rule.ShowFixFlag as "validator/@showFix" ,
+            PFM_VALD_Rule.ShowExplanationFlag as "validator/@showExplanation",
+            PFM_VALD_Rule.ShowIgnoreFlag as "validator/@showIgnore",
+            PFM_VALD_Rule.PageAnchor as "validator/@pageAnchor",
+            vtp.Explanation as "validator/@explanation",
+            vtp.StatusCode as "validator/@status",
+            PFM_VALD_Rule.ValidationXML as "validator"
+            FROM PFM_VALD_Rule
+            INNER JOIN PFM_VALD_Rule_PFM_VALD_Group_R
+            ON PFM_VALD_Rule_PFM_VALD_Group_R.VALDRuleId = PFM_VALD_Rule.VALDRuleId
+            -- for Explanation
+            LEFT OUTER JOIN PFM_VALD_Transaction_P vtp on ( vtp.VALDRuleId = PFM_VALD_Rule.VALDRuleId
+            and vtp.VALDGroupId = PFM_VALD_Group.VALDGroupId
+            and vtp.VALDPageId=PFM_VALD_Page.VALDPageId
+            and vtp.ResourceValue =<exp paramId="resourceValue" />
+            and vtp.ResourceType =<exp paramId="resourceType" />
+            )
+            Where PFM_VALD_Rule_PFM_VALD_Group_R.VALDGroupId=PFM_VALD_Group.VALDGroupId
+            AND PFM_VALD_Rule.VALDRuleId in (Select VALDRuleId from #TempValidations)
+            FOR XML PATH(''), TYPE
+            )
+            from PFM_VALD_Group
+            INNER JOIN PFM_VALD_Page_PFM_VALD_Group_R
+            ON PFM_VALD_Group.VALDGroupId = PFM_VALD_Page_PFM_VALD_Group_R.VALDGroupId
+            WHERE PFM_VALD_Page_PFM_VALD_Group_R.VALDPageId = PFM_VALD_Page.VALDPageId
+            AND PFM_VALD_Group.VALDGroupId in (Select VALDGroupId from #TempValidations)
+            FOR XML PATH('group'), TYPE)
+            FROM PFM_VALD_Page
+            WHERE PFM_VALD_Page.VALDPageId in (Select VALDPageId from #TempValidations)
+            FOR XML PATH('validation')
+
+
+            DROP TABLE #TempValidations
+
+           
+        </sql>
+    </statement>
+
+    <statement name="GetAllPages">
+        <param id="pageUrl" type="string" />
+        <param id="groupName" type="string" />
+        <!-- default values will be used while loading the validations for page.-->
+        <param id="resourceValue" type="string" default="566FA983-B4D7-4342-9CDD-04180F95525A" />
+        <param id="resourceType" type="int32" default="0" />
+        <sql>
+            Select
+            PFM_VALD_Group.VALDGroupId,
+            PFM_VALD_Page.VALDPageId,
+            PFM_VALD_Rule_PFM_VALD_Group_R.VALDRuleId
+            into #TempValidationBeforeFilter
+            FROM PFM_VALD_Page
+            INNER JOIN PFM_VALD_Page_PFM_VALD_Group_R
+            ON PFM_VALD_Page_PFM_VALD_Group_R.VALDPageId = PFM_VALD_Page.VALDPageId
+            Inner Join PFM_VALD_Group
+            ON PFM_VALD_Group.VALDGroupId = PFM_VALD_Page_PFM_VALD_Group_R.VALDGroupId
+            INNER JOIN PFM_VALD_Rule_PFM_VALD_Group_R
+            ON PFM_VALD_Rule_PFM_VALD_Group_R.VALDGroupId=PFM_VALD_Group.VALDGroupId
+            <where>
+                <exp op="AND">
+                    <exp op="in" dbField="PFM_VALD_Page.PageUrl" paramId="pageUrl"/>
+                    <exp op="in" dbField="PFM_VALD_Group.GroupName" paramId="groupName"/>
+                </exp>
+            </where>
+            except
+            Select VALDGroupId,VALDPageId,VALDRuleId
+            from dbo.PFM_VALD_Exception
+            where ResourceValue =<exp paramId="resourceValue" />
+            and ResourceType =<exp paramId="resourceType" />
+
+            Select PFM_VALD_Page.VALDPageId ,PFM_VALD_Page.PageName 
+            from PFM_VALD_Page
+            where PFM_VALD_Page.VALDPageId in (Select VALDPageId from #TempValidationBeforeFilter)
+        </sql>
+    </statement>
+        <statement name="IgnoreExplainValidation">
+        <param id="PageId" type="string" />
+        <param id="ValidationId" type="string" />
+        <param id="GroupId" type="string" />
+        <param id="UserId" type="string" />
+        <param id="Status" type="Int32"  />
+        <param id="Explanation" type="string" default=""  />
+        <param id="ResourceValue" type="string"  />
+        <param id="ResourceTypeCode" type="int32"  />
+        <sql>
+            if exists(Select * from [dbo].[PFM_VALD_Transaction_P]
+            where [VALDRuleId]=<exp paramId="ValidationId" />
+                and [ResourceValue]=<exp paramId="ResourceValue" />
+                and [ResourceType]=<exp paramId="ResourceTypeCode" />
+                and [VALDPageId]=<exp paramId="PageId" />
+                and [VALDGroupId]=<exp paramId="GroupId" />)
+            BEGIN
+                Update [dbo].[PFM_VALD_Transaction_P]
+                set [Explanation]=<exp paramId="Explanation" />
+                ,[StatusCode]=<exp paramId="Status" />
+                ,[CreatorId]=<exp paramId="UserId" />
+                ,[CreatedDate]=getdate()
+                ,[LastUpdateId]=<exp paramId="UserId" />
+                ,[LastUpdateDate]=getdate()
+                where [VALDRuleId]=<exp paramId="ValidationId" />
+                and [ResourceValue]=<exp paramId="ResourceValue" />
+                and [ResourceType]=<exp paramId="ResourceTypeCode" />
+                and [VALDPageId]=<exp paramId="PageId" />
+                and [VALDGroupId]=<exp paramId="GroupId" />
+            END
+            ELSE
+            BEGIN
+            INSERT INTO [dbo].[PFM_VALD_Transaction_P]
+            ([VALDTransactionId]
+            ,[VALDRuleId]
+            ,[ResourceValue]
+            ,[ResourceType]
+            ,[Explanation]
+            ,[StatusCode]
+            ,[CreatorId]
+            ,[CreatedDate]
+            ,[LastUpdateId]
+            ,[LastUpdateDate]
+            ,[VALDPageId]
+            ,[VALDGroupId])
+            VALUES
+            (
+            newid()
+            ,<exp paramId="ValidationId" />
+                ,<exp paramId="ResourceValue" />
+                ,<exp paramId="ResourceTypeCode" />
+                ,<exp paramId="Explanation" />
+                ,<exp paramId="Status" />
+                ,<exp paramId="UserId" />
+                ,getdate()
+                ,<exp paramId="UserId" />
+                ,getdate()
+                ,<exp paramId="PageId" />
+                ,<exp paramId="GroupId" />
+                )
+            END
+        </sql>
+    </statement>
+
+    <statement name="GetExplanation">
+        <param id="PageId" type="string" />
+        <param id="ValidationId" type="string" />
+        <param id="GroupId" type="string" />
+        <param id="UserId" type="string" />
+        <param id="Status" type="Int32"  />
+        <param id="Explanation" type="string" default=""  />
+        <param id="ResourceValue" type="string"  />
+        <param id="ResourceTypeCode" type="int32"  />
+        <sql>
+            Select VALDTransactionId
+            ,Cast(VALDRuleId as varchar(36)) as ValidationId
+            ,Cast(ResourceValue as varchar(36)) as ResourceValue
+            ,ResourceType
+            ,Explanation
+            ,StatusCode
+            ,CreatorId
+            ,CreatedDate
+            ,LastUpdateId
+            ,LastUpdateDate
+            ,Cast(VALDPageId as varchar(36)) as PageId
+            ,Cast(VALDGroupId as varchar(36)) as GroupId
+            FROM [dbo].[PFM_VALD_Transaction_P]
+            where [VALDRuleId]=<exp paramId="ValidationId" />
+            and [ResourceValue]=<exp paramId="ResourceValue" />
+            and [ResourceType]=<exp paramId="ResourceTypeCode" />
+            and [VALDPageId]=<exp paramId="PageId" />
+            and [VALDGroupId]=<exp paramId="GroupId" />
+        </sql>
+    </statement>
+
+</statements>

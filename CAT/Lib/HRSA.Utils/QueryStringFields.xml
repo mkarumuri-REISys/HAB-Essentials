@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<fieldChecker>
+  <Fields>
+
+    <field>
+      <fieldName>GrtId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>action</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>start,edit,view,submit,revise</formatString>
+    </field>
+
+    <field>
+      <fieldName>devid</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>devType</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>1,1</formatString>
+    </field>
+
+    <field>
+      <fieldName>devStatus</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>1,5</formatString>
+    </field>
+
+    <field>
+      <fieldName>resourceType1</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>grant,deliverable</formatString>
+    </field>
+
+    <field>
+      <fieldName>resourceId1</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>resourceType2</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>grant</formatString>
+    </field>
+
+    <field>
+      <fieldName>resourceId2</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>externalDeliverableInstance</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>externalTrackingNo</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid,IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>externalDeliverableId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid,IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>deliverableCycle</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>1,27</formatString>
+    </field>
+
+    <field>
+      <fieldName>deliverableCycleValue</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringDate,IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>deliverableTypeCode</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>1,5</formatString>
+    </field>
+
+    <field>
+      <fieldName>resourceAction</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>access,start,edit,view,submit,revise</formatString>
+    </field>
+
+    <field>
+      <fieldName>deliverableCycleIdentifier</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid,Nbsp</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>actCode</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringFormat</fieldType>
+      <formatString>$$$</formatString>
+    </field>
+
+    <field>
+      <fieldName>serialNo</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringFormat</fieldType>
+      <formatString>#####</formatString>
+    </field>
+
+    <field>
+      <fieldName>controllerId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>0,4</formatString>
+    </field>
+
+    <field>
+      <fieldName>awardNumber</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>wndMode</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntRange</fieldType>
+      <formatString>0,1</formatString>
+    </field>
+
+    <field>
+      <fieldName>PRoleId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>brid</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>UnfiledMessageId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>ClientTaskId</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>TaskTypeCode</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>Action</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>start,edit,view,submit,revise</formatString>
+    </field>
+
+    <field>
+      <fieldName>did</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>Guid</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>dtc</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>rlpt</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>IntAny</fieldType>
+      <formatString></formatString>
+    </field>
+
+    <field>
+      <fieldName>savestate</fieldName>
+      <requiredField>0</requiredField>
+      <fieldType>StringSet</fieldType>
+      <formatString>true,false</formatString>
+    </field>
+    
+    
+  </Fields>
+</fieldChecker>

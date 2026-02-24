@@ -1,0 +1,624 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  
+  <statement name="SaveInvitation" connection="Common">
+    <param id="UserId" type="String" required="true" />
+    <param id="Comments" type="String" />
+    <param id="Deadline" type="DateTime" />
+    <param id="ResourceValue" type="String" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="CreatorId" type="Guid" required="true" />
+    <param id="InvitationId" type="String" required="true"/>
+    <param id="ActivityCode" type="String"  />
+    <param id="ProgramName" type="String"  />
+    <param id="EnityTrackingNumber" type="String"  />
+    <param id="EntityDetails" type="String"  />
+    <param id="EntityType" type="String"  />
+    <param id="ContributionStatusCode" type="Int32" required="true" />
+    <param id="ClientTaskId" type="Guid" required="true" />
+    <sql> 
+      DECLARE @NewResourceID AS UNIQUEIDENTIFIER
+      SET @NewResourceID = (SELECT TOP 1 ResourceID
+      FROM dbo.PFM_CONT_Resources
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        </exp>
+      </where>)
+
+      IF(@NewResourceID IS NULL)
+      BEGIN
+        SET @NewResourceID = NEWID()
+
+        INSERT INTO dbo.PFM_CONT_Resources
+        <columns mode="insert">
+          <column dbField="ResourceID">@NewResourceID</column>
+          <column dbField="ResourceValue" paramId="ResourceValue" />
+          <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+          <column dbField="ParentResourceTypeCode">NULL</column>
+          <column dbField="ParentResourceValue">NULL</column>
+          <column dbField="CreatorId" paramId="CreatorId" />
+          <column dbField="CreatedDate">GETDATE()</column>
+          <column dbField="LastUpdateId" paramId="CreatorId" />
+          <column dbField="LastUpdateDate">GETDATE()</column>
+        </columns>
+      END
+
+      INSERT INTO PFM_CONT_Invitation
+      <columns mode="insert">
+        <column dbField="InvitationId" paramId="InvitationId"/><!--@InvitationId</column>-->
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="Comments" paramId="Comments" />
+        <column dbField="Deadline" paramId="Deadline" />
+        <column dbField="ResourceId">@NewResourceID</column>
+        <column dbField ="StatusCode" paramId ="ContributionStatusCode"/>
+        <column dbField="ClientTaskId" paramId="ClientTaskId" />
+        <column dbField="CreatorId" paramId="CreatorId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="CreatorId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+
+      INSERT INTO PFM_CONT_InvitationDetails
+      <columns mode="insert">
+        <column dbField="InvitationDetailsID" paramId="InvitationId"/>
+        <column dbField="ActivityCode" paramId="ActivityCode" />
+        <column dbField="ProgramName" paramId="ProgramName" />
+        <column dbField="EntityTrackingNumber" paramId="EnityTrackingNumber" />
+        <column dbField="EntityDetails" paramId="EntityDetails" />
+        <column dbField="EntityType" paramId="EntityType" />                
+        <column dbField="CreatorId" paramId="CreatorId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="CreatorId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+
+    </sql>
+  </statement>
+  
+  <statement name="SaveContributionResponse" connection="Common">
+    <param id="InvitationId" type="String" required="true" />
+    <param id="ContributionResponseId" type="String" required="true" />
+    <param id="ResourceId" type="String" required="true" />
+    <param id="Comments" type="String" />
+    <param id="CreatorId" type="String" required="true" />
+
+
+    <sql>
+      declare @count int
+      SELECT @count=count(*) FROM PFM_CONT_ContributionResponse where InvitationId = '<dynamic paramId="InvitationId" />';
+
+      IF( @count > 0)
+      BEGIN
+      DELETE FROM PFM_CONT_ContributionResponse where InvitationId = '<dynamic paramId="InvitationId" />';
+      END
+
+      INSERT INTO PFM_CONT_ContributionResponse
+      <columns mode="insert">
+        <column dbField="InvitationId" paramId="InvitationId"/>
+        <column dbField="ContributionResponseId" paramId="ContributionResponseId"/>
+        <column dbField="ResourceId" paramId="ResourceId"/>
+        <column dbField="Comments" paramId="Comments" />
+        <column dbField="CreatorId" paramId="CreatorId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="CreatorId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+      SELECT @ContributionResponseId AS 'result'
+    </sql>
+  </statement>
+  
+  <statement name="SaveInvitationStatus" connection="Common">
+    <param id="InvitationId" type="String"  required="true"  />
+    <param id="ResourceTypeCode" type="String"  required="true"  />
+    <param id="StatusCode" type="String"  required="true"  />
+    <param id="UserId" type="String"  required="true"  />
+    <sql>
+      UPDATE 
+        PFM_CONT_Invitation 
+      SET 
+        StatusCode = '<dynamic paramId="StatusCode" />' ,
+        LastUpdateId = '<dynamic paramId="UserId" />',
+        LastUpdateDate = GETDATE()
+      WHERE
+      InvitationId = '<dynamic paramId="InvitationId" />';
+
+      SELECT 1 AS 'result'
+    </sql>
+  </statement>
+  
+  <statement name="GetInvitation" connection="Common">
+    <param id="InvitationId" type="String" />
+    <param id="ResourceValue" type="String" />
+    <param id="ResourceTypeCode" type="String" />
+    <sql>
+      SELECT inv.InvitationId
+      , inv.UserId
+      , inv.Comments
+      , inv.Deadline
+      , inv.ResourceId
+      , inv.creatorid
+      , inv.StatusCode
+      , inv.ClientTaskId
+      , res.ResourceValue
+      , res.ResourceTypeCode
+      , pp.PersonId
+      , ca.ContactAddress as email
+      , pp.FirstName
+      , pp.LastName
+      , pp.FirstName as FName
+      , pp.LastName as LName
+      , pp.MiddleName
+      , ca2.ContactAddress as iemail
+      , pp2.PersonId as IPersonId
+      , pp2.FirstName as IFirstName
+      , pp2.LastName as ILastName
+      , pp2.MiddleName as IMiddleName
+      , cr.ContributionResponseId as ContributionResponseId
+      , cr.comments as responsecomments
+      , cr.CreatedDate as responsecreateddate
+      , invd.ActivityCode
+      , invd.ProgramName
+      , invd.EntityTrackingNumber
+      , invd.EntityType
+      , inv.lastupdatedate
+      , invD.EntityDetails
+      , (SELECT count(*)  from PFM_CONT_Attachments ca WHERE ca.InvitationId=inv.invitationid) attchcount
+      FROM
+      PFM_CONT_Invitation inv
+      INNER JOIN PFM_CONT_resources res ON inv.ResourceId = res.ResourceID
+      INNER JOIN PFM_CONT_InvitationDetails invD ON inv.InvitationId = invD.InvitationDetailsID
+      INNER JOIN dbo.People pp ON inv.UserId = pp.UserId
+      INNER JOIN dbo.People pp2 ON inv.CreatorId = pp2.UserId
+      INNER JOIN dbo.ContactAddresses ca ON ca.EntityId = pp.PersonId AND ca.ContactAddressTypeCode =1
+      INNER JOIN dbo.ContactAddresses ca2 ON ca2.EntityId = pp2.PersonId AND ca2.ContactAddressTypeCode =1
+      LEFT OUTER JOIN PFM_CONT_ContributionResponse cr ON inv.InvitationId = cr.InvitationId
+      WHERE 1=1
+      <optional depends="InvitationId">
+        AND inv.InvitationId = '<dynamic paramId="InvitationId" />'
+      </optional>
+      <optional depends="ResourceValue">
+        AND res.ResourceValue = '<dynamic paramId="ResourceValue" />'
+      </optional>
+      <optional depends="ResourceTypeCode">
+        AND res.ResourceTypeCode = '<dynamic paramId="ResourceTypeCode" />'
+      </optional>
+      order BY inv.deadline ASC;
+    </sql>
+  </statement>
+  
+  <statement name="DeleteInvitationItem" connection="Common">
+    <param id="InvitationId" type="Guid" required="true" />
+    <sql>
+      DECLARE @InvitationId AS UNIQUEIDENTIFIER
+      SET @InvitationId = '<dynamic paramId="InvitationId" />'
+
+      DECLARE @ResourceId AS UNIQUEIDENTIFIER
+      SET @ResourceId = (SELECT TOP 1 r.ResourceId
+      FROM dbo.PFM_CONT_Invitation i
+      JOIN dbo.PFM_CONT_Resources r ON i.ResourceId = r.ResourceID
+      WHERE InvitationId = @InvitationId)
+
+      -- Delete all responses to invitation
+      DELETE FROM PFM_CONT_ContributionResponse
+      WHERE ContributionResponseId IN (
+      SELECT cr.ContributionResponseId
+      FROM PFM_CONT_Invitation i
+      JOIN PFM_CONT_Resources r ON i.ResourceId = r.ResourceID
+      JOIN PFM_CONT_ContributionResponse cr ON cr.ResourceId = r.ResourceID and cr.InvitationId = i.InvitationId
+      WHERE i.InvitationId = @InvitationId
+      )
+
+      -- Delete all attachments related to invitation
+      DELETE FROM PFM_CONT_Attachments
+      WHERE InvitationId = @InvitationId
+
+      DELETE FROM PFM_CONT_Invitation
+      WHERE InvitationId = @InvitationId
+
+      DELETE FROM PFM_CONT_InvitationDetails
+      WHERE InvitationDetailsID = @InvitationId
+
+      -- If no other invitations exist, delete the resource entry.
+      IF ((SELECT COUNT(*)
+      FROM dbo.PFM_CONT_Invitation
+      WHERE ResourceId = @ResourceId) = 0)
+      BEGIN
+      DELETE FROM PFM_CONT_Resources
+      WHERE ResourceID = @ResourceId
+      END
+    </sql>
+  </statement>
+  
+  <statement name="GetInvitationItems" connection="Common">
+    <param id="InvitationId" type="String" />
+    <param id="ResourceValue" type="String" />
+    <param id="ResourceTypeCode" type="String" />
+    <param id="StatusCode"/>
+    <param id="ClientTaskId" type="String" />
+    <sql>
+      SELECT inv.InvitationId
+      , inv.UserId
+      , inv.Comments
+      , inv.Deadline
+      , inv.ResourceId
+      , inv.creatorid
+      , inv.CreatedDate
+      , inv.StatusCode
+      , inv.ClientTaskId
+      , res.ResourceValue
+      , res.ResourceTypeCode
+      , pp.PersonId
+      , ca.ContactAddress as email
+      , pp.FirstName
+      , pp.LastName
+      , pp.MiddleName
+      , ca2.ContactAddress as iemail
+      , pp2.PersonId as IPersonId
+      , pp2.FirstName as IFirstName
+      , pp2.LastName as ILastName
+      , pp2.MiddleName as IMiddleName
+      , cr.ContributionResponseId as ContributionResponseId
+      , cr.comments as responsecomments
+      , cr.CreatedDate as responsecreateddate
+      , invd.ActivityCode
+      , invd.ProgramName
+      , invd.EntityTrackingNumber
+      , invd.EntityType
+      , inv.lastupdatedate
+      , invD.EntityDetails
+      , (SELECT count(*)  from PFM_CONT_Attachments ca WHERE ca.InvitationId=inv.invitationid) attchcount
+      FROM
+      PFM_CONT_Invitation inv
+      INNER JOIN dbo.PFM_CONT_InvitationDetails invd ON invd.InvitationDetailsID = inv.InvitationId
+      INNER JOIN PFM_CONT_resources res ON inv.ResourceId = res.ResourceID
+      INNER JOIN dbo.People pp ON inv.UserId = pp.UserId
+      INNER JOIN dbo.People pp2 ON inv.CreatorId = pp2.UserId
+      INNER JOIN dbo.ContactAddresses ca ON ca.EntityId = pp.PersonId AND ca.ContactAddressTypeCode =1
+      INNER JOIN dbo.ContactAddresses ca2 ON ca2.EntityId = pp2.PersonId AND ca2.ContactAddressTypeCode =1
+      LEFT OUTER JOIN PFM_CONT_ContributionResponse cr ON inv.InvitationId = cr.InvitationId
+      WHERE 1=1      
+     <optional depends="InvitationId">
+        AND inv.InvitationId = '<dynamic paramId="InvitationId" />'
+      </optional>
+      <optional depends="ResourceValue">
+        AND res.ResourceValue = '<dynamic paramId="ResourceValue" />'
+      </optional>
+      <optional depends="ResourceTypeCode">
+        AND res.ResourceTypeCode = '<dynamic paramId="ResourceTypeCode" />'
+      </optional>
+      <optional depends="StatusCode">
+        AND <exp op="IN" paramId="StatusCode" dbField="inv.StatusCode"/>
+      </optional>
+      <optional depends="ClientTaskId">
+        AND inv.ClientTaskId = '<dynamic paramId="ClientTaskId" />'
+      </optional>
+      order BY inv.deadline ASC;
+    </sql>
+  </statement>
+  
+  <statement name="GetLookupEntities" connection="Common">
+    <sql>
+      select 'LookupTaskProcessType' as TableName, LookupCode, DisplayValue  from dbo.LookupTaskProcessType
+      UNION ALL
+      select 'LookupTaskStatus' as TableName, LookupCode, DisplayValue  from dbo.LookupTaskStatus ltp
+      UNION ALL
+      select 'LookupTaskStatus' as TableName, LookupCode, longdisplayvalue as DisplayValue from  dbo.LookupResourceType
+      UNION ALL
+      select 'LU_PFM_CONT_Status' as TableName, LookupCode, DisplayName as DisplayValue from  LU_PFM_CONT_Status
+    </sql>
+  </statement>
+
+  <statement name="Search" connection="Common">
+    <!-- Search Parameters -->
+    <param id="Program_Search" />
+    <param id="EntityTrackingNumber_Search" />
+    <param id="EntityType_Search" />
+    <param id="ContributionStatus_Search" />
+    <param id="RequestedByLastName_Search" />
+    <param id="RequestedByFirstName_Search" />
+    
+    <param id="RequestedDateFrom_Search" type="Date" />
+    <param id="RequestedDateTo_Search" type="String" />
+    <param id="ContributionDeadlineFrom_Search" type="Date" />
+    <param id="ContributionDeadlineTo_Search" type="String" />
+    
+    <!-- Grid Parameters -->
+    <param id="ProgramName_Grid" />
+    <param id="EntityTrackingNumber_Grid" />
+    <param id="EntityType_Grid" />
+    <param id="RequestedBy_Grid" />
+    <param id="Deadline_Grid" />
+    <param id="RequestedOn_Grid" />
+    <param id="Status_Grid" />
+
+    <param id="CurrentUser" />
+    <param id="SortExpression" required="true" />
+    <sql>
+      <optional depends="RequestedDateTo_Search">
+        DECLARE @RequestedDate_To AS DATETIME
+        SET @RequestedDate_To = '<dynamic paramId="RequestedDateTo_Search" />'
+      </optional>
+
+      <optional depends="ContributionDeadlineTo_Search">
+        DECLARE @ContributionDeadline_To AS DATETIME
+        SET @ContributionDeadline_To = '<dynamic paramId="ContributionDeadlineTo_Search"/>'
+      </optional>
+      
+      <select>
+        *
+      </select>
+      FROM
+      (
+      SELECT
+      inv.InvitationId
+      , inv.UserId
+      , inv.Comments
+      , inv.Deadline AS 'Deadline'
+      , inv.ResourceId
+      , inv.creatorid
+      , inv.CreatedDate
+      , inv.StatusCode
+      , inv.ClientTaskId
+      , inv.LastUpdateDate
+      , res.ResourceValue
+      , res.ResourceTypeCode
+      , pp.PersonId
+      , ca.ContactAddress as email
+      , pp.FirstName
+      , pp.LastName
+      , pp.MiddleName
+      , ca2.ContactAddress as iemail
+      , pp2.PersonId as IPersonId
+      , pp2.FirstName as IFirstName
+      , pp2.LastName as ILastName
+      , pp2.MiddleName as IMiddleName
+      , pp3.PersonId as LPersonId
+      , pp3.FirstName as LFirstName
+      , pp3.LastName as LLastName
+      , pp3.MiddleName as LMiddleName
+      , cr.ContributionResponseId as ContributionResponseId
+      , cr.comments as responsecomments
+      , cr.CreatedDate as responsecreateddate
+      , invd.ActivityCode AS 'ActivityCode'
+      , invd.ProgramName
+      , invd.EntityTrackingNumber AS 'EntityTrackingNumber'
+      , invd.EntityType AS 'EntityType'
+      , invd.EntityDetails AS 'EntityDetails'
+      , pp2.LastName + ', ' + pp2.FirstName AS 'RequestedBy'
+      , pp.FirstName + ' ' + pp.LastName AS 'LastUpdatedBy'
+      , CONVERT(DATETIME, CONVERT(VARCHAR(10), inv.CreatedDate, 101)) AS 'RequestedOn'
+      , s.DisplayName AS 'Status'
+      , isnull(Convert(varchar(10),cr.LastUpdateDate,101),'') as ResponseLastUpdateDate
+      , case inv.StatusCode when 5 then 0 else 1 end as DisplayOrderOnStatus
+      , case isnull(Convert(varchar(10),inv.Deadline,101),'') when '' then 1 else 0 end as DisplayOrderOnDeadline
+      FROM
+      dbo.PFM_CONT_Invitation inv
+      JOIN dbo.PFM_CONT_InvitationDetails invd
+      ON inv.InvitationId = invd.InvitationDetailsID
+      JOIN dbo.PFM_CONT_resources res
+      ON inv.ResourceId = res.ResourceID
+      JOIN dbo.People pp
+      ON inv.UserId = pp.UserId
+      JOIN dbo.People pp2
+      ON inv.CreatorId = pp2.UserId
+      JOIN dbo.People pp3
+      ON inv.LastUpdateId = pp3.UserId
+      JOIN dbo.ContactAddresses ca
+      ON ca.EntityId = pp.PersonId AND ca.ContactAddressTypeCode = 1
+      JOIN dbo.ContactAddresses ca2
+      ON ca2.EntityId = pp2.PersonId AND ca2.ContactAddressTypeCode = 1
+      LEFT JOIN PFM_CONT_ContributionResponse cr
+      ON inv.InvitationId = cr.InvitationId
+      JOIN LU_PFM_CONT_Status s
+      ON inv.StatusCode = s.LookupCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="inv.UserId" paramId="CurrentUser" />
+          
+          <!--searching parameters -->
+          <exp op="IN" dbField="invd.ActivityCode" paramId="Program_Search" />
+          <exp op="IN" dbField="invd.EntityTrackingNumber" paramId="EntityTrackingNumber_Search" />
+          <exp op="LIKE" dbField="invd.EntityType" paramId="EntityType_Search" />
+          <exp op="IN" dbField="s.LookupCode" paramId="ContributionStatus_Search" />
+          <exp op="LIKE" dbField="pp2.LastName" paramId="RequestedByLastName_Search" />
+          <exp op="LIKE" dbField="pp2.FirstName" paramId="RequestedByFirstName_Search" />
+
+          <exp op="OR"> 
+            <exp op="LIKE" dbField="pp2.LastName" paramId="RequestedByLastName_Search" />
+            <exp op="LIKE" dbField="pp2.FirstName" paramId="RequestedByFirstName_Search" />
+          </exp>
+          
+          <!-- Sudo Between (limitation of BaseSearchList)-->
+          <exp op=">=" dbField="inv.CreatedDate" paramId="RequestedDateFrom_Search" />
+          <optional depends="RequestedDateTo_Search">
+            <exp op="&lt;" dbField="inv.CreatedDate">DATEADD (dd, 1, @RequestedDate_To)</exp>
+          </optional>
+          
+          <!-- Sudo Between (limitation of BaseSearchList)-->
+          <exp op=">=" dbField="inv.Deadline" paramId="ContributionDeadlineFrom_Search" />
+          <optional depends="ContributionDeadlineTo_Search">
+            <exp op="&lt;" dbField="inv.Deadline">DATEADD (dd, 1, @ContributionDeadline_To)</exp>
+          </optional>
+          
+          <!--filtering parameters-->
+          <optional depends="ProgramName_Grid">
+            invd.ActivityCode <dynamic paramId="ProgramName_Grid"></dynamic>
+          </optional>
+          <optional depends="EntityTrackingNumber_Grid">
+            invd.EntityTrackingNumber <dynamic paramId="EntityTrackingNumber_Grid"></dynamic>
+          </optional>
+          <optional depends="EntityType_Grid">
+            invd.EntityType <dynamic paramId="EntityType_Grid"></dynamic>
+          </optional>
+          <optional depends="RequestedBy_Grid">
+            pp2.FirstName <dynamic paramId="RequestedBy_Grid" /> OR pp2.LastName <dynamic paramId="RequestedBy_Grid" />
+          </optional>
+          <optional depends="Deadline_Grid">
+            inv.Deadline <dynamic paramId="Deadline_Grid"></dynamic>
+          </optional>
+
+          <optional depends="RequestedOn_Grid">
+            CONVERT(DATETIME, CONVERT(VARCHAR(10), inv.CreatedDate, 101))  <dynamic paramId="RequestedOn_Grid"></dynamic>
+          </optional>
+          
+          <optional depends="Status_Grid">
+            s.LookupCode <dynamic paramId="Status_Grid" />
+          </optional>
+        </exp>
+      </where>
+      ) Main
+      <sort paramId="SortExpression" />
+    </sql>
+  </statement>
+
+  <statement name="ContributionStatuses" connection="Common">
+    <sql>
+      SELECT LookupCode, DisplayName AS 'DisplayValue'
+      FROM LU_PFM_CONT_Status
+    </sql>
+  </statement>
+
+  <statement name="RequestChange" connection="Common">
+    <param id="Comments" type="String" />
+    <param id="DeadlineString" type="String" />
+    <param id="InvitationId" type="String" required="true" />
+    <param id="HistCreatorId" type="String" required="true" />
+    <sql>
+      DECLARE @Invitation_Id AS UNIQUEIDENTIFIER
+      SET @Invitation_Id = '<dynamic paramId="InvitationId"/>'
+
+      DECLARE @Deadline_DT AS DATETIME
+      SET @Deadline_DT = '<dynamic paramId="DeadlineString"/>'
+
+      DECLARE @ExistingVersion AS INT
+      SET @ExistingVersion = (SELECT TOP 1 [VersionId]
+                              FROM Hist_PFM_CONT_Invitation
+                              WHERE InvitationId = @Invitation_Id
+                              ORDER BY [VersionId] DESC)
+
+      IF @ExistingVersion IS NULL
+        SET @ExistingVersion = 0
+      ELSE
+        SET @ExistingVersion = @ExistingVersion + 1
+
+      INSERT INTO Hist_PFM_CONT_Invitation ([VersionId], InvitationId, UserId, Comment, Deadline, ResourceId, StatusCode, ClientTaskId,
+												   HistCreatorId, HistCreatedDate, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate)
+        SELECT TOP 1 @ExistingVersion AS 'VersionId',
+                    InvitationId,
+                    UserId,
+                    Comments AS Comment,
+                    Deadline,
+                    ResourceId,
+                    StatusCode,
+                    ClientTaskId,
+                    '<dynamic paramId="HistCreatorId" />' AS HistCreatorId,
+                    GETDATE() AS HistCreatedDate,
+                    CreatorId,
+                    CreatedDate,
+                    LastUpdateId,
+                    LastUpdateDate
+                    FROM PFM_CONT_Invitation
+        WHERE InvitationId = @Invitation_Id
+      
+      UPDATE dbo.PFM_CONT_Invitation
+      <columns mode="update">
+        <column dbField="Comments" paramId="Comments" />
+        <column dbField="LastUpdateId" paramId="HistCreatorId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+        <column dbField="StatusCode">5</column>
+      </columns>
+      WHERE InvitationId = @Invitation_Id
+
+
+      <optional depends="DeadlineString">
+        UPDATE dbo.PFM_CONT_Invitation
+        SET Deadline = @Deadline_DT
+        WHERE InvitationId = @Invitation_Id
+      </optional>
+    </sql>
+  </statement>
+<!-- Gets inviation items for multiple entities with in the same entity type-->
+  <statement name="GetInvitationItems2" connection="Common">
+   
+    <param id="ResourceType" />
+    <param id="ResourceValue" />
+    <param id="ContributionStatus" />
+  
+    <sql>
+
+      SELECT
+      inv.InvitationId
+      , inv.UserId
+      , inv.Comments
+      , inv.Deadline AS 'Deadline'
+      , inv.ResourceId
+      , inv.creatorid
+      , inv.CreatedDate
+      , inv.StatusCode
+      , inv.ClientTaskId
+      , inv.LastUpdateDate
+      , res.ResourceValue
+      , res.ResourceTypeCode
+      , pp.PersonId
+      , ca.ContactAddress as email
+      , pp.FirstName
+      , pp.LastName
+      , pp.MiddleName
+      , ca2.ContactAddress as iemail
+      , pp2.PersonId as IPersonId
+      , pp2.FirstName as IFirstName
+      , pp2.LastName as ILastName
+      , pp2.MiddleName as IMiddleName
+      , pp3.PersonId as LPersonId
+      , pp3.FirstName as LFirstName
+      , pp3.LastName as LLastName
+      , pp3.MiddleName as LMiddleName
+      , cr.ContributionResponseId as ContributionResponseId
+      , cr.comments as responsecomments
+      , cr.CreatedDate as responsecreateddate
+      , invd.ActivityCode AS 'ActivityCode'
+      , invd.ProgramName
+      , invd.EntityTrackingNumber AS 'EntityTrackingNumber'
+      , invd.EntityType AS 'EntityType'
+      , invd.EntityDetails AS 'EntityDetails'
+      , pp2.LastName + ', ' + pp2.FirstName AS 'RequestedBy'
+      , pp.FirstName + ' ' + pp.LastName AS 'LastUpdatedBy'
+      , CONVERT(DATETIME, CONVERT(VARCHAR(10), inv.CreatedDate, 101)) AS 'RequestedOn'
+      , s.DisplayName AS 'Status'
+      , isnull(Convert(varchar(10),cr.LastUpdateDate,101),'') as ResponseLastUpdateDate
+      , case inv.StatusCode when 5 then 0 else 1 end as DisplayOrderOnStatus
+      , case isnull(Convert(varchar(10),inv.Deadline,101),'') when '' then 1 else 0 end as DisplayOrderOnDeadline
+      FROM
+      dbo.PFM_CONT_Invitation inv
+      JOIN dbo.PFM_CONT_InvitationDetails invd
+      ON inv.InvitationId = invd.InvitationDetailsID
+      JOIN dbo.PFM_CONT_resources res
+      ON inv.ResourceId = res.ResourceID
+      JOIN dbo.People pp
+      ON inv.UserId = pp.UserId
+      JOIN dbo.People pp2
+      ON inv.CreatorId = pp2.UserId
+      JOIN dbo.People pp3
+      ON inv.LastUpdateId = pp3.UserId
+      JOIN dbo.ContactAddresses ca
+      ON ca.EntityId = pp.PersonId AND ca.ContactAddressTypeCode = 1
+      JOIN dbo.ContactAddresses ca2
+      ON ca2.EntityId = pp2.PersonId AND ca2.ContactAddressTypeCode = 1
+      LEFT JOIN PFM_CONT_ContributionResponse cr
+      ON inv.InvitationId = cr.InvitationId
+      JOIN LU_PFM_CONT_Status s
+      ON inv.StatusCode = s.LookupCode
+      <where>
+        <exp op="AND">
+        
+          <exp op="=" dbField="res.ResourceType" paramId="ResourceType" />
+          <exp op="IN" dbField="res.ResourceValue" paramId="ResourceValue" />
+          <exp op="IN" dbField="s.LookupCode" paramId="ContributionStatus" />
+
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+</statements>

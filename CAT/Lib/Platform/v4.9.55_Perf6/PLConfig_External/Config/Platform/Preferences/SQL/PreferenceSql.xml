@@ -1,0 +1,28 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="GetGlobalPreferences" connection = "Common">
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      select PreferenceXml from PFM_CORE_GlobalPreference
+      where UserId = <exp paramId="UserId"/>
+    </sql>
+  </statement>
+
+  <statement name="AddGlobalPreferences" connection = "Common">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="Preferences" type="String" required="true"/>
+    <sql>
+      insert into PFM_CORE_GlobalPreference(UserId, PreferenceXml)
+      Values(<exp paramId="UserId"/>, <exp paramId="Preferences"></exp>)
+    </sql>
+  </statement>
+
+  <statement name="SaveGlobalPreferences" connection = "Common">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="Preferences" type="String" required="true"/>
+    <sql>
+      update PFM_CORE_GlobalPreference
+      set PreferenceXml = <exp paramId="Preferences"></exp>
+      where UserId = <exp paramId="UserId"/>
+    </sql>
+  </statement>
+</statements>

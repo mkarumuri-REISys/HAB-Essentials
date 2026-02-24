@@ -1,0 +1,1625 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+	<statement name="addWorkAssignment" connection="Common">
+		<param id="assignmentId" type="Guid"  newGuid="true" />
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="roleId" type="Int16" required="true" />
+		<param id="objectType" type="Int16" required="true" />
+		<param id="objectId" type="String" size="36" required="true" />
+		<param id="creatorId" type="String" size="36" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into UserRoleWorkAssignments
+			<columns mode="insert">
+				<column dbField="UserRoleWorkAssignmentId" paramId="assignmentId" />
+				<column dbField="UserId" paramId="userId" />
+				<column dbField="RoleId" paramId="roleId" />
+				<column dbField="ResourceTypeCode" paramId="objectType" />
+				<column dbField="ResourceValue" paramId="objectId" />
+				<column dbField="CreatorId" paramId="creatorId" />
+				<column dbField="CreatedDate" paramId="currDatetime" />
+			</columns>
+		</sql>
+	</statement>
+  <statement name="addSubsidiaryWorkAssignment" connection="Common">
+    <param id="assignmentId" type="Guid" />
+    <param id="sequenceNumber" type="Int32" />
+    <param id="userId" type="String" size="36" required="true" />
+    <param id="roleId" type="Int16" required="true" />
+    <param id="objectType" type="Int16" required="true" />
+    <param id="objectId" type="String" size="36" required="true" />
+    <param id="creatorId" type="String" size="36" />
+    <param id="currDatetime" type="String" size="25" useCurrTime="true" />
+    <sql>
+      insert into UserRoleWorkAssignmentsSubsidiaries
+      <columns mode="insert">
+        <column dbField="UserRoleWorkAssignmentId" paramId="assignmentId" />
+        <column dbField="SequenceNumber" paramId="sequenceNumber" />
+        <column dbField="UserId" paramId="userId" />
+        <column dbField="RoleId" paramId="roleId" />
+<!--        <column dbField="ResourceTypeCode" paramId="objectType" />
+        <column dbField="ResourceValue" paramId="objectId" /> -->
+        <column dbField="CreatorId" paramId="creatorId" />
+        <column dbField="CreatedDate" paramId="currDatetime" />
+      </columns>
+    </sql>
+  </statement>
+	<statement name="addWorkAssignmentCtx" connection="Common">
+		<param id="assignmentId" type="String" size="36" required="true" />
+		<param id="objectTypeCtx" type="Int16"  required="true" />
+		<param id="objectIdCtx" type="String" size="36" required="true" />
+		<param id="creatorId" type="String" size="36" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into UserRoleWorkAssignmentsContext
+			<columns mode="insert">
+				<column dbField="UserRoleWorkAssignmentId" paramId="assignmentId" />
+				<column dbField="ResourceTypeCodeCtx" paramId="objectTypeCtx" />
+				<column dbField="ResourceValueCtx" paramId="objectIdCtx" />
+				<column dbField="CreatorId" paramId="creatorId" />
+				<column dbField="CreatedDate" paramId="currDatetime" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name="checkWorkAssignment" connection="Common">
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="roleId" type="Int16"  required="true" />
+		<param id="objectType" type="Int16"  required="true" />
+		<param id="objectId" type="String" size="36" required="true" />
+		<param id="objectCtxList" type="String" />
+		<param id="resourceTypeValue" type="String" />
+		<sql>
+			select UserRoleWorkAssignmentId
+			from UserRoleWorkAssignments urw with (NOLOCK)
+			<optional depends="objectCtxList">
+				inner join UserRoleWorkAssignmentsContext urwCtx on
+				urw.UserRoleWorkAssignmentId=urwCtx.UserRoleWorkAssignmentId
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="roleId" paramId="roleId" />
+					<exp op="=" dbField="ResourceTypeValue" paramId="resourceTypeValue" />
+					<exp op="IN" dbField="ResourceTypeCodeCtx + '|' + ResourceValueCtx" paramId="objectCtxList" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+  <statement name="checkSubsidiaryWorkAssignment" connection="Common">
+    <param id="userId" type="String" size="36" required="true" />
+    <param id="roleId" type="Int16"  required="true" />
+    <param id="objectType" type="Int16"  required="true" />
+    <param id="objectId" type="String" size="36" required="true" />
+    <param id="objectCtxList" type="String" />
+    <param id="resourceTypeValue" type="String" />
+    <sql>
+      select urw.UserRoleWorkAssignmentId as UserRoleWorkAssignmentId
+      from UserRoleWorkAssignmentsSubsidiaries urw with (NOLOCK)
+      inner join UserRoleWorkAssignments urwa  on urw.UserRoleWorkAssignmentId = urwa.UserRoleWorkAssignmentId
+      <optional depends="objectCtxList">
+        inner join UserRoleWorkAssignmentsContext urwCtx on
+        urw.UserRoleWorkAssignmentId=urwCtx.UserRoleWorkAssignmentId
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="urw.roleId" paramId="roleId" />
+          <exp op="=" dbField="urwa.ResourceTypeValue" paramId="resourceTypeValue" />
+          <exp op="IN" dbField="urwa.ResourceTypeCodeCtx + '|' + urwa.ResourceValueCtx" paramId="objectCtxList" />
+          <exp op="=" dbField="urw.userId" paramId="userId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="getAssignmentId" connection="Common">
+    <param id="userId" type="String" size="36" required="true" />
+    <param id="roleId" type="Int16"  required="true" />
+    <param id="resourceType" type="Int16"  required="true" />
+    <param id="resourceValue" type="String" size="36" required="true" />
+    <sql>
+      select UserRoleWorkAssignmentId
+      from UserRoleWorkAssignments with (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="userId" />
+          <exp op="=" dbField="RoleId" paramId="roleId" />
+          <exp op="=" dbField="ResourceValue" paramId="resourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="resourceType" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetAssignmentsByRolesByUser" connection="Common">
+    <param id="UserId" type="Guid" required="true" />
+    <param id="RoleId" required="true" />
+    <sql>
+      SELECT R.RoleId as RoleId
+      ,R.RoleAbbr as RoleAbbr
+      ,R.RoleName as RoleName
+      ,ResourceTypeCode
+      ,ResourceValue as ResourceTypeValue
+      ,ResourceTypeCode,UserId
+      FROM UserRoleWorkAssignments UA JOIN AC_Role R
+      on UA.RoleId = R.RoleId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="in" dbField="R.RoleId" paramId="RoleId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+	<statement name="updateWorkAssignment" connection="Common">
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="roleId" type="String" size="36"/>
+		<param id="objectType" type="Int16"  />
+		<param id="objectId" type="String" size="36" />
+		<param id="updaterId" type="String" size="36" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<param id="resourceTypeValue" type="String" />
+		<sql>
+			update UserRoleWorkAssignments
+			<columns mode="update">
+				<column dbField="userId" paramId="userId" />
+				<column dbField="LastUpdateId" paramId="updaterId" />
+				<column dbField="LastUpdateDate" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="roleId" paramId="roleId" />
+					<exp op="=" dbField="ResourceTypeValue" paramId="resourceTypeValue" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+  <statement name="updateSubsidiaryWorkAssignment" connection="Common">
+    <param id="assignmentId" type="Guid" required="true" />
+    <param id="sequenceNumber" type="Int32" />
+    <param id="userId" type="String" size="36" required="true" />
+    <param id="roleId" type="Int32" />
+    <param id="updaterId" type="String" size="36" />
+    <param id="currDatetime" type="String" size="25" useCurrTime="true" />
+    
+    <sql>
+
+      update UserRoleWorkAssignmentsSubsidiaries
+      <columns mode="update">
+        <column dbField="LastUpdateId" paramId="updaterId" />
+        <column dbField="LastUpdateDate" paramId="currDatetime" />
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="UserRoleWorkAssignmentId" paramId="assignmentId" />
+          <exp op="=" dbField="UserId" paramId="userId" />
+          <exp op="=" dbField="SequenceNumber" paramId="sequenceNumber" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  
+	<statement name="removeWorkAssignment" connection="Common">
+		<param id="roleId" type="Int32" required="true" />
+		<param id="objectType" type="Int16"  required="true" />
+		<param id="objectId" type="String" size="36" required="true" />
+    <param id="teamId" type="String" size="36" />
+		<sql>
+
+      IF OBJECT_ID('tempdb..#WorkInfo') IS NOT NULL
+      DROP TABLE #WorkInfo
+
+      select UserRoleWorkAssignmentId INTO #WorkInfo
+      from UserRoleWorkAssignments
+      <where>
+					<exp op="and">
+						<exp op="=" dbField="roleId" paramId="roleId" />
+						<exp op="=" dbField="ResourceTypeCode" paramId="objectType" />
+						<exp op="=" dbField="ResourceValue" paramId="objectId" />
+            <exp op="=" dbField="TeamId" paramId="teamId" />
+					</exp>
+				</where>
+      
+			delete from UserRoleWorkAssignmentsContext
+			where UserRoleWorkAssignmentId in
+				(
+				  Select UserRoleWorkAssignmentId From #WorkInfo
+				)
+
+			delete from UserRoleWorkAssignments
+			where UserRoleWorkAssignmentId in
+				(
+				  Select UserRoleWorkAssignmentId From #WorkInfo
+				)
+        
+    DROP TABLE #WorkInfo
+    
+		</sql>
+  </statement>
+  
+  <statement name="RemoveAllWorkAssignmentForTeam" connection="Common">
+    <param id="teamId" type="String" required="true" size="36" />
+		<sql>
+
+      IF OBJECT_ID('tempdb..#WorkInfo') IS NOT NULL
+      DROP TABLE #WorkInfo
+
+      select UserRoleWorkAssignmentId INTO #WorkInfo
+      from UserRoleWorkAssignments
+      <where>
+					<exp op="and">
+            <exp op="=" dbField="TeamId" paramId="teamId" />
+					</exp>
+				</where>
+      
+			delete from UserRoleWorkAssignmentsContext
+			where UserRoleWorkAssignmentId in
+				(
+				  Select UserRoleWorkAssignmentId From #WorkInfo
+				)
+
+			delete from UserRoleWorkAssignments
+			where UserRoleWorkAssignmentId in
+				(
+				  Select UserRoleWorkAssignmentId From #WorkInfo
+				)
+        
+    DROP TABLE #WorkInfo    
+		</sql>
+  
+	</statement>
+  
+  <statement name="MoveAllWorkAssignmentForTeam" connection="Common">
+    <param id="fromTeamId" type="String" required="true" size="36" />
+    <param id="toTeamId" type="String" required="true" size="36" />
+    <param id="currentUserId" type="String" required="true" size="36" />
+		<sql>
+      update UserRoleWorkAssignments
+			<columns mode="update">
+				<column dbField="TeamId" paramId="toTeamId" />
+				<column dbField="LastUpdateId" paramId="currentUserId" />
+				<column dbField="LastUpdateDate">getDate()</column>
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="TeamId" paramId="fromTeamId" />
+				</exp>
+			</where>      
+		</sql>
+  
+	</statement>
+  
+  
+  
+  <statement name="removeSubsidiaryWorkAssignment" connection="Common">
+    <param id="sequenceNumber" type="Int32" required="true"/>
+    <param id="roleId" type="Int32" required="true" />
+    <param id="resourceTypeValue" type="String"  required="true" />
+    <param id="userId" type="String" size="36" />
+    <param id="objectCtxList" type="String" />
+    <sql>
+
+      DECLARE @AssignmentId varchar(36)
+
+      select @AssignmentId = urw.UserRoleWorkAssignmentId
+      from UserRoleWorkAssignmentsSubsidiaries urw with (NOLOCK) 
+      inner join UserRoleWorkAssignments urwa  on urw.UserRoleWorkAssignmentId = urwa.UserRoleWorkAssignmentId
+      <optional depends="objectCtxList != null">
+        inner join UserRoleWorkAssignmentsContext urwCtx on
+        urw.UserRoleWorkAssignmentId=urwCtx.UserRoleWorkAssignmentId
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="urw.roleId" paramId="roleId" />
+          <exp op="=" dbField="urwa.ResourceTypeValue" paramId="resourceTypeValue" />
+          <exp op="IN" dbField="urwa.ResourceTypeCodeCtx + '|' + urwa.ResourceValueCtx" paramId="objectCtxList" />
+          <exp op="=" dbField="urw.userId" paramId="userId" />
+        </exp>
+      </where>
+
+      delete UserRoleWorkAssignmentsSubsidiaries
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="SequenceNumber" paramId="sequenceNumber" />
+          <exp op="=" dbField="roleId" paramId="roleId" />
+          <exp op="=" dbField="UserRoleWorkAssignmentId">@AssignmentId</exp>
+          <exp op="=" dbField="UserId" paramId="userId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+	<statement name="getRoleMembersForObject" connection="Common">
+		<param id="roleId" type="String" size="36" />
+		<param id="objectType" type="Int16" />
+		<param id="objectId" type="String" size="36" />
+		<param id="objectList"  type="String" size="100" />
+		<param id="objectIdList"  type="String" size="100" />
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+		<sql>
+			select distinct cast(urwa.userId as varchar(36)) as userId,
+			urwa.roleId as roleId,
+			cast(urb.backupId as varchar(36)) as backupID,
+			urb.StartDate as backupStart,
+			urb.EndDate as backupEnd,
+			urwa.ResourceValue as ResourceValue
+
+			<optional depends="getDetails==true">
+				, au.UserName as UserName
+				, p.FirstName as FirstName
+				, p.LastName as LastName
+				, p.MiddleName as MiddleName
+				, auBk.UserName as UserNameBk
+				, pBk.FirstName as FirstNameBk
+				, pBk.LastName as LastNameBk
+				, pBk.MiddleName as MiddleNameBk
+			</optional>
+			from UserRoleWorkAssignments urwa
+			left outer join UserRoleBackup urb on urwa.userid = urb.userid and urwa.roleid = urb.roleid
+			inner join ac_user au on au.userId = urwa.userId
+			<optional depends="getDetails==true">
+				<optional depends="getBackup==true">
+					left outer join ac_user aubk on aubk.userId = urb.backupid
+					left outer join people pbk on pbk.userId = urb.backupid
+				</optional>
+
+				<optional depends="getBackup==false">
+					left outer join ac_user aubk on aubk.userId = urb.userid
+					left outer join people pbk on pbk.userId = urb.userid
+				</optional>
+
+				left outer join people p on p.userId = urwa.userId
+				/*left outer join ac_user auBk on auBk.userId = URB.backupID
+				left outer join people pBk on pBk.userId = URB.backupID*/
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="urwa.RoleId" paramId="roleId" />
+					<exp op="=" dbField="urwa.ResourceTypeCode" paramId="objectType" />
+					<exp op="=" dbField="urwa.ResourceValue" paramId="objectId" />
+					<exp op="IN" dbField="urwa.ResourceTypeValue" paramId="objectList" />
+					<exp op="IN" dbField="urwa.ResourceValue" paramId="objectIdList" />
+					<exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+				</exp>
+			</where>
+			<optional depends="getDetails==true">
+				order by LastName, FirstName
+			</optional>
+		</sql>
+	</statement>
+  <statement name="getSusidiaryRoleMembersForObject" connection="Common">
+    <param id="roleId" type="String" size="36" />
+    <param id="objectType" type="Int16" />
+    <param id="objectId" type="String" size="36" />
+    <param id="objectList"  type="String" size="100" />
+    <param id="objectIdList"  type="String" size="100" />
+    <param id="getDetails"  type="Boolean" />
+    <param id="getBackup"  type="Boolean" />
+    <sql>
+      select distinct cast(urwa.userId as varchar(36)) as userId,
+      urwa.roleId as roleId,
+      cast(urb.backupId as varchar(36)) as backupID,
+      urb.StartDate as backupStart,
+      urb.EndDate as backupEnd,
+      urw.ResourceValue as ResourceValue
+      ,'' as TeamId
+      ,'' as TeamName
+      <optional depends="getDetails==true">
+        , au.UserName as UserName
+        , p.FirstName as FirstName
+        , p.LastName as LastName
+        , p.MiddleName as MiddleName
+        , auBk.UserName as UserNameBk
+        , pBk.FirstName as FirstNameBk
+        , pBk.LastName as LastNameBk
+        , pBk.MiddleName as MiddleNameBk
+      </optional>
+      from UserRoleWorkAssignmentsSubsidiaries urwa
+      inner join UserRoleWorkAssignments urw on urwa.UserRoleWorkAssignmentId = urw.UserRoleWorkAssignmentId
+      left outer join UserRoleBackup urb on urwa.userid = urb.userid and urwa.roleid = urb.roleid
+      inner join ac_user au on au.userId = urwa.userId
+      <optional depends="getDetails==true">
+        <optional depends="getBackup==true">
+          left outer join ac_user aubk on aubk.userId = urb.backupid
+          left outer join people pbk on pbk.userId = urb.backupid
+        </optional>
+
+        <optional depends="getBackup==false">
+          left outer join ac_user aubk on aubk.userId = urb.userid
+          left outer join people pbk on pbk.userId = urb.userid
+        </optional>
+
+        left outer join people p on p.userId = urwa.userId
+        /*left outer join ac_user auBk on auBk.userId = URB.backupID
+        left outer join people pBk on pBk.userId = URB.backupID*/
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="urwa.RoleId" paramId="roleId" />
+          <exp op="=" dbField="urw.ResourceTypeCode" paramId="objectType" />
+          <exp op="=" dbField="urw.ResourceValue" paramId="objectId" />
+          <exp op="IN" dbField="urw.ResourceTypeValue" paramId="objectList" />
+          <exp op="IN" dbField="urw.ResourceValue" paramId="objectIdList" />
+          <exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+        </exp>
+      </where>
+      <optional depends="getDetails==true">
+        order by LastName, FirstName
+      </optional>
+    </sql>
+  </statement>
+
+  <!-- This query is using FundingMemo table which belongs to EHB. We need to move this query out of platform.-->
+  <statement name="getRoleMembersForIntOrgThruFundMemo" connection="GEMS">
+		<param id="roleId" type="String" size="36" required="true" />
+		<param id="objectList" type="String" size="100"/>
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+		<sql>
+			select distinct cast(urwa.userId as varchar(36)) as userId,
+			urwa.roleId as roleId,
+			cast(urb.backupId as varchar(36)) as backupID,
+			urb.StartDate as backupStart,
+			urb.EndDate as backupEnd,
+			urwa.ResourceValue as ResourceValue
+			<optional depends="getDetails==true">
+				, au.UserName as UserName
+				, p.FirstName as FirstName
+				, p.LastName as LastName
+				, auBk.UserName as UserNameBk
+				, pBk.FirstName as FirstNameBk
+				, pBk.LastName as LastNameBk
+			</optional>
+			from FundingMemo fm
+			inner join FundingCycles FC on FC.FundingCycleId = FM.FundingCycleId
+			inner join Programs PR on PR.ProgramId = FC.ProgramId and PR.ProgramInstance = FC.ProgramInstance
+			inner join UserRoleWorkAssignments urwa on urwa.ResourceTypeValue = '14|' + cast(pr.programOrgId as varchar(36))
+			left outer join UserRoleBackup urb on urwa.userid = urb.userid and urwa.roleid = urb.roleid
+			inner join ac_user au on au.userId = urwa.userId
+
+			<optional depends="getDetails==true">
+				/*inner join ac_user au on au.userId = urwa.userId*/
+				left outer join people p on p.userId = urwa.userId
+				/*left outer join ac_user auBk on auBk.userId = urb.backupID
+				left outer join people pBk on pBk.userId = urb.backupID*/
+
+				<optional depends="getBackup==true">
+					left outer join ac_user aubk on aubk.userId = urb.backupid
+					left outer join people pbk on pbk.userId = urb.backupid
+				</optional>
+
+				<optional depends="getBackup==false">
+					left outer join ac_user aubk on aubk.userId = urb.userid
+					left outer join people pbk on pbk.userId = urb.userid
+				</optional>
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="urwa.roleId" paramId="roleId" />
+					<exp op="IN" dbField="FM.fundingMemoId" paramId="objectList" />
+					<exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+				</exp>
+			</where>
+			<optional depends="getDetails==true">
+				order by LastName, FirstName
+			</optional>
+		</sql>
+	</statement>
+
+  <!-- This query is using FundingMemo table which belongs to EHB. We need to move this query out of platform.-->
+	<statement name="getRoleMembersForBureauThruFundMemo" connection="GEMS">
+		<param id="roleId" type="String" size="36" required="true" />
+		<param id="objectList" type="String" size="100"/>
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+		<sql>
+			select distinct cast(urwa.userId as varchar(36)) as userId,
+			urwa.roleId as roleId,
+			cast(urb.backupId as varchar(36)) as backupID,
+			urb.StartDate as backupStart,
+			urb.EndDate as backupEnd,
+			urwa.ResourceValue as ResourceValue
+			<optional depends="getDetails==true">
+				, au.UserName as UserName
+				, p.FirstName as FirstName
+				, p.LastName as LastName
+				<optional depends="getBackup==true">
+					, auBk.UserName as UserNameBk
+					, pBk.FirstName as FirstNameBk
+					, pBk.LastName as LastNameBk
+				</optional>
+			</optional>
+			from FundingMemo fm
+			inner join Programs PR on PR.ProgramId = FM.ProgramId and PR.ProgramInstance = FM.ProgramInstance
+			inner join InternalOrganizationRelationships IORG ON IORG.InternalOrg2Id = PR.ProgramOrgId AND IORG.InternalOrg2Instance = PR.ProgramOrgInstance AND IORG.InternalOrgRelationshipTypeCode = 2
+			inner join UserRoleWorkAssignments urwa on urwa.ResourceTypeValue = '48|' + cast(IORG.InternalOrg2Id as varchar(36))
+			left outer join UserRoleBackup urb on urwa.userid = urb.userid and urwa.roleid = urb.roleid
+			inner join ac_user au on au.userId = urwa.userId
+
+			<optional depends="getDetails==true">
+				/*inner join ac_user au on au.userId = urwa.userId*/
+				left outer join people p on p.userId = urwa.userId
+				/*left outer join ac_user auBk on auBk.userId = urb.backupID
+				left outer join people pBk on pBk.userId = urb.backupID*/
+
+				<optional depends="getBackup==true">
+					left outer join ac_user aubk on aubk.userId = urb.backupid
+					left outer join people pbk on pbk.userId = urb.backupid
+				</optional>
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="urwa.roleId" paramId="roleId" />
+					<exp op="IN" dbField="FM.fundingMemoId" paramId="objectList" />
+					<exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+				</exp>
+			</where>
+			<optional depends="getDetails==true">
+				order by LastName, FirstName
+			</optional>
+		</sql>
+	</statement>
+
+  <statement name="getRoleMembers" connection="Common">
+    <param id="roleId" type="String" size="36" required="true" />
+    <param id="getDetails"  type="Boolean" />
+    <param id="getBackup"  type="Boolean" />
+    <sql>
+      select distinct cast(rur.userId as varchar(36)) as userId,
+      rur.roleId as roleId
+      <!--<optional depends="getBackup==true">-->
+      , cast(urb.backupid as varchar(36)) as backupID
+      , urb.startdate as backupStart
+      , urb.enddate as backupEnd
+      , '' as ResourceValue
+      <!--</optional>-->
+      <optional depends="getDetails==true">
+        , au.UserName as UserName
+        , p.FirstName as FirstName
+        , p.LastName as LastName
+        , p.MiddleName as MiddleName
+        <optional depends="getBackup==true">
+          , aubk.Username UserNameBk
+          , pbk.FirstName as FirstNameBk
+          , pbk.LastName as LastNameBk
+          , pbk.MiddleName as MiddleNameBk
+        </optional>
+      </optional>
+      from AC_RELUSERROLE rur
+      inner join ac_user au on au.userId = rur.userId
+      <optional depends="getDetails==true">
+        join people p on p.userId = rur.userId
+      </optional>
+      left outer join UserRoleBackup urb
+      on rur.userid = urb.userid and rur.roleid = urb.roleid and
+      urb.StartDate &lt;= GetDate() and
+      (urb.EndDate &gt;= GetDate() or urb.EndDate is Null)
+      <optional depends="getBackup== true" >
+        left outer join ac_user aubk on aubk.userId = urb.backupid
+        left outer join people pbk on pbk.userId = urb.backupid
+      </optional>
+
+      <!--<optional depends="getBackup== false">
+                           
+                                  left outer join UserRoleBackup urb
+                                                on rur.userid = urb.userid and rur.roleid = urb.roleid and
+                                                       urb.StartDate &lt;= GetDate() and 
+                                                       (urb.EndDate &gt;= GetDate() or urb.EndDate is Null)
+
+                                  left outer join ac_user aubk on aubk.userId = urb.userId
+                                  left outer join people pbk on pbk.userId = urb.userId
+                           </optional>-->
+
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="rur.roleId" paramId="roleId" />
+          <exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+
+        </exp>
+      </where>
+      <optional depends="getDetails==true">
+        order by LastName, FirstName
+      </optional>
+    </sql>
+  </statement>
+
+  <statement name="getMembersByRole" connection="Common">
+		<param id="roleId" type="String" required="true" />
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+		<sql>
+      <!--Tempory table for applicable users-->
+      DECLARE @ApplicableUsers TABLE (
+      UserId UNIQUEIDENTIFIER
+      <optional depends="getDetails==true">
+      , UserName VARCHAR(MAX)
+      , FirstName VARCHAR(MAX)
+      , LastName VARCHAR(MAX)
+      , MiddleName VARCHAR(MAX)
+        <optional depends="getBackup==true" >
+        , UserBackupIntervalId UNIQUEIDENTIFIER
+        , backupStart	Datetime
+        , backupEnd    	Datetime
+        </optional>
+      </optional>
+      )
+      <!--Get all the users and their active backups that 1) have the required role, 2) Belong to the required office, 
+      3) are active-->
+      INSERT INTO @ApplicableUsers
+      SELECT u.UserId
+      <optional depends="getDetails==true">
+      , u.UserName
+      , p.FirstName
+      , p.LastName
+      , p.MiddleName
+         <optional depends="getBackup==true" >
+        , urb.UserBackupIntervalId
+        , urb.BackupStartDate as backupStart
+        , urb.BackupEndDate as backupEnd
+         </optional>
+      </optional>
+      FROM AC_RelUserRole relRole
+      INNER JOIN dbo.AC_User u on relRole.UserId = u.UserId
+      <optional depends="getDetails==true">
+        INNER JOIN People p ON u.userId = p.userId
+        <optional depends="getBackup==true" >
+        LEFT JOIN dbo.AC_UserBackupInterval urb on u.userid = urb.userid
+        and getdate() &gt;= (urb.BackupStartDate) AND getdate() &lt; (ISNULL(urb.BackupEndDate, getdate()+1))
+        </optional>
+      </optional>
+        <where>
+        <exp op="AND">
+          <exp op="&gt;=" dbField="isnull(u.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+          <exp op="=" dbField="relRole.RoleId" paramId="roleId" />
+        </exp>
+      </where>
+      
+      <!--Get all possible users including backups. Users will be duplicated if they are in teams-->
+      SELECT u.UserId
+	    , <exp paramId="roleId" /> as RoleId
+	    , NULL AS TeamId
+	    , NULL AS TeamName
+	    , NULL AS TeamPrefix
+      <optional depends="getDetails==true">
+	    , u.UserName
+	    , u.FirstName
+	    , u.LastName
+	    , u.MiddleName
+      <optional depends="getBackup==true" >
+      , urbd.BackupUserId as backupID
+	    , NULL as backupTeamID
+      , u.backupStart
+      , u.backupEnd  
+	    , aubk.UserName as BackupUserName
+      , auBk.UserName as UserNameBk
+      , pBk.FirstName as FirstNameBk
+      , pBk.LastName as LastNameBk
+      , pBk.MiddleName as MiddleNameBk    
+      </optional>
+      </optional>
+      FROM @ApplicableUsers u
+      <optional depends="getBackup==true" >
+      LEFT JOIN AC_RelBackupIntervalUserRole urbd on urbd.UserBackupIntervalId = u.UserBackupIntervalId and urbd.BackupUserRoleId = <exp paramId="roleId" />
+      LEFT JOIN ac_user  aubk on aubk.userId = urbd.BackupUserId
+      LEFT JOIN people  pbk on pbk.userId = aubk.UserId
+      </optional>
+      UNION
+      SELECT u.UserId
+	    , <exp paramId="roleId" /> as RoleId
+	    , T.TeamId AS TeamId
+	    , T.TeamName AS TeamName
+	    , T.TeamHierarchyPrefix AS TeamPrefix
+      <optional depends="getDetails==true">
+	    , UserName
+	    , FirstName
+	    , LastName
+	    , MiddleName
+	    <optional depends="getBackup==true" >
+      , NULL as backupID
+	    , IIF(u.UserBackupIntervalId IS NOT NULL, T.TeamId, NULL) as backupTeamID
+      , u.backupStart
+      , u.backupEnd  
+	    , NULL as BackupUserName
+      , NULL as UserNameBk
+      , NULL as FirstNameBk
+      , NULL as LastNameBk
+      , NULL as MiddleNameBk
+      </optional>
+      </optional>
+      FROM @ApplicableUsers u
+      JOIN DAS_TeamMember_P TM ON  u.UserId = TM.UserId
+      JOIN DAS_Team_P (NOLOCK) T ON T.TeamId = TM.TeamId
+      where t.TeamStatusCode = 2
+      <optional depends="getDetails==true">
+				order by u.LastName, u.FirstName
+			</optional>
+      
+    </sql>
+	</statement>
+  
+  <statement name="getUserBackUp" connection="Common">
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="roleId" type="String" size="36"/>
+		<param  id="getBackupUserDetails"  type="Boolean" />
+		<param id="getActiveBackup"  type="Boolean" />
+		<sql>
+			select distinct
+			cast(urb.backupId as varchar(36)) as backupID,
+			urb.roleId as roleId,
+			urb.StartDate as backupStart,
+			urb.EndDate as backupEnd
+
+			<optional depends="getBackupUserDetails==true">
+				,AU.UserName, PLE.FirstName, PLE.MiddleName, PLE.LastName
+			</optional>
+			from  UserRoleBackup urb
+			<optional depends="getBackupUserDetails==true">
+				inner join AC_User AU on AU.UserId = urb.BackupId
+				inner join People PLE on PLE.UserId =  AU.UserId
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="urb.roleId" paramId="roleId" />
+					<exp op="=" dbField="urb.userid" paramId="userId" />
+
+					<optional depends="getActiveBackup==true">
+						<exp op="and">
+							<exp op="&lt;=" dbField="urb.StartDate">getDate()</exp>
+							<exp op="or">
+								<exp op="&gt;=" dbField="urb.EndDate">getDate()</exp>
+								<exp op="IS" dbField="urb.EndDate">Null</exp>
+							</exp>
+						</exp>
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getRelatedUsers" connection="Common">
+		<param id="userId1" type="String" size="36" />
+		<param id="roleId1" type="String" size="36" />
+		<param id="userId2" type="String" size="36" />
+		<param id="roleId2" type="String" size="36" />
+		<param id="relCode" type="Int32" required="true" />
+		<param id="fName" type="String" size="30" />
+		<param id="lName" type="String" size="30" />
+		<param id="userName" type="String" size="100" />
+		<param id="excludeDisabled" type="Boolean" />
+		<param id="excludeUserList" type="Boolean" />
+		<param id="getOrphans" type="Boolean" />
+		<sql>
+			select distinct
+			<optional depends="userId1!=null">
+				cast(UserId2 as varchar(36)) as UserId
+				, au2.UserName as UserName
+				, p2.FirstName as FirstName
+				, p2.LastName as LastName
+			</optional>
+			<optional depends="userId1!=null &amp;&amp; userId2!=null">
+				,
+			</optional>
+			<optional depends="userId2!=null">
+				cast(UserId1 as varchar(36)) as UserId
+				, au1.UserName as UserName
+				, p1.FirstName +
+				case IsNull(cast(URB.UserId as varchar(36)), '')
+				when '' then ''
+				else '*' end
+				as FirstName
+				, p1.LastName as LastName
+
+				, case IsNull(cast(URB.UserId as varchar(36)), '')
+				when '' then 0
+				else 1 end  as HasBackup
+			</optional>
+			from UserRelationshipAssignments ura
+			<optional depends="roleId1!=null">
+				inner join ac_relUserRole arur1 on ura.userId1 = arur1.userId
+			</optional>
+			<optional depends="roleId2!=null">
+				inner join ac_relUserRole arur2 on ura.userId2 = arur2.userId
+			</optional>
+			<optional depends="userId1!=null">
+				inner join ac_user au2 on au2.userId = ura.userId2
+				left outer join people p2 on p2.userId = ura.userId2
+			</optional>
+			<optional depends="userId2!=null">
+				inner join ac_user au1 on au1.userId = ura.userId1
+				left outer join people p1 on p1.userId = ura.userId1
+				left outer join UserRoleBackup urb
+				on ura.userid1 = urb.userid and arur1.roleid = urb.roleid and
+				urb.StartDate &lt;= GetDate() and
+				(urb.EndDate &gt;= GetDate() or urb.EndDate is Null)
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ura.UserId1" paramId="userId1" />
+					<exp op="=" dbField="ura.UserId2" paramId="userId2" />
+					<exp op="=" dbField="ura.UserRelationshipCode" paramId="relCode" />
+					<exp op="=" dbField="arur1.roleId" paramId="roleId1" />
+					<exp op="=" dbField="arur2.roleId" paramId="roleId2" />
+					<optional depends="userId1!=null">
+						<exp op="and">
+							<exp op="like" dbField="p2.FirstName" paramId="fName" />
+							<exp op="like" dbField="p2.LastName" paramId="lName" />
+							<exp op="=" dbField="au2.UserName" paramId="userName" />
+							<exp op="NOT IN" dbField="au2.userId" paramId="excludeUserList" />
+							<optional depends="excludeDisabled">
+								<exp op="IS" dbField="au2.AccountDisabledDateTime">NULL</exp>
+							</optional>
+						</exp>
+					</optional>
+					<optional depends="userId2!=null">
+						<exp op="and">
+							<exp op="like" dbField="p1.FirstName" paramId="fName" />
+							<exp op="like" dbField="p1.LastName" paramId="lName" />
+							<exp op="=" dbField="au1.UserName" paramId="userName" />
+							<exp op="NOT IN" dbField="au1.userId" paramId="excludeUserList" />
+							<optional depends="excludeDisabled">
+								<exp op="IS" dbField="au1.AccountDisabledDateTime">NULL</exp>
+							</optional>
+						</exp>
+					</optional>
+				</exp>
+			</where>
+			<optional depends="getOrphans==true">
+				union
+				select distinct cast(au.UserId as varchar(36)) as UserId,
+				au.UserName as UserName,
+				p.FirstName  +
+				case IsNull(cast(URB.UserId as varchar(36)), '')
+				when '' then ''
+				else '*' end
+				as FirstName,
+				p.LastName as LastName
+				, case IsNull(cast(URB.UserId as varchar(36)), '')
+				when '' then 0
+				else 1 end  as HasBackup
+
+				from ac_relUserRole arur
+				inner join ac_user au on au.userId = arur.userId
+				left outer join people p on p.userId = arur.userId
+				left outer join UserRoleBackup urb
+				on au.userid = urb.userid and arur.roleid = urb.roleid and
+				urb.StartDate &lt;= GetDate() and
+				(urb.EndDate &gt;= GetDate() or urb.EndDate is Null)
+				left outer join
+				(UserRelationshipAssignments ura
+				inner join ac_relUserRole arur1 on	<exp op="and">
+					<optional depends="userId1!=null">
+						<exp op="and">
+							<exp op="=" dbField="ura.UserId1">arur1.UserId</exp>
+							<exp op="=" dbField="arur1.roleId" paramId="roleId1" />
+						</exp>
+					</optional>
+					<optional depends="userId2!=null">
+						<exp op="and">
+							<exp op="=" dbField="ura.UserId2">arur1.UserId</exp>
+							<exp op="=" dbField="arur1.roleId" paramId="roleId2" />
+						</exp>
+					</optional>
+				</exp>)on	<exp op="and">
+					<optional depends="userId1!=null">
+						<exp op="=" dbField="arur.userId">ura.userId2</exp>
+					</optional>
+					<optional depends="userId2!=null">
+						<exp op="=" dbField="arur.userId">ura.userId1</exp>
+					</optional>
+					<exp op="=" dbField="ura.UserRelationshipCode" paramId="relCode" />
+				</exp>
+				<where>
+					<exp op="and">
+						<exp op="IS" dbField="ura.UserRelationshipCode">NULL</exp>
+						<exp op="and">
+							<exp op="like" dbField="p.FirstName" paramId="fName" />
+							<exp op="like" dbField="p.LastName" paramId="lName" />
+							<exp op="=" dbField="au.UserName" paramId="userName" />
+							<exp op="NOT IN" dbField="au.userId" paramId="excludeUserList" />
+							<optional depends="excludeDisabled">
+								<exp op="IS" dbField="au.AccountDisabledDateTime">NULL</exp>
+							</optional>
+						</exp>
+						<optional depends="userId1!=null">
+							<exp op="=" dbField="arur.roleId" paramId="roleId2" />
+						</optional>
+						<optional depends="userId2!=null">
+							<exp op="=" dbField="arur.roleId" paramId="roleId1" />
+						</optional>
+					</exp>
+				</where>
+			</optional>
+			order by
+			LastName, FirstName, UserName
+		</sql>
+	</statement>
+  <statement name ="getRoles" connection ="Common">
+		<param id ="RoleId" type="String" required ="true"/>
+		<param id="GetParent" type="Boolean"/>
+		<sql>
+			<optional depends ="GetParent==false">
+				SELECT * FROM AC_Role
+				<where>
+					<exp op ="="  dbField ="RoleId" paramId ="RoleId"/>
+				</where>
+			</optional>
+			<optional depends ="GetParent==true">
+				SELECT ParentRole.* FROM AC_Role ACRole
+				INNER JOIN AC_Role ParentRole ON ACRole.ParentRoleId = ParentRole.RoleId
+				<where>
+					<exp op ="=" dbField ="ACRole.RoleId" paramId ="RoleId"/>
+				</where>
+				UNION
+				SELECT * FROM AC_Role
+				<where>
+					<exp op ="AND">
+						<exp op ="=" dbField ="RoleId" paramId ="RoleId"/>
+						<exp op="IS" dbField ="ParentRoleId">NULL</exp>
+					</exp>
+				</where>
+			</optional>
+		</sql>
+	</statement>
+	<statement name ="getUsersFromRoleAndPrivilege" connection ="Common">
+		<param id ="RoleId" type ="Int32"/>
+		<param id="PrivilegeId" type="String"/>
+		<param id="PrivilegeCount" type="Int32"/>
+		<sql>
+			SELECT People.UserId,
+			People.FirstName,
+			People.LastName,
+			People.MiddleName
+			FROM People
+			INNER JOIN Ac_User on People.UserId = Ac_User.UserId
+			INNER JOIN
+			(SELECT UserId FROM
+			AC_Permission P1
+			WHERE
+			<exp op ="=" dbField ="P1.RoleId" paramId ="RoleId"/>
+			AND P1.PrivilegeId IN <dynamic paramId ="PrivilegeId"/>
+			GROUP BY UserId
+			HAVING COUNT(UserId)  = <exp paramId ="PrivilegeCount"/>
+			) AS TempTable
+			ON People.UserId = TempTable.UserId
+			AND <exp op="&gt;=" dbField="isnull(Ac_User.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+		</sql>
+	</statement>
+
+  <statement name="GetUsersByBureauRole" connection="Common">
+    <param id="OfficeCode" type="Int32" required="true" />
+    <param id="Role" type="Int32" required="true" />
+    <param id="getDetails"  type="Boolean" />
+    <param id="getBackup"  type="Boolean" />
+    <sql>
+      SELECT DISTINCT cast(p.UserId as varchar(36))  AS UserId
+      ,rur.RoleId AS 'Role'
+      <optional depends="getDetails==true">
+        ,au.UserName as UserName
+        ,p.FirstName AS FirstName
+        ,p.LastName AS LastName
+      </optional>
+      <optional depends="getBackup==true" >
+        ,Bperson.FirstName AS BackUpFirstName
+        ,Bperson.LastName AS BackUpLastName
+        ,cast(Bperson.UserId as varchar(36)) AS BackUpUserId
+        ,urb.StartDate AS BackUpStartDate
+        ,urb.EndDate AS BackUpEndDate
+      </optional>
+      FROM dbo.ac_user au
+      JOIN AC_RelUserRole rur on au.userId = rur.userId AND rur.RoleId = <exp paramId="Role" />
+      JOIN people p on p.UserId = rur.userId
+      JOIN dbo.RelPeopleInternalOrganizations rpo ON p.PersonId = rpo.PersonId
+      <optional depends="getBackup==true" >
+        LEFT outer JOIN  UserRoleBackup urb ON  p.userid = urb.userid and urb.roleid = @Role
+        LEFT outer JOIN ac_user aubk on aubk.userId = urb.backupid
+        LEFT outer JOIN dbo.people Bperson ON  Bperson.UserId = urb.BackupId
+      </optional>
+      <where>
+        <exp op="OR">
+          <exp op="=" dbField="rpo.InternalOrgLevel1" paramId="OfficeCode" />
+          <exp op="=" dbField="rpo.InternalOrgLevel2" paramId="OfficeCode" />
+          <exp op="=" dbField="rpo.InternalOrgLevel3" paramId="OfficeCode" />
+          <exp op="=" dbField="rpo.InternalOrgLevel4" paramId="OfficeCode" />
+        </exp>
+        AND <exp op="&gt;=" dbField="isnull(au.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+      </where>
+      ORDER BY
+      LastName, FirstName, UserName
+    </sql>
+  </statement>
+
+  <statement name="GetUsersByRoleAndOffice" connection="Common">
+    <param id="OfficeCode" type="Int32" required="true" />
+    <param id="Role" type="Int32" required="true" />
+    <param id="teamId"  type="String" size="36" />
+    <param id="getDetails"  type="Boolean" />
+    <param id="getBackup"  type="Boolean" />
+    <sql>
+      <!--Tempory table for applicable users-->
+      DECLARE @ApplicableUsers TABLE (
+      UserId UNIQUEIDENTIFIER
+      , UserName VARCHAR(MAX)
+      , FirstName VARCHAR(MAX)
+      , LastName VARCHAR(MAX)
+      , MiddleName VARCHAR(MAX)
+      <optional depends="getBackup==true" >
+      , UserBackupIntervalId UNIQUEIDENTIFIER
+      , backupStart	Datetime
+      , backupEnd    	Datetime
+      </optional>
+      )
+      <!--Get all the users and their active backups that 1) have the required role, 2) Belong to the required office, 
+      3) are active-->
+      INSERT INTO @ApplicableUsers
+      SELECT u.UserId
+      , u.UserName
+      , p.FirstName
+      , p.LastName
+      , p.MiddleName
+       <optional depends="getBackup==true" >
+      , urb.UserBackupIntervalId
+      , urb.BackupStartDate as backupStart
+      , urb.BackupEndDate as backupEnd
+       </optional>
+      FROM dbo.RelPeopleInternalOrganizations relOrg
+      INNER JOIN People p ON p.PersonId = relOrg.PersonId
+      INNER JOIN dbo.AC_User u ON u.userId = p.userId
+      INNER JOIN AC_RelUserRole relRole ON relRole.UserId = u.UserId
+      <optional depends="getBackup==true" >
+      LEFT JOIN dbo.AC_UserBackupInterval urb on u.userid = urb.userid
+      
+      and getdate() &gt;= (urb.BackupStartDate)  AND getdate() &lt; (ISNULL(urb.BackupEndDate, getdate()+1))
+      </optional>
+        <where>
+        <exp op="AND">
+          <exp op="OR">
+            <exp op="=" dbField="relOrg.InternalOrgLevel1" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel2" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel3" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel4" paramId="OfficeCode" />
+          </exp>
+          <exp op="&gt;=" dbField="isnull(u.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+          <exp op="=" dbField="relRole.RoleId" paramId="Role" />
+        </exp>
+      </where>
+      
+      <!--Get all possible users including backups. Users will be duplicated if they are in teams-->
+      SELECT u.UserId
+	    , <exp paramId="Role" /> as RoleId
+	    , NULL AS TeamId
+	    , NULL AS TeamName
+	    , NULL AS TeamPrefix
+	    , u.UserName
+	    , u.FirstName
+	    , u.LastName
+	    , u.MiddleName
+      <optional depends="getBackup==true" >
+      , urbd.BackupUserId as backupID
+	    , NULL as backupTeamID
+      , u.backupStart
+      , u.backupEnd  
+	    , aubk.UserName as BackupUserName
+      , auBk.UserName as UserNameBk
+      , pBk.FirstName as FirstNameBk
+      , pBk.LastName as LastNameBk
+      , pBk.MiddleName as MiddleNameBk    
+      </optional>
+      FROM @ApplicableUsers u
+      <optional depends="getBackup==true" >
+      LEFT JOIN AC_RelBackupIntervalUserRole urbd on urbd.UserBackupIntervalId = u.UserBackupIntervalId and urbd.BackupUserRoleId = <exp paramId="Role" />
+      LEFT JOIN ac_user  aubk on aubk.userId = urbd.BackupUserId
+      LEFT JOIN people  pbk on pbk.userId = aubk.UserId
+      </optional>
+      UNION
+      SELECT u.UserId
+	    , <exp paramId="Role" /> as RoleId
+	    , T.TeamId AS TeamId
+	    , T.TeamName AS TeamName
+	    , T.TeamHierarchyPrefix AS TeamPrefix
+	    , UserName
+	    , FirstName
+	    , LastName
+	    , MiddleName
+	    <optional depends="getBackup==true" >
+      , NULL as backupID
+	    , IIF(u.UserBackupIntervalId IS NOT NULL, T.TeamId, NULL) as backupTeamID
+      , u.backupStart
+      , u.backupEnd  
+	    , NULL as BackupUserName
+      , NULL as UserNameBk
+      , NULL as FirstNameBk
+      , NULL as LastNameBk
+      , NULL as MiddleNameBk
+      </optional>
+      FROM @ApplicableUsers u
+      JOIN DAS_TeamMember_P TM ON  u.UserId = TM.UserId
+      JOIN DAS_Team_P (NOLOCK) T ON T.TeamId = TM.TeamId
+      where t.TeamStatusCode = 2
+      order by u.LastName, u.FirstName
+    </sql>
+  </statement>
+  
+  <statement name="getDirectAssignments" connection="Common">
+		<param id="roleId"  type="Int16" required="true" />
+		<param id="objectType" type="Int16" required="true" />
+		<param id="objectIdList"  type="String" required="true" />
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+    <param id="processDetailCode"  type="Int16" default="0" />
+    <param id="enterpriseProcessCode"  type="Int16" default="0" />
+		<sql>
+
+      --Getting Rollup for the WorkArea to ParentRole
+      DECLARE @RollupId int, @roleIdParam int
+      
+      Set @roleIdParam = <exp paramId="roleId"/>
+
+      SELECT @RollupId = RoleId FROM AC_BureauRoleWorkAreaConfiguration
+      Where WorkAreaId = @roleIdParam
+      
+      Declare @URWABaseData Table
+      (
+	      ResourceValue Varchar(50),
+	      ResourceTypeCode int,
+	      RoleId int,
+	      UserId uniqueidentifier,
+	      TeamId uniqueidentifier
+        ,TeamUnassignedFlag bit
+        ,IsExceptionAssignment bit
+      )
+      
+      <optional depends="processDetailCode &gt; 0">
+         --Check Exception	
+      INSERT into @URWABaseData
+      SELECT urwaep.ResourceValue,urwaep.ResourceTypeCode,urwaep.RoleId,urwaep.UserId,urwaep.TeamId
+      ,0 as TeamUnassignedFlag, 1 as IsExceptionAssignment
+      FROM UserRoleWorkAssignmentsException_P urwaep
+      <where>
+				<exp op="and">
+          <exp op="IN" dbField="urwaep.RoleId">(@roleIdParam, @RollupId)</exp>
+					<exp op="=" dbField="urwaep.ResourceTypeCode" paramId="objectType" />
+					<exp op="=" dbField="urwaep.ResourceValue" paramId="objectIdList" />
+          <exp op="=" dbField="urwaep.ProcessDetailCode" paramId="processDetailCode" />
+        <exp op="=" dbField="urwaep.EnterpriseProcessCode" paramId="enterpriseProcessCode" />					
+				</exp>
+			</where>
+      </optional>
+
+      IF ((SELECT count(1) FROM	@URWABaseData) &lt; 1)
+	    BEGIN
+      --Get URWA Base Data      
+      INSERT into @URWABaseData
+      SELECT URWA.ResourceValue,URWA.ResourceTypeCode,URWA.RoleId,URWA.UserId,URWA.TeamId
+      ,URWA.TeamUnassignedFlag as TeamUnassignedFlag, 0 as IsExceptionAssignment
+      FROM UserRoleWorkAssignments URWA
+      <where>
+				<exp op="and">
+          <exp op="IN" dbField="urwa.RoleId">(@roleIdParam, @RollupId)</exp>
+					<exp op="=" dbField="urwa.ResourceTypeCode" paramId="objectType" />
+					<exp op="=" dbField="urwa.ResourceValue" paramId="objectIdList" />
+				</exp>
+			</where>
+      END
+      
+      SELECT URWA.ResourceValue,URWA.ResourceTypeCode as ResourceType
+      ,URWA.RoleId,URWA.UserId
+      ,URWA.TeamUnassignedFlag as TeamUnassignedFlag
+      ,URWA.IsExceptionAssignment as IsExceptionAssignment
+      ,T.TeamId as TeamId
+      ,T.TeamName as TeamName
+      ,T.TeamHierarchyPrefix as TeamPrefix
+      <optional depends="getDetails==true">
+				, au.UserName as UserName
+				, p.FirstName as FirstName
+				, p.LastName as LastName
+				, p.MiddleName as MiddleName
+        <optional depends="getBackup==true">
+          ,cast(urb.backupId as varchar(36)) as backupID
+          , aubk.UserName as UserName
+          ,urb.StartDate as backupStart
+          ,urb.EndDate as backupEnd
+          , auBk.UserName as UserNameBk
+          , pBk.FirstName as FirstNameBk
+          , pBk.LastName as LastNameBk
+          , pBk.MiddleName as MiddleNameBk
+        </optional>
+			</optional>
+      from @URWABaseData URWA      
+      LEFT JOIN DAS_Team_P  T ON T.TeamId = URWA.TeamId
+      <optional depends="getDetails==true">
+        LEFT JOIN ac_user  au on au.userId = URWA.userId
+        LEFT JOIN people  p on p.userId = URWA.userId
+        <optional depends="getBackup==true">
+          LEFT JOIN UserRoleBackup  urb on urwa.userid = urb.userid and urwa.roleid = urb.roleid
+					LEFT JOIN ac_user  aubk on aubk.userId = urb.backupid
+					LEFT JOIN people  pbk on pbk.userId = urb.backupid
+				</optional>			
+        WHERE isnull(au.AccountDisabledDatetime, getdate()+1) &gt;= getDate()
+			</optional>
+		</sql>
+	</statement>
+
+  <statement name="getDirectIndirectAssignments" connection="Common">
+		<param id="roleId"  type="Int16" required="true" />
+		<param id="objectType" type="Int16" required="true" />
+		<param id="objectId"  type="String" required="true" />
+		<param id="getDetails"  type="Boolean" />
+		<param id="getBackup"  type="Boolean" />
+    <param id="hasSolQuery"  type="Boolean" />
+    <param id="processDetailCode"  type="Int16" default="0" />
+    <param id="enterpriseProcessCode"  type="Int16" default="0" />
+		<sql>
+    
+      DECLARE @resourceTypeCode int
+      Set @resourceTypeCode = <exp paramId="objectType"/>
+      
+      --Getting Rollup for the WorkArea to ParentRole
+      DECLARE @RollupId int, @roleIdParam int, @processDetailCodeParam int,@enterpriseProcessCodeParam int
+      
+      Set @roleIdParam = <exp paramId="roleId"/>
+      Set @processDetailCodeParam = <exp paramId="processDetailCode" />
+      Set @enterpriseProcessCodeParam = <exp paramId="enterpriseProcessCode" />
+      
+      SELECT @RollupId = RoleId FROM AC_BureauRoleWorkAreaConfiguration
+      Where WorkAreaId = @roleIdParam
+      
+      Declare @TempAssignMetaData Table
+      (
+	      Level int,
+	      RelatedResourceTypeCode int,
+	      RelatedResourceValue Varchar(50),
+	      RequireContextFlag bit
+      )
+      
+      Declare @URWABaseData Table
+      (
+	      Level int,
+	      ResourceValue Varchar(50),
+	      ResourceTypeCode int,
+	      RoleId int,
+	      UserId uniqueidentifier,
+	      TeamId uniqueidentifier
+        ,TeamUnassignedFlag bit
+        ,IsExceptionAssignment bit
+      )
+      
+      <optional depends="hasSolQuery==true">
+        --Get the AssignmentMetaData
+        
+        INSERT INTO @TempAssignMetaData
+        select tempHier.Level, tempHier.RelatedResourceTypeCode, T2.Value, tempHier.RequireContextFlag
+        from
+        (select Level, RelatedResourceTypeCode,RelatedColumnName,RequireContextFlag
+        FROM PFM_AMG_AssignmentHierarchyRule
+        WHERE ResourceTypeCode = @resourceTypeCode
+        )
+        as tempHier
+        join @TempResourceData T2 on tempHier.RelatedColumnName=T2.RelatedColumnName
+      </optional>
+      
+      --Insert the Default Resource
+      INSERT INTO @TempAssignMetaData
+      SELECT 0,@resourceTypeCode, <exp paramId="objectId"/>, 0
+      
+      <optional depends="processDetailCode &gt; 0">      
+      --Check Exception	always at subrole level
+      INSERT into @URWABaseData
+      SELECT TOP 1 * FROM
+      (
+      SELECT T1.level,urwaep.ResourceValue,urwaep.ResourceTypeCode,urwaep.RoleId,urwaep.UserId,urwaep.TeamId
+      ,0 as TeamUnassignedFlag, 1 as IsExceptionAssignment
+      FROM UserRoleWorkAssignmentsException_P urwaep
+      JOIN @TempAssignMetaData T1 ON T1.RelatedResourcetypeCode = urwaep.ResourceTypeCode
+      AND T1.RelatedResourceValue = urwaep.ResourceValue AND T1.RequireContextFlag = 0
+      WHERE urwaep.RoleId IN (@roleIdParam, @RollupId) AND urwaep.ProcessDetailCode = @processDetailCodeParam
+      AND urwaep.EnterpriseProcessCode = @enterpriseProcessCodeParam
+      
+      <optional depends="hasSolQuery==true">
+      UNION ALL
+      
+      SELECT T1.Level,urwaep.ResourceValue,urwaep.ResourceTypeCode,urwaep.RoleId,urwaep.UserId,urwaep.TeamId
+      ,0 as TeamUnassignedFlag, 1 as IsExceptionAssignment
+      FROM UserRoleWorkAssignmentsException_P urwaep
+      JOIN @TempAssignMetaData T1 ON T1.RelatedResourcetypeCode = urwaep.ResourceTypeCode
+      AND T1.RelatedResourceValue = urwaep.ResourceValue  AND T1.RequireContextFlag = 1 
+      JOIN UserRoleWorkAssignmentsExceptionContext_P C ON  C.UserRoleWorkAssignmentExceptionId = urwaep.UserRoleWorkAssignmentExceptionId
+      AND C.ResourceValueCtx = (SELECT Value From	@TempResourceData  Where RelatedColumnName = 'ResourceValueCtx')
+      AND C.ResourceTypeCodeCtx = (SELECT Value From	@TempResourceData  Where RelatedColumnName = 'ResourceTypeCodeCtx')
+      WHERE urwaep.RoleId IN (@roleIdParam, @RollupId) AND urwaep.ProcessDetailCode = @processDetailCodeParam 
+      AND urwaep.EnterpriseProcessCode = @enterpriseProcessCodeParam
+      </optional>
+      ) TEMP order by level
+      </optional>
+      
+      IF ((SELECT count(1) FROM	@URWABaseData) &lt; 1)
+      BEGIN
+      --Get URWA Base Data
+      INSERT into @URWABaseData
+      SELECT top 1 * FROM
+      (
+      SELECT T1.level,URWA.ResourceValue,URWA.ResourceTypeCode,URWA.RoleId,URWA.UserId,URWA.TeamId
+      ,URWA.TeamUnassignedFlag as TeamUnassignedFlag, 0 as IsExceptionAssignment
+      FROM UserRoleWorkAssignments URWA
+      JOIN @TempAssignMetaData T1 ON T1.RelatedResourcetypeCode = URWA.ResourceTypeCode
+      AND T1.RelatedResourceValue = URWA.ResourceValue AND T1.RequireContextFlag = 0
+      WHERE URWA.RoleId IN (@roleIdParam, @RollupId)
+
+      <optional depends="hasSolQuery==true">
+      UNION ALL
+      
+      SELECT T1.Level,URWA.ResourceValue,URWA.ResourceTypeCode,URWA.RoleId,URWA.UserId,URWA.TeamId
+      ,URWA.TeamUnassignedFlag as TeamUnassignedFlag, 0 as IsExceptionAssignment
+      FROM UserRoleWorkAssignments URWA
+      JOIN @TempAssignMetaData T1 ON T1.RelatedResourcetypeCode = URWA.ResourceTypeCode
+      AND T1.RelatedResourceValue = URWA.ResourceValue  AND T1.RequireContextFlag = 1 
+      JOIN UserRoleWorkAssignmentsContext C ON  C.UserRoleWorkAssignmentId = URWA.UserRoleWorkAssignmentId      
+      WHERE URWA.RoleId IN (@roleIdParam, @RollupId)
+      AND C.ResourceValueCtx = (SELECT Value From	@TempResourceData  Where RelatedColumnName = 'ResourceValueCtx')
+      AND C.ResourceTypeCodeCtx = (SELECT Value From	@TempResourceData  Where RelatedColumnName = 'ResourceTypeCodeCtx')
+      </optional>
+      ) temp order by Level
+      END
+
+      SELECT top 1 URWA.Level,URWA.ResourceValue,URWA.ResourceTypeCode as ResourceType
+      ,URWA.RoleId,URWA.UserId
+      ,URWA.TeamUnassignedFlag as TeamUnassignedFlag
+      ,URWA.IsExceptionAssignment as IsExceptionAssignment
+      ,T.TeamId as TeamId
+      ,T.TeamName as TeamName
+      ,T.TeamHierarchyPrefix as TeamPrefix
+      <optional depends="getDetails==true">
+				, au.UserName as UserName
+				, p.FirstName as FirstName
+				, p.LastName as LastName
+				, p.MiddleName as MiddleName
+        <optional depends="getBackup==true">
+          , cast(urbd.BackupUserId as varchar(36)) as backupID
+          , IIF(urb.UserBackupIntervalId IS NOT NULL, URWA.TeamId, NULL) as backupTeamID
+          , aubk.UserName as BackupUserName
+          , urb.BackupStartDate as backupStart
+          , urb.BackupEndDate as backupEnd
+          , auBk.UserName as UserNameBk
+          , pBk.FirstName as FirstNameBk
+          , pBk.LastName as LastNameBk
+          , pBk.MiddleName as MiddleNameBk
+        </optional>
+			</optional>
+      from @URWABaseData URWA      
+      LEFT JOIN DAS_Team_P  T ON T.TeamId = URWA.TeamId
+      <optional depends="getDetails==true">
+        LEFT JOIN ac_user  au on au.userId = URWA.userId
+        LEFT JOIN people  p on p.userId = URWA.userId
+        <optional depends="getBackup==true">
+          LEFT JOIN dbo.AC_UserBackupInterval urb on urwa.userid = urb.userid
+            and getdate() &gt;= (urb.BackupStartDate) AND getdate() &lt; (ISNULL(urb.BackupEndDate, getdate()+1))
+          LEFT JOIN AC_RelBackupIntervalUserRole urbd on urbd.UserBackupIntervalId = urb.UserBackupIntervalId and urbd.BackupUserRoleId = urwa.RoleId
+          and urwa.TeamId is null
+          LEFT JOIN ac_user  aubk on aubk.userId = urbd.BackupUserId
+          LEFT JOIN people  pbk on pbk.userId = aubk.UserId
+        </optional>			
+			</optional>
+			<optional depends="getDetails==true">
+        WHERE isnull(au.AccountDisabledDatetime, getdate()+1) &gt;= getDate()
+			</optional>
+		</sql>
+	</statement>
+
+
+
+  <statement name="getTeamsByUserId" connection="Common">
+    <param id='UserId' type='String' size='36' required="true"/>
+    <sql>
+      select t.TeamId,t.TeamHierarchyPrefix+ ' - ' + t.TeamName as TeamName from
+      DAS_TeamMember_P tm
+      inner join DAS_Team_P t
+      on t.TeamId=tm.TeamId
+      where tm.UserId=<exp  paramId="UserId" />
+	  and t.TeamStatusCode = 2
+      group by t.TeamId,t.TeamName,TeamHierarchyPrefix
+    </sql>
+  </statement>
+
+  
+  <statement name="ValidateUserRole" connection="Common">
+    <param id='roleDropDown' type='Int32'/>
+    <param id='userDropDown' type='String' size='36'/>
+    <sql>
+
+      SELECT
+      CASE
+      WHEN Exists(Select UserId from AC_RelUserRole WHERE UserId = <exp paramId="userDropDown"/> and RoleId = <exp paramId="roleDropDown"/>)
+      THEN 1
+      ELSE 0
+      END AS result
+
+    </sql>
+  </statement>
+  
+  <statement name="removeWorkAssignmentByRoleByUser" connection="Common">
+    <param id="roleId" required="true" />
+    <param id="userId" type="Guid" required="true" />
+    <sql>
+      delete from UserRoleWorkAssignmentsContext
+      <where>
+        UserRoleWorkAssignmentId in
+        (
+        select UserRoleWorkAssignmentId
+        from UserRoleWorkAssignments
+        <where>
+          <exp op="and">
+            <exp op="in" dbField="roleId" paramId="roleId" />
+            <exp op="=" dbField="userId" paramId="userId" />
+          </exp>
+        </where>
+        )
+      </where>
+      delete from UserRoleWorkAssignments
+      <where>
+        <exp op="and">
+          <exp op="in" dbField="roleId" paramId="roleId" />
+          <exp op="=" dbField="userId" paramId="userId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+<statement name="AddUpdateWorkAssignment" connection="Common">
+		<param id="userId" type="String" size="36" required="true"/>
+		<param id="roleId" type="Int16" required="true" />
+		<param id="resourceTypeCode" type="Int16" required="true" />
+		<param id="resourceValue" type="String" size="36" required="true" />
+    <param id="teamId" type="String" size="36" required="true" />
+    <param id="teamUnassignedFlag" required="true"/>
+    <param id="currentUserId" type="String" size="36" />
+     
+		<sql>
+      DECLARE @roleIdParam int, @resourceTypeCodeParam int,
+      @resourceValueParam varchar(100) 
+      
+      SET @resourceTypeCodeParam = <exp paramId="resourceTypeCode"/>
+      SET @resourceValueParam = <exp paramId="resourceValue"/> 
+      SET @roleIdParam = <exp paramId="roleId"/>
+      
+      IF Exists (SELECT UserRoleWorkAssignmentId
+			from UserRoleWorkAssignments  urw
+			WHERE  urw.RoleId = @roleIdParam
+			AND urw.ResourceTypeCode = @resourceTypeCodeParam AND urw.ResourceValue = @resourceValueParam) 
+      BEGIN
+			  update UserRoleWorkAssignments
+			  <columns mode="update">
+				  <column dbField="UserId" paramId="userId" />
+          <column dbField="TeamId" paramId="teamId" />
+          <column dbField="TeamUnassignedFlag" paramId="teamUnassignedFlag" />
+          <column dbField="LastUpdateId" paramId="currentUserId" />
+				  <column dbField="LastUpdateDate">getDate()</column>
+			  </columns>
+			  <where>
+				  <exp op="and">
+					  <exp op="=" dbField="roleId">@roleIdParam</exp>
+					  <exp op="=" dbField="ResourceTypeCode">@resourceTypeCodeParam</exp>
+            <exp op="=" dbField="ResourceValue">@resourceValueParam</exp>
+				  </exp>
+			  </where>
+		  End
+		  ELSE
+		  BEGIN
+        insert into UserRoleWorkAssignments
+			  <columns mode="insert">
+				  <column dbField="UserRoleWorkAssignmentId">NEWID()</column>
+				  <column dbField="UserId" paramId="userId" />
+				  <column dbField="RoleId">@roleIdParam</column>
+          <column dbField="ResourceTypeCode">@resourceTypeCodeParam</column>
+				  <column dbField="ResourceValue">@resourceValueParam</column>
+          <column dbField="TeamId" paramId="teamId" />
+          <column dbField="TeamUnassignedFlag" paramId="teamUnassignedFlag" />
+				  <column dbField="CreatorId" paramId="currentUserId" />
+				  <column dbField="CreatedDate">getDate()</column>
+			  </columns>
+		    
+		  END
+			
+		</sql>
+	</statement>
+  <statement name="GetTeamWithMembers" connection="Common">
+    <param id="BureauId" />
+    <param id="RoleId" />
+    <sql>
+      SELECT
+      t.TeamId,
+      t.TeamHierarchyPrefix + ' - ' + t.TeamName AS TeamName,
+      t.ParentBureauId,
+      t.AssociatedOrgId,
+      u.UserId,
+      u.UserName,
+      p.LastName + ', ' + p.FirstName FullName,
+      CAST(IIF(urb.UserBackupIntervalId IS NOT NULL, 1, 0) AS BIT) AS RequiresBackup
+      FROM
+      dbo.RelPeopleInternalOrganizations relOrg
+      JOIN People p ON p.PersonId = relOrg.PersonId
+      JOIN dbo.AC_User u ON u.UserId = p.UserId
+      <optional depends="RoleId" >
+        JOIN dbo.AC_RelUserRole relRole ON u.UserId = relRole.UserId
+      </optional>
+      JOIN dbo.DAS_TeamMember_P mem ON u.UserId = mem.UserId
+      JOIN dbo.DAS_Team_P t ON t.teamId = mem.TeamId
+      LEFT JOIN dbo.AC_UserBackupInterval urb on u.userid = urb.userid AND GETDATE() &gt;= (urb.BackupStartDate) AND GETDATE() &lt; (ISNULL(urb.BackupEndDate, GETDATE()+1))
+      <where>
+        <exp op="AND">
+          <exp op="OR">
+            <exp op="=" dbField="relOrg.InternalOrgLevel1" paramId="BureauId" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel2" paramId="BureauId" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel3" paramId="BureauId" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel4" paramId="BureauId" />
+          </exp>
+          <exp op="&gt;=" dbField="isnull(u.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+          <exp op="=" dbField="relRole.RoleId" paramId="RoleId" />
+          <exp op="=" dbField="t.TeamStatusCode">2</exp>
+        </exp>
+      </where>
+      order by t.TeamName, u.UserName
+    </sql>
+  </statement>
+  <statement name="GetActiveUsers" connection="Common">
+    <param id="RoleId" required="true"/>
+    <param id="GetBackup" type="Boolean" required="true"/>
+    <param id="OfficeCode" />
+    <sql>
+      SELECT u.UserId
+      , u.Username
+      , p.LastName + ', ' + p.FirstName FullName
+      <optional depends="GetBackup==true" >
+        , urb.UserBackupIntervalId
+        , urb.BackupStartDate as BackupStart
+        , urb.BackupEndDate as BackupEnd
+        , aubk.UserId as BackupUserId
+        , auBk.UserName as BackupUserName
+        , pBk.LastName + ', ' + pBk.FirstName BackupFullName
+      </optional>
+      FROM dbo.RelPeopleInternalOrganizations relOrg
+      INNER JOIN People p ON p.PersonId = relOrg.PersonId
+      INNER JOIN dbo.AC_User u ON u.userId = p.userId
+      INNER JOIN AC_RelUserRole relRole ON relRole.UserId = u.UserId
+      <optional depends="GetBackup==true" >
+        LEFT JOIN dbo.AC_UserBackupInterval urb on u.userid = urb.userid
+        and getdate() &gt;= (urb.BackupStartDate)  AND getdate() &lt; (ISNULL(urb.BackupEndDate, getdate()+1))
+        LEFT JOIN AC_RelBackupIntervalUserRole urbd on urbd.UserBackupIntervalId = urb.UserBackupIntervalId and urbd.BackupUserRoleId = <exp paramId="RoleId" />
+        LEFT JOIN ac_user  aubk on aubk.userId = urbd.BackupUserId
+        LEFT JOIN people  pbk on pbk.userId = aubk.UserId
+      </optional>
+      <where>
+        <exp op="AND">
+          <exp op="OR">
+            <exp op="=" dbField="relOrg.InternalOrgLevel1" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel2" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel3" paramId="OfficeCode" />
+            <exp op="=" dbField="relOrg.InternalOrgLevel4" paramId="OfficeCode" />
+          </exp>
+          <exp op="&gt;=" dbField="isnull(u.AccountDisabledDatetime, getdate()+1)">getDate()</exp>
+          <exp op="=" dbField="relRole.RoleId" paramId="RoleId" />
+        </exp>
+      </where>
+      order by p.LastName, p.FirstName
+    </sql>
+  </statement>
+  <statement name="GetTeamsByUser" connection="Common">
+    <param id="UserId" type="Guid"/>
+    <sql>
+      select
+      t.TeamId
+      , t. TeamHierarchyPrefix + ' - ' + t.TeamName as TeamName
+      , t.ParentBureauId
+      , t.AssociatedOrgId
+      , u.UserId
+      , u.UserName
+      , p.LastName + ', ' + p.FirstName FullName
+      , cast(IIF(urb.UserBackupIntervalId IS NOT NULL, 1, 0) as bit) as RequiresBackup
+      from dbo.DAS_Team_P t
+      join dbo.DAS_TeamMember_P mem on t.TeamId = mem.TeamId
+      JOIN dbo.AC_User u on u.UserId = mem.UserId
+      INNER JOIN People p ON u.userId = p.UserId
+      LEFT JOIN dbo.AC_UserBackupInterval urb on u.userid = urb.userid
+      and getdate() &gt;= (urb.BackupStartDate) AND getdate() &lt; (ISNULL(urb.BackupEndDate, getdate()+1))
+      where t.TeamStatusCode = 2
+      AND t.TeamId IN
+      (
+      select teamid from dbo.DAS_TeamMember_P
+      where UserId = <exp paramId="UserId" />
+      )
+      AND isnull(u.AccountDisabledDatetime, getdate()+1) &gt;= getDate()
+    </sql>
+  </statement>
+</statements>

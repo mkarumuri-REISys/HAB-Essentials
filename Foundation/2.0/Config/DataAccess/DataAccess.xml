@@ -1,0 +1,6 @@
+<root>
+  <defaultConnection name="Gems" />
+  <statements delimiter=";" />
+  <!--<parameters maintainParamState="true" />-->
+  <parameters metadata="true" />
+</root>

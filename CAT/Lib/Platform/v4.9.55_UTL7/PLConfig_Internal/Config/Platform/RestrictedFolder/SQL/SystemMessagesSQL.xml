@@ -1,0 +1,162 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/Workspace/Tools/REISchemas/REIData.xsd">
+  
+  <statement name="GetMessages" connection="Common">
+    <param id="SortExpression" type="String" default="EndDate DESC"/>
+    <param id="FilterExpression" type="String" />
+    <sql>
+      <select>
+        *
+      </select> from ( Select
+      pmm.MessageId
+      , pmm.Type AS MessageTypeCode
+      , pmm.Message AS Message
+      , pmm.StartDate AS StartDate
+      , pmm.EndDate AS EndDate
+      , pmm.UserTypeCode AS UserTypeCode
+      , Cast(Convert(varchar(10),pmm.StartDate,101) as DATETIME) AS StartDateFilter
+      , Cast(Convert(varchar(10),pmm.EndDate,101) as DATETIME) AS EndDateFilter
+      , (replace(convert(varchar(8), pmm.StartDate, 10), '-', '/') + ' ' +
+      substring(convert(varchar(20), pmm.StartDate, 9), 13, 5) + ' ' +
+      substring(convert(varchar(30), pmm.StartDate, 9), 25, 2)) AS MessageStartDateDisplay
+      , (replace(convert(varchar(8), pmm.EndDate, 10), '-', '/') + ' ' +
+      substring(convert(varchar(20), pmm.EndDate, 9), 13, 5) + ' ' +
+      substring(convert(varchar(30), pmm.EndDate, 9), 25, 2)) AS MessageEndDateDisplay
+      , CASE
+      WHEN lut.LongDisplayValue IS NULL THEN
+      'All'
+      ELSE
+      lut.LongDisplayValue
+      END AS UserType
+      , lpmt.Description AS MessageType
+      , CASE
+      WHEN getdate() BETWEEN pmm.StartDate AND isnull(pmm.EndDate, pmm.StartDate) THEN
+      'Yes'
+      ELSE
+      'No'
+      END AS IsCurrentlyActive
+      FROM
+      dbo.PFM_MSGS_Messages pmm
+      LEFT OUTER JOIN dbo.LookupUserType lut
+      ON lut.LookupCode = pmm.UserTypeCode
+      LEFT OUTER JOIN dbo.LU_PFM_MSGS_Type lpmt
+      ON lpmt.LookupCode = pmm.Type ) AS FinalData
+      <where>
+        <exp op="AND">
+          <optional depends="FilterExpression">
+            <dynamic paramId="FilterExpression"/>
+          </optional>
+        </exp>
+      </where>
+      <optional depends="SortExpression">
+        <sort paramId="SortExpression"></sort>
+      </optional>
+    </sql>
+  </statement>
+  
+  <statement name="UpdateMessage" connection="Common">
+    <param id="MessageTypeCode" type="Int32"/>
+    <param id="Message" type="String"/>
+    <param id="StartDate" type="DateTime"/>
+    <param id="EndDate" type="DateTime"/>
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="MessageId" type="String" required="true"/>
+    <param id="CurrentDateTime" type="DateTime" useCurrTime="true"/>
+    <param id="AdminUserId" type="String" default="15D6996D-1FA4-4345-980E-68BBA850E25F"/>
+    <sql>
+      UPDATE PFM_MSGS_Messages
+      <columns mode="update">
+        <column dbField="Type" paramId="MessageTypeCode" />
+        <column dbField="Message" paramId="Message" />
+        <column dbField="StartDate" paramId="StartDate" />
+        <column dbField="EndDate" paramId="EndDate" />
+        <column dbField="UserTypeCode" paramId="UserTypeCode" />
+        <column dbField="LastUpdateId" paramId="AdminUserId" />
+        <column dbField="LastUpdateDate" paramId="CurrentDateTime" />
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp paramId="MessageId" dbField="MessageId" op="=" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  
+  <statement name="InsertMessage" connection="Common">
+    <param id="MessageTypeCode" type="Int32"/>
+    <param id="Message" type="String"/>
+    <param id="StartDate" type="DateTime"/>
+    <param id="EndDate" type="DateTime"/>
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="MessageId" type="String" required="true"/>
+    <param id="CurrentDateTime" type="DateTime" useCurrTime="true"/>
+    <param id="AdminUserId" type="String" default="15D6996D-1FA4-4345-980E-68BBA850E25F"/>
+    <sql>
+      INSERT INTO PFM_MSGS_Messages
+      <columns mode="insert">
+        <column dbField="Type" paramId="MessageTypeCode" />
+        <column dbField="Message" paramId="Message" />
+        <column dbField="StartDate" paramId="StartDate" />
+        <column dbField="EndDate" paramId="EndDate" />
+        <column dbField="UserTypeCode" paramId="UserTypeCode" />
+        <column dbField="LastUpdateId" paramId="AdminUserId" />
+        <column dbField="LastUpdateDate" paramId="CurrentDateTime" />
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="CreatorId" paramId="AdminUserId" />
+        <column dbField="CreatedDate" paramId="CurrentDateTime" />
+      </columns>
+    </sql>
+  </statement>
+  
+  <statement name="DeleteMessage" connection="Common">
+    <param id="MessageId" required="true" type="String"/>
+    <sql>
+      DELETE FROM PFM_MSGS_Messages
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="MessageId" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  
+  <statement name="ValidateSystemMessage" connection="Common">
+    <param id="MessageTypeCode" type="Int32"/>
+    <param id="StartDate" type="DateTime"/>
+    <param id="EndDate" type="DateTime"/>
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="MessageId" type="String" required="true"/>
+    <sql>
+      Select count(*) FROM PFM_MSGS_Messages
+      WHERE (
+      <exp paramId="StartDate"/> Between StartDate And EndDate
+      OR
+      <exp paramId="EndDate"/> Between StartDate And EndDate
+      OR
+      StartDate Between <exp paramId="StartDate"/> AND <exp paramId="EndDate"/>
+      OR
+      EndDate Between <exp paramId="StartDate"/> AND <exp paramId="EndDate"/>
+      )
+      AND
+      <optional depends="UserTypeCode">
+        ( UserTypeCode = <exp paramId="UserTypeCode"/> OR UserTypeCode IS NULL )
+        AND
+      </optional>
+      Type = <exp paramId="MessageTypeCode"/>
+      AND
+      MessageId != <exp paramId="MessageId"/>
+    </sql>
+  </statement>
+  
+  <statement name="GetUserTypes" connection="Common">
+    <sql>
+      SELECT convert(varchar(MAX),LookupCode) as LookupCode, LongDisplayValue as DisplayValue FROM LookupUserType ORDER BY LookupCode
+    </sql>
+  </statement>
+  
+  <statement name="GetMessageTypes" connection="Common">
+    <sql>
+      SELECT convert(varchar(MAX),LookupCode) as LookupCode, Description as DisplayValue FROM dbo.LU_PFM_MSGS_Type ORDER BY LookupCode
+    </sql>
+  </statement>
+  
+</statements>

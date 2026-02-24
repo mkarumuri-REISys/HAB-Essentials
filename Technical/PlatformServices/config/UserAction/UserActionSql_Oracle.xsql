@@ -1,0 +1,163 @@
+<statements modulename="pfm-user-action/sql">
+  
+	<statement name="SaveUserActions"  connection="Common">
+    <param id="ByUserID" type="String" required="true" />
+    <param id="OnResourceID" type="String" required="true" />
+    <param id="OnResourceLookUpCode" type="Int32" required="true" />
+    <param id="ActionTypeLookUpCode" type="Int32" required="true" />
+    <param id="Comments" type="String" />
+    <param id="RoleId" type="Int32" />
+    <param id="TenantId" type="Int32"  required="true" />	
+    <sql>
+
+      INSERT INTO PlatformUserAction
+      <columns mode="insert">
+        <column dbField="ActionID" >sys_guid()</column>
+        <column dbField="ByUserID" paramId="ByUserID" />
+        <column dbField="OnDateTime">sysdate</column>
+        <column dbField="OnResourceID" paramId="OnResourceID" />
+        <column dbField="OnResourceLookUpCode" paramId="OnResourceLookUpCode" />
+        <column dbField="ActionTypeLookUpCode" paramId="ActionTypeLookUpCode" />
+        <column dbField="Comments" paramId="Comments" />
+        <column dbField="CreatorId" paramId="ByUserID" />
+        <column dbField="CreatedDate" >sysdate</column>
+        <column dbField="RoleId" paramId="RoleId" />
+        <column dbField="ExternalSystemCode" paramId="TenantId" />
+      </columns>
+
+    </sql>
+  </statement>
+
+<statement name="GetUserActionHistory"  connection="Common">
+<param id="ByUserID" type="String"/>
+<param id="onResourceIDs" type="String" required="true" />
+<param id="onResourceLookupCodes" type="Int32" required="true" />
+<param id="processLookUpCode" required="true" />
+<param id="UserActionType" type="String"/>
+<param id="actionTypeDisplay" type="String"/>  
+<param id="fullName" type="String"/> 
+<param id="onDateTime" type="String"/>                                   
+<param id="SortExpression" type="String" required="false" default="ActionTime DESC"/>
+<param id="tenantId" type="Int32"  required="true" />	
+
+<sql>
+      <select>
+        *
+      </select>
+  FROM
+  (
+  SELECT
+  Convert(varchar(36),LookupPlatformUserActionType.LookUpCode) as UserActionID,
+  PlatformUserAction.ActionID, PlatformUserAction.ExternalSystemCode as TenantId,
+  PlatformUserAction.OnDateTime ActionTime,
+  FORMAT(PlatformUserAction.OnDateTime,'MM/dd/yyyy hh:mm tt') + ' ET' OnDateTime, ISNULL(PlatformUserAction.Comments, ' ') as Comments,
+  LookupPlatformUserActionType.LongDisplayValue LongDisplayValue, ISNULL(People.NamePrefix, '') as NamePrefix , ISNULL(People.FirstName, '') as FirstName,
+  ISNULL(People.MiddleName, '') as MiddleName, ISNULL(People.LastName, '') as LastName,
+  ISNULL(People.LastName, '')  + ', ' + ISNULL(People.FirstName, '') as fullName,
+  Convert(varchar(36),PlatformUserAction.ByUserID) as ByUserID,
+  Convert(varchar(36),PlatformUserAction.OnResourceID) as OnResourceID, PlatformUserAction.OnResourceLookupCode,
+  LookupPlatformUserActionType.ProcessTypeLookUpCode as ProcessTypeLookUpCode,
+  LookupPlatformUserActionType.ShortDisplayValue as ActionTypeDisplay
+  FROM  PlatformUserAction INNER JOIN
+  LookupPlatformUserActionType ON
+  PlatformUserAction.ActionTypeLookUpCode = LookupPlatformUserActionType.LookupCode INNER JOIN
+  People ON PlatformUserAction.ByUserID = People.UserId INNER JOIN
+  LU_PLATFORMUSERACTIONPROCESS ON
+  LookupPlatformUserActionType.ProcessTypeLookUpCode = LU_PLATFORMUSERACTIONPROCESS.LookupCode
+  <where>
+						 <exp op="and">
+						 <exp op="IN" dbField="PlatformUserAction.OnResourceID" paramId="onResourceIDs" />
+						 <exp op="=" dbField="PlatformUserAction.OnResourceLookupCode" paramId="onResourceLookupCodes" />
+						 <exp op="in" dbField="PlatformUserAction.ByUserID" paramId="ByUserID" />
+						 <exp op="IN" dbField="LookupPlatformUserActionType.ProcessTypeLookUpCode"  paramId="processLookUpCode" />
+             <exp op="=" dbField="PlatformUserAction.ExternalSystemCode" paramId="tenantId" />
+						 <optional depends="UserActionType!='0'">
+						 <exp op="in" dbField="PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+						 </optional>
+						 <!--Filter params -->
+						 <exp op="like" dbField="LookupPlatformUserActionType.ShortDisplayValue" paramId="actionTypeDisplay" />               
+						 
+						 <exp op="like" dbField="ISNULL(People.LastName, '')  + ', ' + ISNULL(People.FirstName, '')" paramId="fullName" />  
+						 <exp op="like" dbField="FORMAT(PlatformUserAction.OnDateTime,'MM/dd/yyyy hh:mm tt')" paramId="onDateTime" /> 						 
+						 </exp>
+			</where>
+      ) AS UserActions
+<sort paramId="SortExpression"/>
+</sql>
+</statement>
+
+	<statement name="GetUserLastCommment">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="OnResourceLookupCodes" type="Int32" required="true" />
+		<param id="ProcessLookUpCode" type="Int32" />
+		<param id="UserActionType" type="String"/>
+		<param id="tempDatetime" type="string" default="PlatformUserAction.OnDateTime desc" />
+		<sql>
+      SELECT TOP 1 Convert(varchar(36),LookupPlatformUserActionType.LookUpCode) as UserActionID,
+      PlatformUserAction.ActionID,
+      PlatformUserAction.OnDateTime, ISNULL(PlatformUserAction.Comments, ' ') as Comments,
+      LookupPlatformUserActionType.LongDisplayValue LongDisplayValue, ISNULL(People.NamePrefix, '') as NamePrefix , ISNULL(People.FirstName, '') as FirstName,
+      ISNULL(People.MiddleName, '') as MiddleName, ISNULL(People.LastName, '') as LastName,
+      Convert(varchar(36),PlatformUserAction.ByUserID) as ByUserID,
+      Convert(varchar(36),PlatformUserAction.OnResourceID) as OnResourceID, PlatformUserAction.OnResourceLookupCode,
+      LookupPlatformUserActionType.ProcessTypeLookUpCode as ProcessTypeLookUpCode
+      FROM PlatformUserAction with(nolock) INNER JOIN
+      LookupPlatformUserActionType with(nolock) ON
+      PlatformUserAction.ActionTypeLookUpCode = LookupPlatformUserActionType.LookupCode INNER JOIN
+      People with(nolock) ON PlatformUserAction.ByUserID = People.UserId INNER JOIN
+      LU_PLATFORMUSERACTIONPROCESS with(nolock) ON
+      LookupPlatformUserActionType.ProcessTypeLookUpCode = LU_PLATFORMUSERACTIONPROCESS.LookupCode
+      <where>
+				<exp op="and">
+					<exp op="in" dbField="PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PlatformUserAction.OnResourceLookupCode" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+
+	<statement name="WF_GetUserLastCommment" connection="Workflow">
+		<param id="ByUserID" type="String" />
+		<param id="OnResourceIDs" type="String" />
+		<param id="OnResourceLookupCodes" type="Int32" />
+		<param id="ProcessLookUpCode" type="String" />
+		<param id="UserActionType" type="String" />
+		<param id="tempDatetime" type="string" default="FUA.Create_Datetime desc" />
+		<sql>
+			SELECT TOP 1 FUA.USER_ACTION_ID as ActionID
+			,FUA.Create_Datetime as OnDateTime
+			,FUA.Comment as Comments
+			,FUA.USER_ACTION_DESC as LongDisplayValue
+			,ISNULL(p.NamePrefix, '') as NamePrefix, ISNULL(p.FirstName, '') as FirstName, ISNULL(p.MiddleName, '') as MiddleName, ISNULL(p.LastName, '') as LastName
+			,AU.UserId as ByUserID
+			,PIC.OBJECT_ID as OnResourceID
+			,PIC.OBJECT_TYPE_ID as OnResourceLookupCode
+			,INST.Process_Definition_Id as ProcessTypeLookUpCode
+			FROM Process_Instance_Context PIC
+			JOIN FACT_Process_Instance INST ON PIC.PROCESS_INSTANCE_ID = INST.PROCESS_INSTANCE_ID
+			JOIN FACT_USER_ACTIONS FUA ON PIC.PROCESS_INSTANCE_ID = FUA.PROCESS_INSTANCE_ID
+			JOIN GEMS.DBO.AC_USER AU ON AU.UserId = FUA.User_Id
+			JOIN GEMS.DBO.People P ON AU.UserId = P.UserId
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="Convert(varchar(36),PIC.OBJECT_ID)" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PIC.OBJECT_TYPE_ID" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="Convert(varchar(36),AU.UserId)" paramId="ByUserID" />
+					<exp op="in" dbField="Convert(varchar(36),INST.Process_Definition_Id)" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="FUA.USER_ACTION_DESC" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+
+</statements>

@@ -1,0 +1,10 @@
+﻿<!-- This config is being provided as a template to be followed for Solutions. ServerIndentifier node value should be the Cache Server name. -->
+<Config>
+  <IsCacheEnabled>true</IsCacheEnabled>
+  <ServerIdentifier>localhost</ServerIdentifier>
+  <CacheName>default</CacheName>
+  <CachePort>22233</CachePort>
+  <CacheExpirationDuration>20</CacheExpirationDuration>
+  <CacheChannelTimeoutDuration>2</CacheChannelTimeoutDuration>
+  <CacheRequestTimeoutDuration>2</CacheRequestTimeoutDuration>
+</Config>

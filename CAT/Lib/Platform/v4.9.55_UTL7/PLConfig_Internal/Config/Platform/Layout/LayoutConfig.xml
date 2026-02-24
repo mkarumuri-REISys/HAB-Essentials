@@ -1,0 +1,7 @@
+<root>
+  <switchRolePage> </switchRolePage>
+  <validationErrorPerLine>5</validationErrorPerLine>
+  <smtpServer>mail.reisys.com</smtpServer>
+  <smtpUser></smtpUser>
+  <smtpPassword></smtpPassword>
+</root>

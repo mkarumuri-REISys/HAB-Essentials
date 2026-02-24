@@ -1,0 +1,39 @@
+﻿<Config>
+  <homeURLs>
+    <CorePredefinedPageId userType="1" >EAC75208-B220-490C-BCCD-6F67B88AE2CE</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >F179BBB9-5C75-4BDC-8F40-D2CB515113A0</CorePredefinedPageId>
+    <CorePredefinedPageId userType="4" >C5564169-DF72-489D-A278-DC316B8EEEEE</CorePredefinedPageId>
+    <CorePredefinedPageId userType="5" >152FEDBD-A345-4555-B1BD-CC7C6ECD2A4A</CorePredefinedPageId>
+    <CorePredefinedPageId userType="6" >6F8F7F3C-65C3-47A5-BAF9-A68CFBD93757</CorePredefinedPageId>
+    <CorePredefinedPageId userType="8" >FF2E4CC0-6547-4FBA-978C-FF7FC96B7278</CorePredefinedPageId>
+    <CorePredefinedPageId userType="9" >84C0374B-EB33-42C1-B02E-365ED2833C40</CorePredefinedPageId>
+  </homeURLs>
+  <ehbHomeURLs>
+    <CorePredefinedPageId userType="1" >EF56FA25-1897-443E-9A7B-CFD41133A649</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >5CF7E4C0-09BA-4998-986D-11837210C511</CorePredefinedPageId>
+  </ehbHomeURLs>
+  <contactUsURLs>
+    <CorePredefinedPageId userType="1" >AB9E06B6-A8A3-43B4-8E6D-BB3A74F0F60E</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >63B61CE0-95AB-461D-9059-DA619D11ED18</CorePredefinedPageId>
+    <CorePredefinedPageId userType="4" >B22E7872-3042-43C5-A79E-B7111D3CBBBB</CorePredefinedPageId>
+    <CorePredefinedPageId userType="5" >B22E7872-3042-43C5-A79E-51C1956E8C6C</CorePredefinedPageId>
+    <CorePredefinedPageId userType="6" >83CE8EF2-9FDB-4E89-AD32-D30823D2905F</CorePredefinedPageId>
+    <CorePredefinedPageId userType="8" >954BC835-F79D-4C44-8FB8-AF0FDD1ECE78</CorePredefinedPageId>
+    <CorePredefinedPageId userType="9" >26C8AE61-64FD-48D8-B2A6-D8FEAD63A056</CorePredefinedPageId>
+  </contactUsURLs>
+  <acceptableUserPolicyURLs>
+    <CorePredefinedPageId userType="1" >CD8901B7-F862-4200-95F4-21FACF119CA5</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >C208971F-2739-4D04-8207-1BD0B7E4DA74</CorePredefinedPageId>
+  </acceptableUserPolicyURLs>
+  <viewersAndPlayersURLs>
+    <CorePredefinedPageId userType="1" >22893EE3-FEEE-4EB3-A4CB-8D17FD6B5D1B</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >8F8D649D-3805-44AE-B54B-FD88B9197B23</CorePredefinedPageId>
+  </viewersAndPlayersURLs>
+  <myPortfolioURLs>
+  </myPortfolioURLs>
+  <toolbarControllerURLs>
+    <CorePredefinedPageId userType="1" >557198BF-F0AF-4729-B671-5E821F83751E</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2" >43A77B6D-12B3-4B4D-80EB-9D3441902F8B</CorePredefinedPageId>
+    <CorePredefinedPageId userType="4" >3DECA217-D99B-425F-AA93-3FE7E86E6E88</CorePredefinedPageId>
+  </toolbarControllerURLs>
+</Config>

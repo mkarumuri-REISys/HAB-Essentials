@@ -1,0 +1,47 @@
+<statements>
+	<statement name="getProcInst">
+		<param id="sourceId" type="adVarChar" size="36" required="true" />
+		<sql>
+			select fpi.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic				
+				inner join Workflow.dbo.FACT_PROCESS_INSTANCE fpi on fic.process_instance_id = fpi.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">13</exp>
+					<exp op="=" dbField="fic.object_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getProcInstThruApp">
+		<param id="sourceId" type="adVarChar" size="36" required="true" />
+		<sql>
+			select distinct fpi.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join APPLICATIONS app on fic.object_id = cast(app.applicationid as varchar(36))	
+				inner join FUNDINGCYCLES fc on app.fundingCycleId = fc.fundingCycleId
+				inner join Workflow.dbo.FACT_PROCESS_INSTANCE fpi on fic.process_instance_id = fpi.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="fc.programid" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getProcInstThruGrant">
+		<param id="sourceId" type="adVarChar" size="36" required="true" />
+		<sql>
+			select distinct fpi.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic
+				inner join GRANTS gr on fic.object_id = cast(gr.applicationid as varchar(36))				
+				inner join Workflow.dbo.FACT_PROCESS_INSTANCE fpi on fic.process_instance_id = fpi.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="gr.programId" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

@@ -1,0 +1,6 @@
+{
+  "SessionTimeOut":{
+    "SessionTimeout": 30,
+    "WarningTimeout": 5
+  }
+}

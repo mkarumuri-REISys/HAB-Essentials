@@ -1,0 +1,23 @@
+<datePickerConfig version="1.0">
+	<errLog>
+		<path>Y:\logs\error\DatePicker</path>
+	</errLog>
+	<defaultValues>
+		<popupButtonImagePath>Platform/Include/Images/DateIcon_66.gif</popupButtonImagePath>
+		<PopupButtonCSS>border:none;</PopupButtonCSS>
+		<PopupButtonText></PopupButtonText>
+		<CalendarCSS>border:1px solid #000000; background: #FFFFFF;</CalendarCSS>
+		<TitleCSS>font: bold 12px verdana; color: #000000;</TitleCSS>
+		<TitleHeaderRowCSS>border:1px solid #000000; background: #99CCFF;</TitleHeaderRowCSS>
+		<WeekRowCSS>border:1px solid #000000; background: #CCCCCC;</WeekRowCSS>
+		<MouseOverCSS>border:1px solid #000000; background: #FFFFFF;</MouseOverCSS>
+		<MouseSelectCSS>border:1px solid #000000; background: #FFFFCC;</MouseSelectCSS>
+		<MonthNavTextCSS>font: bold 11px verdana; text-decoration:none; color:#000000</MonthNavTextCSS>
+		<PrevMonthNavText>&amp;lt;M</PrevMonthNavText>
+		<NextMonthNavText>M&amp;gt;</NextMonthNavText>
+		<YearNavTextCSS>font: bold 11px verdana; text-decoration:none; color:#000000</YearNavTextCSS>
+		<PrevYearNavText>&amp;lt;Y</PrevYearNavText>
+		<NextYearNavText>Y&amp;gt;</NextYearNavText>
+		<HRSAHolidays></HRSAHolidays>
+	</defaultValues>
+</datePickerConfig>

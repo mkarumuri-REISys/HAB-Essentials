@@ -1,0 +1,263 @@
+﻿<wrapperTables>
+
+  <config subjectAreaCode="9999">
+    <statement name="SavePhysicalMailingAddress" connection="Gems">
+      <sql>
+        IF NOT EXISTS (
+        SELECT top 1 *
+        FROM PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+        )
+        BEGIN
+        INSERT INTO PlatformTestAddresses
+        <columns mode ="insert">
+          <column dbField="AddressId" >newid()</column>
+          <column dbField="EntityId" paramId="EntityId" />
+          <column dbField="EntityTypeCode" paramId="EntityTypeCode" />
+          <column dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+          <column dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          <column dbField="DeliveryModeTypeCode" paramId="DeliveryModeTypeCode" />
+          <column dbField="MailStopCode" paramId="MailStopCode" />
+          <column dbField="DivisionLine" paramId="DivisionLine" />
+          <column dbField="InternalRoutingInformation" paramId="InternalRoutingInformation" />
+          <column dbField="Company" paramId="Company" />
+          <column dbField="StreetNumber" paramId="StreetNumber" />
+          <column dbField="StreetAddress" paramId="StreetAddress" />
+          <column dbField="SecondaryIdentifierTypeCode" paramId="SecondaryIdentifierTypeCode" />
+          <column dbField="SecondaryIdentifierRange" paramId="SecondaryIdentifierRange" />
+          <column dbField="Urbanization" paramId="Urbanization" />
+          <column dbField="RuralRouteTypeCode" paramId="RuralRouteTypeCode" />
+          <column dbField="RuralRouteNumber" paramId="RuralRouteNumber" />
+          <column dbField="RuralRouteBoxNumber" paramId="RuralRouteBoxNumber" />
+          <column dbField="PostOfficeBoxNumber" paramId="PostOfficeBoxNumber" />
+          <column dbField="City" paramId="City" />
+          <column dbField="StateCode" paramId="StateCode" />
+          <column dbField="ZipCode" paramId="ZipCode" />
+          <column dbField="Zip4Code" paramId="Zip4Code" />
+          <column dbField="CountryCode" paramId="CountryCode" />
+          <column dbField="CongressionalDistrict" paramId="CongressionalDistrict" />
+          <column dbField="County" paramId="County" />
+          <column dbField="CountyFIPSCode" paramId="CountyFIPSCode" />
+          <column dbField="ValidationStatusCode" paramId="ValidationStatusCode" />
+          <column dbField="CreatorId" paramId="CreatorId" />
+          <column dbField="CreatedDate" >getdate()</column>
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" >getdate()</column>
+          <column dbField="InternationalStreetAddress" paramId="InternationalStreetAddress" />
+          <column dbField="Province" paramId="Province" />
+          <column dbField="PostalCode" paramId="PostalCode" />
+        </columns>
+        END
+        ELSE
+        BEGIN
+        UPDATE PlatformTestAddresses
+        <columns mode ="update">
+          <column dbField="DeliveryModeTypeCode" paramId="DeliveryModeTypeCode" />
+          <column dbField="MailStopCode" paramId="MailStopCode" />
+          <column dbField="DivisionLine" paramId="DivisionLine" />
+          <column dbField="InternalRoutingInformation" paramId="InternalRoutingInformation" />
+          <column dbField="Company" paramId="Company" />
+          <column dbField="StreetNumber" paramId="StreetNumber" />
+          <column dbField="StreetAddress" paramId="StreetAddress" />
+          <column dbField="SecondaryIdentifierTypeCode" paramId="SecondaryIdentifierTypeCode" />
+          <column dbField="SecondaryIdentifierRange" paramId="SecondaryIdentifierRange" />
+          <column dbField="Urbanization" paramId="Urbanization" />
+          <column dbField="RuralRouteTypeCode" paramId="RuralRouteTypeCode" />
+          <column dbField="RuralRouteNumber" paramId="RuralRouteNumber" />
+          <column dbField="RuralRouteBoxNumber" paramId="RuralRouteBoxNumber" />
+          <column dbField="PostOfficeBoxNumber" paramId="PostOfficeBoxNumber" />
+          <column dbField="City" paramId="City" />
+          <column dbField="StateCode" paramId="StateCode" />
+          <column dbField="ZipCode" paramId="ZipCode" />
+          <column dbField="Zip4Code" paramId="Zip4Code" />
+          <column dbField="CountryCode" paramId="CountryCode" />
+          <column dbField="CongressionalDistrict" paramId="CongressionalDistrict" />
+          <column dbField="County" paramId="County" />
+          <column dbField="CountyFIPSCode" paramId="CountyFIPSCode" />
+          <column dbField="ValidationStatusCode" paramId="ValidationStatusCode" />
+          <column dbField="InternationalStreetAddress" paramId="InternationalStreetAddress" />
+          <column dbField="Province" paramId="Province" />
+          <column dbField="PostalCode" paramId="PostalCode" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" >getdate()</column>
+        </columns>
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+        END
+
+
+
+      </sql>
+    </statement>
+    <statement name="GetPhysicalMailingAddress" connection="Gems">
+      <sql>
+        Select * from PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+      </sql>
+    </statement>
+    <statement name="RemovePhysicalMailingAddress" connection="Gems">
+      <sql>
+        Delete from PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+      </sql>
+    </statement>
+  </config>
+
+  <config subjectAreaCode="9998">
+    <statement name="SavePhysicalMailingAddress" connection="Gems">
+      <sql>
+        IF NOT EXISTS (
+        SELECT top 1 *
+        FROM PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+        )
+        BEGIN
+        INSERT INTO PlatformTestAddresses
+        <columns mode ="insert">
+          <column dbField="AddressId" >newid()</column>
+          <column dbField="EntityId" paramId="EntityId" />
+          <column dbField="EntityTypeCode" paramId="EntityTypeCode" />
+          <column dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+          <column dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          <column dbField="DeliveryModeTypeCode" paramId="DeliveryModeTypeCode" />
+          <column dbField="MailStopCode" paramId="MailStopCode" />
+          <column dbField="DivisionLine" paramId="DivisionLine" />
+          <column dbField="InternalRoutingInformation" paramId="InternalRoutingInformation" />
+          <column dbField="Company" paramId="Company" />
+          <column dbField="StreetNumber" paramId="StreetNumber" />
+          <column dbField="StreetAddress" paramId="StreetAddress" />
+          <column dbField="SecondaryIdentifierTypeCode" paramId="SecondaryIdentifierTypeCode" />
+          <column dbField="SecondaryIdentifierRange" paramId="SecondaryIdentifierRange" />
+          <column dbField="Urbanization" paramId="Urbanization" />
+          <column dbField="RuralRouteTypeCode" paramId="RuralRouteTypeCode" />
+          <column dbField="RuralRouteNumber" paramId="RuralRouteNumber" />
+          <column dbField="RuralRouteBoxNumber" paramId="RuralRouteBoxNumber" />
+          <column dbField="PostOfficeBoxNumber" paramId="PostOfficeBoxNumber" />
+          <column dbField="City" paramId="City" />
+          <column dbField="StateCode" paramId="StateCode" />
+          <column dbField="ZipCode" paramId="ZipCode" />
+          <column dbField="Zip4Code" paramId="Zip4Code" />
+          <column dbField="CountryCode" paramId="CountryCode" />
+          <column dbField="CongressionalDistrict" paramId="CongressionalDistrict" />
+          <column dbField="County" paramId="County" />
+          <column dbField="CountyFIPSCode" paramId="CountyFIPSCode" />
+          <column dbField="ValidationStatusCode" paramId="ValidationStatusCode" />
+          <column dbField="CreatorId" paramId="CreatorId" />
+          <column dbField="CreatedDate" >getdate()</column>
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" >getdate()</column>
+          <column dbField="InternationalStreetAddress" paramId="InternationalStreetAddress" />
+          <column dbField="Province" paramId="Province" />
+          <column dbField="PostalCode" paramId="PostalCode" />
+        </columns>
+        END
+        ELSE
+        BEGIN
+        UPDATE PlatformTestAddresses
+        <columns mode ="update">
+          <column dbField="DeliveryModeTypeCode" paramId="DeliveryModeTypeCode" />
+          <column dbField="MailStopCode" paramId="MailStopCode" />
+          <column dbField="DivisionLine" paramId="DivisionLine" />
+          <column dbField="InternalRoutingInformation" paramId="InternalRoutingInformation" />
+          <column dbField="Company" paramId="Company" />
+          <column dbField="StreetNumber" paramId="StreetNumber" />
+          <column dbField="StreetAddress" paramId="StreetAddress" />
+          <column dbField="SecondaryIdentifierTypeCode" paramId="SecondaryIdentifierTypeCode" />
+          <column dbField="SecondaryIdentifierRange" paramId="SecondaryIdentifierRange" />
+          <column dbField="Urbanization" paramId="Urbanization" />
+          <column dbField="RuralRouteTypeCode" paramId="RuralRouteTypeCode" />
+          <column dbField="RuralRouteNumber" paramId="RuralRouteNumber" />
+          <column dbField="RuralRouteBoxNumber" paramId="RuralRouteBoxNumber" />
+          <column dbField="PostOfficeBoxNumber" paramId="PostOfficeBoxNumber" />
+          <column dbField="City" paramId="City" />
+          <column dbField="StateCode" paramId="StateCode" />
+          <column dbField="ZipCode" paramId="ZipCode" />
+          <column dbField="Zip4Code" paramId="Zip4Code" />
+          <column dbField="CountryCode" paramId="CountryCode" />
+          <column dbField="CongressionalDistrict" paramId="CongressionalDistrict" />
+          <column dbField="County" paramId="County" />
+          <column dbField="CountyFIPSCode" paramId="CountyFIPSCode" />
+          <column dbField="ValidationStatusCode" paramId="ValidationStatusCode" />
+          <column dbField="InternationalStreetAddress" paramId="InternationalStreetAddress" />
+          <column dbField="Province" paramId="Province" />
+          <column dbField="PostalCode" paramId="PostalCode" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="LastUpdateDate" >getdate()</column>
+        </columns>
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+        END
+
+
+
+      </sql>
+    </statement>
+    <statement name="GetPhysicalMailingAddress" connection="Gems">
+      <sql>
+        Select * from PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+      </sql>
+    </statement>
+    <statement name="RemovePhysicalMailingAddress" connection="Gems">
+      <sql>
+        Delete from PlatformTestAddresses
+        <where >
+          <exp op="AND">
+            <exp op="=" dbField="EntityId" paramId="EntityId" />
+            <exp op="=" dbField="EntityTypeCode" paramId="EntityTypeCode" />
+            <exp op="=" dbField="AddressPurposeCode" paramId="AddressPurposeCode" />
+            <exp op="=" dbField="AddressTypeCode" paramId="AddressTypeCode" />
+          </exp>
+        </where>
+      </sql>
+    </statement>
+  </config>
+  
+</wrapperTables>

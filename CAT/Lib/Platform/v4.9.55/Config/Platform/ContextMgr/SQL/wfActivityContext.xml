@@ -1,0 +1,42 @@
+<statements>	
+	<statement name="getAll" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<sql>
+			select object_type_id as targetObjectType,
+					object_id as targetObjectID
+			from Workflow.dbo.ACTIVITY_INSTANCE_CONTEXT
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="activity_instance_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="insert" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<param id="targetType" type="Int32" required="true"/>
+		<param id="targetId" type="String" size="36" required="true"/>
+		<sql>
+			insert into ACTIVITY_INSTANCE_CONTEXT
+			<columns mode="insert">
+				<column dbField="activity_instance_id" paramId="sourceId" />
+				<column dbField="object_type_id" paramId="targetType" />
+				<column dbField="object_id" paramId="targetId" />
+			</columns>
+		</sql>
+	</statement>
+	
+	<statement name="remove" connection="WORKFLOW">
+		<param id="sourceId" type="String" size="36" required="true"/>
+		<param id="targetType" type="Int32" size="36" />
+		<sql>
+			delete from ACTIVITY_INSTANCE_CONTEXT
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="activity_instance_id" paramId="sourceId" />
+					<exp op="=" dbField="object_type_id" paramId="targetType" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

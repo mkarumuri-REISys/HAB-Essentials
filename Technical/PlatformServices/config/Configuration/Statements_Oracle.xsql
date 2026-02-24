@@ -1,0 +1,26 @@
+<statements modulename="ApplicationConfig/data">
+  <statement name="LoadConfigurations" connection="gems">
+    <param id="Environment" type="String" required="true" />
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="ProgramSpecificSystemId" type="Int32" required="true"/>
+    <param id="LookupExternalSystemDimension" type="Int32"/>
+    <param id="ConfigKey" type="String"/>
+    <sql>
+
+      <optional depends="UserTypeCode">
+       SELECT n.LookupCode as LookupCode, n.DisplayValue as Key, c.WebConfigValue as Value
+       FROM LU_PFM_Environment e
+       INNER JOIN PFM_WebConfig_P c ON
+       e.LookupCode=c.EnvironmentCode
+       AND (e.DisplayValue =<exp paramId="Environment"/> OR (e.DisplayValue !=<exp paramId="Environment"/> AND e.DisplayValue = 'All'))
+       AND c.UserTypeCode = <exp paramId="UserTypeCode"/>
+       AND (c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/> OR c.ExternalSystemsCode IS NULL)
+       INNER JOIN LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode
+     </optional>
+      <optional depends="ConfigKey">
+          where n.DisplayValue=<exp paramId="ConfigKey"/>
+      </optional>
+    </sql>
+  </statement>
+</statements>
+

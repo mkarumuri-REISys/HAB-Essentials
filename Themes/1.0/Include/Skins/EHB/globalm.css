@@ -1,0 +1,692 @@
+﻿body {
+    background-color: #EEEFF0;
+    min-width: 0 !important;
+}
+
+#base_login {
+    background-color: #fff;
+    border-bottom: 3px solid #D4D7D9;
+    padding-bottom: 15px;
+    margin: 20px auto 0 auto;
+    width: 100% !important;
+}
+
+/* The following media 4 queries are a work around to fix the issue caused by #base_login width:750px in the global.css. The width porperty needs to be 
+   changed to the min-width:750px in global css and then in the global responsive style sheet, overwrite the porperty to inherit the width (make it important).
+   This work around is used to avoid modifying the global css at this time. 
+*/
+@media screen and ( max-width:767px ){
+    #base_login {
+        width: 100%;
+    }
+}
+@media screen and ( min-width:768px ){
+    #base_login {
+        width: 83.33% !important;
+    }
+}
+@media screen and ( min-width:992px ){
+    #base_login {
+        width: 83.33% !important;
+    }
+}
+@media screen and ( min-width:1200px ){
+    #base_login {
+        width: 66.66% !important;
+    }
+}
+
+    #base_login .login_left {
+        width: 100% !important;
+        float: left;
+        margin-right: 3.5%;
+        border-right: none !important;
+    }
+
+    #base_login .login_right {
+        width: 100% !important;
+    }
+
+/************************
+***     Login   	  ***
+************************/
+#base_login {
+    margin-top: 110px;
+}
+
+    #base_login .btn-primary {
+        background: #4d8cb3;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #4d8cb3), color-stop(100%, #2d668b));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* IE10+ */
+        background: linear-gradient(to bottom, #4d8cb3 0%, #2d668b 100%);
+        /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4d8cb3', endColorstr='#2d668b', GradientType=0);
+        /* IE6-9 */
+    }
+
+    #base_login .center-block {
+        background-color: #ffffff;
+        border-radius: 6px 6px 0 0;
+        border-bottom: 3px solid #d4d7d9;
+        margin-top: 10px;
+    }
+
+        #base_login .login_left .calleft {
+            color: #414141;
+            font-weight: 600;
+        }
+
+        #base_login .login_left .input-group {
+            width: 100%;
+            padding-bottom:15px;
+        }
+
+            #base_login .login_left .input-group input.form-control {
+                border-bottom-right-radius: 0;
+                border-top-right-radius: 0;
+                background-color: #f4f5f5;
+                font-size: 12px;
+                padding: 0 8px;
+            }
+
+        #base_login .login_left .input-group-addon {
+            top: 0;
+            border-radius: 0;
+            background: #ffffff;
+            /* Old browsers */
+            background: -moz-linear-gradient(top, #ffffff 47%, #e9e9e9 96%);
+            /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(47%, #ffffff), color-stop(96%, #e9e9e9));
+            /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #ffffff 47%, #e9e9e9 96%);
+            /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #ffffff 47%, #e9e9e9 96%);
+            /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #ffffff 47%, #e9e9e9 96%);
+            /* IE10+ */
+            background: linear-gradient(to bottom, #ffffff 47%, #e9e9e9 96%);
+            /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e9e9e9', GradientType=0);
+            /* IE6-9 */
+        }
+
+        #base_login .login_left .form-group {
+            margin-bottom: 10px;
+        }
+
+    #base_login .loginline {
+        border-bottom: 1px dashed #cccccc;
+        margin-bottom: 15px;
+        padding: 15px 0 0;
+        width: 92%;
+    }
+
+    #base_login .login_right h3 {
+        border-left: 3px solid #ccd4d9;
+        color: #1d4f70;
+        font-weight: 600;
+        margin-left: -15px;
+        padding: 10px 30px 10px 10px;
+        font-size: 1em;
+        background: #f0f6fa;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #f0f6fa 0%, #d0e0ec 100%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f0f6fa), color-stop(100%, #d0e0ec));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #f0f6fa 0%, #d0e0ec 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #f0f6fa 0%, #d0e0ec 100%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #f0f6fa 0%, #d0e0ec 100%);
+        /* IE10+ */
+        background: linear-gradient(to bottom, #f0f6fa 0%, #d0e0ec 100%);
+        /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f0f6fa', endColorstr='#d0e0ec', GradientType=0);
+        /* IE6-9 */
+    }
+
+        #base_login .login_right h3.LinksBlock:after,
+        #base_login .login_right h3:after {
+            content: ' ';
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 13px solid #d1e0ec;
+            position: relative;
+            top: 33px;
+            right: 60px;
+            z-index: 50;
+        }
+
+    #base_login .login_right .otherLinks {
+        padding-left: 0;
+        list-style: none;
+        padding-top: 10px;
+    }
+
+    #base_login .login_right .contactLinks {
+        padding-top: 10px;
+    }
+
+    #base_login .login_right .contactcategory {
+        display: inline;
+        font-weight: 600;
+        padding-bottom: 10px;
+    }
+
+    #base_login .login_right .content {
+        display: inline;
+        padding: 0 0 5px 25px;
+    }
+
+        #base_login .login_right .content p {
+            padding-left: 65px;
+        }
+
+    #base_login .login_right .LinksBlock {
+        padding-bottom: 10px;
+        display:block;
+    }
+
+    #base_login .v-bar {
+        height: 65%;
+        width: 1px;
+        border-right: 1px dashed #ccd4d9;
+        position: absolute;
+        right: 50%;
+    }
+
+    #base_login .h-bar {
+        padding: 5px;
+        background-color: #EEEFF0;
+        float: left;
+        position: relative;
+        top: 10px;
+        width: 100%;
+        margin-left: 0;
+        border-top: 1px solid #D6DFE7;
+        border-bottom: 1px solid #D6DFE7;
+        margin-bottom: 10px;
+    }
+
+    #base_login button {
+        width: 35%;
+    }
+
+    #base_login .forgot-password {
+        text-align: left;
+        padding-left: 0;
+        margin-bottom: 20px;
+        float: left;
+    }
+
+    #base_login .txtUsernameValidation,
+    #base_login .txtPasswordValidation {
+        color: #dd2020;
+    }
+
+    #base_login .ValidationError {
+        padding-top: 10px;
+    }
+
+    #base_login h2 {
+        margin-top: 10px;
+    }
+
+.login-layout .visible-xs .navbar-brand {
+    display: inline;
+    margin-right: 5px;
+}
+
+    .login-layout .visible-xs .navbar-brand h1 {
+        display: inline;
+        position: relative;
+        float: none;
+        top: -7px !important;
+        margin-left: 10px;
+    }
+
+    .login-layout .visible-xs .navbar-brand img {
+        margin-right: 5px;
+    }
+
+.login-layout .hidden-xs .navbar-brand {
+    display: inline;
+}
+
+.login-layout .hidden-xs h1 {
+    display: inline;
+    position: absolute;
+}
+
+.login-layout .hidden-xs .hrsa-logo-top {
+    background-image: url(Images/EHB-MobilePortal-logo.png);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    padding-left: 126px;
+    background-size: auto;
+    padding-bottom: 15px;
+}
+/******************* MOBILE ADJUSTMENTS *******************/
+.page-xs #base_login {
+    margin-top: 60px;
+}
+
+    .page-xs #base_login .input-group {
+        padding-right: 0 !important;
+    }
+
+    .page-xs #base_login button,
+    .page-xs #base_login .loginline {
+        width: 100%;
+        text-transform: uppercase;
+    }
+
+    .page-xs #base_login .login_right {
+        margin-bottom: 30px;
+    }
+
+    .page-xs #base_login .login_left .input-group input.form-control {
+               font-size:16px;
+}
+
+        .page-xs #base_login .login_right h3 {
+            width: inherit;
+        }
+
+.logindashed {
+    border-right:0;
+    }
+
+    .page-xs #base_login select#ddlSite {
+        height: 30px !important;
+        padding-left: 3px;
+        background: #e9e9e9;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #e9e9e9 4%, #ffffff 53%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(4%, #e9e9e9), color-stop(53%, #ffffff));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #e9e9e9 4%, #ffffff 53%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #e9e9e9 4%, #ffffff 53%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #e9e9e9 4%, #ffffff 53%);
+        /* IE10+ */
+        background: linear-gradient(to bottom, #e9e9e9 4%, #ffffff 53%);
+        /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e9e9e9', endColorstr='#ffffff', GradientType=0);
+        /* IE6-9 */
+    }
+
+.page-xs .center-block {
+    width: 96%;
+    margin-left: 2%;
+    border: 1px solid #d6dfe7;
+}
+
+/*********************
+*** Custom Changes ***
+**********************/
+#content-center .container-fluid .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#base_login {
+    border-radius: 6px 6px 0 0;
+}
+
+
+    #base_login .login_right .content p a {
+        display: inline-block;
+        margin-left: 50px;
+        margin-top: -18px;
+    }
+
+.titledownarrow1, .titledownarrow {
+    display: none;
+}
+
+
+
+@-moz-document url-prefix() {
+    #base_login .login_left {
+        width: 100% !important;
+    }
+}
+
+
+@media screen and ( max-width:767px ) {
+    #header {
+        height: 60px !important;
+    }
+
+    .main_title span {
+        padding: 0 0 0 12px !important;
+    }
+
+    #base_login {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+        #base_login .login_left {
+            width: 100% !important;
+            margin-right: 0 !important;
+        }
+
+        #base_login .login_right {
+            width: 100% !important;
+            margin-right: 0 !important;
+            
+        }
+
+
+            #base_login .login_right h3 {
+                margin-left: -10px;
+            }
+
+    #ins_right {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    #base_login .loginline {
+        width: 100%;
+    }
+
+    #base_login .login_left .input-group input.form-control {
+        font-size:16px;
+    }
+	#base_login .login_left .form-group select {
+	margin-bottom:25px;
+	font-size:16px;
+
+	}
+    .loginContent {
+        padding-right: 0 !important;
+    }
+
+    #base_login .btn-primary {
+        width: 100% !important;
+        text-transform: uppercase;
+		font-size:16px;
+    }
+
+    #logowrapper {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+
+    .logo {
+        margin: 0;
+        height: auto !important;
+        width: 100% !important;
+    }
+
+        .logo img {
+            display: none !important;
+        }
+
+        .logo a {
+            width: 125px;
+            height: 36px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            background-image: url(Images/EHB-MobilePortal-logo-login.png);
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            background-size: auto 100%;
+        }
+
+    h1 {
+        font-size: 0 !important;
+    }
+
+    .errorBase {
+        margin-left: 15px !important;
+        margin-right: 15px !important;
+    }
+
+    .HiddenLinksBlock {
+     display: none !important;
+     }
+
+    #footer ul#footer_list li {
+        border-left: 0 solid !important;
+    }
+     
+
+    .loginHeaderEX {
+        margin-left:0;
+    }
+
+}
+
+#top-link {
+	width:30px !important;
+	height:30px !important;
+
+}
+
+/* The following css is a work around for the field level validation messages when using input-group-addon to show the glyphicons for username and password.
+    The input-group-addon has currently been commented out in the responsive version of LoginViewControl.ascx control.
+*/
+
+
+.reimodal {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+    .reimodal .close {
+        top: 3px !important;
+        height:25px !important;
+
+    }
+
+    .reimodal .mtitle {
+        margin-left: 0 !important;
+    }
+
+    .reimodal p {
+        padding-left: 10px !important;
+    }
+
+.reimodal .btnRight input {
+        background: #4d8cb3 !important;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #4d8cb3 0%, #2d668b 100%)  !important;
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #4d8cb3), color-stop(100%, #2d668b))  !important;
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #4d8cb3 0%, #2d668b 100%) !important;
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #4d8cb3 0%, #2d668b 100%) !important;
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #4d8cb3 0%, #2d668b 100%) !important;
+        /* IE10+ */
+        background: linear-gradient(to bottom, #4d8cb3 0%, #2d668b 100%) !important;
+        /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4d8cb3', endColorstr='#2d668b', GradientType=0) !important;
+        /* IE6-9 */
+		
+		padding:6px 12px 6px 12px;
+		height:30px !important;
+		border-radius: 4px;
+		color:#fff;
+		font-size:14px;
+    }
+.reimodal .btnRight input:hover {
+	color:#fff !important;
+}	
+	
+
+li.subactive a {
+background-position: center 24px !important;
+height:35px !important;
+}
+
+.LoginWarningOverLay{
+    width: 60% !important;
+}
+
+
+
+@media screen and ( max-width:767px ){
+    .reimodal {
+		width:80% !important;
+	}
+
+	.reimodal .btnRight{
+		width: 90% !important;
+    padding-bottom:10px;
+    }
+
+	.reimodal .btnRight .hrsaSkinnedButton{
+		width: 90% !important;
+		border-radius:6px;
+		background-color:#447b9e;
+		background-position: 0 -1150px;
+		height:33px;
+		padding:7px 8px;
+		text-transform: uppercase;
+		font-weight:normal;
+
+        background: #4d8cb3;
+        /* Old browsers */
+        background: -moz-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #4d8cb3), color-stop(100%, #2d668b));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #4d8cb3 0%, #2d668b 100%);
+        /* IE10+ */
+        background: linear-gradient(to bottom, #4d8cb3 0%, #2d668b 100%);
+        /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#4d8cb3', endColorstr='#2d668b', GradientType=0);
+        /* IE6-9 */
+		
+	}
+	.reimodal p {
+		width:100% !important;
+	}
+	.reimodal .confirm_right{
+		width:auto;
+		margin-left:auto;
+		margin-right:auto;
+		padding-left:20px;	
+		padding-right:20px;	
+        max-height: 50vh;
+        overflow-y: scroll;
+	}
+	.reimodal .confirm_left .confirm_warn{ 
+		display:none;
+	}
+	#PreLoginWarningMessage_Container {
+		width:auto !important;
+	}
+	#exposeMask { width:100% !important;}
+	
+	#divForgetPassword {
+	height:250px;
+	overflow-y:scroll;
+	}
+}
+
+
+
+.hidden-offscreen{
+position: absolute !important;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+    padding:0 !important;
+    border:0 !important;
+    height: 1px !important;
+    width: 1px !important;
+    overflow: hidden;
+}
+
+.logindashed {
+    border-right:0 !important;
+    }
+	
+.contactLinks .content {
+	width:80%;
+	}
+
+
+/**** Adjustment Code ****/
+
+  @media \0screen{
+            .logo a {
+            filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+            src='/2010/WebEPSInternal/Platform/Include/Skins/EHB/Images/EHB-MobilePortal-logo-login.png',   
+            sizingMethod='scale');
+            }
+        }
+        
+        @media screen and (max-width:767px) {
+            .reimodal .confirm_right {
+                overflow-y:auto !important;
+                max-height:250px !important;
+            }
+        }
+        
+        #base_login { padding:0;}
+        
+        .main_title, .main_title span { background-image:none;}
+        
+        #divForgetPassword,
+        .modal .modal-dialog .modal-content .modal-body,
+        .reimodal .confirm_right {
+            overflow-y:auto !important;
+        }
+        
+        #footpanel ul li a {
+            padding:.4em 1em !important;
+            height:30px !important;
+        }
+        #base_login .login_right .contactcategory {
+            display:inline-block !important;
+            vertical-align:top !important;
+        }
+        #base_login .login_right .content {
+            display:inline-block !important;
+        }
+        #base_login .login_right .contact-link-out {
+        display:inline !important;
+            }
+
+#exposeMask {
+    background: url(./Images/shadow-boxer.png) repeat left top !important;
+    background-color:transparent !important;
+    zoom: 1;
+	filter: alpha(opacity=30);	
+}
+
+@media only screen
+and (-webkit-min-device-pixel-ratio: 2)
+and (orientation: landscape) {
+	.reimodal .confirm_right, #divForgetPassword { height:150px !important;}
+	.reimodal { top:20px !important;}
+
+}

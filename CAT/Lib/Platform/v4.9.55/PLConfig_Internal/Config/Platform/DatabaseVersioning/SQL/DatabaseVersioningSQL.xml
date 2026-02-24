@@ -1,0 +1,16 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+
+  <statement name ="GetCurrentVersions" connection="Common">
+    SELECT ProductName, ProductVersion, PlatformVersion
+    FROM PFM_PRODUCTVERSION_P  (NOLOCK)
+  </statement>
+  <statement name ="GetIssues" connection="Common">
+    <param id="Version" type="String" />
+    <param id="DisplayValue" type="String" />
+    SELECT JIRAIssueNumber,ProductName , ProductVersion FROM PFM_IssueDetail_P inner join PFM_PRODUCTVERSION_P
+    on PFM_IssueDetail_P.ProductVersionId = PFM_PRODUCTVERSION_P.ProductVersionId Where  ProductName like '<dynamic paramId="DisplayValue"/>'
+    AND ProductVersion like '<dynamic paramId="Version"/>'
+
+
+  </statement>
+</statements>

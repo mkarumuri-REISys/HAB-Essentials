@@ -1,0 +1,16 @@
+<statements>
+	<statement name="getProcInst">
+		<param id="sourceId" type="adVarChar" size="36" required="true" />
+		<sql>
+			select fpi.*
+			from Workflow.dbo.PROCESS_INSTANCE_CONTEXT fic				
+				inner join Workflow.dbo.FACT_PROCESS_INSTANCE fpi on fic.process_instance_id = fpi.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fic.object_type_id">11</exp>
+					<exp op="=" dbField="fic.object_id" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

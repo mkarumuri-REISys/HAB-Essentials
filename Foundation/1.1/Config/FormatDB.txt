@@ -1,0 +1,343 @@
+  /*-------- Create UserInfo Table --------------------*/
+  
+  USE GEMS
+  GO
+
+  /****** Object:  Table [dbo].[UserDetail]    Script Date: 4/7/2015 12:51:01 PM ******/
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserDetail]'))
+  DROP TABLE [dbo].[UserDetail]
+  GO
+
+  /****** Object:  Table [dbo].[UserInfo]    Script Date: 4/7/2015 12:50:12 PM ******/
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserInfo]'))
+  DROP TABLE [dbo].[UserInfo]
+  GO
+
+  /****** Object:  Table [dbo].[UserInfo]    Script Date: 4/7/2015 12:50:12 PM ******/
+  SET ANSI_NULLS ON
+  GO
+
+  SET QUOTED_IDENTIFIER ON
+  GO
+
+  SET ANSI_PADDING ON
+  GO
+
+  CREATE TABLE [dbo].[UserInfo](
+  [FirstName] [varchar](50) NULL,
+  [LastName] [varchar](50) NULL,
+  [UserInfoId] [uniqueidentifier] NOT NULL,
+  [MiddleName] [varchar](50) NULL,
+  [CreatorId] [uniqueidentifier] NULL,
+  [LastUpdateId] [uniqueidentifier] NULL,
+  [CreatedDate] [datetime] NULL,
+  [LastUpdateDate] [datetime] NULL,
+  CONSTRAINT [PK_UserInfo] PRIMARY KEY CLUSTERED
+  (
+  [UserInfoId] ASC
+  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+  ) ON [PRIMARY]
+
+  GO
+
+  SET ANSI_PADDING OFF
+  GO
+  
+  USE EF
+  GO
+
+  /****** Object:  Table [dbo].[UserDetail]    Script Date: 4/7/2015 12:51:01 PM ******/
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserDetail]'))
+  DROP TABLE [dbo].[UserDetail]
+  GO
+
+  /****** Object:  Table [dbo].[UserInfo]    Script Date: 4/7/2015 12:50:12 PM ******/
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserInfo]'))
+  DROP TABLE [dbo].[UserInfo]
+  GO
+
+  /****** Object:  Table [dbo].[UserInfo]    Script Date: 4/7/2015 12:50:12 PM ******/
+  SET ANSI_NULLS ON
+  GO
+
+  SET QUOTED_IDENTIFIER ON
+  GO
+
+  SET ANSI_PADDING ON
+  GO
+
+  CREATE TABLE [dbo].[UserInfo](
+  [FirstName] [varchar](50) NULL,
+  [LastName] [varchar](50) NULL,
+  [UserInfoId] [uniqueidentifier] NOT NULL,
+  [MiddleName] [varchar](50) NULL,
+  [CreatorId] [uniqueidentifier] NULL,
+  [LastUpdateId] [uniqueidentifier] NULL,
+  [CreatedDate] [datetime] NULL,
+  [LastUpdateDate] [datetime] NULL,
+  CONSTRAINT [PK_UserInfo] PRIMARY KEY CLUSTERED
+  (
+  [UserInfoId] ASC
+  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+  ) ON [PRIMARY]
+
+  GO
+
+  SET ANSI_PADDING OFF
+  GO
+
+  ----------------------- Create UserDetail Table ------------------------------------------------
+
+
+
+
+
+
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IntegrationTest_AC_GetUser]') AND type in (N'P', N'PC'))
+  DROP PROCEDURE [dbo].[IntegrationTest_AC_GetUser]
+  GO
+
+  /****** Object:  StoredProcedure [dbo].[IntegrationTest_AC_GetUser]    Script Date: 4/28/2015 4:04:20 PM ******/
+  SET ANSI_NULLS ON
+  GO
+
+  SET QUOTED_IDENTIFIER OFF
+  GO
+
+
+
+
+  --************************************************************************************
+
+  CREATE  PROCEDURE [dbo].[IntegrationTest_AC_GetUser](@FirstName varchar(20),@ReturnCode  int output) AS
+
+  begin
+  set nocount on
+  Select FirstName,LastName,UserInfoId
+  FROM UserInfo
+  where
+  FirstName = @FirstName
+
+
+  set @ReturnCode=55
+  end
+
+
+
+  GO
+
+
+
+
+
+
+
+
+  /****** Object:  Table [dbo].[UserDetail]    Script Date: 4/7/2015 12:51:01 PM ******/
+  SET ANSI_NULLS ON
+  GO
+
+  SET QUOTED_IDENTIFIER ON
+  GO
+
+  CREATE TABLE [dbo].[UserDetail](
+  [UserDetailId] [int] NOT NULL,
+  [UserId] [uniqueidentifier] NOT NULL,
+  [Address] [nchar](10) NULL,
+  [City] [nchar](10) NULL,
+  [State] [nchar](10) NULL,
+  [ZipCode] [int] NULL,
+  [CreatorId] [uniqueidentifier] NULL,
+  [LastUpdateId] [uniqueidentifier] NULL,
+  [CreatedDate] [datetime] NULL,
+  [LastUpdateDate] [datetime] NULL)
+
+
+  GO
+
+  ALTER TABLE [dbo].[UserDetail]  WITH CHECK ADD  CONSTRAINT [PK_UserDetail_UserInfo] FOREIGN KEY([UserId])
+  REFERENCES [dbo].[UserInfo] ([UserInfoId])
+  GO
+
+  ALTER TABLE [dbo].[UserDetail] CHECK CONSTRAINT [PK_UserDetail_UserInfo]
+  GO
+
+
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[vw_UserInfo]') AND type in (N'V'))
+  DROP VIEW vw_UserInfo
+
+  GO
+
+  CREATE VIEW vw_UserInfo AS
+  SELECT FirstName, LastName, UserInfoId from UserInfo
+
+  GO
+
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[StripWWWandCom]') AND type in (N'FN'))
+  DROP FUNCTION StripWWWandCom
+
+  GO
+
+  CREATE FUNCTION dbo.StripWWWandCom (@input VARCHAR(250))
+  RETURNS VARCHAR(250)
+  AS BEGIN
+  DECLARE @Work VARCHAR(250)
+
+  SET @Work = @Input
+
+  SET @Work = REPLACE(@Work, 'www.', '')
+  SET @Work = REPLACE(@Work, '.com', '')
+
+  RETURN @work
+  END
+
+  GO
+
+  ---------Create UserAddress Table---------------------
+
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserAddress]'))
+  DROP TABLE [dbo].[UserAddress]
+  GO
+
+
+  SET ANSI_NULLS ON
+  GO
+
+  SET QUOTED_IDENTIFIER ON
+  GO
+
+  SET ANSI_PADDING ON
+  GO
+
+  CREATE TABLE [dbo].[UserAddress](
+  [UserAddressId] [int] IDENTITY(1,1) NOT NULL,
+  [StreetNumber] [int] NULL,
+  [Address] [varchar](100) NOT NULL,
+  [City] [varchar](50) NULL,
+  [State] [varchar](50) NULL,
+  [CreatorId] [uniqueidentifier] NULL,
+  [LastUpdateId] [uniqueidentifier] NULL,
+  [CreatedDate] [datetime] NULL,
+  [LastUpdateDate] [datetime] NULL,
+  CONSTRAINT [PK_UserAddress] PRIMARY KEY CLUSTERED
+  (
+  [UserAddressId] ASC
+  )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+  ) ON [PRIMARY]
+
+  GO
+
+  SET ANSI_PADDING OFF
+  GO
+
+-----------------------------
+
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UserAddress_Insert]') AND type in (N'P', N'PC'))
+/****** Object:  StoredProcedure [dbo].[UserAddress_Insert]    Script Date: 11/3/2015 3:25:05 PM ******/
+DROP PROCEDURE [dbo].[UserAddress_Insert]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserAddress_Insert]    Script Date: 11/3/2015 3:25:05 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ CREATE  PROCEDURE [dbo].[UserAddress_Insert](
+@StreetNumber int,
+@Address varchar(100),
+@City varchar(50),
+@State varchar(50),
+@CreatorId UniqueIdentifier,
+@CreatedDate DateTime,
+@LastUpdateId UniqueIdentifier,
+@LastUpdateDate DateTime)
+
+AS
+
+ BEGIN
+
+
+INSERT INTO [dbo].[UserAddress]
+           (
+           [StreetNumber]
+           ,[Address]
+           ,[City]
+           ,[State]
+		   ,CreatorId
+,LastUpdateId
+,CreatedDate
+,LastUpdateDate)
+     VALUES
+           (@StreetNumber
+           ,@Address
+           ,@City
+           ,@State
+		   ,@CreatorId
+		    ,@LastUpdateId
+		   ,@CreatedDate
+		   ,@LastUpdateDate)
+		   
+ Select UserAddressId from UserAddress where UserAddressId = SCOPE_IDENTITY()
+
+ END
+
+
+GO
+
+  IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateUserAddress]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdateUserAddress]
+GO
+
+CREATE PROCEDURE [dbo].[UpdateUserAddress]  
+    @Id [int],  
+   @StreetNumber int,
+@Address varchar(100),
+@City varchar(50),
+@State varchar(50), 
+@CreatorId UniqueIdentifier,
+@CreatedDate DateTime,
+@LastUpdateId UniqueIdentifier,
+@LastUpdateDate DateTime
+AS  
+BEGIN  
+    UPDATE [dbo].[UserAddress]  
+    SET [StreetNumber] = @StreetNumber, [Address] = @Address, [City] = @City  , [State] = @State  
+    WHERE ([UserAddressId] = @Id)  
+END  
+  
+GO  
+  
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteUserAddress]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[DeleteUserAddress]
+GO
+
+CREATE PROCEDURE [dbo].[DeleteUserAddress]  
+    @Id [int] 
+AS  
+BEGIN  
+    DELETE [dbo].[UserAddress]  
+    WHERE ([UserAddressId] = @Id)  
+END 
+
+GO
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetUserAddressandCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetUserAddressandCount]
+GO
+
+CREATE PROCEDURE [dbo].[GetUserAddressandCount]  
+    @Id [int] ,
+	@UserAddressCount [int] OUTPUT
+AS  
+BEGIN  
+   SELECT @UserAddressCount=count(*) + 9
+   FROM [dbo].[UserAddress]  
+   WHERE ([UserAddressId] = @Id)  
+
+   SELECT *
+   FROM [dbo].[UserAddress]  
+   WHERE ([UserAddressId] = @Id)  
+END 

@@ -1,0 +1,559 @@
+<statements>
+  <statement name="usp_PollMessageQueue" connection="GEMS">
+    <param id="PollerIdentifier" type="Guid" size="36" />
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime="true"  />
+    <param id="FetchSize" type="Int32" default="" />
+    <sp name="usp_PollMessageQueue" />
+  </statement>
+
+  <statement name="PollMessageQueue" connection="GEMS">
+    <param id="PollerIdentifier" type="String" size="36"  />
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime="true"  />
+    <param id="FetchSize" type="Int32" default="" />
+    <sql>
+      BEGIN TRANSACTION
+      set nocount on;
+      update top(<exp paramId="FetchSize"/>) mail_dispatchermessagequeue
+      <columns mode="update">
+        <column dbField="PollerIdentifier" paramId="PollerIdentifier" />
+        <column dbField="LastUpdateDate" paramId="CurrTimeStamp" />
+      </columns>
+      where MessageQueued is NULL and PollerIdentifier is NULL;
+      set nocount off;
+      select MessageId,
+      ISNULL(MessageQueued,0) MessageQueued,
+      ISNULL(MessageDetailPopulated,0) MessageDetailPopulated
+      from mail_dispatchermessagequeue
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="PollerIdentifier" paramId="PollerIdentifier" />
+          MessageQueued is NULL
+        </exp>
+      </where>
+      COMMIT TRANSACTION
+    </sql>
+  </statement>
+
+  <statement name="GetMessengerQueue" connection="GEMS">
+    <param id="PollerIdentifier" type="Guid" />
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime="true"  />
+    <param id="FetchSize" type="Int32" default="" />
+    <sql>
+      set nocount on;
+      update top(<exp paramId="FetchSize"/>) mail_dispatchermessagequeue
+      <columns mode="update">
+        <column dbField="PollerIdentifier" paramId="PollerIdentifier" />
+        MessageQueued = 1
+        <column dbField="LastUpdateDate" paramId="CurrTimeStamp" />
+      </columns>
+      where MessageQueued is NULL and PollerIdentifier is NULL;
+      set nocount off;
+      SELECT
+      cast(q.MessageId as varchar(36)) as MessageId,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000'
+      then isnull(ext.email,'')
+      else isnull(luUser.email,'') end as
+      UserEmailAddress,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000'
+      then isnull(ext.firstname,'')
+      else isnull(luUser.firstname,'') end as
+      UserFirstName,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000'
+      then isnull(ext.lastname,'')
+      else isnull(luUser.lastname,'') end as
+      UserLastName,
+      userLog.SystemBased,statement
+      userLog.TypeOfUser TypeOfReciept,
+      body.BodyType BodyTypeCode,
+      isnull(luUser.Digest,0) DigestFlag,
+      isnull(luUser.Digest,0) PreferenceTimeTypeCode,
+      msgLog.ReceiptToList,
+      msgLog.receiptCCList,
+      msgLog.receiptBCCList,
+      msg.SenderId,
+      isnull(SenUser.Email,'') SenderEmailAddress,
+      isnull(SenUser.firstName,'') SenderFirstName,
+      isnull(SenUser.LastName,'') SenderLastName,
+      msg.Subject,
+      msg.MessageDate,
+      msg.Attachments,
+      isnull(msg.SendAlertFlag,1) SendAlertFlag,
+      isnull(msg.SendContentFlag,1) SendContentFlag,
+      body.Body
+      FROM
+      mail_dispatchermessagequeue q inner join
+      mail_message msg on q.messageid = msg.messageid inner join
+      mail_messageLog msgLog on msg.messageid = msgLog.messageid left outer join
+      lu_users SenUser on msgLog.userid = SenUser.Userid inner join
+      mail_body body on msg.messageid = body.messageid inner join
+      mail_UserLog userLog on msg.messageid = userLog.messageid left outer join
+      lu_users luUser on userlog.Userid = luUser.userid left outer join
+      Mail_ExternalUsers ext on userlog.Userid = ext.ExternalUserId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="PollerIdentifier" paramId="PollerIdentifier" />
+          userLog.TypeOfUser &lt;&gt; 'From'
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUser" connection="GEMS">
+    <param id="UserId" type="String" size="36" />
+    <sql>
+      select FirstName, LastName, UserName, email from Lu_Users
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="userid" paramId="UserId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="GetStandardMessagesByContext" connection="GEMS">
+    <param id="ExternalResourceId" type="Int64" />
+    <param id="AttachmentPurposeCode" type="Int32" />
+    <sql>
+      BEGIN TRANSACTION
+      select cast(a.StandardMessageId as varchar(36)) StandardMessageId, Subject, Body, BodyType,statementName,componentName, DefinitionFile, RelationshipLocation
+      from mail_StandardContext as a
+      inner join mail_standardMessage as b on a.StandardMessageId=b.StandardMessageId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MessageContextCode" paramId="ExternalResourceId" />
+        </exp>
+      </where>
+      ;
+      select FileName as FileName, cast(MSMA.AttachmentId as varchar(36)) as AttachmentId,
+      cast(MSC.StandardMessageId as varchar(36)) UniqueStandardMessageId
+      From mail_StandardContext as MSC
+      inner join mail_standardMessage as MSM on MSC.StandardMessageId=MSM.StandardMessageId
+      inner join Mail_StandardMessageAttachments MSMA on MSMA.StandardMessageId=MSM.StandardMessageId
+      inner join dm_attachment DMA on DMA.Attachmentid = MSMA.AttachmentId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MSC.MessageContextCode" paramId="ExternalResourceId" />
+          <exp op="=" dbField="MSMA.AttachmentPurposeCode" paramId="AttachmentPurposeCode" />
+        </exp>
+      </where>
+      COMMIT TRANSACTION
+    </sql>
+  </statement>
+
+  <statement name="GetMailAddressDetails"  connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+
+    <sql>
+      select ReceiptToList AS 'To', ReceiptCCList AS 'CC', ReceiptBCCList AS 'Bcc'
+      FROM  mail_message_context MMC
+      join mail_message MM on MM.MessageId = MMC.MessageId
+      join Mail_Body MB on MB.MessageId = MM.MessageId
+      join mail_messagelog MML on MML.MessageId = MM.MessageId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MMC.messageid" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUnreadMessageCount" connection="GEMS">
+    <param id="UserId" type="Guid" required="true" />
+    <sql>
+      select count(*) from Mail_UserLog with(NOLOCK)
+      where
+      UserId = '<dynamic paramId="UserId"/>' and
+      TypeOfUser = 'To' and
+      MessageRead is null and
+      MessageDeleted is null
+    </sql>
+  </statement>
+
+  <statement name="QueueMessage" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <param id="PollerIdentifier" type="Guid" size="36" />
+    <sql>
+      update mail_dispatchermessagequeue
+      set MessageQueued = 1,LastUpdateDate = current_timestamp
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="PollerIdentifier" paramId="PollerIdentifier" />
+          <exp op="=" dbField="MessageId" paramId="MessageId" />
+          MessageQueued is NULL
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="PopulateMessageDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <param id="PollerIdentifier" type="Guid" size="36" />
+    <sql>
+      insert into mail_dispatcherMessageDetails
+      (MessageDetailId,MessageId,
+      UserId,UserEmailAddress,UserFirstName,UserLastName,
+      SystemBased,TypeOfReciept,BodyTypeCode,
+      DigestFlag,PreferenceTimeTypeCode,ReceiptToList,receiptCCList,
+      receiptBccList,
+      SenderId,SenderEmailAddress,SenderFirstName,SenderLastName,
+      Subject,MessageDate,
+      Attachments,SendAlertFlag,SendContentFlag,CreatedDate)
+      SELECT
+      newid(),msg.MessageId,userLog.UserId,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000' then isnull(ext.email,'')
+      else isnull(luUser.PreferredEmail,'')
+      end as email,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000' then isnull(ext.firstname,'')
+      else isnull(luUser.firstname,'')
+      end as firstname,
+      case isnull(luUser.userid,'00000000-0000-0000-0000-000000000000')
+      when '00000000-0000-0000-0000-000000000000' then isnull(ext.lastname,'')
+      else isnull(luUser.lastname,'')
+      end as lastname,
+      userLog.SystemBased,userLog.TypeOfUser,body.BodyType,
+      isnull(luUser.Digest,0),
+      isnull(luUser.Digest,0),
+      msgLog.ReceiptToList,msgLog.receiptCCList,
+      msgLog.receiptBCCList,
+      msg.SenderId,
+      isnull(SenUser.Email,''),isnull(SenUser.firstName,''),isnull(SenUser.LastName,''),
+      msg.Subject,msg.MessageDate,
+      msg.Attachments,
+      isnull(msg.SendAlertFlag,1),
+      isnull(msg.SendContentFlag,1),
+      current_timestamp
+      FROM mail_message msg
+      join mail_messageLog msgLog on msgLog.MessageId = msg.MessageId
+      join mail_body body on body.MessageId = msg.MessageId
+      join mail_UserLog userLog on userLog.MessageId = msg.MessageId
+      left join lu_users SenUser on msgLog.userid = SenUser.Userid
+      left join lu_users luUser on userlog.Userid = luUser.userid
+      left join Mail_ExternalUsers ext on userlog.Userid = ext.ExternalUserId
+      <where>
+        <exp op="and">
+          userLog.TypeOfUser &lt;&gt; 'From'
+          <exp op="=" dbField="msg.MessageId" paramId="MessageId" />
+        </exp>
+      </where>;
+      
+      update mail_dispatchermessagequeue
+      set MessageDetailPopulated = 1
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="PollerIdentifier" paramId="PollerIdentifier" />
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>;
+    </sql>
+  </statement>
+
+  <statement name="CleanUp" connection="GEMS">
+    <sql>
+      update mail_dispatchermessagequeue
+      set MessageQueued = NULL,
+      PollerIdentifier = NULL
+    </sql>
+  </statement>
+
+  <statement name="GetMailMessageDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      select u.email AS 'From',
+      MML.ReceiptToList AS 'To', MML.ReceiptCCList AS 'CC', MML.ReceiptBCCList AS 'Bcc',
+      Subject, Body
+      FROM mail_message_context MMC
+      join mail_message MM on MM.MessageId = MMC.MessageId
+      join Mail_Body MB on MB.MessageId = MM.MessageId
+      join mail_messagelog MML on MML.MessageId = MM.MessageId
+      inner join lu_users u on u.userid = MML.userid
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MMC.messageid" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="GetEmailDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      select
+      MD.MessageDetailId,
+      MD.MessageId,
+      MD.UserId,
+      MD.UserEmailAddress,
+      MD.UserFirstName,
+      MD.UserLastName,
+      MD.SystemBased,
+      MD.TypeOfReciept,
+      MD.BodyTypeCode,
+      MD.DigestFlag,
+      MD.PreferenceTimeTypeCode,
+      dbo.ufn_GetEmailfromUserName(MD.ReceiptToList) as ReceiptToList,
+      dbo.ufn_GetEmailfromUserName(MD.receiptCCList) as receiptCCList,
+      dbo.ufn_GetEmailfromUserName(MD.receiptBCCList) as receiptBCCList,
+      --MD.SenderEmailAddress,
+      dbo.ufn_GetEmailfromUserName(MD.SenderId) as SenderEmailAddress,
+      MD.SenderFirstName,
+      MD.SenderLastName,
+      MD.Subject,
+      MD.SenderId,
+      MD.MessageDate,
+      MD.Attachments,
+      MD.SendAlertFlag,
+      MD.SendContentFlag,
+      MD.CreatedDate,
+      MD.LastUpdateDate,
+      MB.Body MailBody
+      from Mail_DispatcherMessageDetails MD,
+      mail_body MB
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MD.messageid" paramId="MessageId" />
+          MD.messageId = MB.messageId
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="ArchiveMessageDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      BEGIN TRANSACTION
+      insert into hist_mail_dispatchermessagedetails
+      (MessageDetailId,
+      MessageId,
+      UserId,
+      UserEmailAddress,
+      SystemBased,
+      TypeOfReciept,
+      BodyTypeCode,
+      DigestFlag,
+      PreferenceTimeTypeCode,
+      ReceiptToList,
+      receiptCCList,
+      receiptBCCList,
+      SenderId,
+      Subject,
+      MessageDate,
+      Attachments,
+      SendAlertFlag,
+      SendContentFlag,
+      SenderEmailAddress,
+      SenderFirstName,
+      SenderLastName,
+      UserFirstName,
+      UserLastName,
+      SentDate)
+      select MessageDetailId,
+      MessageId,
+      UserId,
+      <!--<optional depends='ReRoutingEmailAddress' exist='true'>
+        <exp paramId='ReRoutingEmailAddress' />,
+      </optional>
+      <optional depends='ReRoutingEmailAddress' exist='false'>-->
+      UserEmailAddress,
+      <!--</optional>-->
+      SystemBased,
+      TypeOfReciept,
+      BodyTypeCode,
+      DigestFlag,
+      PreferenceTimeTypeCode,
+      ReceiptToList,
+      receiptCCList,
+      receiptBCCList,
+      SenderId,
+      Subject,
+      MessageDate,
+      Attachments,
+      SendAlertFlag,
+      SendContentFlag,
+      SenderEmailAddress,
+      SenderFirstName,
+      SenderLastName,
+      UserFirstName,
+      UserLastName,
+      current_timestamp
+      from mail_dispatchermessagedetails
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MessageId" paramId="MessageId" />
+        </exp>
+      </where>;
+      delete from Mail_DispatcherMessageDetails
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>;
+      delete from mail_dispatchermessagequeue
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>
+      COMMIT TRANSACTION
+    </sql>
+  </statement>
+
+  <statement name="DeleteMessageDetails" connection="GEMS">
+    <param id="MessageId"/>
+    <sql>
+      delete from Mail_DispatcherMessageDetails
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="DeleteMessage" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      delete from mail_dispatchermessagequeue
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="LogFailedMessageDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      insert into Mail_Error_DispatcherMessageDetails
+      (MessageDetailId,
+      MessageId,
+      UserId,
+      UserEmailAddress,
+      SystemBased,
+      TypeOfReciept,
+      BodyTypeCode,
+      DigestFlag,
+      PreferenceTimeTypeCode,
+      ReceiptToList,
+      receiptCCList,
+      receiptBCCList,
+      SenderId,
+      Subject,
+      MessageDate,
+      Attachments,
+      SendAlertFlag,
+      SendContentFlag,
+      SenderEmailAddress,
+      SenderFirstName,
+      SenderLastName,
+      UserFirstName,
+      UserLastName,
+      SentDate)
+      select MessageDetailId,
+      MessageId,
+      UserId,
+      <!--<optional depends='ReRoutingEmailAddress' exist='true'>
+        <exp paramId='ReRoutingEmailAddress' />,
+      </optional>
+      <optional depends='ReRoutingEmailAddress' exist='false'>-->
+      UserEmailAddress,
+      <!--</optional>-->
+      SystemBased,
+      TypeOfReciept,
+      BodyTypeCode,
+      DigestFlag,
+      PreferenceTimeTypeCode,
+      ReceiptToList,
+      receiptCCList,
+      receiptBCCList,
+      SenderId,
+      Subject,
+      MessageDate,
+      Attachments,
+      SendAlertFlag,
+      SendContentFlag,
+      SenderEmailAddress,
+      SenderFirstName,
+      SenderLastName,
+      UserFirstName,
+      UserLastName,
+      current_timestamp
+      from mail_dispatchermessagedetails
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MessageId" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetAttachmentDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      select 	dm.FileLocation,
+      dm.FileName,
+      upper(dm.fileExtension) fileExtension,
+      dm.PhysicalFileName,
+      dm.FileDescription
+      from dm_attachment dm inner join
+      (
+      select dm.attachmentid as attachmentid , max(dm.AttachmentInstance) as AttachmentInstance
+      from mail_attachment ma inner join  dm_attachment dm on ma.attachmentid = dm.attachmentid
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="ma.messageid" paramId="MessageId" />
+        </exp>
+      </where>
+      group by dm.attachmentid
+      ) B on dm.attachmentid = B.attachmentid AND dm.AttachmentInstance = B.AttachmentInstance
+    </sql>
+  </statement>
+
+  <statement name="LogFailedSysAdminErrorMessages" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <param id="Subject" type="String" />
+    <param id="Body" type="String" />
+    <param id="TO" type="String" />
+    <param id="CC" type="String" />
+    <param id="BCC" type="String" />
+    <param id="Sender" type="String" />
+    <sql>
+      insert into MAIL_SysAdminErrorTable
+      <columns mode="insert">
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="[Subject]" paramId="Subject" />
+        <column dbField="Body" paramId="Body" />
+        <column dbField="[TO]" paramId="TO" />
+        <column dbField="CC" paramId="CC" />
+        <column dbField="BCC" paramId="BCC" />
+        <column dbField="Sender" paramId="Sender" />
+      </columns>
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteFailedMessage" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      DELETE from Mail_DispatcherMessageDetails
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>;
+      DELETE from Mail_DispatcherMessageQueue
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="messageid" paramId="MessageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+</statements>

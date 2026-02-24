@@ -1,0 +1,237 @@
+﻿<statements>
+  <statement name="GetHelpLinks" connection ="Common">
+    <param id="roles" type="String" />
+    <param id="viewid" type="String" size="36" />
+    <param id="externalSystemCode" type="Int32" />
+    <param id="userType" type="Int32" />
+    <sql>
+
+
+      SELECT HL.CoreRunTimePageViewId,HL.URL,HL.LinkTypeCode, HLT.Description, HLT.LinkText, LES.ShortDisplayValue as ExternalSystem
+      FROM  LU_PFM_Help_LinkType HLT
+      INNER JOIN PFM_HELP_Links_P HL ON HL.LinkTypeCode = HLT.LookupCode
+      INNER JOIN LookupExternalSystems LES ON LES.LookupCode = HL.ExternalSystemsCode
+      WHERE
+      <optional depends ="roles">
+        HL.LinkTypeCode IN (
+        SELECT DISTINCT LookUpCode
+        FROM LU_PFM_Help_LinkType_AC_Role_R
+        where RoleId in <exp paramId="roles" />
+
+        )
+        AND
+      </optional><optional depends ="roles == null">
+        HL.LinkTypeCode  NOT IN (3,9)
+        AND
+      </optional>
+      (CoreRunTimePageViewId = <exp paramId="viewid" /> or CoreRunTimePageViewId is null)
+      AND ExternalSystemsCode = <exp paramId="externalSystemCode" />
+      AND ( HLT.ShowInFlyoutFlag = 1 OR HLT.ShowInFlyoutFlag IS  NULL)
+      AND HLT.UserType = <exp paramId="userType" />
+      ORDER BY LinkTypeCode
+    </sql>
+  </statement>
+  <statement name ="AddNewHelpLinkAssociation" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <param id ="URL" type ="String" required ="true"/>
+    <param id ="UserId"  type ="String"  size="36" />
+    <param id ="HelpLinkTypeCode" type="Int32" />
+    <sql>
+      INSERT INTO PFM_HELP_Links_P
+      <columns mode="insert">
+        <column dbField="HelpLinkId">newid()</column>
+        <column dbField="CoreRunTimePageViewId" paramId="viewId" />
+        <column dbField="ExternalSystemsCode" paramId="externSystemCode" />
+        <column dbField ="URL" paramId ="URL" />
+        <column dbField ="CreatorId" paramId ="UserId" />
+        <column dbField ="CreatedDate">getDate()</column>
+        <column dbField ="LastUpdateId" paramId ="UserId" />
+        <column dbField ="LastUpdateDate">getDate()</column>
+        <column dbField ="LinkTypeCode" paramId ="HelpLinkTypeCode" />
+      </columns>
+    </sql>
+  </statement>
+  <statement name ="UpdateHelpLinkAssociation" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <param id ="URL" type ="String" required ="true"/>
+    <param id ="UserId"  type ="String"/>
+    <param id ="HelpLinkTypeCode" type="Int32" />
+    <sql>
+      UPDATE PFM_HELP_Links_P
+      <columns mode="update">
+        <column dbField="CoreRunTimePageViewId" paramId="viewId" />
+        <column dbField="ExternalSystemsCode" paramId="externSystemCode" />
+        <column dbField ="URL" paramId ="URL" />
+        <column dbField ="LastUpdateId" paramId ="UserId" />
+        <column dbField ="LastUpdateDate">getDate()</column>
+      </columns>
+      <where>
+        <exp op ="AND">
+          <exp op ="=" dbField ="CoreRunTimePageViewId"  paramId="viewId" />
+          <exp op ="=" dbField ="LinkTypeCode"  paramId="HelpLinkTypeCode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name ="RemoveHelpLinkAssociation" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <sql>
+      DELETE FROM PFM_HELP_Links_P
+      <where>
+        <exp op ="=" dbField ="CoreRunTimePageViewId"  paramId="viewId" />
+      </where>
+      AND LinkTypeCode in (1,2)
+    </sql>
+  </statement>
+
+  <statement name ="GetManageDetails" connection ="Common">
+    <param id ="viewid" type ="String"  size="36" required ="true" />
+    <sql>
+      SELECT top(1) (p.FirstName + ' ' + p.LastName) as pname,v.LastUpdateDate from PFM_HELP_Links_P v
+      INNER JOIN People p on v.LastUpdateid = p.userid
+      <where>
+        <exp op ="=" dbField ="CoreRunTimePageViewId" paramId ="viewid"/>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetUrlByLinkTypeCode" connection="Common">
+    <param id="linkTypeCode" type="Int32"/>
+    <param id="externalSystemCode" type="Int32"/>
+    <sql>
+      select URL, LES.ShortDisplayValue as ExternalSystem, HLT.LinkText, HL.LinkTypeCode 
+      from PFM_HELP_Links_P HL
+      INNER JOIN LookupExternalSystems  LES ON LES.LookupCode = HL.ExternalSystemsCode
+      INNER JOIN LU_PFM_Help_LinkType HLT ON HLT.LookUpCode = HL.LinkTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField ="LinkTypeCode" paramId="linkTypeCode"/>
+          <exp op="=" dbField ="ExternalSystemsCode" paramId="externalSystemCode"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetMultipleUrlByLinkType" connection="Common">
+    <param id="linkTypeCode" type="String" />
+    <param id="externalSystemCode" type="Int32" />
+    <sql>
+      SELECT URL, LES.ShortDisplayValue as ExternalSystem, HLT.LinkText, HL.LinkTypeCode
+      FROM PFM_HELP_Links_P HL
+      INNER JOIN LookupExternalSystems LES ON LES.LookupCode = HL.ExternalSystemsCode
+      INNER JOIN LU_PFM_Help_LinkType HLT ON HLT.LookUpCode = HL.LinkTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="LinkTypeCode" paramId="linkTypeCode"/>
+          <exp op="=" dbField="ExternalSystemsCode" paramId="externalSystemCode"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name ="GetUrlByLinkTypeCodeWithFriendlyName" connection ="Common">
+    <param id ="linkTypeCode" type ="Int32"/>
+    <param id ="externalSystemCode" type ="Int32"/>
+    <param id ="FriendlyName" type ="string"/>
+    <param id ="viewId" type ="string" size="36" required ="true"/>
+    <sql>
+      select URL, LES.ShortDisplayValue as ExternalSystem,HLT.LinkText from PFM_HELP_Links_P HL
+      INNER JOIN LookupExternalSystems  LES ON LES.LookupCode = HL.ExternalSystemsCode
+      INNER JOIN LU_PFM_Help_LinkType HLT ON HLT.LookUpCode = HL.LinkTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField ="LinkTypeCode" paramId="linkTypeCode"/>
+          <exp op="=" dbField ="ExternalSystemsCode" paramId="externalSystemCode"/>
+          <exp op="=" dbField ="FriendlyName" paramId="FriendlyName"/>
+          <exp op="=" dbField ="CoreRunTimePageViewId" paramId="viewId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name ="GetManageDetailsWithFriendlyName" connection ="Common">
+    <param id ="viewid" type ="String"  size="36" required ="true" />
+    <param id ="FriendlyName" type ="string"/>
+    <sql>
+      SELECT top(1) (p.FirstName + ' ' + p.LastName) as pname,v.LastUpdateDate from PFM_HELP_Links_P v
+      INNER JOIN People p on v.LastUpdateid = p.userid
+      <where>
+        <exp op="AND">
+          <exp op ="=" dbField ="CoreRunTimePageViewId" paramId ="viewid"/>
+          <exp op="=" dbField ="FriendlyName" paramId="FriendlyName"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name ="AddNewHelpLinkAssociationWithFriendlyName" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <param id ="URL" type ="String" required ="true"/>
+    <param id ="UserId"  type ="String"  size="36" />
+    <param id ="HelpLinkTypeCode" type="Int32" />
+    <param id ="FriendlyName" type ="string"/>
+    <sql>
+      INSERT INTO PFM_HELP_Links_P
+      <columns mode="insert">
+        <column dbField="HelpLinkId">newid()</column>
+        <column dbField="CoreRunTimePageViewId" paramId="viewId" />
+        <column dbField="ExternalSystemsCode" paramId="externSystemCode" />
+        <column dbField ="URL" paramId ="URL" />
+        <column dbField ="CreatorId" paramId ="UserId" />
+        <column dbField ="CreatedDate">getDate()</column>
+        <column dbField ="LastUpdateId" paramId ="UserId" />
+        <column dbField ="LastUpdateDate">getDate()</column>
+        <column dbField ="LinkTypeCode" paramId ="HelpLinkTypeCode" />
+        <column dbField ="FriendlyName" paramId ="FriendlyName" />
+      </columns>
+    </sql>
+  </statement>
+
+
+  <statement name ="UpdateHelpLinkAssociationWithFriendlyName" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <param id ="URL" type ="String" required ="true"/>
+    <param id ="UserId"  type ="String"/>
+    <param id ="HelpLinkTypeCode" type="Int32" />
+    <param id ="FriendlyName" type ="string"/>
+    <sql>
+      UPDATE PFM_HELP_Links_P
+      <columns mode="update">
+        <column dbField="CoreRunTimePageViewId" paramId="viewId" />
+        <column dbField="ExternalSystemsCode" paramId="externSystemCode" />
+        <column dbField ="URL" paramId ="URL" />
+        <column dbField ="LastUpdateId" paramId ="UserId" />
+        <column dbField ="LastUpdateDate">getDate()</column>
+      </columns>
+      <where>
+        <exp op ="AND">
+          <exp op ="=" dbField ="CoreRunTimePageViewId"  paramId="viewId" />
+          <exp op ="=" dbField ="LinkTypeCode"  paramId="HelpLinkTypeCode" />
+          <exp op="=" dbField ="FriendlyName" paramId="FriendlyName"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name ="RemoveHelpLinkAssociationWithFriendlyName" connection ="Common">
+    <param id ="viewId" type ="String"/>
+    <param id ="externSystemCode" type ="Int32" required ="true"/>
+    <param id ="HelpLinkTypeCode" type="Int32" />
+    <param id ="FriendlyName" type ="string"/>
+    <sql>
+      DELETE FROM PFM_HELP_Links_P
+      <where>
+        <exp op ="AND">
+          <exp op ="=" dbField ="CoreRunTimePageViewId"  paramId="viewId" />
+          <exp op ="=" dbField ="LinkTypeCode"  paramId="HelpLinkTypeCode" />
+          <exp op="=" dbField ="FriendlyName" paramId="FriendlyName"/>
+          <exp op ="=" dbField ="LinkTypeCode"  paramId="HelpLinkTypeCode" />
+          <exp op="=" dbField ="FriendlyName" paramId="FriendlyName"/>
+        </exp>
+      </where>
+
+    </sql>
+  </statement>
+</statements>

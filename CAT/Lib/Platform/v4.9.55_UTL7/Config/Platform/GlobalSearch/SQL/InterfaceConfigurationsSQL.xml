@@ -1,0 +1,131 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+  <!-- You can get a copy of the schema at https://recovery-svn.reisys.com:10007/HRSA/Tools/Trunk/REISchemas/REIData.xsd -->
+  <statement name="SearchResultConfigurations" connection = "Common">
+    <sql>
+      <select>
+        IndexKey, 
+        Tooltip, 
+        CSS
+      </select>
+      
+      FROM PFM_ENSR_SearchResultConfigurations
+    </sql>
+  </statement>
+
+  <statement name="SuggestionResultFormatters" connection = "Common">
+    <sql>
+      <select>
+        ID,
+        IndexKey,
+        Formatter
+      </select>
+
+      FROM PFM_ENSR_SuggestionPanelResultFormats
+    </sql>
+  </statement>
+
+  <statement name="GetSuggestionResultFormatter" connection = "Common">
+    <param id="ID" type="Int32" required="true" />
+    
+    <sql>
+      <select>
+        ID,
+        IndexKey,
+        Formatter
+      </select>
+
+      FROM PFM_ENSR_SuggestionPanelResultFormats
+      
+      <where>
+        <exp op="=" dbField="ID" paramId="ID" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="NewSuggestionResultFormatter" connection = "Common">
+    <param id="Formatter" type="String" required="true" />
+    <param id="IndexKey" type="String" required="true" />
+    <sql>
+      INSERT INTO PFM_ENSR_SuggestionPanelResultFormats
+      (
+          IndexKey,
+          Formatter,
+          CreatorId,
+          CreatedDate,
+          LastUpdateId,
+          LastUpdateDate
+      )
+      VALUES ('<dynamic paramId="IndexKey"/>', '<dynamic paramId="Formatter"/>', '16901559-AEC6-4754-831B-94B413E5B36B', GETDATE(), '16901559-AEC6-4754-831B-94B413E5B36B', GETDATE())
+
+      SELECT TOP 1 ID
+      FROM PFM_ENSR_SuggestionPanelResultFormats
+      WHERE IndexKey = '<dynamic paramId="IndexKey"/>' AND
+            Formatter = '<dynamic paramId="Formatter"/>'
+    </sql>
+  </statement>
+  
+  <statement name="DeleteSuggestionResultFormatter" connection = "Common">
+    <param id="ID" type="Int32" required="true" />
+    <sql>
+      
+      DELETE FROM PFM_ENSR_SuggestionPanelResultFormats
+      
+      <where>
+        <exp op="=" dbField="ID" paramId="ID" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="AllGroupFacets" connection = "Common">
+    <sql>
+      <select>
+        ID, 
+        Facet, 
+        GroupID,
+        DisplayText
+      </select>
+      FROM PFM_ENSR_GroupFacets
+    </sql>
+  </statement>
+
+  <statement name="AllResultFormats" connection = "Common">
+    <sql>
+      <select>
+        ID,
+        Format,
+        IndexKey
+      </select>
+      FROM PFM_ENSR_ResultFormats
+    </sql>
+  </statement>
+
+  <statement name="ValuesForFormat" connection = "Common">
+    <param id="FormatId" type="Int32" required="true" />
+    <sql>
+      <select>
+        ID,
+        Field,
+        FormatId
+      </select>
+      FROM PFM_ENSR_FormatValues
+      <where>
+        <exp op="=" dbField="FormatId" paramId="FormatId" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="AdditionalValuesForFormat" connection = "Common">
+    <param id="FormatId" type="Int32" required="true" />
+    <sql>
+      <select>
+        ID,
+        Field,
+        FormatId
+      </select>
+      FROM PFM_ENSR_AdditionalValues
+      <where>
+        <exp op="=" dbField="FormatId" paramId="FormatId" />
+      </where>
+    </sql>
+  </statement>
+</statements>

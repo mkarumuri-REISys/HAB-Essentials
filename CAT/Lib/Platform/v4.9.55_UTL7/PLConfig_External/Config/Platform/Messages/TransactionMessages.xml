@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<messageConfig>
+	<CommitErr>Context should be in one of the following state to be commited - {Entered, Committed, Rollbacked}.</CommitErr>
+	<RollbackErr>Context should be in one of the following state to be rollbacked - {Entered, Committed, Rollbacked}.</RollbackErr>
+	<EnterErr>Context should be in one of the following state to be entered - {Created, Exitted}.</EnterErr>
+	<ExitErr>Context should be in one of the following state to exit - {Entered, Committed, Rollbacked}.</ExitErr>
+	<InvalidTransactionAffinity>Used transaction affinity is not supported.</InvalidTransactionAffinity>
+</messageConfig>

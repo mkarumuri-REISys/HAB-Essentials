@@ -1,0 +1,86 @@
+<statements>
+	<statement name="AddUserAction">
+		<sql>
+			DELETE FROM PlatformUserAction
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ByUserID">'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</exp>
+					<exp op="=" dbField="OnResourceID">'4042b843-a4f6-4387-8c91-be60fe30c4f6'</exp>
+				</exp>
+			</where>
+			INSERT INTO PlatformUserAction
+			<columns mode="insert">
+				<column dbField="ActionID" >newid()</column>
+				<column dbField="ByUserID" >'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</column>
+				<column dbField="OnDateTime">getdate()</column>
+				<column dbField="OnResourceID">'4042b843-a4f6-4387-8c91-be60fe30c4f6'</column>
+				<column dbField="OnResourceLookUpCode">1</column>
+				<column dbField="ActionTypeLookUpCode">1</column>
+				<column dbField="Comments">'Test Data Transaction'</column>
+				<column dbField="CreatorId">'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</column>
+				<column dbField="CreatedDate" >getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="UpdateLookupResourceType">
+		<sql>
+			UPDATE LookupResourceType
+			<columns mode="update">
+				<column dbField="CreatorId">'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</column>
+				<column dbField="LastUpdateDate" >getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="UpdateLookupResourceTypeFail">
+		<sql>
+			UPDATE LookupResourceType
+			<columns mode="update">
+				<column dbField="CreatorId">'bhenson'</column>
+				<column dbField="LastUpdateDate" >getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="UpdateLookupTaskTypeGEMS" connection="GEMS">
+		<sql>
+			UPDATE LookupTaskType
+			<columns mode="update">
+				<column dbField="CreatorId">'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</column>
+				<column dbField="LastUpdateDate" >getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="UpdateLookupTaskTypeGEMSFail" connection="GEMS">
+		<sql>
+			UPDATE LookupTaskType
+			<columns mode="update">
+				<column dbField="CreatorId">'bhenson'</column>
+				<column dbField="LastUpdateDate" >getdate()</column>
+			</columns>
+		</sql>
+	</statement>
+	<statement name="GetPlatformUserActions">
+		<sql>
+			SELECT TOP 1 Comments, CreatedDate
+			FROM PlatformUserAction
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ByUserID">'dec7f3fe-e50c-4580-a429-ce56b61fb89c'</exp>
+					<exp op="=" dbField="OnResourceID">'4042b843-a4f6-4387-8c91-be60fe30c4f6'</exp>
+				</exp>
+			</where>
+			ORDER BY CreatedDate DESC
+		</sql>
+	</statement>
+	<statement name="GetLookupResourceType">
+		<sql>
+			SELECT TOP 1 LookupCode, LastUpdateDate
+			FROM LookupResourceType			
+		</sql>
+	</statement>
+	<statement name="GetLookupTaskTypeGEMS" connection="GEMS">
+		<sql>
+			SELECT TOP 1 LookupCode, LastUpdateDate
+			FROM LookupTaskType
+		</sql>
+	</statement>
+</statements>

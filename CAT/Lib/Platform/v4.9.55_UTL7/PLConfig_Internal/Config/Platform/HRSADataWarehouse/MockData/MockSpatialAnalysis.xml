@@ -1,0 +1,257 @@
+﻿<response>
+  <settings>
+    <setting>
+      <name>Lat</name>
+      <value>33.946</value>
+    </setting>
+    <setting>
+      <name>Lon</name>
+      <value>-98.500</value>
+    </setting>
+    <setting>
+      <name>Targets</name>
+      <value>RURAL,PCHPSA,MHHPSA,DCHPSA,PCHPSAMC</value>
+    </setting>
+  </settings>
+  <spatialanalysisresult>
+    <inputlat>33.946</inputlat>
+    <inputlon>-98.500</inputlon>
+    <targets count="5">
+      <target targetname="MHHPSA">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="PCHPSAMC">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="RURAL">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="DCHPSA">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>HPSA ID</name>
+                <value>648485</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Degree of Shortage</name>
+                <value>4</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Score</name>
+                <value>7</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Date</name>
+                <value>2012/04/03</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Population</name>
+                <value>117231</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Shortage</name>
+                <value>0.800000011921</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Formal Ratio</name>
+                <value>5164:1</value>
+              </attribute>
+              <attribute>
+                <name>HPSA FTE</name>
+                <value>22.7</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Percent of Population Below Poverty Level</name>
+                <value>None</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Last Update Date</name>
+                <value></value>
+              </attribute>
+              <attribute>
+                <name>Estimated Population Served</name>
+                <value>68100</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Estimated Underserved Population</name>
+                <value>49131</value>
+              </attribute>
+              <attribute>
+                <name>Designation Type</name>
+                <value>Single County</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Status</name>
+                <value>Designated</value>
+              </attribute>
+              <attribute>
+                <name>Metropolitan Indicator</name>
+                <value>Non-Metropolitan</value>
+              </attribute>
+              <attribute>
+                <name>Primary State</name>
+                <value>Texas</value>
+              </attribute>
+              <attribute>
+                <name>Snapshot Date</name>
+                <value>2012-07-12 00:00:00</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Name</name>
+                <value>Wichita County</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="PCHPSA">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>HPSA ID</name>
+                <value>148999482E</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Degree of Shortage</name>
+                <value>1</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Score</name>
+                <value>15</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Date</name>
+                <value>2001/01/30</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Population</name>
+                <value>53091</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Shortage</name>
+                <value>8.89999961853</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Formal Ratio</name>
+                <value>6033:1</value>
+              </attribute>
+              <attribute>
+                <name>HPSA FTE</name>
+                <value>8.8</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Percent of Population Below Poverty Level</name>
+                <value>13.0</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Designation Last Update Date</name>
+                <value>2012/05/30</value>
+              </attribute>
+              <attribute>
+                <name>Estimated Population Served</name>
+                <value>17600</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Estimated Underserved Population</name>
+                <value>35491</value>
+              </attribute>
+              <attribute>
+                <name>Designation Type</name>
+                <value>Population Group</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Status</name>
+                <value>Designated</value>
+              </attribute>
+              <attribute>
+                <name>Metropolitan Indicator</name>
+                <value>Non-Metropolitan</value>
+              </attribute>
+              <attribute>
+                <name>Primary State</name>
+                <value>Texas</value>
+              </attribute>
+              <attribute>
+                <name>Snapshot Date</name>
+                <value>2012-07-12 00:00:00</value>
+              </attribute>
+              <attribute>
+                <name>HPSA Name</name>
+                <value>Low Income - Wichita County</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+    </targets>
+  </spatialanalysisresult>
+</response>
+

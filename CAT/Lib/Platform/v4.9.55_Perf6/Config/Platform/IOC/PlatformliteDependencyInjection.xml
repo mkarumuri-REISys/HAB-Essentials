@@ -1,0 +1,28 @@
+﻿<IOCBindings>
+  <!--<add sourceType="REISys.Platform.Services.IUserService,REISys.Platform.Services" targetType="REISys.Platform.Services.UserService,REISys.Platform.Services" name="" interceptable="true"/>-->
+  <add sourceType="REISys.Platform.Core.CacheStore.ICacheStore,REISys.PlatformLite.Core" targetType="REISys.Platform.Core.CacheStore.InMemoryCache,REISys.PlatformLite.Core" name="" interceptable="false" lifeTimeManager="ContainerControlledLifetimeManager"/>
+  
+  <!--<add sourceType="REISys.Platform.Services.ExceptionManagement.IExceptionService,REISys.Platform.Services" targetType="REISys.Platform.Services.ExceptionManagement.ExceptionService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.SharedConfiguration.ISharedConfigurationService,REISys.Platform.Services" targetType="REISys.Platform.Services.Sh
+  aredConfiguration.SharedConfigurationService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.Configuration.IConfigurationService,REISys.Platform.Services" targetType="REISys.Platform.Services.Configuration.XmlConfigurationService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Domain.Repositories.RecentlyAccessed.IRecentlyAccessedItemRepository,REISys.Platform.Domain" targetType="REISys.Platform.Domain.Repositories.RecentlyAccessed.RecentlyAccessedItemRepository_DataEngine,REISys.Platform.Domain" name="" />
+  <add sourceType="REISys.Platform.Domain.Repositories.Layout.IFavoriteRepository,REISys.Platform.Domain" targetType="REISys.Platform.Domain.Repositories.Layout.FavoriteRepository,REISys.Platform.Domain" name="" interceptable="false" />
+  <add sourceType="REISys.Data.IParser,REISys.Platform.DataAccess" targetType="REISys.Data.SqlParser,REISys.Platform.DataAccess" name="SqlParser" interceptable="false">
+    <constructor/>
+  </add>
+  <add sourceType="REISys.Platform.Services.Data.IAnalysisService,REISys.Platform.Services" targetType="REISys.Platform.Services.Data.AnalysisService,REISys.Platform.Services" name="" interceptable="false" >
+    <constructor>
+      <param type="REISys.Data.IParser,REISys.Platform.DataAccess" resolve="true" resolveName="SqlParser" />
+     </constructor>  
+  </add>
+  <add sourceType="REISys.Platform.Services.Session.ISessionService,REISys.Platform.Services" targetType="REISys.Platform.Services.Session.SessionService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.Session.ISessionTokenService,REISys.Platform.Services" targetType="REISys.Platform.Services.Session.SessionTokenService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.Security.ICryptoService,REISys.Platform.Services" targetType="REISys.Platform.Services.Security.CryptoService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.IUserService,REISys.Platform.Services" targetType="REISys.Platform.Services.UserService,REISys.Platform.Services" name="" interceptable="true"/>
+  <add sourceType="REISys.Platform.Domain.Repositories.Glossary.IGlossaryRepository,REISys.Platform.Domain" targetType="REISys.Platform.Domain.Repositories.Glossary.LegacyGlossaryRepository,REISys.Platform.Domain" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.Layout.ILayoutService,REISys.Platform.Services" targetType="REISys.Platform.Services.Layout.LayoutService,REISys.Platform.Services" name="" interceptable="false" />
+  <add sourceType="REISys.Platform.Services.TraceManagement.ITraceService,REISys.Platform.Services" targetType="REISys.Platform.Services.TraceManagement.TraceService,REISys.Platform.Services" name="" interceptable="false" />-->
+</IOCBindings>
+
+<!--lifeTimeManager="PerResolveLifetimeManager"-->

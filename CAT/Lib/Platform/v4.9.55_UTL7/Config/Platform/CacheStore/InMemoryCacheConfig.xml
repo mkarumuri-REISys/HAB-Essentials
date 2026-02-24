@@ -1,0 +1,4 @@
+﻿<Config>
+  <IsCacheEnabled>true</IsCacheEnabled>
+  <CacheExpirationDuration>20</CacheExpirationDuration>
+</Config>

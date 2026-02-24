@@ -1,0 +1,1220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="hierarchytype">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>  
+
+  <xs:simpleType name="layoutModeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Normal"/>
+      <xs:enumeration value="Popup"/>
+      <xs:enumeration value="Print"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--AutoSave-->
+  <xs:simpleType name="intervalType">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Continuous" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="reloadMode">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="AutoReload" />
+      <xs:enumeration value="ShowOption" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="inputParameterName">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="ResourceValue" />
+      <xs:enumeration value="ResourceTypeCode" />
+      <xs:enumeration value="ResourceInstance" />
+      <xs:enumeration value="UserId" />
+      <xs:enumeration value="ViewParams" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="inputSource">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="QueryString" />
+      <xs:enumeration value="SolutionSession" />
+      <xs:enumeration value="SharedSession" />
+      <xs:enumeration value="Model" />
+      <xs:enumeration value="Config" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- AutoSave-->
+
+  <xs:complexType name="criteriaItem">
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+  
+  <xs:simpleType name="itemsmodetype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ExpandAll" />
+      <xs:enumeration value="ExpandCurrentRole" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="loadingmodestype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Client" />
+      <xs:enumeration value="Server" />
+      <xs:enumeration value="ClientFlattened" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="reiBoolean">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="true" />
+      <xs:enumeration value="false" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- PFM-2912 { -->
+  <xs:simpleType name="targetType">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="_blank" />
+      <xs:enumeration value="_parent" />
+      <xs:enumeration value="_self" />
+      <xs:enumeration value="_top" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- } PFM-2912 -->
+
+  <!-- PFM-3085 { -->
+  <xs:simpleType name="reiWindowTypes">
+    <xs:restriction base="xs:string" >
+      <xs:enumeration value="Current" />
+      <xs:enumeration value="Popup" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- } PFM-3085 -->
+
+  <xs:complexType name="navigationChildItem">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="navigation" type="navigationChildItem" minOccurs="0">
+      </xs:element>
+    </xs:sequence>
+    <!-- PFM-3383 -->
+    <!--PFM 3445 Properties imageAltText and imageToolTip added to add the Alt and Title tag of the RadPanelBar Image-->
+    <xs:attribute name="iconImageUrl" type="xs:string" use="optional" />
+    <xs:attribute name="imageAltText" type="xs:string" use="optional" />
+    <xs:attribute name="imageToolTip" type="xs:string" use="optional" />
+    <xs:attribute name="markupID" type="xs:string" use="required" />
+    <xs:attribute name="navigationItemId" type="xs:string" use="required" />
+    <xs:attribute name="displayValue" type="xs:string" use="required" />
+    <xs:attribute name="destination" type="xs:string" use="required" />
+    <xs:attribute name="description" type="xs:string" use="required" />
+    <xs:attribute name="parentID" type="xs:string" use="required" />
+    <xs:attribute name="visible" type="reiBoolean" use="optional" />
+    <xs:attribute name="enabled" type="reiBoolean" use="optional" />
+    <!-- PFM-2912 { -->
+    <xs:attribute name="class" type="xs:string" use="optional" />
+    <xs:attribute name="target" type="targetType" use="optional" />
+    <!-- } PFM-2912 -->
+  </xs:complexType>
+  <xs:complexType name="navigationParentItem">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="navigation" type="navigationChildItem" minOccurs="0">
+      </xs:element>
+    </xs:sequence>
+    <!-- PFM-3383 -->
+    <!--PFM 3445 Properties imageAltText and imageToolTip added to add the Alt and Title tag of the RadPanelBar Image-->
+    <xs:attribute name="iconImageUrl" type="xs:string" use="optional" />
+    <xs:attribute name="imageAltText" type="xs:string" use="optional" />
+    <xs:attribute name="imageToolTip" type="xs:string" use="optional" />
+    <xs:attribute name="markupID" type="xs:string" use="required" />
+    <xs:attribute name="navigationItemId" type="xs:string" use="required" />
+    <xs:attribute name="displayValue" type="xs:string" use="required" />
+    <xs:attribute name="destination" type="xs:string" use="required" />
+    <xs:attribute name="description" type="xs:string" use="required" />
+    <xs:attribute name="visible" type="reiBoolean" use="optional" />
+    <xs:attribute name="enabled" type="reiBoolean" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="pageGroup">
+    <xs:all>
+      <xs:element name="layout" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="header" minOccurs="0" maxOccurs="1">
+              <xs:complexType>
+                <xs:all>
+                  <!-- PFM-3716 { -->
+                  <xs:element name="banner" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
+                      </xs:all>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="homePagePath" type="xs:string" use="optional" />
+                      <xs:attribute name="popupHeading" type="xs:string" use="optional" />
+                      <xs:attribute name="imagePath" type="xs:string" use="optional" />
+                      <xs:attribute name="showEnvironmentInformation" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <!-- } PFM-3716 -->
+                  <xs:element name="userNavigation" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="topMenu" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                          <xs:element name="navigation" type="navigationParentItem" minOccurs="0" maxOccurs="unbounded" />
+                          <xs:element name="changePassword" minOccurs="0" maxOccurs="1">
+                              <xs:complexType>
+                                  <xs:attribute name="popUp" type="reiBoolean" use="optional" />
+                              </xs:complexType>    
+                          </xs:element>    
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="rootMarkupId" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="globalSearch" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="Category " minOccurs="0">
+                          <xs:complexType>
+                            <xs:attribute name="itemValue" type="xs:string" use="required" />
+                            <xs:attribute name="itemText" type="xs:string" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="resultUrl" type="xs:string" use="optional" />
+                      <xs:attribute name="autoCompleteUrl" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="globalNavigation" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="currentNavigationId" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="contentTab" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="navigation" type="navigationParentItem"></xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="currentMarkupId" type="xs:string" use="optional" />
+                      <xs:attribute name="rootMarkupId" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="mode" type="mode" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="sideMenu" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="filter" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="localNavigation" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="currentNavigationId" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="mode" type="mode" use="optional" />                
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="leftMenu" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:sequence >
+                  <xs:element name="filter" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="criteria" type="criteriaItem" minOccurs="0" maxOccurs="unbounded"/>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="navigation" type="navigationParentItem" minOccurs="0" maxOccurs="unbounded"></xs:element>                
+                </xs:sequence>
+                <xs:attribute name ="orderBy" type="xs:string" use="optional"/>
+                <xs:attribute name="title" type="xs:string" use="optional" />
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="mode" type="mode" use="optional" />
+                <xs:attribute name="itemMode" type="itemsmodetype" use="optional" />
+                <xs:attribute name="loadingMode" type="loadingmodestype" use="optional" />
+                <xs:attribute name="currentMarkupId" type="xs:string" use="optional" />
+                <!-- removed for PFM-2557 -->
+                <!--<xs:attribute name="dimension" type="dimensiontype" use="optional" />-->
+                <xs:attribute name="hierarchy" type="hierarchytype" use="optional" />                
+              </xs:complexType>
+            </xs:element>
+            <!--PFM -2690-->
+            <xs:element name="footer" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <!--<xs:sequence minOccurs="0" maxOccurs="1">-->
+                <xs:all>
+                  <xs:element name="navigations" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="navigation" type="navigationChildItem"></xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="footerLogo" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="img1" type="xs:string" use="optional" />
+                      <xs:attribute name="img2" type="xs:string" use="optional" />
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:all>
+                <!--</xs:sequence>-->
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="solutionName" type="xs:string" use="optional" />
+                <xs:attribute name="solutionVersion " type="xs:string" use="optional" />
+                <xs:attribute name="platformVersion" type="xs:string" use="optional" />
+                <xs:attribute name="environment" type="xs:string" use="optional" />
+                <xs:attribute name="showProductInformation" type="reiBoolean" use="optional" />
+                <xs:attribute name="showVersionInformation" type="reiBoolean" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <!--PFM 2690-->
+            <xs:element name="toolBar" minOccurs="0" maxOccurs="1">
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="font" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="layoutmenu" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  
+                  <xs:element name="feedback" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="email" type="xs:string" use="optional"/>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+
+                  <xs:element name="quickNote" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+
+                  <xs:element name="personalComments" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  
+                  <xs:element name="fileItem" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+
+                  <xs:element name="calculatorToolbar" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="corePredefinedPageId" type="xs:string" use="optional" />
+                      <xs:attribute name="url" type="xs:string" use="optional" />
+                      <xs:attribute name="tooltip" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+
+                  <xs:element name="autoSaveToolbarStatus" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="feedback" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+
+                  <xs:element name="pageContextMessage" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                      </xs:all>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="globalMessage" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:all>
+                        <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                      </xs:all>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="searchOptions" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <!-- PFM-2628 { -->
+                      <xs:attribute name="viewType" use="optional" >
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="FolderBasedView"/>
+                            <xs:enumeration value="CaseBasedView"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                      <!-- PFM-2628 } -->
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="portfolio" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <!-- PFM-3085 { -->
+                  <xs:element name="favorites" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element maxOccurs="unbounded" minOccurs="0" name="navigation">
+                                <xs:complexType>
+                                  <xs:attribute name="description" type="xs:string" use="optional" />
+                                  <xs:attribute name="destination" type="xs:string" use="optional" />
+                                  <xs:attribute name="externalSystemCode" type="xs:int" use="optional" />
+                                  <xs:attribute name="externalSystemDimensionCode" type="xs:int" use="optional" />
+                                  <xs:attribute name="externalSystemDimensionValue" type="xs:string" use="optional" />
+                                  <xs:attribute name="categoryDescription" type="xs:string" use="optional" />
+                                  <xs:attribute name="displayText" type="xs:string" use="optional" />
+                                  <xs:attribute name="additionalParams" type="xs:string" use="optional" />
+                                  <xs:attribute name="favoriteCategoryDescription" type="xs:string" use="optional" />
+                                  <xs:attribute name="favoriteCategoryCode" type="xs:int" use="optional" />
+                                  <xs:attribute name="windowType" type="reiWindowTypes" use="optional" />
+                                </xs:complexType>
+                              </xs:element>
+                            </xs:sequence>
+                            <xs:attribute name="name" type="xs:string"  />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="tickler" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                          <xs:complexType>
+                            <xs:attribute name="name" type="xs:string" use="optional" />
+                            <xs:attribute name="description" type="xs:string" use="optional" />
+                            <xs:attribute name="startDate" type="xs:string" use="optional" />
+                            <xs:attribute name="duration" type="xs:int" use="optional" />
+                            <xs:attribute name="eventTypeCode" type="xs:int" use="optional" />
+                            <xs:attribute name="calendarTypeCode" type="xs:int" use="optional" />
+                            <xs:attribute name="location" type="xs:string" use="optional" />
+                            <xs:attribute name="subject" type="xs:string" use="optional" />
+                            <xs:attribute name="clientEventId" type="xs:string" use="optional" />
+                            <xs:attribute name="recurrenceTypeCocde" type="xs:int" use="optional" />
+                            <xs:attribute name="inactiveDateTime" type="xs:string" use="optional" />
+                            <xs:attribute name="lastUpdatedDateTime" type="xs:string" use="optional" />
+                            <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="helplinks" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                          <xs:complexType>
+                            <xs:attribute name="externSystemCode" type="xs:int" use="optional" />
+                            <xs:attribute name="url" type="xs:string" use="optional" />
+                            <xs:attribute name="linkType" type="xs:string" use="optional" />
+                            <xs:attribute name="description" type="xs:string" use="optional" />
+                            <xs:attribute name="displayValue" type="xs:string" use="optional" />
+                            <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="recentlyAccessed" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                          <xs:complexType>
+                            <xs:attribute name="groupName" type="xs:string" use="optional" />
+                            <xs:attribute name="addtionalQSParam" type="xs:string" use="optional" />
+                            <xs:attribute name="title" type="xs:string" use="optional" />
+                            <xs:attribute name="description" type="xs:string" use="optional" />
+                            <xs:attribute name="staticTooltip" type="xs:string" use="optional" />
+                            <xs:attribute name="dynamicTooltipUrl" type="xs:string" use="optional" />
+                            <xs:attribute name="tooltipIsStatic" type="xs:string" use="optional" />
+                            <xs:attribute name="controllerUrl" type="xs:string" use="optional" />
+
+                          </xs:complexType>
+                          
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                  <!-- } PFM-3085 -->
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="helpUrl" type="xs:string" use="optional" />
+                <xs:attribute name="type" type="toolbartype" use="optional" />
+                <!-- PFM-2979 { -->
+                <xs:attribute name="showCallout" type="reiBoolean" use="optional" />
+                <!--  PFM-2979 } -->
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="pageTitle" minOccurs="0" maxOccurs="1">
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="imagePath" type="xs:string" use="optional" />
+                <xs:attribute name="containerCssClass" type="xs:string" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="instruction" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="xs:string">
+                    <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                    <xs:attribute name="mode" type="mode" use="optional" />
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="systemMessage" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="value" type="xs:string" minOccurs="0" nillable="true"/>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="useGlobal" type="reiBoolean" use="optional"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="systemAnnouncement" minOccurs="0" maxOccurs="1" nillable="true">
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="value" type="xs:string" minOccurs="0" nillable="true"/>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean"/>
+                <xs:attribute name="useGlobal" type="reiBoolean" use="optional"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="generalInformation" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="value" type="xs:string" />
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="breadCrumb" minOccurs="0" maxOccurs="1">
+              <xs:complexType>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                <xs:attribute name="externalSystemDimensionCode" type="xs:string" use="optional" />
+                <xs:attribute name="externalSystemCode" type="xs:string" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="cssOptions" type="clientFilesDownloadOption" minOccurs="0" maxOccurs="1" />
+            <xs:element name="scriptOptions" type="clientFilesDownloadOption" minOccurs="0" maxOccurs="1" />
+           
+            <!--AutoSave-->
+            <xs:element name="autoSave" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="inputParams" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="autoSaveInputParam" minOccurs="0" maxOccurs="unbounded" >
+                          <xs:complexType>
+                            <xs:attribute name="inputParameterName" type="inputParameterName" use="required" />
+                            <xs:attribute name="inputSource" type="inputSource" use="required" />
+                            <xs:attribute name="key" type="xs:string" use="required" />
+                            <xs:attribute name="value" type="xs:string" use="optional" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element  maxOccurs="1" name="discardAutoSave" minOccurs="0">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="pageAction" minOccurs="1">
+                          <xs:complexType>
+                            <xs:attribute name="id" type="xs:string" use="optional" />
+                            <xs:attribute name="name" type="xs:string" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="activated" type="reiBoolean" use="optional" />
+                <xs:attribute name="timerInterval" type="xs:positiveInteger" use="optional" />
+                <xs:attribute name="intervalType" type="intervalType" use="optional" />
+                <xs:attribute name="toolbarMessageTimeout" type="xs:positiveInteger" use="optional" />
+                <xs:attribute name="reloadMode" type="reloadMode" use="optional" />
+                <xs:attribute name="hiddenFields" type="xs:string" use="optional" />
+                <xs:attribute name="multiUser" type="reiBoolean" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <!--AutoSave-->
+            <!--Richtextbox-->
+            <xs:element name="richtextbox" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="spellCheckSettings" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:attribute name="editDistance" type="xs:int" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                </xs:all>
+              </xs:complexType>
+            </xs:element>
+            <!--Richtextbox-->
+            <!--Session offset-->
+            <xs:element name="sessionOffset" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:all>
+                  <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                </xs:all>
+                <xs:attribute name="visible" type="reiBoolean" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <!--Session offset-->
+          </xs:all>
+          <xs:attribute name="visible" type="reiBoolean" use="optional" />
+          <xs:attribute name="windowTitle" type="xs:string" use="optional" />
+          <xs:attribute name="windowTitleSuffix" type="xs:string" use="optional" />
+          <xs:attribute name="windowIconPath" type="xs:string" use="optional" />
+          <xs:attribute name="persistence" type="xs:boolean" use="optional" />
+          <xs:attribute name="mode" type="layoutModeType"/>
+          <xs:attribute name="supportsClassicUI" use="optional" type="reiBoolean" default="true"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="authorization" minOccurs="0" maxOccurs="1" >
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="location" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element maxOccurs="unbounded" name="deny">
+                      <xs:complexType>
+                        <xs:attribute name="roleIds" type="roles" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element maxOccurs="unbounded" name="allow">
+                      <xs:complexType>
+                        <xs:attribute name="roleIds" type="roles" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="path" type="xs:string" use="optional" />
+                <xs:attribute name="allowAnonymous" type="reiBoolean" use="optional" />
+              </xs:complexType>
+            </xs:element>
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="statePersistence" minOccurs="0" maxOccurs="1" >
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="viewstate" minOccurs="0" maxOccurs="1" >
+              <xs:complexType>
+                <xs:attribute name="compression" type="compressionType" use="optional" />
+                <xs:attribute name="viewStateStore" type="viewStateStorageType" use="optional" />
+                <xs:attribute name="compressionThreshold" type="xs:long" use="optional" />
+              </xs:complexType>
+            </xs:element>
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="id" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:simpleType name="roles">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        A star wildcard, or a comma delimited string of integers, each of which represent a role.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+  <xs:simpleType name="mode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Expand" />
+      <xs:enumeration value="Collapse" />
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- removed for PFM-2557 -->
+  <!--<xs:simpleType name="dimensiontype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Process" />
+      <xs:enumeration value="Document" />
+    </xs:restriction>
+  </xs:simpleType>-->
+  <xs:simpleType name="toolbartype">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Page" />
+      <xs:enumeration value="Popup" />
+      <xs:enumeration value="Print" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="clientFilesDownloadOption">
+    <xs:attribute name="crunch" type="reiBoolean" />
+    <xs:attribute name="combine" type="reiBoolean" />
+  </xs:complexType>
+  <xs:simpleType name="viewStateStorageType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ClientBrowser" />
+      <xs:enumeration value="Database" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="compressionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="GZip" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="pageGroup" type="pageGroup"></xs:element>
+        </xs:sequence>
+        <xs:element name="default" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="layout" minOccurs="0" maxOccurs="1" >
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="header" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="banner" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+                              </xs:all>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <xs:attribute name="homePagePath" type="xs:string" use="optional" />
+                              <xs:attribute name="imagePath" type="xs:string" use="optional" />
+                              <xs:attribute name="popupHeading" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                    <xs:element name="topMenu" minOccurs="0" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                          <xs:element name="navigation" type="navigationParentItem" minOccurs="0" maxOccurs="unbounded" />
+                          <xs:element name="changePassword" minOccurs="0" maxOccurs="1">
+                              <xs:complexType>
+                                  <xs:attribute name="popUp" type="reiBoolean" use="optional" />
+                              </xs:complexType>    
+                          </xs:element>    
+                      </xs:sequence>
+                      <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      <xs:attribute name="rootMarkupId" type="xs:string" use="optional" />
+                    </xs:complexType>
+                  </xs:element>
+                          <xs:element name="globalSearch" minOccurs="0" maxOccurs="1" >
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="Category " minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:attribute name="itemValue" type="xs:string" use="required" />
+                                    <xs:attribute name="itemText" type="xs:string" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <xs:attribute name="resultUrl" type="xs:string" use="optional" />
+                              <xs:attribute name="autoCompleteUrl" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="contentTab" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="navigation" type="navigationParentItem"></xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <xs:attribute name="currentMarkupId" type="xs:string" use="optional" />
+                              <xs:attribute name="rootMarkupId" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="mode" type="mode" use="optional" />
+                        <xs:attribute name="showEnvironmentInformation" type="reiBoolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="leftMenu" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:sequence >
+                          <xs:element name="filter" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="criteria" type="criteriaItem" minOccurs="0" maxOccurs="unbounded"/>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="navigation" type="navigationParentItem" minOccurs="0" maxOccurs="unbounded"></xs:element>                    
+                        </xs:sequence>
+                        <!--Attribute added to left menu for update Order by clause-->
+                        <xs:attribute name ="orderBy" type="xs:string" use="optional"/>
+                        <xs:attribute name="title" type="xs:string" use="optional" />
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="mode" type="mode" use="optional" />
+                        <xs:attribute name="itemMode" type="itemsmodetype" use="optional" />
+                        <xs:attribute name="loadingMode" type="loadingmodestype" use="optional" />
+                        <xs:attribute name="currentMarkupId" type="xs:string" use="optional" />
+                        <!-- removed for PFM-2557 -->
+                        <!--<xs:attribute name="dimension" type="dimensiontype" use="optional" />-->
+                        <xs:attribute name="hierarchy" type="hierarchytype" use="optional" />
+                        <!--<xs:attribute name="orderLeftMenuByRoleAlphabetical" type="orderLeftMenuByRoleAlphabeticaltype" use="optional" />-->
+                      </xs:complexType>
+                    </xs:element>
+                    <!--PFM -2690-->
+                    <xs:element name="footer" minOccurs="0" maxOccurs="1" >
+                      <xs:complexType>
+                        <!--<xs:sequence minOccurs="0" maxOccurs="1">-->
+                        <xs:all>
+                          <xs:element name="navigations" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                <xs:element name="navigation" type="navigationChildItem"></xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="footerLogo" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="footerLogo" type="xs:string" minOccurs="1" maxOccurs="1" />
+                              </xs:all>
+                              <xs:attribute name="img1" type="xs:string" use="optional" />
+                              <xs:attribute name="img2" type="xs:string" use="optional" />
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:all>
+                        <!--</xs:sequence>-->
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="solutionName" type="xs:string" use="optional" />
+                        <xs:attribute name="solutionVersion " type="xs:string" use="optional" />
+                        <xs:attribute name="platformVersion" type="xs:string" use="optional" />
+                        <xs:attribute name="environment" type="xs:string" use="optional" />
+                        <xs:attribute name="showProductInformation" type="reiBoolean" use="optional" />
+                        <xs:attribute name="showVersionInformation" type="reiBoolean" use="optional" />                            
+                      </xs:complexType>
+                    </xs:element>
+                    <!--PFM 2690-->
+
+
+                    <xs:element name="toolBar" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="font" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="layoutmenu" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+
+                          <xs:element name="feedback" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="email" type="xs:string" use="optional"/>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+
+                          <xs:element name="quickNote" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          
+                          <xs:element name="personalComments" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          
+                          <xs:element name="fileItem" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+
+                          <xs:element name="calculatorToolbar" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <xs:attribute name="corePredefinedPageId" type="xs:string" use="optional" />
+                              <xs:attribute name="url" type="xs:string" use="optional" />
+                              <xs:attribute name="tooltip" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+
+                          <xs:element name="autoSaveToolbarStatus" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <xs:attribute name="feedback" type="xs:string" use="optional" />
+                              <xs:attribute name="tooltip" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+
+                          <xs:element name="pageContextMessage" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                              </xs:all>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="globalMessage" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                              </xs:all>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="searchOptions" minOccurs="0" maxOccurs="1" >
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                              <!-- PFM-2628 { -->
+                              <xs:attribute name="viewType" use="optional" >
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="FolderBasedView"/>
+                                    <xs:enumeration value="CaseBasedView"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                              <!-- PFM-2628 } -->
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="portfolio" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <!-- PFM-3085 { -->
+                          <xs:element name="favorites" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" minOccurs="0" name="navigation">
+                                        <xs:complexType>
+                                          <xs:attribute name="description" type="xs:string" use="optional" />
+                                          <xs:attribute name="destination" type="xs:string" use="optional" />
+                                          <xs:attribute name="externalSystemCode" type="xs:int" use="optional" />
+                                          <xs:attribute name="externalSystemDimensionCode" type="xs:int" use="optional" />
+                                          <xs:attribute name="externalSystemDimensionValue" type="xs:string" use="optional" />
+                                          <xs:attribute name="categoryDescription" type="xs:string" use="optional" />
+                                          <xs:attribute name="displayText" type="xs:string" use="optional" />
+                                          <xs:attribute name="additionalParams" type="xs:string" use="optional" />
+                                          <xs:attribute name="favoriteCategoryDescription" type="xs:string" use="optional" />
+                                          <xs:attribute name="favoriteCategoryCode" type="xs:int" use="optional" />
+                                          <xs:attribute name="windowType" type="reiWindowTypes" use="optional" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="name" type="xs:string"  />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="tickler" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" use="optional" />
+                                    <xs:attribute name="description" type="xs:string" use="optional" />
+                                    <xs:attribute name="startDate" type="xs:string" use="optional" />
+                                    <xs:attribute name="duration" type="xs:int" use="optional" />
+                                    <xs:attribute name="eventTypeCode" type="xs:int" use="optional" />
+                                    <xs:attribute name="calendarTypeCode" type="xs:int" use="optional" />
+                                    <xs:attribute name="location" type="xs:string" use="optional" />
+                                    <xs:attribute name="subject" type="xs:string" use="optional" />
+                                    <xs:attribute name="clientEventId" type="xs:string" use="optional" />
+                                    <xs:attribute name="recurrenceTypeCocde" type="xs:int" use="optional" />
+                                    <xs:attribute name="inactiveDateTime" type="xs:string" use="optional" />
+                                    <xs:attribute name="lastUpdatedDateTime" type="xs:string" use="optional" />
+                                    <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="helplinks" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:attribute name="externSystemCode" type="xs:int" use="optional" />
+                                    <xs:attribute name="url" type="xs:string" use="optional" />
+                                    <xs:attribute name="linkType" type="xs:string" use="optional" />
+                                    <xs:attribute name="description" type="xs:string" use="optional" />
+                                    <xs:attribute name="displayValue" type="xs:string" use="optional" />
+                                    <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="recentlyAccessed" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="navigation" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:attribute name="groupName" type="xs:string" use="optional" />
+                                    <xs:attribute name="addtionalQSParam" type="xs:string" use="optional" />
+                                    <xs:attribute name="title" type="xs:string" use="optional" />
+                                    <xs:attribute name="description" type="xs:string" use="optional" />
+                                    <xs:attribute name="staticTooltip" type="xs:string" use="optional" />
+                                    <xs:attribute name="dynamicTooltipUrl" type="xs:string" use="optional" />
+                                    <xs:attribute name="tooltipIsStatic" type="xs:string" use="optional" />
+                                    <xs:attribute name="controllerUrl" type="xs:string" use="optional" />
+                                    
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <!-- } PFM-3085 -->
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="helpUrl" type="xs:string" use="optional" />
+                        <xs:attribute name="type" type="toolbartype" use="optional" />
+                        <!-- PFM-2979 { -->
+                        <xs:attribute name="showCallout" type="reiBoolean" use="optional" />
+                        <!--  PFM-2979 } -->
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="instruction" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                            <xs:attribute name="mode" type="mode" use="optional" />
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="systemMessage" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="value" type="xs:string" minOccurs="0" nillable="true"/>
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="useGlobal" type="reiBoolean" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="systemAnnouncement" minOccurs="0" maxOccurs="1" nillable="true">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="value" type="xs:string" minOccurs="0" nillable="true" />
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean"/>
+                        <xs:attribute name="useGlobal" type="reiBoolean" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="generalInformation" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="value" type="xs:string" />
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="breadCrumb" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="externalSystemDimensionCode" type="xs:string" use="optional" />
+                        <xs:attribute name="externalSystemCode" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="pageTitle" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                        <xs:attribute name="imagePath" type="xs:string" use="optional" />
+                        <xs:attribute name="containerCssClass" type="xs:string" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="cssOptions" type="clientFilesDownloadOption" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="scriptOptions" type="clientFilesDownloadOption" minOccurs="0" maxOccurs="1" />
+                    <!--AutoSave-->
+                    <xs:element name="autoSave" minOccurs="0" maxOccurs="1" >
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="inputParams" minOccurs="0" maxOccurs="1" >
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="autoSaveInputParam" minOccurs="0" maxOccurs="unbounded" >
+                                  <xs:complexType>
+                                    <xs:attribute name="inputParameterName" type="inputParameterName" use="required" />
+                                    <xs:attribute name="inputSource" type="inputSource" use="required" />
+                                    <xs:attribute name="key" type="xs:string" use="required" />
+                                    <xs:attribute name="value" type="xs:string" use="optional" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element  maxOccurs="1" name="discardAutoSave" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="pageAction" minOccurs="1">
+                                  <xs:complexType>
+                                    <xs:attribute name="id" type="xs:string" use="optional" />
+                                    <xs:attribute name="name" type="xs:string" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                    
+                        <xs:attribute name="activated" type="reiBoolean" use="optional" />
+                        <xs:attribute name="timerInterval" type="xs:positiveInteger" use="optional" />
+                        <xs:attribute name="intervalType" type="intervalType" use="optional" />
+                        <xs:attribute name="toolbarMessageTimeout" type="xs:positiveInteger" use="optional" />
+                        <xs:attribute name="reloadMode" type="reloadMode" use="optional" />
+                        <xs:attribute name="hiddenFields" type="xs:string" use="optional" />
+                        <xs:attribute name="multiUser" type="reiBoolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <!--AutoSave-->
+                    <!--Richtextbox-->
+                    <xs:element name="richtextbox" minOccurs="0" maxOccurs="1" >
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="spellCheckSettings" minOccurs="0" maxOccurs="1" >
+                            <xs:complexType>
+                              <xs:attribute name="editDistance" type="xs:int" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:all>
+                      </xs:complexType>
+                    </xs:element>
+                    <!--Richtextbox-->
+                    <!--Session offset-->
+                    <xs:element name="sessionOffset" minOccurs="0" maxOccurs="1" >
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                        </xs:all>
+                        <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <!--Session offset-->
+                    <!--SanitizeQueryStringParameter-->
+                    <xs:element name="sanitizeQueryString" nillable="true" maxOccurs="1" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="parameter " minOccurs="0">
+                            <xs:complexType>
+                              <xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="DisableAutoValidate" type="xs:boolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                    <!--SanitizeQueryStringParameter-->
+                  </xs:all>
+                  <xs:attribute name="visible" type="reiBoolean" use="optional" />
+                  <xs:attribute name="windowTitle" type="xs:string" use="optional" />
+                  <xs:attribute name="windowTitleSuffix" type="xs:string" use="optional" />
+                  <xs:attribute name="windowIconPath" type="xs:string" use="optional" />
+                  <xs:attribute name="persistence" type="xs:boolean" use="optional" />
+                  <xs:attribute name="mode" type="layoutModeType"/>
+                  <xs:attribute name="supportsClassicUI" use="optional" type="reiBoolean" default="true"/>
+                  <xs:attribute name="enableScrollToTop" use="optional" type="reiBoolean" default="true"/>
+                  <xs:attribute name="disableErrorReporting" use="optional" type="reiBoolean" default="false" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="authorization">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="location">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:choice minOccurs="0" maxOccurs="unbounded">
+                            <xs:element maxOccurs="unbounded" name="deny">
+                              <xs:complexType>
+                                <xs:attribute name="roleIds" type="roles" use="required" />
+                              </xs:complexType>
+                            </xs:element>
+                            <xs:element maxOccurs="unbounded" name="allow">
+                              <xs:complexType>
+                                <xs:attribute name="roleIds" type="roles" use="required" />
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:choice>
+                        </xs:sequence>
+                        <xs:attribute name="path" type="xs:string" use="optional" />
+                        <xs:attribute name="allowAnonymous" type="reiBoolean" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="statePersistence" minOccurs="0" maxOccurs="1" >
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element name="viewstate" minOccurs="0" maxOccurs="1" >
+                      <xs:complexType>
+                        <xs:attribute name="compression" type="compressionType" use="optional" />
+                        <xs:attribute name="viewStateStore" type="viewStateStorageType" use="optional" />
+                        <xs:attribute name="compressionThreshold" type="xs:long" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="pageGroup" type="pageGroup"></xs:element>
+        </xs:sequence>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AssignmentManager>
+	<RetrieveDirectAssignments>
+		<Statement>getRoleMembersForObject</Statement>
+	</RetrieveDirectAssignments>
+  <RetrieveSusidiaryDirectAssignments>
+    <Statement>getSusidiaryRoleMembersForObject</Statement>
+  </RetrieveSusidiaryDirectAssignments>
+	<RetrieveRoleMembers>
+		<Statement>getRoleMembers</Statement>
+	</RetrieveRoleMembers>
+	<RetrieveBackUpUser>
+		<Statement>getUserBackUp</Statement>
+	</RetrieveBackUpUser>
+	<RetrieveSubOrdinates>
+		<Statement>getRelatedUsers</Statement>
+	</RetrieveSubOrdinates>
+ <DirectAssignments>
+		<Statement>getDirectAssignments</Statement>
+	</DirectAssignments>
+</AssignmentManager>

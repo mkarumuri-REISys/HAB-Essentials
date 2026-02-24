@@ -1,0 +1,124 @@
+<statements>
+	<statement name="getIssuesForApplication">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select cast(a.IssueId as varchar(36)) IssueId, IssueTrackingNo, IssueTypeCode,
+			ResponsibleUserId, IssueTitle, IssueDescription, RestrictsFundingFlag,
+			Phase,c.Createddate,d.FirstName, d.LastName, b.ResourceValue,b.ResourceTypeCode 
+			from IssueContext a inner join
+			IssueContext b on a.issueId=b.IssueId inner join
+			Issues c on a.issueid = c.issueid inner join lu_users d on
+			c.responsibleuserid = d.userid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="a.ResourceTypeCode">11</exp>
+					<exp op="=" dbField="a.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			order by c.Createddate desc
+		</sql>
+	</statement>
+
+	<statement name="getProcessInstance" dbName="WORKFLOW">
+		<param id="sourceId" />
+		<sql>
+			select cast(fpi.process_instance_id as varchar(36)) as id, object_id as IssueId,
+					cast(fpi.process_definition_id as varchar(36)) as processDefinitionID,
+					cast(fpi.root_process_instance_id as varchar(36)) as rootInstanceID,
+					fpi.current_state_id as state, 
+					fpi.container_xml as containerXML,
+					fpi.client_status_msg as clientStatusMsg
+			from FACT_PROCESS_INSTANCE fpi inner join PROCESS_INSTANCE_CONTEXT pic on
+			fpi.process_instance_id = pic.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="object_type_id">6</exp>
+					<exp op="IN" dbField="object_id" paramId="sourceId" />
+				</exp>
+			</where>
+			order by fpi.client_status_msg
+		</sql>
+	</statement>
+	
+	<statement name="getIssuesForProgram">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select cast(a.IssueId as varchar(36)) as IssueId, IssueTrackingNo, IssueTypeCode,
+			ResponsibleUserId, IssueTitle, IssueDescription, RestrictsFundingFlag,
+			Phase,a.Createddate, b.ResourceValue,b.ResourceTypeCode 
+			from IssueContext a inner join
+			IssueContext b on a.issueId=b.IssueId inner join
+			Issues c on a.issueid = c.issueid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="a.ResourceTypeCode">13</exp>
+					<exp op="=" dbField="a.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			order by a.Createddate desc
+		</sql>
+	</statement>
+	<statement name="getIssuesForGrant">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select cast(a.IssueId as varchar(36)) IssueId, IssueTrackingNo, IssueTypeCode,
+			ResponsibleUserId, IssueTitle, IssueDescription, RestrictsFundingFlag,
+			Phase, a.Createddate,b.ResourceValue,b.ResourceTypeCode 
+			from IssueContext a inner join
+			IssueContext b on a.issueId=b.IssueId inner join
+			Issues c on a.issueid = c.issueid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="a.ResourceTypeCode">12</exp>
+					<exp op="=" dbField="a.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			order by a.Createddate desc
+		</sql>
+	</statement>
+	<statement name="getAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<sql>
+			select ResourceTypeCode as targetObjectType,
+					ResourceValue as targetObjectID
+			from issueContext
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="IssueId" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="insertAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="targetType" type="adSmallInt" required="true"/>
+		<param id="targetId" type="adVarChar" size="36" required="true"/>
+		<sql>
+			insert into issueContext
+			<columns mode="insert">
+				<column dbField="IssueId" paramId="sourceId" />
+				<column dbField="ResourceTypeCode" paramId="targetType" />
+				<column dbField="ResourceValue" paramId="targetId" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name="removeAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="targetType" type="adSmallInt" size="36" />
+		<sql>
+			delete from issueContext
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="IssueId" paramId="sourceId" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="targetType" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

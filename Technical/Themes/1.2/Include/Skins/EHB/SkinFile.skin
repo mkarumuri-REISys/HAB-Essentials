@@ -1,0 +1,3 @@
+﻿<%@ Register TagPrefix="rei" namespace="REISys.Platform.Web.UI.WebControls" assembly="REISys.Platform.Web"%>  
+ 
+<rei:REIRadDock Top="250px" Left="35%" runat="server" Style="z-index: 50000" />

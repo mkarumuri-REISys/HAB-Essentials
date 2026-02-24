@@ -1,0 +1,162 @@
+﻿<statements>
+  <statement name="GetUser" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      SELECT
+      LoginFailedCount, LockoutDateTime, AccountDisabledDateTime,
+      AgreementSignedOnDateTime, ProfileExpirationDateTime, PasswordExpirationDateTime,
+      LastLoginDateTime, u.UserId, u.UserName, p.FirstName, p.LastName, p.Title, p.MiddleName
+      From AC_User u
+      JOIN People p
+      ON u.UserId = p.UserId
+      WHERE u.UserId = <exp paramId="UserId" />
+    </sql>
+  </statement>
+  <statement name="GetAllUser" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      SELECT
+      LoginFailedCount, LockoutDateTime, AccountDisabledDateTime,
+      AgreementSignedOnDateTime, ProfileExpirationDateTime, PasswordExpirationDateTime,
+      LastLoginDateTime, u.UserId, u.UserName, p.FirstName, p.LastName, p.Title, p.MiddleName
+      From AC_User u
+      Left JOIN People p
+      ON u.UserId = p.UserId
+      WHERE u.UserId = <exp paramId="UserId" />
+    </sql>
+  </statement>
+  <statement name="LockUserAccount" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      UPDATE AC_User
+      SET LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1, LastLoginFailedDateTime = GETDATE(), LockoutDateTime= GETDATE()
+      WHERE UserId = <exp paramId="UserId" />
+
+      execute uspAC_LogUserAction @UserId,@UserId,10,'Locked By System'
+    </sql>
+  </statement>
+  <statement name="UnlockUserAccount" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      UPDATE AC_User
+      SET LockoutDateTime = NULL, LoginFailedCount = NULL, LastLoginFailedDateTime = NULL
+      WHERE UserId = <exp paramId="UserId" />
+
+      set @strUnlockActionComment = 'Account Unlocked By System on login after ' + cast(@AccountLockoutEffectiveMins as varchar(10)) + ' minutes of account lockout'
+      execute uspAC_LogUserAction @UserId, @UserId, 11, @strUnlockActionComment
+    </sql>
+  </statement>
+  <statement name="LogUserAction" connection = "Common">
+    <param id="UserId" type="String" />
+    <param id="Comments" type="String" />
+    <param id="ActionType" type="Int32" />
+    <sql>
+      INSERT INTO AC_UserActions
+      <columns mode="INSERT">
+        <column dbField="UserActionId">NEWID()</column>
+        <column dbField="UserId" paramId="UserId"/>
+        <column dbField="UserActionTypeCode" paramId="ActionType" />
+        <column dbField="Comments" paramId="Comments" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+      </columns>
+    </sql>
+  </statement>
+  <!-- PFM-2243. Copied from EHBs. Y:\Config\Interface\Statements\Common.sql -->
+  <statement name="GetQuickLinkReports" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      SELECT uf.ReportId AS Id, catalog.Name, catalog.Path
+      FROM ERS_UserFavorites uf, ERS_Report catalog
+      WHERE UserID = <exp paramId="UserId" />
+      AND uf.ReportId = catalog.ReportId
+      AND QuickLinksFlag = 1
+      ORDER BY catalog.Name
+    </sql>
+  </statement>
+
+  <!-- PFM-2243. Copied from EHBs. Y:\Config\Interface\Statements\Common.sql -->
+  <statement name="GetRecentlyVisitedReports" connection = "Common">
+    <param id="UserId" type="String" />
+    <sql>
+      SELECT TOP 5 rh.ReportId as Id, catalog.Name, catalog.Path
+      FROM ERS_ReportsVisitedHistory rh, ERS_Report catalog
+      WHERE rh.UserId = <exp paramId="UserId"/>
+      AND rh.ReportID = catalog.ReportId
+      GROUP BY rh.ReportId, catalog.Name, catalog.path, catalog.ExecutionSystemID
+      ORDER BY 3 DESC
+    </sql>
+  </statement>
+
+  <statement name="GetUserDetails" connection="Common">
+    <param id="RoleIds" />
+    <param id="PrivillegeIds" />
+    <param id="IsPreferred" type="String" />
+    <sql>
+      SELECT DISTINCT u.UserId as Id
+      , UserName
+      , FirstName
+      , LastName
+      , MiddleName
+      , CASE
+      WHEN len(isnull(middlename, '')) = 0 THEN
+      isnull(LastName, '') + ', ' + isnull(FirstName, '')
+      ELSE
+      isnull(LastName, '') + ', ' + isnull(FirstName, '') + ' ' + middlename
+      END AS FullName
+      , NamePrefix as Title
+      , u.UserTypeCode
+      , lUt.ShortDisplayValue AS UserType
+      , ar.roleName AS DefaultRole
+      , (SELECT TOP 1 ca.ContactAddress
+      FROM
+      ContactAddresses ca
+      WHERE
+      p.PersonId = ca.EntityId
+      AND ca.EntityTypeCode = 1
+      AND ca.ContactAddressTypeCode = 1
+      <optional depends="IsPreferred=='true'">
+        AND ca.IsPreferred = 1
+      </optional>
+      <optional depends="IsPreferred=='false'">
+        AND ca.ContactAddressPurposeCode = 1
+      </optional>
+      ) PrimaryEmail
+      , (SELECT TOP 1 ca.ContactAddress
+      FROM
+      ContactAddresses ca
+      WHERE
+      p.PersonId = ca.EntityId
+      AND ca.EntityTypeCode = 1
+      AND ca.ContactAddressTypeCode = 2
+      <optional depends="IsPreferred=='true'">
+        AND ca.IsPreferred = 1
+      </optional>
+      <optional depends="IsPreferred=='false'">
+        AND ca.ContactAddressPurposeCode = 1
+      </optional>
+      ) PrimaryPhone
+      FROM
+      ac_user u
+      INNER JOIN people p
+      ON u.userid = p.userid
+      INNER JOIN ac_role ar
+      ON ar.roleid = u.defaultRoleid
+      INNER JOIN lookupUserType lUt
+      ON lut.lookupcode = u.usertypecode
+      WHERE
+      u.UserId IN (SELECT UserId
+      FROM
+      AC_Permission(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp op="IN" paramId="RoleIds" dbField="RoleId" />
+          <exp op="IN" paramId="PrivillegeIds" dbField="PrivilegeId" />
+          <exp>Status = 'Granted'</exp>
+          <exp>getdate() BETWEEN isnull(StartDateTime, getdate() - 1) AND isnull(EndDateTime, getdate() + 1)</exp>
+        </exp>
+      </where>
+      )
+    </sql>
+  </statement>
+</statements>

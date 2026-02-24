@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customConfiguration>
+	<buildNumber>1.5.10.0</buildNumber>
+	<exceptionManagement mode="ON">
+		<publishers>
+			<publisher provider="FILE" format="TEXT" mode="ON" logFileName="Y:\Error\Text\ErrorLog{0}.txt"/>
+			<publisher provider="FILE" format="XML" mode="ON" logFileName="Y:\Error\XML\ErrorLog{0}.xml"/>
+		</publishers>
+	</exceptionManagement>
+	<traceManagement mode="OFF">
+		<listener format="TEXT" mode="ON" initializeData="Y:\Trace\Text\TraceLog{0}.txt"/>
+		<listener format="XML" mode="ON" initializeData="Y:\Trace\XML\TraceLog{0}.xml"/>
+	</traceManagement>
+	<security keyProvider="REISys.Security.DevKeyProvider,REISys.SecurityPlatformLite.KeyProvider"/>
+	<connectionMode value="0"/>
+	<EIS configFileName="EISEncapsulator/Config"/>
+  <ErrorPage newUIpath="Platform/Interface/Error.aspx" oldUIPath="Platform/Interface/ErrorPage.aspx"/>
+	<!--Setting for EIS Encapsulator for Acceing the Https EIS WebService-->
+	<!--If Https is true ,then Flag should be true -->
+	<https enabled="false"/>
+</customConfiguration>

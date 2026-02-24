@@ -1,0 +1,24 @@
+﻿<root>
+  <documentManagerTemporaryResourceTypeCode value="44"/>
+  <documentManagerResourceTypeCode value="2120" />
+  <documentManagerAttachmentPurposeCode value="246"/>
+  <taskProcessTypeCode value ="134"/>
+  <taskTypeCodeAssignee value ="715"/>
+  <taskTypeCodeContributor value ="441"/>
+  <fieldIssueTrackingNo value ="188"/>
+  <fieldIssueResourceValue value ="189"/>
+  <fieldIssueResourceTrackingNo value ="190"/>
+  <fieldIssueResourceDescription value ="191"/>
+  <fieldIssueResourceName value ="125"/>
+  <fieldIssueTitle value ="192"/>
+  <contextNewIssue value ="429"/>
+  <contextReAssignIssue value ="430"/>
+  <contextModifyIssue value ="431"/>
+  <epsCorePreDefinePageId value ="D120B985-831C-4155-BCD4-5919C92E8DCA"/>
+  <actionHistoryCaseCreatedLookupCode value="494"/>
+  <actionHistoryCaseUpdatedLookupCode value="495"/>
+  <actionHistoryCaseReassignedLookupCode value="496"/>
+  <actionHistoryCaseClosedLookupCode value="497"/>
+  <actionHistoryCaseReopenedLookupCode value="498"/>
+  <useCommonConnection value="False"/>
+</root>

@@ -1,0 +1,327 @@
+<statements>
+    <!-- PFM-3570 -->
+    <!--<statement name="GetProcessInstancePendingTasks">
+        <param id="processInstanceId" type="string" required="true" />
+        <sql>
+            USE GEMS
+            DECLARE @uuid VARCHAR(50)
+            SET @uuid = '<dynamic paramId="processInstanceId" />'
+            SELECT
+            'WI' AS TaskInternalType, wiRecords.WORK_ITEM_ID as internalId, t.TaskId, t.ClientTaskId, t.TaskTypeCode, t.AssignedOnDate, t.StartedOnDate, t.CompletedOnDate, t.TaskStatusCode, t.AssigneeId, t.LastUpdateDate
+            from dbo.Tasks t JOIN (
+				SELECT w2.*
+                                     FROM workflow.dbo.FACT_WORK_ITEM w2 
+                                     JOIN workflow.dbo.FACT_PROCESS_INSTANCE p2 ON p2.PROCESS_INSTANCE_ID = w2.PROCESS_INSTANCE_ID  
+                                     JOIN gems.dbo.Tasks t2 on t2.ClientTaskId = w2.WORK_ITEM_ID                                       
+                                     WHERE 
+                                     w2.PROCESS_INSTANCE_ID =
+                                            (SELECT  CAST(SUBSTRING(@uuid, 1, 8) + '-' + SUBSTRING(@uuid, 9, 4) + '-' + SUBSTRING(@uuid, 13, 4) + '-' +
+                                                        SUBSTRING(@uuid, 17, 4) + '-' + SUBSTRING(@uuid, 21, 12)
+                                                        AS UNIQUEIDENTIFIER)
+                                            )
+                                     AND p2.CURRENT_STATE_ID IN (2,4) AND w2.CURRENT_STATE_ID IN (1,2,3,4) AND t2.TaskStatusCode IN (1,2)
+            ) wiRecords ON t.ClientTaskId = wiRecords.WORk_ITEM_ID
+            UNION
+            SELECT 
+            'AI' AS TaskInternalType, aiRecords.ACTIVITY_INSTANCE_ID as internalId, t1.TaskId, t1.ClientTaskId, t1.TaskTypeCode, t1.AssignedOnDate, t1.StartedOnDate, t1.CompletedOnDate, t1.TaskStatusCode, t1.AssigneeId, t1.LastUpdateDate
+            FROM dbo.Tasks t1 JOIN (SELECT a3.ACTIVITY_INSTANCE_ID
+                                      FROM workflow.dbo.FACT_ACTIVITY_INSTANCE a3 
+                                      JOIN workflow.dbo.FACT_PROCESS_INSTANCE p3 ON p3.PROCESS_INSTANCE_ID = a3.PROCESS_INSTANCE_ID            
+                                      JOIN gems.dbo.Tasks t3 on t3.ClientTaskId = a3.ACTIVITY_INSTANCE_ID                                                                           
+                                      WHERE 
+                                      p3.PROCESS_INSTANCE_ID = 
+                                            (SELECT  CAST(SUBSTRING(@uuid, 1, 8) + '-' + SUBSTRING(@uuid, 9, 4) + '-' + SUBSTRING(@uuid, 13, 4) + '-' +
+                                                        SUBSTRING(@uuid, 17, 4) + '-' + SUBSTRING(@uuid, 21, 12)
+                                                        AS UNIQUEIDENTIFIER)
+                                            )
+                                      AND p3.CURRENT_STATE_ID IN (2,4) AND a3.CURRENT_STATE_ID IN (1,3,4) AND t3.TaskStatusCode IN (1,2)
+                                        ) aiRecords ON aiRecords.ACTIVITY_INSTANCE_ID = t1.ClientTaskId
+        </sql>
+    </statement>-->
+    
+    <statement name="GetProcessInstancePendingTasks">
+        <param id="processInstanceId" type="string" required="true" />
+        <sql>
+            USE GEMS
+            DECLARE @uuid VARCHAR(36)
+            SET @uuid = '<dynamic paramId="processInstanceId" />'
+            SELECT
+            'WI' AS TaskInternalType, wiRecords.WORK_ITEM_ID as internalId, t.TaskId, t.ClientTaskId, t.TaskTypeCode, t.AssignedOnDate, t.StartedOnDate, t.CompletedOnDate, t.TaskStatusCode, t.AssigneeId, t.LastUpdateDate
+            from dbo.Tasks t JOIN (
+				SELECT w2.*
+                                     FROM workflow.dbo.FACT_WORK_ITEM w2 
+                                     JOIN workflow.dbo.FACT_PROCESS_INSTANCE p2 ON p2.PROCESS_INSTANCE_ID = w2.PROCESS_INSTANCE_ID  
+                                     JOIN gems.dbo.Tasks t2 on t2.ClientTaskId = w2.WORK_ITEM_ID                                       
+                                     WHERE 
+                                     w2.PROCESS_INSTANCE_ID = @uuid                                            
+                                     AND p2.CURRENT_STATE_ID IN (2,4) AND w2.CURRENT_STATE_ID IN (1,2,3,4) AND t2.TaskStatusCode IN (1,2)
+            ) wiRecords ON t.ClientTaskId = wiRecords.WORk_ITEM_ID
+            UNION
+            SELECT 
+            'AI' AS TaskInternalType, aiRecords.ACTIVITY_INSTANCE_ID as internalId, t1.TaskId, t1.ClientTaskId, t1.TaskTypeCode, t1.AssignedOnDate, t1.StartedOnDate, t1.CompletedOnDate, t1.TaskStatusCode, t1.AssigneeId, t1.LastUpdateDate
+            FROM dbo.Tasks t1 JOIN (SELECT a3.ACTIVITY_INSTANCE_ID
+                                      FROM workflow.dbo.FACT_ACTIVITY_INSTANCE a3 
+                                      JOIN workflow.dbo.FACT_PROCESS_INSTANCE p3 ON p3.PROCESS_INSTANCE_ID = a3.PROCESS_INSTANCE_ID            
+                                      JOIN gems.dbo.Tasks t3 on t3.ClientTaskId = a3.ACTIVITY_INSTANCE_ID                                                                           
+                                      WHERE 
+                                      p3.PROCESS_INSTANCE_ID = @uuid 
+                                      AND p3.CURRENT_STATE_ID IN (2,4) AND a3.CURRENT_STATE_ID IN (1,3,4) AND t3.TaskStatusCode IN (1,2)
+                                        ) aiRecords ON aiRecords.ACTIVITY_INSTANCE_ID = t1.ClientTaskId
+        </sql>
+    </statement>
+
+
+    <statement name="get" connection="Workflow">
+		<param id="id" 					type="String" size="36" />
+		<param id="rootInstanceID" 		type="String" size="36" />
+		<param id="desc" 				type="String" size="30" />
+		<param id="typeId" 			type="Int32" />
+		<param id="procDefId" 		type="String" size="36" />
+		<param id="state" 				type="Int32" />
+		<param id="relObjType" 	type="Int32" />
+		<param id="relObjIdList"   	type="String"/>
+		<param id="stateList"  		type="String"/>
+		<sql>
+			set nocount on;
+			<!--optional depends="parameters/parameter[@id='getClientInfo' and . = 'true']" type="xpath">
+				declare @T_WorkItems table (
+					ObjectId		uniqueidentifier PRIMARY KEY,
+					ObjectTypeId		smallint,
+					id 			varchar(36),
+					processDefinitionID	varchar(36),
+					rootInstanceID	varchar(36),
+					state			smallint,
+					containerXML		varChar(2000),
+					clientStatusMsg		varChar(1000),
+					lastUpdateDate		varchar(25),
+					createDate		datetime
+					);				
+			Insert into @T_WorkItems
+			</optional-->
+			select distinct
+			<!--optional depends="parameters/parameter[@id='relObjType' or @id='relObjIdList' or (@id='getClientInfo' and . = 'true')]" type="xpath">
+						pic.object_id, pic.object_type_id,
+					</optional>
+				-->
+			cast(fpi.process_instance_id as varchar(36)) as id,
+			cast(fpi.process_definition_id as varchar(36)) as processDefinitionID,
+			cast(fpi.root_process_instance_id as varchar(36)) as rootInstanceID,
+			lpd.process_desc as description,
+			fpi.current_state_id as state,
+			fpi.container_xml as containerXML,
+			fpi.client_status_msg as clientStatusMsg,
+			fpi.update_datetime as lastUpdateDate,
+			fpi.create_datetime as createdDate
+			from
+
+			<optional depends="relObjType != null || relObjIdList != null">
+				PROCESS_INSTANCE_CONTEXT pic
+				inner join
+			</optional>
+
+			FACT_PROCESS_INSTANCE fpi with(nolock)
+
+			<optional depends="relObjType != null || relObjIdList != null">
+				on fpi.process_instance_id = pic.process_instance_id
+			</optional>
+
+			<!--
+			<optional depends="relObjType != null or relObjIdList != null or getClientInfo = true">
+				on fpi.process_instance_id = pic.process_instance_id or fpi.root_process_instance_id = pic.process_instance_id
+			</optional>
+			-->
+			inner join LU_PROCESS_DEFINITION lpd on fpi.process_definition_id = lpd.process_definition_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fpi.process_instance_id" paramId="id" />
+					<exp op="=" dbField="fpi.process_definition_id" paramId="procDefId" />
+					<exp op="=" dbField="fpi.root_process_instance_id" paramId="rootInstanceID" />
+					<exp op="=" dbField="fpi.current_state_id" paramId="state" />
+					<exp op="IN" dbField="fpi.current_state_id" paramId="stateList" />
+					<!--optional depends="state,stateList" exist="false">
+						fpi.current_state_id = 4
+					</optional -->
+					<exp op="=" dbField="lpd.process_desc" paramId="desc" />
+					<exp op="=" dbField="lpd.process_type_id" paramId="typeId" />
+					<exp op="=" dbField="pic.object_type_id" paramId="relObjType" />
+					<exp op="IN" dbField="pic.object_id" paramId="relObjIdList" />
+				</exp>
+			</where>
+			<!--order by fpi.current_state_id-->
+		</sql>
+	</statement>
+
+	<statement name="update" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="procDefId" type="String" size="36" />
+		<param id="newStateId" type="Int32" />
+		<param id="containerXML" type="String" size="2000" />
+		<param id="clientStatusMsg" type="String" size="100" />
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			update workflow.dbo.FACT_PROCESS_INSTANCE
+			<columns mode="update">
+				<column dbField="current_state_id" paramId="newStateId" />
+				<column dbField="container_xml" paramId="containerXML" />
+				<column dbField="client_status_msg" paramId="clientStatusMsg" />
+				<column dbField="updated_by" paramId="userId" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="process_instance_id" paramId="id" />
+					<exp op="=" dbField="process_definition_id" paramId="procDefId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="new" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="procDefId" type="String" size="36" />
+		<param id="rootInstanceID" type="String" size="36" />
+		<param id="stateId" type="Int32" />
+		<param id="userId" type="String" size="36" required="true" />
+		<sql>
+			insert into workflow.dbo.FACT_PROCESS_INSTANCE
+			<columns mode="insert">
+				<column dbField="process_instance_id" paramId="id" />
+				<column dbField="process_definition_id" paramId="procDefId" />
+				<column dbField="root_process_instance_id" paramId="rootInstanceID" />
+				<column dbField="current_state_id" paramId="stateId" />
+				<column dbField="created_by" paramId="userId" />
+				<column dbField="create_datetime">current_timestamp</column>
+			</columns>
+		</sql>
+	</statement>
+
+	<statement name="recordUserAction" connection="Workflow">
+		<param id="actionId" type="Guid" size="36" newGuid="true" />
+		<param id="procInstId" type="String" size="36" required="true" />
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="roleId" type="String" size="36" />
+		<param id="actionDesc" type="String" size="100" required="true" />
+		<param id="comment" type="String"/>
+		<param id="currDatetime" type="DateTime" useCurrTime="true" />
+		<sql>
+			insert into workflow.dbo.FACT_USER_ACTIONS
+			<columns mode="insert">
+				<column dbField="user_action_id" paramId="actionId" />
+				<column dbField="process_instance_id" paramId="procInstId" />
+				<column dbField="user_id" paramId="userId" />
+				<column dbField="role_id" paramId="roleId" />
+				<column dbField="user_action_desc" paramId="actionDesc" />
+				<column dbField="comment" paramId="comment" />
+				<column dbField="create_datetime" paramId="currDatetime" />
+			</columns>
+		</sql>
+	</statement>
+
+	<statement name="GetUserActions" connection="Workflow">
+		<param id="ByUserID" type="String" />
+		<param id="OnResourceIDs" type="String" />
+		<param id="ProcessLookUpCode" type="String" />
+		<param id="UserActionType" type="String" />
+		<param id="tempDatetime" type="string" default="FUA.Create_Datetime desc" />
+		<sql>
+			<select>
+				FUA.Create_Datetime as OnDateTime
+				,FUA.Comment as Comments
+				,FUA.USER_ACTION_DESC as LongDisplayValue
+				,ISNULL(p.NamePrefix + ' ', '') + ISNULL(p.FirstName + ' ', '')+ ISNULL(p.MiddleName + ' ', '') + ISNULL(p.LastName, '') AS ActionTakenBy
+				,FUA.USER_ACTION_ID as UserActionID
+			</select>
+			from Process_Instance_Context PIC
+			JOIN FACT_Process_Instance INST ON PIC.PROCESS_INSTANCE_ID = INST.PROCESS_INSTANCE_ID
+			JOIN FACT_USER_ACTIONS FUA ON PIC.PROCESS_INSTANCE_ID = FUA.PROCESS_INSTANCE_ID
+			JOIN GEMS.DBO.AC_USER AU ON AU.UserId = FUA.User_Id
+			JOIN GEMS.DBO.People P ON AU.UserId = P.UserId
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="Convert(varchar(36),PIC.OBJECT_ID)" paramId="OnResourceIDs" />
+					<exp op="in" dbField="Convert(varchar(36),AU.UserId)" paramId="ByUserID" />
+					<exp op="in" dbField="Convert(varchar(36),INST.Process_Definition_Id)" paramId="ProcessLookUpCode" />
+					<exp op="in" dbField="FUA.USER_ACTION_DESC" paramId="UserActionType" />
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+
+	<statement name="GetUserActionHistory" connection="Workflow">
+		<param id="ByUserID" type="String" />
+		<param id="OnResourceIDs" type="String" />
+		<param id="OnResourceLookupCodes" type="Int32" />
+		<param id="ProcessLookUpCode" type="String" />
+		<param id="UserActionType" type="String" />
+		<param id="tempDatetime" type="string" default="FUA.Create_Datetime desc" />
+		<sql>
+			<select>
+				 FUA.USER_ACTION_ID as ActionID
+				,FUA.Create_Datetime as OnDateTime
+				,FUA.Comment as Comments
+				,FUA.USER_ACTION_DESC as LongDisplayValue
+				,ISNULL(p.NamePrefix, '') as NamePrefix, ISNULL(p.FirstName, '') as FirstName, ISNULL(p.MiddleName, '') as MiddleName, ISNULL(p.LastName, '') as LastName
+				,AU.UserId as ByUserID
+				,PIC.OBJECT_ID as OnResourceID
+				,PIC.OBJECT_TYPE_ID as OnResourceLookupCode
+				,INST.Process_Definition_Id as ProcessTypeLookUpCode
+			</select>
+			FROM Process_Instance_Context PIC
+			JOIN FACT_Process_Instance INST ON PIC.PROCESS_INSTANCE_ID = INST.PROCESS_INSTANCE_ID
+			JOIN FACT_USER_ACTIONS FUA ON PIC.PROCESS_INSTANCE_ID = FUA.PROCESS_INSTANCE_ID
+			JOIN GEMS.DBO.AC_USER AU ON AU.UserId = FUA.User_Id
+			JOIN GEMS.DBO.People P ON AU.UserId = P.UserId
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="Convert(varchar(36),PIC.OBJECT_ID)" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PIC.OBJECT_TYPE_ID" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="Convert(varchar(36),AU.UserId)" paramId="ByUserID" />
+					<exp op="in" dbField="Convert(varchar(36),INST.Process_Definition_Id)" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="FUA.USER_ACTION_DESC" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+
+	<statement name="GetUserLastCommment" connection="Workflow">
+		<param id="ByUserID" type="String" />
+		<param id="OnResourceIDs" type="String" />
+		<param id="OnResourceLookupCodes" type="Int32" />
+		<param id="ProcessLookUpCode" type="String" />
+		<param id="UserActionType" type="String" />
+		<param id="tempDatetime" type="string" default="FUA.Create_Datetime desc" />
+		<sql>
+			SELECT TOP 1 FUA.USER_ACTION_ID as ActionID
+			,FUA.Create_Datetime as OnDateTime
+			,FUA.Comment as Comments
+			,FUA.USER_ACTION_DESC as LongDisplayValue
+			,ISNULL(p.NamePrefix, '') as NamePrefix, ISNULL(p.FirstName, '') as FirstName, ISNULL(p.MiddleName, '') as MiddleName, ISNULL(p.LastName, '') as LastName
+			,AU.UserId as ByUserID
+			,PIC.OBJECT_ID as OnResourceID
+			,PIC.OBJECT_TYPE_ID as OnResourceLookupCode
+			,INST.Process_Definition_Id as ProcessTypeLookUpCode
+			FROM Process_Instance_Context PIC
+			JOIN FACT_Process_Instance INST ON PIC.PROCESS_INSTANCE_ID = INST.PROCESS_INSTANCE_ID
+			JOIN FACT_USER_ACTIONS FUA ON PIC.PROCESS_INSTANCE_ID = FUA.PROCESS_INSTANCE_ID
+			JOIN GEMS.DBO.AC_USER AU ON AU.UserId = FUA.User_Id
+			JOIN GEMS.DBO.People P ON AU.UserId = P.UserId
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="Convert(varchar(36),PIC.OBJECT_ID)" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PIC.OBJECT_TYPE_ID" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="Convert(varchar(36),AU.UserId)" paramId="ByUserID" />
+					<exp op="in" dbField="Convert(varchar(36),INST.Process_Definition_Id)" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="FUA.USER_ACTION_DESC" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+</statements>

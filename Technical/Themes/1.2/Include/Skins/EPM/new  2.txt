@@ -1,0 +1,11 @@
+# As of not script is not tested please verify and make a backup of skins Folder Before Running it
+cls
+cd Y:\EHB\Skins\Windows7
+Y:
+# get all css files, store the name in a variable skip the first line to keep the base theme name replace "Windows7" with "HrsaTheme"
+# Save it as "HrsaTheme.css" and remove "Windows7" File
+dir *.Windows7.css | % { $fileName=$_.Name; write("Processed $fileName"); Get-Content $fileName | % { if( $_ -like "/`**Window*`*/" ) { $_ } else { $_ -Replace "Windows7","EHB" }}| Set-Content ($fileName -Replace "Windows7","EHB") }
+dir *.Windows7.css | % { rm $_.Name}
+
+dir *.Vista.css | % { $fileName=$_.Name; write("Processed $fileName"); Get-Content $fileName | % { if( $_ -like "/`**Vista*`*/" ) { $_ } else { $_ -Replace "Vista","EHB" }}| Set-Content ($fileName -Replace "Vista","EHB") }
+dir *.Vista.css | % { rm $_.Name}

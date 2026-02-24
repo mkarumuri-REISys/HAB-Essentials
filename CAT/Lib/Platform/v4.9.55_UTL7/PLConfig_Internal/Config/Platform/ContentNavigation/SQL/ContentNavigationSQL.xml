@@ -1,0 +1,118 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="GetContentItems" connection="GEMS">
+    <param id="MarkUpId" type="String" required="true"/>
+    <param id="MarkUpType" type="String" required="true"/>
+    <param id="UseSection" type="String"/>
+    <param id="SortParam" type="String"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="ResourceType" type="Int32"/>
+    <param id="ResourceValue" type="String"/>
+    <param id="ResourceTypeCodeForPrivilege" type="Int32" required="true"/>
+    <param id="ResourceTypeCodeForRole" type="Int32" required="true"/>
+    <param id="ResourceTypeCodeForModule" type="Int32" required="true"/>
+    <param id="ShowOtherLinks" type="String" required="true" />
+    <param id="ModuleFilters" />
+    <sql>
+      SELECT pnci.NVGNContentItemId as NvgnContentItemId
+      , pnci.DisplayValue AS ContentItemDisplayValue
+      , pnci.Description AS ContentItemDescription
+      , pnci.CssClass AS ContentItemCssClass
+      , pnci.ContentItemCOREPreDefinedPageId as ContentItemCorePreDefinedPageId
+      , pnci.AdditionalQueryString
+      , pnci.ContentToolTip AS ContentItemToolTip
+      , pnci.HelpToolTip AS HelpToolTip
+      , pnci.HelpFlag AS HasHelp
+      , isnull(pnci.PermissionDeniedToolTip,'') as PermissionDeniedToolTip
+      , convert(int,rpncipncs.DisplayOrder) AS ContentItemDisplayOrder
+      , convert(int,rpncgpni.DisplayOrder) AS ContentGroupDisplayOrder
+      , rpncipncs.Visible AS ContentItemVisible
+      , IsPopUp
+      <optional depends="UseSection=='true'">
+        , pncs.NVGNContentSectionId as NvgnContentSectionId
+        , convert(int,pncs.DisplayOrder) AS ContentSectionDisplayOrder
+        , pncs.DisplayValue AS ContentSectionDisplayValue
+        , pncs.Description AS ContentSectionDescription
+        , pncs.SectionSize AS ContentSectionSize
+      </optional>
+      , pncg.NVGNContentGroupId as NvgnContentGroupId
+      , pncg.DisplayValue AS ContentGroupDisplayValue
+      , pncg.Description AS ContentGroupDescription
+      , CASE WHEN pncia.ResourceValue IS NOT NULL AND acp.PrivilegeId IS NULL THEN convert(bit,0) ELSE convert(bit,1) END AS Enabled
+      , CASE WHEN pnci.ContentItemCOREPreDefinedPageId IS NOT NULL THEN isnull(replace(convert(VARCHAR(MAX), esdv.DimensionValue) + rtrim(ltrim(pcpdp.RelativeURL)), '{0}', ''),'#') ELSE pnci.NavigationURL END AS ContentItemFinalUrl
+      FROM dbo.PFM_NVGN_ContentItem pnci
+      <optional depends="MarkUpType=='NavigationItem'">
+        JOIN dbo.Rel_PFM_NVGN_ContentItem_PFM_NVGN_Item rpncipni
+        ON pnci.NVGNContentItemId = rpncipni.NVGNContentItemId
+        JOIN dbo.PFM_NVGN_Item pni
+        ON rpncipni.NVGNItemId = pni.NVGNItemId
+      </optional>
+      <optional depends="MarkUpType=='NavigationLocalItem'">
+        JOIN dbo.Rel_PFM_NVGN_ContentItem_PFM_NVGN_LocalItem rpncipni
+        ON pnci.NVGNContentItemId = rpncipni.NVGNContentItemId
+        JOIN dbo.PFM_NVGN_LocalItem pni
+        ON rpncipni.NVGNLocalItemId = pni.NVGNLocalItemId
+      </optional>
+      <optional depends="UseSection=='false'">
+        JOIN dbo.Rel_PFM_NVGN_ContentItem_PFM_NVGN_ContentGroup rpncipncs
+        ON pnci.NVGNContentItemId = rpncipncs.NVGNContentItemId
+        JOIN dbo.PFM_NVGN_ContentGroup pncg
+        ON pncg.NVGNContentGroupId = rpncipncs.NVGNContentGroupId
+        <optional depends="MarkUpType=='NavigationItem'">
+          JOIN dbo.Rel_PFM_NVGN_ContentGroup_PFM_NVGN_Item rpncgpni
+          ON rpncgpni.NVGNItemId = pni.NVGNItemId AND rpncgpni.NVGNContentGroupId = pncg.NVGNContentGroupId
+        </optional>
+        <optional depends="MarkUpType=='NavigationLocalItem'">
+          JOIN dbo.Rel_PFM_NVGN_ContentGroup_PFM_NVGN_LocalItem rpncgpni
+          ON rpncgpni.NVGNLocalItemId = pni.NVGNLocalItemId AND rpncgpni.NVGNContentGroupId = pncg.NVGNContentGroupId
+        </optional>
+      </optional>
+      <optional depends="UseSection=='true'">
+        JOIN dbo.Rel_PFM_NVGN_ContentItem_PFM_NVGN_ContentSection rpncipncs
+        ON pnci.NVGNContentItemId = rpncipncs.NVGNContentItemId
+        JOIN dbo.PFM_NVGN_ContentSection pncs
+        ON rpncipncs.NVGNContentSectionId = pncs.NVGNContentSectionId
+        JOIN dbo.PFM_NVGN_ContentGroup pncg
+        ON pncg.NVGNContentGroupId = pncs.NVGNContentGroupId
+        <optional depends="MarkUpType=='NavigationItem'">
+          JOIN dbo.Rel_PFM_NVGN_ContentGroup_PFM_NVGN_Item rpncgpni
+          ON rpncgpni.NVGNItemId = pni.NVGNItemId AND rpncgpni.NVGNContentGroupId = pncg.NVGNContentGroupId
+        </optional>
+        <optional depends="MarkUpType=='NavigationLocalItem'">
+          JOIN dbo.Rel_PFM_NVGN_ContentGroup_PFM_NVGN_LocalItem rpncgpni
+          ON rpncgpni.NVGNLocalItemId = pni.NVGNLocalItemId AND rpncgpni.NVGNContentGroupId = pncg.NVGNContentGroupId
+        </optional>
+      </optional>
+      LEFT OUTER JOIN dbo.PFM_CORE_PreDefinedPage pcpdp ON pnci.ContentItemCOREPreDefinedPageId = pcpdp.COREPreDefinedPageId
+      LEFT OUTER JOIN dbo.ExternalSystemDimensionValue esdv ON pcpdp.ExternalSystemDimensionCode = esdv.ExternalSystemDimensionCode AND pcpdp.ExternalSystemCode = esdv.ExternalSystemCode
+      LEFT OUTER JOIN dbo.PFM_NVGN_ContentItem_Access pncia ON pnci.NVGNContentItemId = pncia.NVGNContentItemId
+      LEFT OUTER JOIN dbo.AC_Permission acp ON ((convert(varchar(500), acp.PrivilegeId) = pncia.ResourceValue AND pncia.ResourceTypeCode = <exp paramId="ResourceTypeCodeForPrivilege" />) or (convert(varchar(500),acp.RoleId) = pncia.ResourceValue AND pncia.ResourceTypeCode = <exp paramId="ResourceTypeCodeForRole" />))
+      AND acp.UserId = <exp paramId="UserId" />
+      <optional depends="ResourceType">
+        AND acp.ResourceTypeCode = <exp paramId="ResourceType" />
+      </optional>
+      <optional depends="ResourceValue">
+        AND acp.ResourceValue = <exp paramId="ResourceValue" />
+      </optional>
+      LEFT OUTER JOIN dbo.PFM_NVGN_ContentItem_Access_DomainSpecific pnciads
+      ON pnci.NVGNContentItemId = pnciads.NVGNContentItemId
+      <where>
+        <exp op="AND">
+          <exp paramId="MarkUpId" op="=" dbField="pni.MarkUpId" />
+          <optional depends="ModuleFilters">
+            <exp op="OR">
+              <exp paramId="ModuleFilters" op="IN" dbField="pnciads.ResourceValue" />
+              <optional depends="ShowOtherLinks=='true'">
+                <exp op="OR">
+                  <exp op="IS" dbField="pnciads.ResourceValue">NULL</exp>
+                </exp>
+              </optional>
+            </exp>
+          </optional>
+        </exp>
+      </where>
+      <optional depends="SortParam">
+        order by <dynamic paramId="SortParam"/>
+      </optional>
+    </sql>
+  </statement>
+</statements>

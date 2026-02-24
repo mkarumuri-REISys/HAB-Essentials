@@ -1,0 +1,448 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+	<statement name="GetTemplateInfo">
+		<param id="TemplateId" type="string" size="36" />
+		<param id="TemplateTypeCode" type="Int32" />
+		<param id="ResourceFilters" type="string" size="1000" />
+		<param id="IncludeEmptyTemplates" type="Boolean" />
+		<sql>
+			select distinct
+			cast(T.TemplateId as varchar(36)) as TemplateId,
+			T.TemplateName,
+			TA.AttachmentId as TemplateAttachmentId,
+			TA.AttachmentInstance as TemplateAttachmentInstance,
+			ISNULL(T.TemplateDescription, '') as TemplateDescription,
+			ISNULL(T.StatementName, '') as StatementName,
+			ISNULL(T.ComponentName, '') as ComponentName,
+			ISNULL(cast(T.ActiveDate as varchar(20)), '') as ActiveDate,
+			ISNULL(cast(T.InactiveDate as varchar(20)),'') as InactiveDate,
+			T.TemplateTypeCode,
+			T.AssociatedAttachmentPurposeCode,
+			LTA.Description as AttachmentPurposeCodeDescription,
+			isnull(T.MinAttachmentCount, 0) as MinAttachmentCount,
+			isnull(T.MaxAttachmentCount, 0) as MaxAttachmentCount,
+			ISNULL(T.DisplayOrder,' ') as DisplayOrder,
+			LTT.TemplateFiltersRequiredFlag
+			from Templates T
+			<optional depends="IncludeEmptyTemplates">
+				LEFT OUTER JOIN
+			</optional>
+			<optional depends="!IncludeEmptyTemplates">
+				join
+			</optional>
+			TemplateAttachment TA on T.TemplateId = TA.TemplateId
+			join LookupTemplateType LTT on LTT.LookupCode = T.TemplateTypeCode
+			join LookupAttachmentPurpose LTA on LTA.LookupCode = T.AssociatedAttachmentPurposeCode
+			<optional depends="ResourceFilters">
+				join TemplateResourceFilter TRF on TRF.TemplateId = T.TemplateId
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="T.TemplateId" paramId="TemplateId"/>
+					<exp op="=" dbField="T.TemplateTypeCode" paramId="TemplateTypeCode"/>
+					<exp op="&gt;" dbField="isnull(T.InactiveDate, getDate()+1)">getdate()</exp>
+					<exp op="in" dbField="TRF.ResourceTypeValue" paramId="ResourceFilters" />
+				</exp>
+			</where>
+			order by DisplayOrder
+		</sql>
+	</statement>
+
+  <!--2.9 new Control SQL-->
+  
+  <statement name="GetTemplates">
+    <param id="TemplateId" type="Guid" size="36" />
+    <param id="TemplateTypeCode" type="Int32" />
+    <param id="ResourceFilters" type="string" size="1000" />
+    <param id="IncludeEmptyTemplates" type="Boolean" />
+    <param id="UserId" type="Guid" size="36" />
+    <sql>
+
+
+      SELECT
+      t.TemplateId  as 'Id'
+      ,t.TemplateName  as 'Name'
+      ,ISNULL(t.TemplateDescription, '') as 'Description'  --Can be Null
+      ,ISNULL(t.StatementName, '') as 'StatementName'              --Can be Null
+      ,ISNULL(t.ComponentName, '') as 'ComponentName'              --Can be Null
+      ,t.ActiveDate  as 'ActiveDate'                               --Can be Null
+      ,t.InactiveDate  as 'ExpiryDate'                          --Can be Null
+      ,t.TemplateTypeCode as 'TypeCode'
+      ,t.AssociatedAttachmentPurposeCode as PurposeCode
+      ,lta.Description as AttachmentPurposeCodeDescription
+      ,isnull(t.MinAttachmentCount, 0) as 'MinAttachmentCount'
+      ,isnull(t.MaxAttachmentCount, 0) as 'MaxAttachmentCount'
+      ,ISNULL(t.DisplayOrder,'') as 'DisplayOrder'
+      ,ltt.TemplateFiltersRequiredFlag  as 'IsFiltersRequired'
+      ,t.[CreatorId]   as 'CreatorId'
+      ,t.[CreatedDate]  as 'CreatedDate'
+      ,t.[LastUpdateId]  as 'LastUpdateId'
+      ,t.[LastUpdateDate]  as 'LastUpdateDate'
+      FROM Templates t
+      INNER JOIN LookupTemplateType ltt on ltt.LookupCode = t.TemplateTypeCode
+      INNER JOIN LookupAttachmentPurpose lta on lta.LookupCode = t.AssociatedAttachmentPurposeCode
+      <optional depends="ResourceFilters">
+        join TemplateResourceFilter trf on trf.TemplateId = t.TemplateId
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.TemplateId" paramId="TemplateId"/>
+          <exp op="=" dbField="t.TemplateTypeCode" paramId="TemplateTypeCode"/>
+          <exp op="&gt;" dbField="isnull(t.InactiveDate, getDate()+1)">getdate()</exp>
+          <exp op="in" dbField="trf.ResourceTypeValue" paramId="ResourceFilters" />
+          <exp op="=" dbField="t.CreatorId" paramId="UserId"/>
+        </exp>
+      </where>
+      order by DisplayOrder
+
+      SELECT
+      ta.AttachmentId  as 'Id'
+      ,ta.AttachmentInstance  as 'AttachmentInstance'
+      ,ta.TemplateId  as 'TemplateId'
+      ,ta.AttachmentPurposeCode as 'AttachmentPurposeCode'
+      ,ta.CreatorId  as 'CreatorId'
+      ,ta.CreatedDate as 'CreatedDate'
+      ,ta.LastUpdateId as 'LastUpdateId'
+      ,ta.LastUpdateDate  as 'LastUpdateDate'
+      FROM TemplateAttachment ta
+      INNER JOIN Templates t ON ta.TemplateId = t.TemplateId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.TemplateId" paramId="TemplateId"/>
+          <exp op="=" dbField="t.TemplateTypeCode" paramId="TemplateTypeCode"/>
+          <exp op="&gt;" dbField="isnull(t.InactiveDate, getDate()+1)">getdate()</exp>
+          <exp op="=" dbField="ta.CreatorId" paramId="UserId"/>
+        </exp>
+      </where>
+      order by DisplayOrder
+
+    </sql>
+  </statement>
+  
+  
+	<statement name="SelectTemplates">
+		<param id="TemplateTypeCode" type="Int32" />
+		<sql>
+			select distinct
+			cast(T.TemplateId as varchar(36)) as TemplateId,
+			T.TemplateName,
+			ISNULL(T.TemplateDescription, ' ') as TemplateDescription,
+			ISNULL(T.StatementName, ' ') as StatementName,
+			ISNULL(T.ComponentName, ' ') as ComponentName,
+			T.AssociatedAttachmentPurposeCode,
+			isnull(T.MinAttachmentCount, 0) as MinAttachmentCount,
+			isnull(T.MaxAttachmentCount, 0) as MaxAttachmentCount,
+			ISNULL(T.DisplayOrder, ' ') as DisplayOrder,
+			LTT.TemplateFiltersRequiredFlag
+			from Templates T
+			join LookupTemplateType LTT on LTT.LookupCode = T.TemplateTypeCode
+			<where>
+				<exp op ="AND">
+					<exp op="=" dbField="T.TemplateTypeCode" paramId="TemplateTypeCode"/>
+					<exp op="&gt;" dbField="isnull(T.InactiveDate, getDate()+1)">getdate()</exp>
+				</exp>
+			</where>
+			order by DisplayOrder
+		</sql>
+	</statement>
+	<statement name ="InsertTemplate">
+		<param id ="TemplateId" type ="String" required ="true"/>
+		<param id ="TemplateTypeCode" type="Int32"/>
+		<param id ="TemplateName" type ="String"/>
+		<param id ="StatementName" type ="String"/>
+		<param id ="ComponentName" type ="String"/>
+		<param id ="TemplateDescription" type ="String"/>
+		<param id ="ActiveDate" type ="String"/>
+		<param id ="InactiveDate" type ="String"/>
+		<param id ="DisplayOrder" type ="String"/>
+		<param id ="AssociatedAttachmentPurposeCode" type ="Int32"/>
+		<param id ="MinAttachmentCount" type ="Int32"/>
+		<param id ="MaxAttachmentCount" type ="Int32"/>
+		<param id ="UserId" type ="String"/>
+		<sql>
+			IF EXISTS (SELECT * FROM Templates
+			<where>
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+			</where>)
+			BEGIN
+			UPDATE Templates
+			<columns mode ="update">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="TemplateTypeCode" paramId ="TemplateTypeCode"/>
+				<column dbField ="TemplateName" paramId ="TemplateName"/>
+				<column dbField ="StatementName" paramId ="StatementName"/>
+				<column dbField ="ComponentName" paramId ="ComponentName"/>
+				<column dbField ="TemplateDescription" paramId ="TemplateDescription"/>
+				<column dbField ="ActiveDate" paramId ="ActiveDate"/>
+				<column dbField ="InactiveDate" paramId ="InactiveDate"/>
+				<column dbField ="DisplayOrder" paramId ="DisplayOrder"/>
+				<column dbField ="AssociatedAttachmentPurposeCode" paramId ="AssociatedAttachmentPurposeCode"/>
+				<column dbField ="MinAttachmentCount" paramId ="MinAttachmentCount"/>
+				<column dbField ="MaxAttachmentCount" paramId ="MaxAttachmentCount"/>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			<where>
+				<exp op ="=" dbField ="TemplateId" paramId ="TemplateId"/>
+			</where>
+			END
+			ELSE
+			BEGIN
+			INSERT INTO Templates
+			<columns mode ="insert">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="TemplateTypeCode" paramId ="TemplateTypeCode"/>
+				<column dbField ="TemplateName" paramId ="TemplateName"/>
+				<column dbField ="StatementName" paramId ="StatementName"/>
+				<column dbField ="ComponentName" paramId ="ComponentName"/>
+				<column dbField ="TemplateDescription" paramId ="TemplateDescription"/>
+				<column dbField ="ActiveDate" paramId ="ActiveDate"/>
+				<column dbField ="InactiveDate" paramId ="InactiveDate"/>
+				<column dbField ="DisplayOrder" paramId ="DisplayOrder"/>
+				<column dbField ="AssociatedAttachmentPurposeCode" paramId ="AssociatedAttachmentPurposeCode"/>
+				<column dbField ="MinAttachmentCount" paramId ="MinAttachmentCount"/>
+				<column dbField ="MaxAttachmentCount" paramId ="MaxAttachmentCount"/>
+				<column dbField ="CreatorId" paramId ="UserId"/>
+				<column dbField ="CreatedDate">getdate()</column>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			END
+		</sql>
+
+	</statement >
+	<statement name ="UpdateTemplate">
+		<param id ="TemplateId" type ="String" required ="true"/>
+		<param id ="TemplateTypeCode" type="Int32"/>
+		<param id ="TemplateName" type ="String"/>
+		<param id ="StatementName" type ="String"/>
+		<param id ="ComponentName" type ="String"/>
+		<param id ="TemplateDescription" type ="String"/>
+		<param id ="ActiveDate" type ="String"/>
+		<param id ="InactiveDate" type ="String"/>
+		<param id ="DisplayOrder" type ="String"/>
+		<param id ="AssociatedAttachmentPurposeCode" type ="Int32"/>
+		<param id ="MinAttachmentCount" type ="Int32"/>
+		<param id ="MaxAttachmentCount" type ="Int32"/>
+		<param id ="UserId" type ="String"/>
+		<sql>
+			IF EXISTS (SELECT * FROM Templates
+			<where>
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+			</where>)
+			BEGIN
+			UPDATE Templates
+			<columns mode ="update">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="TemplateTypeCode" paramId ="TemplateTypeCode"/>
+				<column dbField ="TemplateName" paramId ="TemplateName"/>
+				<column dbField ="StatementName" paramId ="StatementName"/>
+				<column dbField ="ComponentName" paramId ="ComponentName"/>
+				<column dbField ="TemplateDescription" paramId ="TemplateDescription"/>
+				<column dbField ="ActiveDate" paramId ="ActiveDate"/>
+				<column dbField ="InactiveDate" paramId ="InactiveDate"/>
+				<column dbField ="DisplayOrder" paramId ="DisplayOrder"/>
+				<column dbField ="AssociatedAttachmentPurposeCode" paramId ="AssociatedAttachmentPurposeCode"/>
+				<column dbField ="MinAttachmentCount" paramId ="MinAttachmentCount"/>
+				<column dbField ="MaxAttachmentCount" paramId ="MaxAttachmentCount"/>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			<where>
+				<exp op ="=" dbField ="TemplateId" paramId ="TemplateId"/>
+			</where>
+			END
+		</sql>
+	</statement>
+	<statement name="DeleteTemplate">
+		<param id="TemplateId" type="String" size="50" required ="true"/>
+		<sql>
+			IF EXISTS (SELECT * FROM Templates
+			<where>
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+			</where>)
+			BEGIN
+			DELETE FROM Templates
+			<where>
+						<exp op="=" dbField="TemplateId" paramId="TemplateId" />
+				</where>
+			END
+		</sql>
+	</statement>
+	<statement name="TemplateCountResourceFilters">
+		<param id ="ResourceTypeCode" type ="Int32" required ="true"/>
+		<param id ="ResourceValue" type ="String" required ="true" size ="36"/>
+		<sql>
+			SELECT TemplateId, COUNT(TemplateId) AS TemplatesCount
+			FROM TemplateResourceFilter
+			WHERE TemplateId IN
+					(
+					SELECT TEmplateId FROM TemplateResourceFilter
+					<where>
+					
+					<exp op ="AND">
+						<exp op ="=" dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+						<exp op ="=" dbField ="ResourceValue" paramId ="ResourceValue"/>
+					</exp>
+					</where>
+					)
+			
+			GROUP BY TemplateId
+		</sql>
+	</statement>
+	<statement name="UpdateTemplateResourceFilters">
+		<param id ="TemplateId" type ="String" required ="true"/>
+		<param id ="ResourceTypeCode" type="Int32" required ="true"/>
+		<param id ="ResourceValue" type="String"/>
+		<param id ="UserId" type ="String"/>
+		<sql>
+			IF EXISTS (SELECT * FROM TemplateResourceFilter
+			<where>
+				<exp op ="AND">
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+				<exp op="=" dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+				</exp>
+			</where>)
+			BEGIN
+			UPDATE TemplateResourceFilter
+			<columns mode ="update">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+				<column dbField ="ResourceValue" paramId ="ResourceValue"/>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			<where>
+			<exp op ="AND">
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+				<exp op="=" dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+			</exp>
+			</where>
+			END
+			ELSE
+			BEGIN
+			INSERT INTO TemplateResourceFilter
+			<columns mode ="insert">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+				<column dbField ="ResourceValue" paramId ="ResourceValue"/>
+				<column dbField ="CreatorId" paramId ="UserId"/>
+				<column dbField ="CreatedDate">getdate()</column>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			END
+		</sql>
+	</statement>
+	<statement name="MoveTemplateResourceFilters">
+		<param id ="TemplateId" type ="String"/>
+		<param id ="FromResourceTypeCode" type="Int32" required ="true" />
+		<param id ="FromResourceValue" type="String" required ="true"/>
+		<param id ="ToResourceTypeCode" type="Int32" required ="true" />
+		<param id ="ToResourceValue" type="String" required ="true"/>
+		<param id ="UserId" type ="String"/>
+		<sql>
+			UPDATE TemplateResourceFilter
+			<columns mode ="update">
+				<column dbField ="ResourceTypeCode" paramId ="ToResourceTypeCode"/>
+				<column dbField ="ResourceValue" paramId ="ToResourceValue"/>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			<where>
+				<exp op ="AND">
+					<exp op ="=" dbField ="ResourceTypeCode" paramId ="FromResourceTypeCode"/>
+					<exp op ="=" dbField ="ResourceValue" paramId ="FromResourceValue"/>
+					<exp op ="=" dbField ="TemplateId" paramId ="TemplateId"/>
+				</exp>	
+			</where>
+		</sql>
+	</statement>
+	<statement name="InsertTemplateResourceFilters">
+		<param id ="TemplateId" type ="String" required ="true"/>
+		<param id ="ResourceTypeCode" type="Int32"/>
+		<param id ="ResourceValue" type="String"/>
+		<param id ="UserId" type ="String"/>
+		<sql>
+			BEGIN
+			INSERT INTO TemplateResourceFilter
+			<columns mode ="insert">
+				<column dbField ="TemplateId" paramId ="TemplateId"/>
+				<column dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+				<column dbField ="ResourceValue" paramId ="ResourceValue"/>
+				<column dbField ="CreatorId" paramId ="UserId"/>
+				<column dbField ="CreatedDate">getdate()</column>
+				<column dbField ="LastUpdateId" paramId ="UserId"/>
+				<column dbField ="LastUpdateDate">getdate()</column>
+			</columns>
+			END
+		</sql>
+	</statement>
+	<statement name="DeleteTemplateResourceFilters">
+		<param id ="TemplateId" type ="String" required ="true"/>
+		<param id ="ResourceTypeCode" type="Int32"/>
+		<param id ="ResourceValue" type="String"/>
+		<sql>
+		IF EXISTS (SELECT * FROM TemplateResourceFilter
+		<where>
+			<exp op ="AND">
+				<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+				<exp op="=" dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+				<exp op="=" dbField ="ResourceValue" paramId ="ResourceValue"/>
+			</exp>
+		</where>)
+			DELETE FROM TemplateResourceFilter
+			<where>
+				<exp op ="AND">
+					<exp op="=" dbField ="TemplateId" paramId ="TemplateId"/>
+					<exp op="=" dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/>
+					<exp op="=" dbField ="ResourceValue" paramId ="ResourceValue"/>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="CheckFiltersRequiredFlagForLookupCode">
+		<param id ="hidLookupCode" />
+		<param id ="hidTemplateFiltersRequiredFlag"/>
+		<sql>
+			IF NOT EXISTS
+			( SELECT * FROM LookupTemplateType
+			<where>
+				<exp op ="AND">
+					<exp op ="=" dbField ="LookupCode" paramId ="hidLookupCode"/>
+					<exp op ="=" dbField ="TemplateFiltersRequiredFlag" paramId ="hidTemplateFiltersRequiredFlag"/>
+				</exp>
+			</where>
+				)
+			BEGIN
+				IF EXISTS
+				(SELECT * FROM LookupTemplateType
+				<where>
+					<exp op ="AND">
+						<exp op ="=" dbField ="LookupCode" paramId ="hidLookupCode"/>
+						<exp op ="=" dbField ="TemplateFiltersRequiredFlag">1</exp>
+					</exp>
+				</where>
+			)
+			BEGIN
+			SELECT '1' AS result
+			END
+			ELSE
+			BEGIN
+			SELECT '0' AS result
+			END
+			END
+			ELSE
+			BEGIN
+			SELECT '1' AS result
+			END
+		</sql>
+	</statement>
+</statements>
+
+
+
+
+
+
+
+

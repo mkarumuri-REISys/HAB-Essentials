@@ -1,0 +1,838 @@
+<statements>
+  <statement name="GetCurrentSessionCounterForUserSession" connection="Common">
+    <param id="SessionId" type="String" size="36" />
+    <sql>
+      select SessionCounter from AC_SESSION A
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="A.SessionId" paramId="SessionId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="updateForNewLogin" connection="Common">
+    <param id="SessionId" type="String" size="36" />
+    <param id="SessionStartDateTime" type="String" size="30" />
+    <param id="SessionCounter" type="Int32" />
+    <param id="currDatetime" type="String" size="25" useCurrTime="true" />
+
+    <sql>
+      set nocount on;
+      update ac_Session
+      <columns mode="update">
+        <column dbField="SessionCounter" paramId="SessionCounter" />
+        <column dbField="SessionLastAccessDateTime">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SessionId" paramId="SessionId"/>
+          <exp op="=" dbField="SessionStartDateTime" paramId="SessionStartDateTime"/>
+          SessionLastAccessDateTime &lt;= dateAdd("mi",20,current_timestamp)
+        </exp>
+      </where>;
+      set nocount off
+    </sql>
+
+  </statement>
+  <statement name="SelectForNewLogin" connection="Common" >
+    <param id="SessionId" type="String" size="36" />
+    <param id="SessionStartDateTime" type="String" size="30" />
+    <param id="SessionCounter" type="Int32" />
+    <sql>
+      select 	cast(userid as varchar(36)) userid,
+      cast(sessionId as varchar(36)) sessionId,
+      left(Convert(varchar,sessionstartdateTime,9),len(Convert(varchar,sessionstartdateTime,9))-6)+'.'+right(Convert(varchar,sessionstartdateTime,9),5) sessionstartdateTime,
+      left(Convert(varchar,SessionLastAccessDateTime,9),len(Convert(varchar,SessionLastAccessDateTime,9))-6)+'.'+right(Convert(varchar,SessionLastAccessDateTime,9),5) SessionLastAccessDateTime,
+      SessionCounter
+      from ac_Session
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SessionId" paramId="SessionId"/>
+          <exp op="=" dbField="SessionStartDateTime" paramId="SessionStartDateTime"/>
+          <exp op="=" dbField="SessionCounter" paramId="SessionCounter"/>
+          SessionLastAccessDateTime &lt;= dateAdd("mi",20,current_timestamp)
+
+        </exp>
+      </where>
+
+    </sql>
+
+  </statement>
+  <statement name="IsLoggedIn" connection="Common" >
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="SessionCounter" type="Int32" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="AC_IsLoggedIn" />
+  </statement>
+  <statement name="IsLoggedInUsername" connection="Common">
+    <param id="Username" type="String" />
+    <param id="SessionTimeout" type="Int32" />
+    <sql>
+      DECLARE @SessionId UNIQUEIDENTIFIER, @SessionLastAccessDate DATETIME, @MinutesSinceLastAccess DATETIME
+
+      SELECT @SessionId = SessionId, @SessionLastAccessDate = SessionLastAccessDateTime,
+      @MinutesSinceLastAccess = DATEDIFF(minute, @SessionLastAccessDate, GETDATE())
+
+      FROM AC_User u
+      JOIN AC_Session s
+      ON u.UserId = s.UserId
+      WHERE UserName =  <exp paramId="Username" />
+
+      IF @SessionId IS NOT NULL AND @MinutesSinceLastAccess &lt; <exp paramId="SessionTimeout" />
+      BEGIN
+      /* See [AC_IsLoggedIn] for justification of update statement */
+      UPDATE AC_Session SET SessionLastAccessDateTime = GETDATE()
+      WHERE SessionId = @SessionId
+
+      SELECT 1
+      END
+    </sql>
+  </statement>
+  <statement name="IsUserStillLoggedIn" connection="Common" >
+    <param id="UserId" type="String" size="36" required="true"/>
+   <param id="SessionId" type="String" size="36" required="true" /> 
+    <param id="SessionTimeout" type="Int32" required="true"/>
+
+    <sql>
+      DECLARE @MinutesSinceLastAccess DATETIME
+
+      select @MinutesSinceLastAccess =  DATEDIFF(minute, SessionLastAccessDateTime, GETDATE())
+      from AC_Session
+      <optional depends="UserId">
+      where   UserId =  <exp paramId="UserId"/> 
+      </optional>
+      <optional depends="SessionId">
+        where   SessionId =  <exp paramId="SessionId"/>  
+      </optional>
+      IF  @MinutesSinceLastAccess &lt; <exp paramId="SessionTimeout" />
+      Select 1 as IsUserIsLoggedIn
+
+    </sql>
+  </statement>
+  <statement name="Logout" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="SessionCounter" type="Int32" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <param id="LogoutType" type="Int32"/>
+    <sp name="AC_Logout" />
+  </statement>
+  <statement name="GetRoles" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="AC_GetRoles" />
+  </statement>
+  <statement name="HasPermission" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="RoleId" type="Int32" />
+    <param id="PrivilegeId" type="Int32" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <param id="ResourceFormatTypeCode" type="Int32"  />
+    <param id="ResourceTypeValue" type="String" size="500" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="AC_HasPermission" />
+  </statement>
+  <statement name="CheckAndGetPermission" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="CurrentRoleId" type="Int32" />
+    <param id="RoleId" type="Int32" />
+    <param id="PrivilegeId" type="Int32" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <param id="ResourceFormatTypeCode" type="Int32"  />
+    <param id="ResourceTypeValue" type="String" size="500" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="AC_CheckAndGetPermission" />
+  </statement>
+
+  <!-- the table in this query does not exist in Gems DB. Is it really used?-->
+  <statement name="retreiveStatusXML" connection="Common" >
+    <param id="TrackingNo" type="String" size="30" />
+    <sql>
+      select statusXML from grantsProcessingQueue
+      <where>
+        <exp op="=" dbField="ApplicationTrackingNo" paramId="TrackingNo" />
+      </where>
+    </sql>
+
+  </statement>
+
+  <!-- the table in this query does not exist in Gems DB. Is it really used?-->
+  <statement name="updateStatus"  connection="Common">
+    <param id="trackingNo" type="String" size="36" />
+    <param id="physicalFileLocation" type="String" size="100" />
+    <param id="statusXML"  type="String" size="3000" />
+    <sql>
+      set nocount on;
+      update GrantsProcessingQueue
+      <columns mode="update">
+        <column dbField="physicalFileLocation" paramId="physicalFileLocation" />
+        <column dbField="statusXML" paramId="statusXML" />
+      </columns>
+      <where>
+        <exp op="=" dbField="ApplicationTrackingNo" paramId="trackingNo" />
+      </where>
+    </sql>
+
+  </statement>
+
+  <statement name="GetUserInfo" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="30" />
+    <sql>
+      select 	isnull(a.UserName,'') UserName,
+      isnull(b.FirstName,'') FirstName,
+      isnull(b.MiddleName,'') MiddleName,
+      isnull(b.LastName,'') LastName,
+      isnull(a.LastLoginDateTime,'') LastLoginDateTime,
+      isnull(a.DefaultRoleId,'') DefaultRoleId
+      ,isnull(ca.ContactAddress,'') PrimaryEmail
+      from ac_user a inner join people b on a.userid = b.userid
+      Left Outer Join ContactAddresses ca on ( ca.EntityId=b.PersonId and ca.EntityTypeCode=1 and ca.ContactAddressTypeCode=1  and ca.ContactAddressPurposeCode=1)
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="a.userid" paramId="UserId"/>
+        </exp>
+      </where>
+
+    </sql>
+  </statement>
+
+  <statement name="GetCurrentRoleId" connection="Common">
+    <param id="SessionId" type="String" size="36" />
+    <sql>
+      Select Cast(SessionData as XML).value('(/sessionInfo/user/currRole/@id)[1]','int') CurrentRoleId
+      from ac_sessionstate
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SessionId" paramId="SessionId"/>
+        </exp>
+      </where>
+
+    </sql>
+  </statement>
+
+
+  <statement name="GetSessionLastAccessDateTime" connection="Common">
+    <param id="SessionId" type="String" size="36" />
+    <sql>
+      Select SessionLastAccessDateTime
+      FROM ac_session
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SessionId" paramId="SessionId"/>
+        </exp>
+      </where>
+
+    </sql>
+  </statement>
+
+  <statement name="AddAudit" connection="Common">
+    <param id="EventTypeCode" type="Int32" />
+    <param id="SuccessFlag" type="Int32" />
+    <param id="Server" type="String" size="50" />
+    <param id="ClientIpAddress" type="String" size="20" />
+    <param id="UserId" type="String" size="36" />
+    <param id="Description" type="String" size="100" />
+    <param id="AccessedURL" type="String" size="100" />
+    <param id="ClassName" type="String" size="50" />
+    <param id="MethodName" type="String" size="50" />
+    <param id="ResourceTypeCode" type="Int32" />
+    <param id="ResourceValue" type="String" size="50" />
+    <param id="ExtendedInfoXML" type="String" size="2000" />
+    <param id="EventDatetime" type="String" size="25" />
+    <sql>
+      insert into Audit
+      <columns mode="insert">
+        <column dbField="EventTypeCode" paramId="EventTypeCode" />
+        <column dbField="SuccessFlag" paramId="SuccessFlag" />
+        <column dbField="Server" paramId="Server" />
+        <column dbField="ClientIpAddress" paramId="ClientIpAddress" />
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="Description" paramId="Description" />
+        <column dbField="AccessedURL" paramId="AccessedURL" />
+        <column dbField="ClassName" paramId="ClassName" />
+        <column dbField="MethodName" paramId="MethodName" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="ResourceValue" paramId="ResourceValue" />
+        <column dbField="ExtendedInfoXML" paramId="ExtendedInfoXML" />
+        <column dbField="EventDatetime" paramId="EventDatetime" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="GetPrivilegesByUserAndRole" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="RoleId" type="Int32" />
+    <sql>
+      select PrivilegeId
+      from AC_Permission
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="ResourceFormatTypeCode">1</exp>
+          <exp op="=" dbField="Status">'Granted'</exp>
+          <exp op="=" dbField="RoleId" paramId="RoleId" />
+          <exp op="OR">
+            <exp op="&lt;=" dbField="StartDateTime">getdate()</exp>
+            <exp op="IS" dbField="StartDateTime">null</exp>
+          </exp>
+          <exp op="OR">
+            <exp op="&gt;" dbField="EndDateTime">getdate()</exp>
+            <exp op="IS" dbField="EndDateTime">null</exp>
+          </exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetPrivilegesForResourceRole" connection="Common">
+    <param id="ResourceTypeCode" type="Int32"/>
+    <param id="RoleId" type="Int32" />
+    <sql>
+      select prv.privilegeid, prv.privilegeAbbr, prv.privilegeName, RoleId
+      from AC_Privilege prv
+      inner join AC_RelRolePrivilege rel on prv.PrivilegeId = rel.PrivilegeId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ResourceTypeCode"  paramId="ResourceTypeCode" />
+          <exp op="=" dbField="RoleId" paramId="RoleId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="HasRole" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="SessionId" type="String" size="36"  />
+    <param id="SessionStartDateTime" type="String" size="50" />
+    <param id="RoleId" type="Int32" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="AC_HasRole" />
+  </statement>
+  <statement name="GrantPermission" connection="Common">
+    <param id="LoginUserId" type="string" size="36" />
+    <param id="SessionId" type="string" size="36"  />
+    <param id="SessionStartDateTime" type="string" size="50" />
+    <param id="UserId" type="string" size="36" />
+    <param id="RoleId" type="Int32" />
+    <param id="PrivilegeId" type="Int32" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <param id="ResourceFormatTypeCode" type="Int32"  />
+    <param id="ResourceValue" type="string" size="500" />
+    <param id="StartDateTime" type="string"  default="" />
+    <param id="EndDateTime" type="string" default="" />
+    <param id="Remarks" type="string" size="255" default="" />
+    <param id="ReturnCode" type="Int32" direction="output" default="0" />
+    <sp name="AC_GrantPermission" />
+  </statement>
+
+  <statement name="RevokePermission" connection="Common">
+    <param id="LoginUserId" type="string" size="36" />
+    <param id="SessionId" type="string" size="36"  />
+    <param id="SessionStartDateTime" type="string" size="50" />
+    <param id="UserId" type="string" size="36" />
+    <param id="RoleId" type="Int32" />
+    <param id="PrivilegeId" type="Int32" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <param id="ResourceFormatTypeCode" type="Int32"  />
+    <param id="ResourceValue" type="string" size="500" />
+    <param id="RevokeFromDateTime" type="string" default="" />
+    <param id="Remarks" type="string" size="255" default="" />
+    <param id="ReturnCode" type="Int32" direction="output" default="0" />
+    <sp name="AC_RevokePermission" />
+  </statement>
+
+
+  <statement name="AC_Login" connection="Common">
+    <param id="UserName" type="string" size="100" />
+    <param id="Password" type="string" size="40" />
+    <param id="Realm" type="Int32"  />
+    <param id="UserTypeCode" type="Int32"  />
+    <param id="SessionIdInput" type="string" size="36" />
+    <param id="SessionStartDateTimeInput" type="string" size="50" />
+    <param id="SessionTimeOut" type="Int32"  />
+    <param id="AccountLockoutEffectiveMins" type="Int32"  />
+    <param id="ReturnCode" type="Int32" direction="output"  />
+    <param id="UserId" type="string" direction="output" />
+    <param id="SessionId" type="string" size="36" direction="output" />
+    <param id="SessionStartDateTime" type="string" size="50" direction="output" />
+    <param id="DefaultRoleId" type="Int32" direction="output" />
+    <param id="UserAgreementExpirationDays" type="Int32"  />
+    <param id="ADUser" type="Int32"  />
+    <sp name="AC_Login" />
+  </statement>
+
+  <statement name="LoginAndUpdateDBSessionXML" connection="Common">
+    <param id="UserName" type="string" size="100" />
+    <param id="Password" type="string" size="40" />
+    <param id="Realm" type="Int32"  />
+    <param id="UserTypeCode" type="Int32"  />
+    <param id="SessionIdInput" type="string" size="36" />
+    <param id="SessionStartDateTimeInput" type="string" size="50" />
+    <param id="SessionTimeOut" type="Int32"  />
+    <param id="AccountLockoutEffectiveMins" type="Int32"  />
+    <param id="ReturnCode" type="Int32" direction="output"  />
+    <param id="UserId" type="string" direction="output" />
+    <param id="SessionId" type="string" size="36" direction="output" />
+    <param id="SessionStartDateTime" type="string" size="50" direction="output" />
+    <param id="DefaultRoleId" type="Int32" direction="output" />
+    <param id="UserAgreementExpirationDays" type="Int32"  />
+    <param id="ADUser" type="Int32"  />
+    <sql>
+      -- this is done like this since SessionStartDateTime is returned as a string not as a datetime
+      declare @dbParam_UserName varchar(100)
+      set @dbParam_UserName= <exp paramId="UserName"/>
+      declare @dbParam_Password varchar(40)
+      set @dbParam_Password= <exp paramId="Password"/>
+      declare @dbParam_Realm int
+      set @dbParam_Realm= <exp paramId="Realm"/>
+      declare @dbParam_UserTypeCode int
+      set @dbParam_UserTypeCode= <exp paramId="UserTypeCode"/>
+      declare @dbParam_SessionIdInput varchar(36)
+      set @dbParam_SessionIdInput= <exp paramId="SessionIdInput"/>
+      declare @dbParam_SessionStartDateTimeInput varchar(50)
+      set @dbParam_SessionStartDateTimeInput= <exp paramId="SessionStartDateTimeInput"/>
+      declare @dbParam_SessionTimeOut int
+      set @dbParam_SessionTimeOut= <exp paramId="SessionTimeOut"/>
+      declare @dbParam_AccountLockoutEffectiveMins int
+      set @dbParam_AccountLockoutEffectiveMins= <exp paramId="AccountLockoutEffectiveMins"/>
+      declare @dbParam_ReturnCode int
+      set @dbParam_ReturnCode= <exp paramId="ReturnCode"/>
+      declare @dbParam_UserId varchar(36)
+      set @dbParam_UserId= <exp paramId="UserId"/>
+      declare @dbParam_SessionId varchar(36)
+      set @dbParam_SessionId= <exp paramId="SessionId"/>
+      declare @dbParam_SessionStartDateTime varchar(50)
+      set @dbParam_SessionStartDateTime= <exp paramId="SessionStartDateTime"/>
+      declare @dbParam_DefaultRoleId int
+      set @dbParam_DefaultRoleId= <exp paramId="DefaultRoleId"/>
+      declare @dbParam_UserAgreementExpirationDays int
+      set @dbParam_UserAgreementExpirationDays= <exp paramId="UserAgreementExpirationDays"/>
+      declare @dbParam_ADUser int
+      set @dbParam_ADUser= <exp paramId="ADUser"/>
+
+      exec AC_Login @dbParam_UserName,@dbParam_Password,@dbParam_Realm,@dbParam_UserTypeCode,@dbParam_SessionIdInput,@dbParam_SessionStartDateTimeInput,@dbParam_SessionTimeOut,@dbParam_AccountLockoutEffectiveMins,@dbParam_ReturnCode OUTPUT ,@dbParam_UserId OUTPUT ,@dbParam_SessionId OUTPUT ,@dbParam_SessionStartDateTime OUTPUT ,@dbParam_DefaultRoleId OUTPUT ,@dbParam_UserAgreementExpirationDays,@dbParam_ADUser
+
+      Select @dbParam_ReturnCode ReturnCode,
+      @dbParam_UserId UserId,
+      @dbParam_SessionId SessionId,
+      Convert(datetime,@dbParam_SessionStartDateTime,9) SessionStartDateTime,
+      @dbParam_DefaultRoleId DefaultRoleId
+
+
+      ---------------------------------------------------------------------------------------------
+
+
+      Select * into #TempTable
+      from (
+
+      Select 1 id,InternalOrglevel1 InternalOrglevel
+      from RelPeopleInternalOrganizations RPIO
+      inner join PEOPLE AP on  RPIO.PersonId=AP.PersonId
+      and ap.UserId=@dbParam_UserId
+      union ALL
+      Select 2 id,InternalOrglevel2 InternalOrglevel
+      from RelPeopleInternalOrganizations RPIO
+      inner join PEOPLE AP on  RPIO.PersonId=AP.PersonId
+      and ap.UserId=@dbParam_UserId
+      union ALL
+      Select 3 id,InternalOrglevel3  InternalOrglevel
+      from RelPeopleInternalOrganizations RPIO
+      inner join PEOPLE AP on  RPIO.PersonId=AP.PersonId
+      and ap.UserId=@dbParam_UserId
+      union ALL
+      Select 4 id,InternalOrglevel4 InternalOrglevel
+      from RelPeopleInternalOrganizations RPIO
+      inner join PEOPLE AP on  RPIO.PersonId=AP.PersonId
+      and ap.UserId=@dbParam_UserId
+      ) temp
+
+
+
+      declare @tempXml xml
+
+      set @tempXml=
+      (
+      Select
+
+      (
+      Select
+      AS1.UserId as '@id',
+      Convert(varchar(40),SessionStartDateTime,9) as 'session/@startDate',
+      isnull(SessionCounter,0) as 'session/@counter',
+      Convert(varchar(40),SessionLastAccessDateTime,22) as 'session/@lastAccessDate',
+      isnull(SessionCounter,0) as 'session/@sessionAccessCount',
+      SessionId as 'session',
+
+      (
+      select AU.DefaultRoleId as '@id',
+      (
+      Select ARUR.RoleId as '@id'
+      from AC_RelUserRole ARUR
+      inner join AC_Role  AR on ARUR.RoleId=ar.roleid
+      where ARUR.userid=AS1.UserId
+      and ar.ParentRoleId = AU.DefaultRoleId
+      for xml path('currSubRole'),root('currSubRoles'),type
+      )
+      for xml path('currRole'),type
+      )
+      ,
+      AP.FirstName as 'firstName',
+      AP.lastName as 'lastName',
+      AU.UserName as 'userName',
+      Convert(varchar(40),AU.LastLoginDateTime,22) as 'lastLoginDateTime',
+      (
+      Select min(InternalOrglevel) '@lowestId' ,
+      (Select id 'intOrg/@id',
+      InternalOrglevel  'intOrg'
+      from #TempTable
+      for xml path(''),type)
+
+      from #TempTable
+      where InternalOrglevel&lt;&gt;0
+      for XML path('intOrgs'), type),
+      DATEDIFF(dd, getdate(), AU.ProfileExpirationDateTime ) as 'daysProfileValid'
+      for xml path('user'),type
+      ),
+      '' as 'Reports',
+      '' as  'Reports/QuickLinks',
+      '' as  'Reports/RecentlyViewed',
+      '' as 'programSpecific'
+      from
+      AC_SESSION AS1
+      inner join PEOPLE AP on  AS1.UserId=AP.UserId
+      inner join AC_USER AU on  AS1.UserId=AU.UserId
+
+      where AS1.UserId=@dbParam_UserId
+      for XML Path(''),root('sessionInfo')
+      )
+
+      Drop Table #TempTable
+
+      --Select @tempXml
+
+      update ac_sessionstate
+      set SessionData=Convert(varchar(max),@tempXml)
+      where SessionId=@dbParam_SessionId
+
+
+
+      update ac_session
+      set SessionCounter=0
+      where SessionId=@dbParam_SessionId
+      ---------------------------------------------------------------------------------------
+
+
+    </sql>
+  </statement>
+  <statement name="GetSessionData" connection="Common">
+    <param id="SessionId" type="string" size="36" required="true"/>
+    <sql>
+      select SessionId,SessionStartDateTime, Realm, SessionLastAccessDateTime, UserId, SessionCounter from ac_session where SessionId=<exp paramId="SessionId"/>
+    </sql>
+  </statement>
+  <statement name="GetSessionDataAndUserTypeCode" connection="Common">
+    <param id="SessionId" type="string" size="36" required="true"/>
+    <sql>
+      select SessionId,SessionStartDateTime, s.Realm, SessionLastAccessDateTime, s.UserId, SessionCounter, u.UserTypeCode
+      from ac_session s join ac_user u on u.UserId=s.UserId
+      <where>
+        <exp op="=" dbField="s.SessionId" paramId="SessionId" />
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetSessionDetails" connection="Common">
+    <param id="UserName" type="string" size="100" />
+    <sql>
+      select SessionId,SessionStartDateTime, Realm, SessionLastAccessDateTime, UserId, SessionCounter from ac_session where userid in
+      (select userid from ac_user where username like <exp paramId="UserName"/> )
+    </sql>
+  </statement>
+  <statement name="GetACUser" connection="Common">
+    <param id="UserId" required="false"  type="string" />
+    <sql>
+      Select  u.UserId
+      ,u.UserName
+      ,p.FirstName
+      ,p.LastName
+      ,p.Title
+      ,p.MiddleName
+      ,pio.InternalOrgLevel1 InternalOrgId
+      ,io.InternalOrgName
+      ,ca.ContactAddress PrimaryEmail
+      From ac_user u
+      inner join people p on u.userId=p.userId
+      Left outer join RelPeopleInternalOrganizations pio on pio.PersonId = p.PersonId
+      Left outer join InternalOrganizations io on pio.InternalOrgLevel1 = io.InternalOrgId
+      Left Outer Join ContactAddresses ca on ( ca.EntityId=p.PersonId and ca.EntityTypeCode=1 and ca.ContactAddressTypeCode=1  and ca.ContactAddressPurposeCode=1)
+      <where>
+        <exp op="AND">
+          <exp dbField="u.UserId" paramId="UserId" op="in" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetUserResults" connection="Common">
+    <param id="searchText" required="true"  type="string" />
+    <param id="sortParam" type="string" default="FirstName" />
+    <param id="userType" type="Int32"  />
+    <sql>
+      <select>
+        a.UserId,UserName,FirstName,MiddleName,LastName,Title,isnull(ca.ContactAddress, '') PrimaryEmail
+      </select>
+      from ac_user a
+      inner join people p on a.userId=p.userId
+      Left Outer Join ContactAddresses ca on ( ca.EntityId=p.PersonId and ca.EntityTypeCode=1 and ca.ContactAddressTypeCode=1  and ca.ContactAddressPurposeCode=1)
+      where ((UserName+'|'+FirstName+'|'+LastName like <exp paramId="searchText"/>) or
+      (FirstName+' '+LastName like <exp paramId="searchText"/>))
+      <optional depends="userType" >
+        and (a.UserTypeCode =  <exp paramId="userType"/> or a.UserId in (select UserId from AC_UserProfile aup where aup.UserTypeCode = <exp paramId="userType"/>))
+      </optional>
+      <sort paramId="sortParam" ></sort>
+    </sql>
+  </statement>
+  <statement name="UpdateDefaultRoleId" connection="Common">
+    <param id="UserId" type="String" size="36" required="true" />
+    <param id="RoleId" type="Int32" required="true" />
+    <sql>
+      update ac_user
+      <columns mode="update">
+        <column dbField="DefaultRoleId" paramId="RoleId" />
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserId" paramId="UserId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="InsertRelUserRole" connection="Common">
+    <param id="UserId" type="String" size="36" required="true" />
+    <param id="RoleId" type="Int32" required="true" />
+    <param id="LastReviewDate" type="DateTime" />
+    <param id="LastReviewedByUserId" type="String" size="36" />
+    <sql>
+      Insert into ac_reluserrole
+      <columns mode="Insert">
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="RoleId" paramId="RoleId" />
+        <column dbField="LastReviewDate" paramId="LastReviewDate" />
+        <column dbField="LastReviewedBy" paramId="LastReviewedByUserId" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="DeleteRelUserRole" connection="Common">
+    <param id="UserId" type="String" size="36" required="true" />
+    <param id="RoleId" type="Int32" required="true" />
+    <sql>
+      Delete from ac_reluserrole
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserId" paramId="UserId"/>
+          <exp op="=" dbField="RoleId" paramId="RoleId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUserPrivileges" connection="Common">
+    <param id="ResourceValue" type="String" />
+    <param id="ResourceTypeCode" type="Int32" />
+    <param id="PrivilegeId" type="Int32" />
+    <sql>
+      select Userid, PrivilegeId
+      from AC_Permission
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ResourceValue"  paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+          <optional depends="PrivilegeId != null">
+            <exp op="=" dbField="PrivilegeId" paramId="PrivilegeId" />
+          </optional>
+        </exp>
+      </where>
+      AND (EndDateTime>getdate() or EndDateTime is null)
+    </sql>
+  </statement>
+
+  <statement name="GetACPermission" connection="Common">
+    <param id="UserId" type="String" size="36" required="false" />
+    <param id="PrivilegeId" type="String" size="100" required="false" />
+    <param id="ResourceValue" type="String" required="false" />
+    <param id="ResourceTypeCode" type="Int32" required="false" />
+    <param id="RoleId" type="Int32" required="false" />
+    <sql>
+      select *
+      from AC_Permission
+      <where>
+        <exp op="AND">
+          <optional depends="UserId != null">
+            <exp op="=" dbField="UserId" paramId="UserId" />
+          </optional>
+          <optional depends="PrivilegeId != null">
+            <exp  op="in"  dbField="PrivilegeId"  paramId="PrivilegeId" />
+          </optional>
+          <optional depends="ResourceValue != null">
+            <exp  op="in"  dbField="ResourceValue"  paramId="ResourceValue" />
+          </optional>
+          <optional depends="ResourceTypeCode != null">
+            <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+          </optional>
+          <optional depends="RoleId != null">
+            <exp op="=" dbField="RoleId" paramId="RoleId" />
+          </optional>
+        </exp>
+      </where>
+      AND (StartDateTime &lt; GetDate() or StartDateTime is null)
+      AND (EndDateTime &gt; getdate() or EndDateTime is null)
+    </sql>
+  </statement>
+
+  <statement name="GetACPermissions" connection="Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="PrivilegeId" type="String" size="100" />
+    <param id="ResourceValue" type="String"/>
+    <param id="ResourceTypeCodes"/>
+    <param id="RoleId" type="Int32"/>
+    <sql>
+      select *
+      from AC_Permission
+      <where>
+        <exp op="AND">
+          <optional depends="UserId != null">
+            <exp op="=" dbField="UserId" paramId="UserId" />
+          </optional>
+          <optional depends="PrivilegeId != null">
+            <exp  op="in"  dbField="PrivilegeId"  paramId="PrivilegeId" />
+          </optional>
+          <optional depends="ResourceValue != null">
+            <exp  op="in"  dbField="ResourceValue"  paramId="ResourceValue" />
+          </optional>
+          <optional depends="ResourceTypeCodes != null">
+            <exp op="in" dbField="ResourceTypeCode" paramId="ResourceTypeCodes" />
+          </optional>
+          <optional depends="RoleId != null">
+            <exp op="=" dbField="RoleId" paramId="RoleId" />
+          </optional>
+        </exp>
+      </where>
+      AND (StartDateTime &lt; GetDate() or StartDateTime is null)
+      AND (EndDateTime &gt; getdate() or EndDateTime is null)
+    </sql>
+  </statement>
+  
+  <statement name="GetUserNameBySessionId" connection="Common">
+    <param id="sessionId" type="String" size="36" required="true" />
+    <sql>
+      SELECT acu.USERID,USERNAME FROM ac_session acs JOIN AC_USER  acu on acs.USERID =acu.USERID
+      <where>
+        <exp op="=" dbField="sessionid" paramId="sessionId" />
+      </where>
+    </sql>
+  </statement>
+  <statement name="RemovePermission">
+    <param id="PermissionId" type="Guid"  required="true" />
+     <sql>
+      UPDATE AC_Permission
+      <columns mode="update">
+        <column dbField="EndDateTime">current_timestamp</column>
+        <column dbField="Remarks">NULL</column>
+        <column dbField="UpdatedDateTime">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="PermissionId" paramId="PermissionId" />
+        </exp>
+      </where>
+     </sql>
+  </statement>
+  <statement name="RemovePermissionForUser">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="RoleId" type="int32" required="true"/>
+    <param id="PrivilegeId" type="int32"  required="true" />
+    <param id="ResourceTypeCode" type="string" required="true"/>
+    <param id="ResourceValue" type="string" default="0"/>
+    <sql>
+      declare @ResourceFormatTypeCode int;
+      declare @ResourceValue1 varchar(50);
+
+      set @ResourceValue1= <exp paramId="ResourceValue"/>
+      IF @ResourceValue1='0'
+      BEGIN
+      SELECT @ResourceValue1=DefaultResourceValue FROM AC_RelRolePrivilege WHERE RoleId = <exp  paramId="RoleId" /> AND PrivilegeId = <exp  paramId="PrivilegeId" />
+      END
+
+      UPDATE AC_Permission
+      <columns mode="update">
+        <column dbField="EndDateTime">current_timestamp</column>
+        <column dbField="Status">NULL</column>
+        <column dbField="UpdatedDateTime">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserId" paramId="UserId" />
+          <exp op="=" dbField="RoleId" paramId="RoleId" />
+          <exp op="=" dbField="PrivilegeId" paramId="PrivilegeId" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+         
+        </exp>
+        AND  ResourceValue= @ResourceValue1
+      </where>
+      </sql>
+  </statement>
+  <statement name="AddPermission" connection="GEMS">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="RoleId" type="int32" required="true"/>
+    <param id="PrivilegeId" type="int32"  required="true" />
+    <param id="ResourceTypeCode" type="string" required="true"/>
+    <param id="ResourceValue" type="string"  default="0"/>
+    <param id="Status" type="string" default="Granted"/>
+    <sql>
+    
+      declare @NEWID uniqueidentifier;
+      declare @ResourceFormatTypeCode int;
+      declare @ResourceValue1 varchar(50);
+
+      SELECT @NEWID=NEWID()
+      set @ResourceValue1= <exp paramId="ResourceValue"/>
+
+      IF @ResourceValue1='0'
+      BEGIN
+      SELECT @ResourceFormatTypeCode = DefaultResourceFormatTypeCode, @ResourceValue1=DefaultResourceValue FROM AC_RelRolePrivilege WHERE RoleId = <exp  paramId="RoleId" /> AND PrivilegeId = <exp  paramId="PrivilegeId" />
+      END
+      ELSE
+      BEGIN
+      SELECT @ResourceFormatTypeCode = DefaultResourceFormatTypeCode FROM AC_RelRolePrivilege WHERE RoleId = <exp  paramId="RoleId" /> AND PrivilegeId = <exp  paramId="PrivilegeId" />
+      END
+
+      INSERT INTO AC_PERMISSION
+      <columns mode="insert">
+        <column dbField="PermissionId">@NEWID</column>
+        <column dbField="PrivilegeId" paramId="PrivilegeId" />
+        <column dbField="RoleId" paramId="RoleId" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="ResourceFormatTypeCode">@ResourceFormatTypeCode</column>
+        <column dbField="ResourceValue">@ResourceValue1</column>
+        <column dbField="Status" paramId="Status"/>
+        <column dbField="UpdatedDateTime">current_timestamp</column>
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="UpdatedByUser" paramId="UserId" />
+     </columns>
+    
+    </sql>
+  </statement>
+  
+</statements>

@@ -1,0 +1,654 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="GetResourceInstance" connection = "Common">
+    <param id="SourceIds" required="true" />
+    <param id="ResourceTypeCode"/>
+    <sql>
+      SELECT
+      ri.ResourceIdentifierId as 'Id'
+      , ri.SourceId  as 'ResourceValue'
+      , ri.ResourceTrackingNo as 'ResourceTrackingNo'
+      , ri.Name  as 'Name'
+      , ri.Description as 'Description'
+      , ri.ResourceTypeCode  as 'ResourceTypeCode'
+      , ri.CreatorId   as 'CreatorId'
+      , ri.CreatedDate  as 'CreatedDate'
+      , ri.LastUpdateId  as 'LastUpdateId'
+      , ri.LastUpdateDate  as 'LastUpdateDate'
+      , lr.LongDisplayValue as 'ResourceDescription'
+      , ri.AttributesXml as AttributesXml
+      FROM PFM_Resource_Instance ri
+      INNER JOIN LookupResourceType lr on lr.LookupCode = ri.ResourceTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="SourceId" paramId="SourceIds" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="InsertResourceInstance" connection = "Common">
+    <param id="Id" type="String" required="true" />
+    <param id="ResourceValue" type="String" required="true" />
+    <param id="ResourceTrackingNo" type="String" />
+    <param id="ResourceTypeCode" type="Int32" />
+    <param id="Name" type="String" />
+    <param id="Description" type="String" />
+    <param id="AttributesXml" type="String" required="true" />
+    <param id="CreatorId" type="String" required="true" />
+    <sql>
+      declare @count as integer
+      SELECT @count=count(*)
+      FROM PFM_Resource_Instance 
+      <where>
+        <exp op="=" dbField="SourceId" paramId="ResourceValue" />
+      </where>
+      if @count = 0
+      begin
+      
+          INSERT INTO PFM_Resource_Instance
+          <columns mode="insert">
+            <column dbField="ResourceIdentifierId" paramId="Id" />
+            <column dbField="SourceId" paramId="ResourceValue" />
+            <column dbField="ResourceTrackingNo" paramId="ResourceTrackingNo" />
+            <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+            <column dbField="Name" paramId="Name" />
+            <column dbField="Description" paramId="Description" />
+            <column dbField="CreatorId" paramId="CreatorId" />
+            <column dbField="CreatedDate">getDate()</column>
+            <column dbField="LastUpdateId" paramId="CreatorId" />
+            <column dbField="LastUpdateDate">getDate()</column>
+            <column dbField="AttributesXml" paramId="AttributesXml" />
+          </columns>;
+      
+      end
+    </sql>
+  </statement>
+   <statement name="InsertOrUpdateResourceInstance" connection = "Common">
+    <param id="Id" type="String" required="true" />
+    <param id="ResourceValue" type="String" required="true" />
+    <param id="ResourceTrackingNo" type="String" />
+    <param id="ResourceTypeCode" type="Int32" />
+    <param id="Name" type="String" />
+    <param id="Description" type="String" />
+    <param id="CreatorId" type="String" required="true" />
+    <param id="LastUpdateId" type="String" required="true" />
+    <param id="AttributesXml" type="String" required="true" />
+    <sql>
+      UPDATE PFM_Resource_Instance
+      <columns mode="update">
+        <column dbField="AttributesXml" paramId="AttributesXml" />
+        <column dbField="LastUpdateDate">getDate()</column>
+        <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SourceId" paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        </exp>
+      </where>
+
+      IF @@ROWCOUNT = 0
+      INSERT INTO PFM_Resource_Instance
+      <columns mode="insert">
+        <column dbField="ResourceIdentifierId" paramId="Id" />
+        <column dbField="SourceId" paramId="ResourceValue" />
+        <column dbField="ResourceTrackingNo" paramId="ResourceTrackingNo" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="Name" paramId="Name" />
+        <column dbField="Description" paramId="Description" />
+        <column dbField="CreatorId" paramId="CreatorId" />
+        <column dbField="CreatedDate">getDate()</column>
+        <column dbField="LastUpdateId" paramId="CreatorId" />
+        <column dbField="LastUpdateDate">getDate()</column>
+        <column dbField="AttributesXml" paramId="AttributesXml" />
+      </columns>;
+    </sql>
+  </statement>
+
+  <statement name="declareVariables" connection="Common">
+    <sql>
+      declare @parentResourceIdentifer uniqueidentifier;
+      declare @childResourceIdentifer uniqueidentifier;
+    </sql>
+  </statement>
+  <statement name="InsertResourceRelationships" connection = "Common">
+    <param id="ResourceRelationShipId" type="Guid" required="true"/>
+    <param id="ResourceValue" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="RelatedResourceValue" type="Guid" required="true"/>
+    <param id="RelatedResourceTypeCode" type="Int32" required="true" />
+    <param id="RelationshipCategoryTypeCode" required="true"/>
+    <param id="CreatorId" type="Guid" required="true" />
+    <sql>
+      <!--Assuming that the resources have already been inserted-->
+
+      SELECT @parentResourceIdentifer=ResourceIdentifierId
+      FROM PFM_Resource_Instance
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SourceId" paramId="ResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        </exp>
+      </where>
+
+      SELECT @childResourceIdentifer= ResourceIdentifierId
+      FROM PFM_Resource_Instance
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="SourceId" paramId="RelatedResourceValue" />
+          <exp op="=" dbField="ResourceTypeCode" paramId="RelatedResourceTypeCode" />
+        </exp>
+      </where>
+
+      <!--Check if relationshit already exists-->
+      IF NOT EXISTS(
+      SELECT ResourceIdentifierId
+      FROM PFM_Resource_Relationship
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ResourceIdentifierId">@parentResourceIdentifer</exp>
+          <exp op="=" dbField="ChildResourceIdentifierId">@childResourceIdentifer</exp>
+          <exp op="=" dbField="RelationShipCategoryTypeCode" paramId="RelationshipCategoryTypeCode" />
+        </exp>
+      </where>
+      )
+      begin
+      INSERT INTO PFM_Resource_Relationship
+      <columns mode="insert">
+        <column dbField="ResourceIdentifierId">@parentResourceIdentifer</column>
+        <column dbField="ResourceRelationShipId" paramId="ResourceRelationShipId" />
+        <column dbField="ChildResourceIdentifierId">@childResourceIdentifer</column>
+        <column dbField="CreatorId" paramId="CreatorId" />
+        <column dbField="CreatedDate">getDate()</column>
+        <column dbField="LastUpdateId" paramId="CreatorId" />
+        <column dbField="LastUpdateDate">getDate()</column>
+        <column dbField="RelationShipCategoryTypeCode" paramId="RelationshipCategoryTypeCode"></column>
+      </columns>;
+      end
+    </sql>
+  </statement>
+
+  <statement name="DeleteResourceRelationship" connection = "Common">
+    <param id="ResourceValue" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="RelatedResourceValue" type="Guid" required="true"/>
+    <param id="RelatedResourceTypeCode" type="Int32" required="true" />
+    <param id="RelationshipCategoryTypeCode" type="Int32" required="true" />
+    <sql>
+      DELETE FROM  PFM_Resource_Relationship
+      WHERE ResourceIdentifierId  in  (SELECT ResourceIdentifierId FROM PFM_Resource_Instance RI
+      <where>
+        <exp op="AND">
+          <exp dbField="RI.sourceid" paramId="ResourceValue" op="=" />
+          <exp dbField="RI.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+        </exp>
+      </where>)
+      AND
+      ChildResourceIdentifierId IN (SELECT ResourceIdentifierId FROM PFM_Resource_Instance RI2
+      <where>
+        <exp op="AND">
+          <exp dbField="RI2.SOURCEID" paramId="RelatedResourceValue" op="=" />
+          <exp dbField="RI2.ResourceTypeCode" paramId="RelatedResourceTypeCode" op="=" />
+        </exp>
+      </where>)
+      AND  RelationshipCategoryTypeCode = <exp paramId="RelationshipCategoryTypeCode" />
+      <!-- If relationship type is link we have to delete the reverse the relationship-->
+      <optional depends="RelationshipCategoryTypeCode == 2" >
+        DELETE FROM  PFM_Resource_Relationship
+        WHERE ChildResourceIdentifierId  in  (SELECT ResourceIdentifierId FROM PFM_Resource_Instance RI
+        <where>
+          <exp op="AND">
+            <exp dbField="RI.sourceid" paramId="ResourceValue" op="=" />
+            <exp dbField="RI.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+          </exp>
+        </where>)
+        AND
+        ResourceIdentifierId  IN (SELECT ResourceIdentifierId FROM PFM_Resource_Instance RI2
+        <where>
+          <exp op="AND">
+            <exp dbField="RI2.SOURCEID" paramId="RelatedResourceValue" op="=" />
+            <exp dbField="RI2.ResourceTypeCode" paramId="RelatedResourceTypeCode" op="=" />
+          </exp>
+        </where>)
+        AND  RelationshipCategoryTypeCode = <exp paramId="RelationshipCategoryTypeCode" />
+      </optional>
+
+    </sql>
+
+
+  </statement>
+  <statement name="GetResourceRelationship" connection = "Common">
+    <param id="ResourceValue" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="RelatedResourceValue" type="Guid" required="true"/>
+    <param id="RelatedResourceTypeCode" type="Int32" required="true" />
+    <sql>
+      SELECT
+      rel.ResourceValue,
+      rel.[ResourceTypeCode],
+      rel.[RelatedResourceValue],
+      rel.[RelatedResourceTypeCode],
+      rel.[CreatorId],
+      rel.[CreatedDate],
+      rel.[LastUpdateId],
+      rel.[LastUpdateDate],
+      lt.LongDisplayValue ResourceDescription,
+      rlt.LongDisplayValue RelatedResourceDescription
+
+      FROM [PFM_Resource_Relationship_P] rel
+      JOIN LookupResourceType lt
+      ON lt.LookupCode = rel.ResourceTypeCode
+      join LookupResourceType  rlt
+      ON rlt.LookupCode = RelatedResourceTypeCode
+      <where>
+        <exp op="AND">
+          <exp dbField="ResourceValue" paramId="ResourceValue" op="=" />
+          <exp dbField="ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+          <exp dbField="RelatedResourceValue" paramId="RelatedResourceValue" op="=" />
+          <exp dbField="RelatedResourceTypeCode" paramId="RelatedResourceTypeCode" op="=" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+
+  <statement name="GetResourceLinks" connection = "Common">
+    <param id="ResourceValues"  />
+    <param id="RelationshipTypeCode" type="Int32" required="true" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <sql>
+      SELECT
+      ri.ResourceIdentifierId as 'Id'
+      ,ri.SourceId  as 'ResourceValue'
+      ,ri.ResourceTrackingNo as 'ResourceTrackingNo'
+      ,ri.Name  as 'Name'
+      ,ri.Description as 'Description'
+      ,ri.ResourceTypeCode  as 'ResourceTypeCode'
+      ,ri.CreatorId   as 'CreatorId'
+      ,ri.CreatedDate  as 'CreatedDate'
+      ,ri.LastUpdateId  as 'LastUpdateId'
+      ,ri.LastUpdateDate  as 'LastUpdateDate'
+      ,lr.LongDisplayValue as 'ResourceDescription'
+      ,ri.AttributesXml as AttributesXml
+      FROM PFM_Resource_Instance ri
+      INNER JOIN LookupResourceType lr on lr.LookupCode = ri.ResourceTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="SourceId" paramId="ResourceValues" />
+        </exp>
+      </where>
+
+      DECLARE @Resources TABLE
+      (
+      Id uniqueidentifier
+      )
+      insert into @Resources
+      SELECT
+      ri.ResourceIdentifierId AS 'Id'
+
+      FROM PFM_Resource_Instance ri
+      INNER JOIN LookupResourceType lr
+      ON lr.LookupCode = ri.ResourceTypeCode
+      <where>
+        <exp op="AND">
+          <exp dbField="ri.SourceId" paramId="ResourceValues" op="IN" />
+        </exp>
+      </where>
+
+      select * from PFM_Resource_Relationship rel
+      join @Resources ri
+      ON (rel.ResourceIdentifierId = ri.Id
+      OR rel.ChildResourceIdentifierId = ri.Id)
+
+      SELECT
+      ri.ResourceIdentifierId AS 'Id',
+      ri.SourceId AS 'ResourceValue',
+      ri.ResourceTrackingNo AS 'ResourceTrackingNo',
+      ri.Name AS 'Name',
+      ri.Description AS 'Description',
+      ri.ResourceTypeCode AS 'ResourceTypeCode',
+      ri.CreatorId AS 'CreatorId',
+      ri.CreatedDate AS 'CreatedDate',
+      ri.LastUpdateId AS 'LastUpdateId',
+      ri.LastUpdateDate AS 'LastUpdateDate',
+      lr.LongDisplayValue AS 'ResourceDescription'
+      ,ri.AttributesXml as AttributesXml
+      FROM PFM_Resource_Instance ri
+      INNER JOIN LookupResourceType lr
+      ON lr.LookupCode = ri.ResourceTypeCode
+
+      JOIN PFM_Resource_Relationship rel
+      ON (rel.ResourceIdentifierId = ri.ResourceIdentifierId
+      OR rel.ChildResourceIdentifierId = ri.ResourceIdentifierId)
+      AND <exp paramId="RelationshipTypeCode" op="=" dbField="rel.RelationShipCategoryTypeCode" />
+      join @Resources r on
+      ((Id = rel.ResourceIdentifierId) OR (Id = rel.ChildResourceIdentifierId))
+      and ID &lt;&gt; ri.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          <exp dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode" op="="/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetChildren" connection="Common">
+    <param id="ResourceValue" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32"  />
+    <param id="Level" type="Int32" required="true" />
+    <sql>
+      ;  WITH RecursiveResourceHierarchy(  [Level],Id, ResourceValue, ResourceTypeCode, ResourceTrackingNo, Name,  Description,
+      ParentId, ParentResourceValue, ParentResourceTrackingNo, ParentName,ParentDescription
+      )
+      AS
+      (
+      <!-- anchor query-->
+      SELECT
+      1 [Level],
+      rr.ChildResourceIdentifierId AS Id,
+      ric.SourceId as ResourceValue,
+      ric.ResourceTypeCode ResourceTypeCode	,
+      ric.ResourceTrackingNo as ResourceTrackingNo,
+      ric.Name as Name,
+      ric.Description as Description,
+      ri.ResourceIdentifierId AS ParentId,
+      ri.SourceId as ParentResourceValue,
+      ri.ResourceTrackingNo as ParentResourceTrackingNo,
+      ri.Name as ParentName,
+      ri.Description	 AS ParentDescription
+      FROM PFM_Resource_Instance ri
+      JOIN PFM_Resource_Relationship rr ON rr.ResourceIdentifierId = ri.ResourceIdentifierId
+      JOIN PFM_Resource_Instance ric ON ric.ResourceIdentifierId = rr.ChildResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="ri.SourceId" paramId="ResourceValue" op="=" />
+          <exp dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+        </exp>
+      </where>
+      <!-- end anchor query-->
+      UNION ALL
+      <!-- recursive query-->
+      SELECT Level + 1 [Level],
+      rr.ChildResourceIdentifierId AS Id,
+      ric.SourceId as ResourceValue,
+      ric.ResourceTypeCode ResourceTypeCode	,
+      ric.ResourceTrackingNo as ResourceTrackingNo,
+      ric.Name as Name,
+      ric.Description as Description,
+      ri.ResourceIdentifierId AS ParentId,
+      ri.SourceId as ParentResourceValue,
+      ri.ResourceTrackingNo as ParentResourceTrackingNo,
+      ri.Name as ParentName,
+      ri.Description	 AS ParentDescription
+      FROM RecursiveResourceHierarchy rh
+      JOIN PFM_Resource_Instance ri ON ri.ResourceIdentifierId = rh.Id
+      JOIN PFM_Resource_Relationship rr ON rh.Id = rr.ResourceIdentifierId
+      JOIN PFM_Resource_Instance ric ON ric.ResourceIdentifierId = rr.ChildResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="level" paramId="Level" op="&lt;" />
+        </exp >
+      </where>
+      )
+      <!-- end of recursive query-->
+      <!--query CTE -->
+      SELECT * FROM RecursiveResourceHierarchy
+
+    </sql>
+  </statement>
+
+  <statement name="GetParents" connection="Common">
+    <sql>
+      <param id="ResourceValue" type="Guid" required="true" />
+      <param id="ResourceTypeCode" type="Int32"  />
+      <param id="Level" type="Int32" required="true" />
+
+      ; WITH RecursiveResourceHierarchy(  [Level],Id, ResourceValue, ResourceTypeCode, ResourceTrackingNo, Name,  Description
+      --ParentId, ParentResourceValue, ParentResourceTypeCode,ParentResourceTrackingNo, ParentName,ParentDescription
+      )
+      AS
+      (
+      <!-- begin anchor query-->
+      SELECT
+      0 as [Level],
+      ri.ResourceIdentifierId AS Id,
+      ri.SourceId as ResourceValue,
+      ri.ResourceTypeCode,
+      ri.ResourceTrackingNo as ResourceTrackingNo,
+      ri.Name as Name,
+      ri.Description	 AS Description
+
+      FROM PFM_Resource_Instance ri
+      JOIN PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = ri.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="ri.SourceId" paramId="ResourceValue" op="=" />
+          <exp dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+
+        </exp>
+      </where>
+      <!-- end of anchor query -->
+      UNION ALL
+      <!-- begin recursive query-->
+      SELECT
+      level + 1  [Level],
+      rp.ResourceIdentifierId AS Id,
+      rp.SourceId as ResourceValue,
+      rp.ResourceTypeCode,
+      rp.ResourceTrackingNo as ResourceTrackingNo,
+      rp.Name as Name,
+      rp.Description	 AS Description
+      FROM RecursiveResourceHierarchy rh
+      JOIN PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = rh.Id
+      join PFM_Resource_Instance rp on rr.ResourceIdentifierId = rp.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="level" paramId="Level" op="&lt;" />
+        </exp>
+      </where>
+      )
+      <!-- end of anchor query-->
+      <!-- now query the CTE (the reason we are putting  it in temp table is, the recursive query will not contain the top level parent. Incase the level required is all the way to the top level parent-->
+      SELECT rh.Level,
+      rh.Id,
+      rh.ResourceValue,
+      rh.ResourceTypeCode,
+      rh.ResourceTrackingNo as ResourceTrackingNo,
+      rh.Name as Name,
+      rh.Description	 AS Description,
+      rp.ResourceIdentifierId AS ParentId,
+      rp.SourceId as ParentResourceValue,
+      rp.ResourceTypeCode as ParentResourceTypeCode,
+      rp.ResourceTrackingNo as ParentResourceTrackingNo,
+      rp.Name as ParentName,
+      rp.Description	 AS ParentDescription
+      into #temp
+      FROM RecursiveResourceHierarchy rh
+      left JOIN  PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = rh.Id
+      left join PFM_Resource_Instance rp on rr.ResourceIdentifierId = rp.ResourceIdentifierId
+      <where>
+        <!---we only want the parent nodes, not the current node-->
+        <exp op="AND">
+          <exp dbField="rh.ResourceValue" paramId="ResourceValue" op="&lt;&gt;" />
+        </exp>
+      </where>
+      <!-- now do the final select-->
+
+      SELECT * FROM #temp
+      union ALL
+
+      SELECT <exp paramId="Level"/>,
+      rp.ResourceIdentifierId,
+      rp.SourceId as ResourceValue,
+      rp.ResourceTypeCode,
+      rp.ResourceTrackingNo as ResourceTrackingNo,
+      rp.Name as Name,
+      rp.Description	 AS Description,
+      null AS ParentId,
+      null as ParentResourceValue,
+      null as ParentResourceTypeCode,
+      null as ParentResourceTrackingNo,
+      null as ParentName,
+      null	 AS ParentDescription
+      FROM #temp rh
+      join PFM_Resource_Instance rp   ON rh.parentId = rp.ResourceIdentifierId
+      WHERE rh.ParentId not in (SELECT ID from #temp)
+      and  <exp paramId="Level"/> NOT IN (SELECT LEVEL FROM #TEMP)
+      drop table #temp;
+    </sql>
+  </statement>
+
+  <statement name="GetResourceLinkList" connection = "Common">
+    <param id="ResourceValues"  />
+    <param id="RelationshipTypeCode" type="Int32" required="true" />
+    <param id="ResourceReturnTypeCode" type="Int32"  />
+    <sql>
+      SELECT distinct
+      ri.ResourceIdentifierId AS 'Id',
+      ri.SourceId AS 'ResourceValue',
+      ri.ResourceTrackingNo AS 'ResourceTrackingNo',
+      ri.Name AS 'Name',
+      ri.Description AS 'Description',
+      ri.ResourceTypeCode AS 'ResourceTypeCode',
+      ri.CreatorId AS 'CreatorId',
+      ri.CreatedDate AS 'CreatedDate',
+      ri.LastUpdateId AS 'LastUpdateId',
+      ri.LastUpdateDate AS 'LastUpdateDate',
+      lr.LongDisplayValue AS 'ResourceDescription'
+      FROM PFM_Resource_Instance ri
+      INNER JOIN LookupResourceType lr
+      ON lr.LookupCode = ri.ResourceTypeCode
+      JOIN PFM_Resource_Relationship rel
+      ON (rel.ResourceIdentifierId = ri.ResourceIdentifierId
+      OR rel.ChildResourceIdentifierId = ri.ResourceIdentifierId)
+      AND <exp paramId="RelationshipTypeCode" dbField="rel.RelationShipCategoryTypeCode" op="=" />
+      join PFM_Resource_Instance r on
+      (r.ResourceIdentifierId = rel.ResourceIdentifierId
+      OR r.ResourceIdentifierId = rel.ChildResourceIdentifierId)
+      and r.ResourceIdentifierId &lt;&gt; ri.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          <exp dbField="ri.ResourceTypeCode"  paramId="ResourceReturnTypeCode" op="="/>
+          <exp dbField="r.SourceId" paramId="ResourceValues" op="IN"/>
+
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetRecursivelyRelatedResources" connection="Common">
+    <sql>
+      <param id="ResourceValue" type="Guid" required="true" />
+      <param id="ResourceTypeCode" type="Int32"  required="true"/>
+      <param id="RequiredResourceTypeCodes" type="string"  required="true"/>
+      <param id="Level" type="Int32" required="true" />
+      <param id="RelationShipCategoryTypeCodes" type="string"  />
+      
+      IF OBJECT_ID('tempdb..#temp') IS NOT NULL DROP TABLE #temp
+
+      <!-- Get all root parents -->
+      ;WITH RecursiveParentHierarchy(  [Level],Id, PathIdentifier)
+      AS
+      (
+      SELECT
+      0 as [Level]
+      , ri.ResourceIdentifierId AS Id
+      , cast(ROW_NUMBER() OVER (ORDER BY ri.ResourceIdentifierId) as varchar(max)) as PathIdentifier
+      FROM PFM_Resource_Instance ri
+       <where>
+        <exp op="AND">
+          <exp op="=" dbField="ri.SourceId" paramId="ResourceValue"/>
+          <exp op="=" dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode"/>
+        </exp>
+      </where>
+      
+      UNION ALL
+      
+      SELECT
+      level + 1  [Level]
+      , ri.ResourceIdentifierId AS Id
+      , rh.PathIdentifier + '-' + cast(ROW_NUMBER() OVER (ORDER BY ri.ResourceIdentifierId) as varchar(max)) as PathIdentifier
+      FROM RecursiveParentHierarchy rh
+      JOIN PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = rh.Id
+      join PFM_Resource_Instance ri on rr.ResourceIdentifierId = ri.ResourceIdentifierId
+       <where>
+        <exp op="AND">
+          <exp op="IN" dbField="ri.ResourceTypeCode" paramId="RequiredResourceTypeCodes"/>
+          <exp op="IN" dbField="rr.RelationShipCategoryTypeCode" paramId="RelationShipCategoryTypeCodes"/>
+          <exp op="&lt;" dbField="level" paramId="Level" />
+        </exp>
+      </where>
+      )
+      
+      select *
+      into #temp
+      from
+      (
+        select top 1000 *
+        , Case WHEN Level >= ISNULL(LEAD(level) OVER (ORDER BY PathIdentifier), -1) THEN 1 ELSE 0 END IsFirst
+        from RecursiveParentHierarchy
+        order by PathIdentifier
+      ) t
+      where t.IsFirst= 1
+      
+      <!-- Get all children -->
+      ;WITH RecursiveChildHierarchy(  [Level], ParentId,Id, ResourceValue, ResourceTypeCode, ResourceTrackingNo, Name,
+        Description, AttributesXml, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate)
+      AS
+      (
+      SELECT
+      0 [Level]
+      , cast(NULL as uniqueidentifier ) as ParentId
+      , ri.ResourceIdentifierId AS Id
+      , ri.SourceId as ResourceValue
+      , ri.ResourceTypeCode ResourceTypeCode
+      , ri.ResourceTrackingNo as ResourceTrackingNo
+      , ri.Name as Name
+      , ri.Description as Description
+      , ri.AttributesXml
+      , ri.CreatorId   as 'CreatorId'
+      , ri.CreatedDate  as 'CreatedDate'
+      , ri.LastUpdateId  as 'LastUpdateId'
+      , ri.LastUpdateDate  as 'LastUpdateDate'
+      FROM PFM_Resource_Instance ri
+      Join #temp temp on temp.Id = ri.ResourceIdentifierId
+
+      UNION ALL
+
+      SELECT Level + 1 [Level]
+      , rr.ResourceIdentifierId as ParentId
+      , ri.ResourceIdentifierId AS Id
+      , ri.SourceId as ResourceValue
+      , ri.ResourceTypeCode ResourceTypeCode
+      , ri.ResourceTrackingNo as ResourceTrackingNo
+      , ri.Name as Name
+      , ri.Description as Description
+      , ri.AttributesXml
+      , ri.CreatorId   as 'CreatorId'
+      , ri.CreatedDate  as 'CreatedDate'
+      , ri.LastUpdateId  as 'LastUpdateId'
+      , ri.LastUpdateDate  as 'LastUpdateDate'
+      FROM RecursiveChildHierarchy rh
+      JOIN PFM_Resource_Relationship rr ON rh.Id = rr.ResourceIdentifierId
+      JOIN PFM_Resource_Instance ri ON ri.ResourceIdentifierId = rr.ChildResourceIdentifierId
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="ri.ResourceTypeCode" paramId="RequiredResourceTypeCodes"/>
+          <exp op="IN" dbField="rr.RelationShipCategoryTypeCode" paramId="RelationShipCategoryTypeCodes"/>
+          <exp op="&lt;" dbField="level" paramId="Level" />
+        </exp>
+      </where>
+      )
+      
+      SELECT * FROM RecursiveChildHierarchy
+      order by ResourceValue
+      OPTION (MAXRECURSION 100);
+    </sql>
+  </statement>
+
+</statements>

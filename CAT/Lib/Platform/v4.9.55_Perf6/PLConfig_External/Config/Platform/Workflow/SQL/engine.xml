@@ -1,0 +1,17 @@
+<statements>
+
+	<statement name="getWorkItemContainerXML" connection="Workflow">
+		<param id="activityInstanceId" type="String" size="36" />
+		<sql>
+			select container_xml as containerXML
+			from FACT_WORK_ITEM fwi
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fwi.ACTIVITY_INSTANCE_ID" paramId="activityInstanceId" />
+					<exp>fwi.LATEST_FLAG in (1)</exp>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+</statements>

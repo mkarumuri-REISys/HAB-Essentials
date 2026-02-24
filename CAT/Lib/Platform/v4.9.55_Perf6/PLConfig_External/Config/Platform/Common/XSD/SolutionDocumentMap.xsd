@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="root">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="asynchronousTask" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="customConfig" />
+						</xs:sequence>
+					</xs:complexType>		
+				</xs:element>
+				<xs:element name="dataEngine" minOccurs="1">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="config" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="documentManagement" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="config" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="lookup" minOccurs="0">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="config" />
+							<xs:element name="data" />
+							<xs:element name="xml" />
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="solution" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="config" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="standardMessage" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="standardContext">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="data" />
+										<xs:element name="definition" />
+										<xs:element name="relation" />
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="template" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="config" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="workflow" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence minOccurs="0" maxOccurs="1">
+							<xs:element name="engineConfiguration">
+								<xs:complexType>
+									<xs:sequence minOccurs="0" maxOccurs="1">
+										<xs:element name="config" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="mockUpData" minOccurs="0">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="accessControl" />
+							<xs:element name="layout">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="layoutSettings" />
+										<xs:element name="customSettings" />
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

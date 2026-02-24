@@ -1,0 +1,339 @@
+﻿<statements>
+
+  <statement name="RemoveTopic" connection="Common">
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = '<dynamic paramId="TopicFriendlyName" />';
+
+      DELETE FROM PFM_SVBS_Topic_P_LU_PFM_SVBS_TYPE_R where TopicId = @topicId;
+      DELETE FROM PFM_SVBS_Topic_P WHERE TopicFriendlyName = '<dynamic paramId="TopicFriendlyName" />';
+    </sql>
+  </statement>
+  <statement name="RemoveSubscription" connection="Common">
+    <param id="SubscriptionFriendlyName" type="String" required="true" />
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = '<dynamic paramId="TopicFriendlyName" />';
+
+      DELETE FROM PFM_SVBS_Subscription_P WHERE TopicId = @topicId;
+    </sql>
+  </statement>
+
+  <statement name="CreateTopic" connection="Common">
+    <param id="TopicId" type="Guid" required="true" />
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="TopicDescription" type="String"  />
+    <param id="UserId" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+
+    <sql>
+      INSERT INTO PFM_SVBS_Topic_P
+      <columns mode="insert">
+        <column dbField="TopicId" paramId="TopicId"/>
+        <column dbField="TopicFriendlyName" paramId="TopicFriendlyName"/>
+        <column dbField="TopicDescription" paramId="TopicDescription"/>
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+    </sql>
+  </statement>
+  <statement name="CreateTypesForTopic" connection="Common">
+    <param id="TopicId" type="Guid" required="true" />
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="DisplayName" type="String" />
+    <param id="ExternalSystemCode" type="Int32"  />
+    <param id="TopicTypeCode" type="Int32"  required="true" />
+    <param id="UserId" type="Guid" required="true" />
+
+    <sql>
+      declare @count int
+      SELECT @count=count(*) from LU_PFM_SVBS_TYPE where LookupCode = <exp paramId="TopicTypeCode" />;
+
+      IF( @count = 0)
+      BEGIN
+      INSERT INTO LU_PFM_SVBS_TYPE
+      <columns mode="insert">
+        <column dbField="LookupCode" paramId="TopicTypeCode"/>
+        <column dbField="DisplayName" paramId="DisplayName"/>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+      END
+
+
+      INSERT INTO PFM_SVBS_Topic_P_LU_PFM_SVBS_TYPE_R
+      <columns mode="insert">
+        <column dbField="TopicId" paramId="TopicId"/>
+        <column dbField="ExternalSystemCode" paramId="ExternalSystemCode"/>
+        <column dbField="TopicTypeCode" paramId="TopicTypeCode"/>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+    </sql>
+  </statement>
+  <statement name="CreateSubscription" connection="Common">
+    <param id="SubscriptionId" type="Guid" required="true" />
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="SubscriptionFriendlyName" type="String" required="true" />
+    <param id="SqlFilterExpression" type="String"  />
+    <param id="ExternalSystemCode" type="Int32"  />
+    <param id="ListenerTypeCode" type="Int32"  />
+    <param id="SubscriptionDescription" type="String"  />
+    <param id="UserId" type="Guid" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="LockDurationSeconds" type="Int32" required="true" />
+    <param id="MaxDeliveryCount" type="Int32" required="true" />
+
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = '<dynamic paramId="TopicFriendlyName" />';
+
+      INSERT INTO PFM_SVBS_Subscription_P
+      <columns mode="insert">
+        <column dbField="TopicId">@topicId</column>
+        <column dbField="SubscriptionId" paramId="SubscriptionId"/>
+        <column dbField="SubscriptionFriendlyName" paramId="SubscriptionFriendlyName"/>
+        <column dbField="SqlFilterExpression" paramId="SqlFilterExpression"/>
+        <column dbField="ExternalSystemCode" paramId="ExternalSystemCode"/>
+        <column dbField="SubscriptionDescription" paramId="SubscriptionDescription"/>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode"/>
+        <column dbField="ListenerTypeCode" paramId="ListenerTypeCode"/>
+        <column dbField="LockDurationSeconds" paramId="LockDurationSeconds"/>
+        <column dbField="MaxDeliveryCount" paramId="MaxDeliveryCount"/>
+      </columns>
+    </sql>
+  </statement>
+  <statement name="UpdateSubscription" connection="Common">
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="SubscriptionFriendlyName" type="String" required="true" />
+    <param id="Message" type="String"  />
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = <exp paramId="TopicFriendlyName"/>;
+
+      update PFM_SVBS_Subscription_P
+      set
+      Message = <exp paramId="Message"/>,
+      LastUpdateDate = GETDATE()
+      where SubscriptionFriendlyName = <exp paramId="SubscriptionFriendlyName"/>
+
+    </sql>
+  </statement>
+  <statement name="UpdateSubscriptionMessage" connection="Common">
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="SubscriptionFriendlyName" type="String" required="true" />
+    <param id="Message" type="String"  />
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = <exp paramId="TopicFriendlyName"/>;
+
+      update PFM_SVBS_Subscription_P
+      set
+      Message = <exp paramId="Message"/>,
+      LastUpdateDate = GETDATE()
+      where SubscriptionFriendlyName = <exp paramId="SubscriptionFriendlyName"/>
+
+    </sql>
+  </statement>
+  <statement name="UpdateTopicMessage" connection="Common">
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="Message" type="String"  />
+    <sql>
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = <exp paramId="TopicFriendlyName"/>;
+
+      update PFM_SVBS_Topic_P
+      set
+      Message = <exp paramId="Message"/>,
+      LastUpdateDate = GETDATE()
+      where TopicFriendlyName = <exp paramId="TopicFriendlyName"/>
+
+    </sql>
+  </statement>
+
+  <statement name="UpdateMessage" connection="Common">
+    <param id="MessageId" type="Guid" required="true" />
+    <param id="SubscriptionId" type="Guid" required="true" />
+    <param id="UserId" type="Guid" required="true" />
+    <param id="TopicFriendlyName" type="String" required="true" />
+    <param id="SubscriptionFriendlyName" type="String" required="true" />
+    <param id="Body" type="String"  />
+    <param id="MachineName" type="String"  />
+    <param id="ExternalSystemCode" type="Int32"  />
+    <param id="TopicTypeCode" type="Int32"  />
+    <param id="ProcessingStatusCode" type="Int32"  />
+    <param id="DeliveryCount" type="Int32"  />
+    <param id="Message" type="String"  />
+
+    <sql>
+      declare @existingMessageCount int
+      SELECT @existingMessageCount= COUNT(*) FROM PFM_SVBS_Message_P where MessageId = <exp paramId="MessageId"/>  and SubscriptionId=<exp paramId="SubscriptionId"/>
+
+      declare @topicId uniqueidentifier
+      SELECT @topicId=TopicId FROM PFM_SVBS_Topic_P where TopicFriendlyName = '<dynamic paramId="TopicFriendlyName" />';
+
+      if(@existingMessageCount > 0)
+      BEGIN
+
+      update PFM_SVBS_Message_P
+      set
+      Message = <exp paramId="Message"/>,
+      MachineName = <exp paramId="MachineName"/>,
+      DeliveryCount = <exp paramId="DeliveryCount"/>,
+      LastUpdateDate = GETDATE()
+      where MessageId = <exp paramId="MessageId"/> and SubscriptionId=<exp paramId="SubscriptionId"/>
+
+      END
+      ELSE
+      BEGIN
+      INSERT INTO PFM_SVBS_Message_P
+      <columns mode="insert">
+        <column dbField="MessageId"  paramId="MessageId"/>
+        <column dbField="TopicId">@topicId</column>
+        <column dbField="SubscriptionId" paramId="SubscriptionId"/>
+        <column dbField="Message" paramId="Message"/>
+        <column dbField="MachineName" paramId="MachineName"/>
+        <column dbField="TopicTypeCode" paramId="TopicTypeCode"/>
+        <column dbField="ProcessingStatusCode" paramId="ProcessingStatusCode"/>
+        <column dbField="DeliveryCount" paramId="DeliveryCount"/>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+      END
+    </sql>
+  </statement>
+  <statement name="GetConfigurationAttributes" connection="Common">
+    <param id="SystemCode" type="Int32" />
+    <sql>
+      SELECT ConfigurationAttributeCode
+      , ServiceBusInstanceName
+      , [Value]
+      , Configuration
+      , lta.DisplayName
+      FROM
+      PFM_SVBS_Configuration_P cfg
+      JOIN LU_PFM_SVBS_Configuration_Attribute lta
+      ON cfg.ConfigurationAttributeCode = lta.LookupCode;
+    </sql>
+  </statement>
+  <statement name="GetServiceBusTopics" connection="Common">
+    <param id="SystemCode" type="Int32" />
+    <sql>
+      -- Topics and Subscriptions
+
+      -- Topics and Subscriptions
+      SELECT t.TopicId
+      , TopicFriendlyName
+      , TopicDescription
+      , SubscriptionId
+      , SubscriptionFriendlyName
+      , SubscriptionDescription
+      , ExternalSystemCode
+      , SqlFilterExpression
+      , ListenerTypeCode
+      , t.ResourceTypeCode
+      , s.LockDurationSeconds
+      , s.MaxDeliveryCount
+      , Convert( VarChar( 10 ), ListenerTimeOfDay, 114 ) as ListenerTimeOfDay
+      FROM
+      PFM_SVBS_Topic_P t
+      LEFT OUTER JOIN PFM_SVBS_Subscription_P s
+      ON t.TopicId = s.TopicId
+      ORDER BY
+      TopicFriendlyName
+      , SubscriptionFriendlyName
+      , ExternalSystemCode
+      , ListenerTypeCode
+
+      -- Service Bus types
+      SELECT lookupcode
+      , displayname
+      , comments
+      , creatorid
+      , createddate
+      , LastUpdateId
+      , LastUpdateDate
+      FROM
+      LU_PFM_SVBS_TYPE;
+
+      -- external systems
+      SELECT ExternalSystemCode
+      , tr.TopicId
+      , t.TopicFriendlyName
+      FROM
+      PFM_SVBS_Topic_P_LookupExternalSystems_R tr
+      JOIN PFM_SVBS_Topic_P t
+      ON t.TopicId = tr.TopicId;
+
+      -- topics by type
+      SELECT tt.TopicTypeCode
+      , t.TopicId
+      , t.TopicFriendlyName
+      , tt.ExternalSystemCode
+      , tr.DisplayName
+      FROM
+      PFM_SVBS_Topic_P_LU_PFM_SVBS_TYPE_R tt
+      JOIN PFM_SVBS_Topic_P t
+      ON tt.TopicId = t.TopicId
+      JOIN LU_PFM_SVBS_TYPE tr
+      ON tt.TopicTypeCode = tr.LookupCode
+
+      -- external systems
+      SELECT lls.ExternalSystemCode
+      , lls.ListenerTypeCode
+      , lls.Configuration
+      , lt.DisplayName
+      FROM
+      PFM_SVBS_LISTENERTYPE_LookupExternalSystems_R lls
+      JOIN LU_PFM_SVBS_LISTENERTYPE lt
+      ON lls.ListenerTypeCode = lt.LookupCode;
+
+      -- configuration
+      SELECT ConfigurationAttributeCode
+      , ExternalSystemCode
+      , ListenerTypeCode
+      , [Value]
+      , Configuration
+      , lta.DisplayName
+      FROM
+      PFM_SVBS_Configuration_Attribute_LookupExternalSystems_R la
+      JOIN LU_PFM_SVBS_Configuration_Attribute lta
+      ON la.ConfigurationAttributeCode = lta.LookupCode;
+
+      -- Subscriber Attributes
+      SELECT ConfigurationAttributeCode
+      , SubscriptionId
+      , ListenerTypeCode
+      , [Value]
+      , lta.DisplayName
+      FROM
+      PFM_SVBS_Configuration_Attribute_Subscription_R la
+      JOIN LU_PFM_SVBS_Configuration_Attribute lta
+      ON la.ConfigurationAttributeCode = lta.LookupCode;
+    </sql>
+  </statement>
+  <statement name="GetExternalSystem" connection="Common">
+    <param id="id" type="Int32" required="true" />
+    <sql>
+      SELECT LookupCode id, ActiveDate, InactiveDate, Description, LongDisplayValue, ShortDisplayValue, UserId, Password FROM dbo.LookupExternalSystems
+      <where>
+        <exp op="=" dbField="lookupcode" paramId="id" />
+      </where>
+    </sql>
+  </statement>
+</statements>

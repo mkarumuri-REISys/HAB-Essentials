@@ -1,0 +1,54 @@
+﻿{
+  "LookupConfig": {
+    "Mapping": {
+      "attachmentPurposes": {
+        "statement": "GetAttachmentPurposes",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "externalSystemDimensionValues": {
+        "statement": "GetExternalSystemDimensionValues",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "countries": {
+        "statement": "GetCountries",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "states": {
+        "statement": "GetStates",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "addressSecondaryIdentifiers": {
+        "statement": "GetAddressSecondaryIdentifierTypes",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "ruralRouteTypes": {
+        "statement": "GetRuralRouteTypes",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "resourceTypes": {
+        "statement": "GetResourceTypes",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "noteTypes": {
+        "statement": "GetNoteTypes",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "issueState": {
+        "statement": "GetIssueState",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "issueStatus": {
+        "statement": "GetIssueStatus",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "issuePriority": {
+        "statement": "GetIssuePriority",
+        "moduleName": "pfm-lookup/sql"
+      },
+      "test": {
+        "statement": "GetTestValues",
+        "moduleName": "pfm-lookup/sql"
+      }
+    }
+  }
+}

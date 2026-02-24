@@ -1,0 +1,22 @@
+	<statements>
+	<statement name="get" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="procDefId" type="String" size="36" />		
+		
+		<sql>
+			select cast(transition_id as varchar(36)) as id,
+					transition_desc as description,
+					transition_type_id as typeId,
+					cast(from_activity_id as varchar(36)) as fromId,
+					cast(to_activity_id as varchar(36)) as toId,
+					condition as condition
+			from LU_TRANSITION
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="transition_id" paramId="id" />
+					<exp op="=" dbField="process_definition_id" paramId="procDefId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

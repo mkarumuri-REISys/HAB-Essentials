@@ -1,0 +1,205 @@
+<statements>
+	<!-- Testing for the Insertion Into UserAction table -->
+	<statement name="SaveUserActions">
+		<param id="ByUserID" type="String" />
+		<param id="OnResourceID" type="String" />
+		<param id="OnResourceLookUpCode" type="Int32" />
+		<param id="ActionTypeLookUpCode" type="Int32" />
+		<param id="Comments" type="String" />
+        <param id="RoleId" type="Int32" />
+		<sql>
+
+			INSERT INTO [dbo].[PlatformUserAction]
+			<columns mode="insert">
+				<column dbField="ActionID" >newid()</column>
+				<column dbField="ByUserID" paramId="ByUserID" />
+				<column dbField="OnDateTime">getdate()</column>
+				<column dbField="OnResourceID" paramId="OnResourceID" />
+				<column dbField="OnResourceLookUpCode" paramId="OnResourceLookUpCode" />
+				<column dbField="ActionTypeLookUpCode" paramId="ActionTypeLookUpCode" />
+		        <column dbField="Comments">
+		          N'<dynamic paramId="Comments"/>'
+		        </column>
+				<column dbField="CreatorId" paramId="ByUserID" />
+				<column dbField="CreatedDate" >getdate()</column>
+                <column dbField="RoleId" paramId="RoleId" />
+			</columns>
+			
+		</sql>
+	</statement>
+
+	<statement name="GetUserActions">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="ProcessLookUpCode" required="true" />
+		<param id="userActionType" type="String"/>
+		<param id="tempDatetime" type="string" default="dbo.PlatformUserAction.OnDateTime desc" />
+		<sql>
+			<select>
+        Convert(varchar(36),dbo.LookupPlatformUserActionType.LookUpCode) as UserActionID,
+        dbo.PlatformUserAction.ActionID,
+        dbo.PlatformUserAction.OnDateTime, ISNULL(dbo.PlatformUserAction.Comments, ' ') AS Comments,
+        dbo.LookupPlatformUserActionType.LongDisplayValue LongDisplayValue, ISNULL(dbo.People.NamePrefix + ' ', '') + ISNULL(dbo.People.FirstName + ' ', '')
+        + ISNULL(dbo.People.MiddleName + ' ', '') + ISNULL(dbo.People.LastName, '') AS ActionTakenBy,
+        Convert(varchar(36),dbo.PlatformUserAction.ByUserID) as ByUserID,
+        Convert(varchar(36),dbo.PlatformUserAction.OnResourceID) as OnResourceID,
+        dbo.LookupPlatformUserActionType.ProcessTypeLookUpCode as ProcessTypeLookUpCode,
+        LookupPlatformUserActionType.ShortDisplayValue as ActionTypeDisplay
+      </select>
+			FROM  dbo.PlatformUserAction INNER JOIN
+			dbo.LookupPlatformUserActionType ON
+			dbo.PlatformUserAction.ActionTypeLookUpCode = dbo.LookupPlatformUserActionType.LookupCode INNER JOIN
+			dbo.People ON dbo.PlatformUserAction.ByUserID = dbo.People.UserId INNER JOIN
+			dbo.LookupPlatformUserActionProcess ON
+			dbo.LookupPlatformUserActionType.ProcessTypeLookUpCode = dbo.LookupPlatformUserActionProcess.LookupCode
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="dbo.PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="dbo.PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="dbo.LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="userActionType!='0'">
+					<exp op="in" dbField="dbo.PlatformUserAction.ActionTypeLookUpCode" paramId="userActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+		</statement>
+
+		<statement name="GetUserActionHistory">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="OnResourceLookupCodes" type="Int32" required="true" />
+		<param id="ProcessLookUpCode" required="true" />
+		<param id="UserActionType" type="String"/>
+		<param id="tempDatetime" type="string" default="PlatformUserAction.OnDateTime desc" />
+		<sql>
+			<select>
+        Convert(varchar(36),LookupPlatformUserActionType.LookUpCode) as UserActionID,
+        PlatformUserAction.ActionID,
+        PlatformUserAction.OnDateTime, ISNULL(PlatformUserAction.Comments, ' ') as Comments,
+        LookupPlatformUserActionType.LongDisplayValue LongDisplayValue, ISNULL(People.NamePrefix, '') as NamePrefix , ISNULL(People.FirstName, '') as FirstName,
+        ISNULL(People.MiddleName, '') as MiddleName, ISNULL(People.LastName, '') as LastName,
+        Convert(varchar(36),PlatformUserAction.ByUserID) as ByUserID,
+        Convert(varchar(36),PlatformUserAction.OnResourceID) as OnResourceID, PlatformUserAction.OnResourceLookupCode,
+        LookupPlatformUserActionType.ProcessTypeLookUpCode as ProcessTypeLookUpCode,
+        LookupPlatformUserActionType.ShortDisplayValue as ActionTypeDisplay
+      </select>
+      FROM  PlatformUserAction INNER JOIN
+      LookupPlatformUserActionType ON
+      PlatformUserAction.ActionTypeLookUpCode = LookupPlatformUserActionType.LookupCode INNER JOIN
+      People ON PlatformUserAction.ByUserID = People.UserId INNER JOIN
+      LookupPlatformUserActionProcess ON
+      LookupPlatformUserActionType.ProcessTypeLookUpCode = LookupPlatformUserActionProcess.LookupCode
+      <where>
+				<exp op="and">
+					<exp op="in" dbField="PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PlatformUserAction.OnResourceLookupCode" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+
+	<statement name="GetUserLastCommment">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="OnResourceLookupCodes" type="Int32" required="true" />
+		<param id="ProcessLookUpCode" type="Int32" />
+		<param id="UserActionType" type="String"/>
+		<param id="tempDatetime" type="string" default="PlatformUserAction.OnDateTime desc" />
+		<sql>
+      SELECT TOP 1 Convert(varchar(36),LookupPlatformUserActionType.LookUpCode) as UserActionID,
+      PlatformUserAction.ActionID,
+      PlatformUserAction.OnDateTime, ISNULL(PlatformUserAction.Comments, ' ') as Comments,
+      LookupPlatformUserActionType.LongDisplayValue LongDisplayValue, ISNULL(People.NamePrefix, '') as NamePrefix , ISNULL(People.FirstName, '') as FirstName,
+      ISNULL(People.MiddleName, '') as MiddleName, ISNULL(People.LastName, '') as LastName,
+      Convert(varchar(36),PlatformUserAction.ByUserID) as ByUserID,
+      Convert(varchar(36),PlatformUserAction.OnResourceID) as OnResourceID, PlatformUserAction.OnResourceLookupCode,
+      LookupPlatformUserActionType.ProcessTypeLookUpCode as ProcessTypeLookUpCode
+      FROM PlatformUserAction with(nolock) INNER JOIN
+      LookupPlatformUserActionType with(nolock) ON
+      PlatformUserAction.ActionTypeLookUpCode = LookupPlatformUserActionType.LookupCode INNER JOIN
+      People with(nolock) ON PlatformUserAction.ByUserID = People.UserId INNER JOIN
+      LookupPlatformUserActionProcess with(nolock) ON
+      LookupPlatformUserActionType.ProcessTypeLookUpCode = LookupPlatformUserActionProcess.LookupCode
+      <where>
+				<exp op="and">
+					<exp op="in" dbField="PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PlatformUserAction.OnResourceLookupCode" paramId="OnResourceLookupCodes" />
+					<exp op="in" dbField="PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+  <!--Removed all Convert() from above where clause-->
+	<statement name="GetUserActionTypes">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="ProcessLookUpCode" required="true" />
+		<param id="UserActionType" type="String" />
+		<sql>
+			<select>Distinct Convert(varchar(36),dbo.LookupPlatformUserActionType.LookUpCode) as UserActionID,
+				dbo.LookupPlatformUserActionType.ShortDisplayValue ShortDisplayValue
+			</select>
+			FROM  dbo.PlatformUserAction INNER JOIN
+			dbo.LookupPlatformUserActionType ON
+			dbo.PlatformUserAction.ActionTypeLookUpCode = dbo.LookupPlatformUserActionType.LookupCode INNER JOIN
+			dbo.People ON dbo.PlatformUserAction.ByUserID = dbo.People.UserId INNER JOIN
+			dbo.LookupPlatformUserActionProcess ON
+			dbo.LookupPlatformUserActionType.ProcessTypeLookUpCode = dbo.LookupPlatformUserActionProcess.LookupCode
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="dbo.PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="dbo.PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="dbo.LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="dbo.PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+			</sql>
+	</statement>
+
+	<statement name="GetUserActionTypesLookup">
+		<param id="ByUserID" type="String"/>
+		<param id="OnResourceIDs" type="String" required="true" />
+		<param id="OnResourceLookupCodes" type="String" required="true" />
+		<param id="ProcessLookUpCode" required="true" />
+		<param id="UserActionType" type="String" />
+		<sql>
+			<select>
+				Distinct Convert(varchar(36),LookupPlatformUserActionType.LookUpCode) as UserActionID,
+				LookupPlatformUserActionType.ShortDisplayValue ShortDisplayValue
+			</select>
+			FROM  PlatformUserAction INNER JOIN
+			LookupPlatformUserActionType ON
+			PlatformUserAction.ActionTypeLookUpCode = LookupPlatformUserActionType.LookupCode INNER JOIN
+			People ON PlatformUserAction.ByUserID = People.UserId INNER JOIN
+			LookupPlatformUserActionProcess ON
+			LookupPlatformUserActionType.ProcessTypeLookUpCode = LookupPlatformUserActionProcess.LookupCode
+			<where>
+				<exp op="and">
+					<exp op="in" dbField="PlatformUserAction.OnResourceID" paramId="OnResourceIDs" />
+					<exp op="in" dbField="PlatformUserAction.OnResourceLookupCode" paramId="OnResourceLookupCodes" />
+					<exp op="=" dbField="PlatformUserAction.ByUserID" paramId="ByUserID" />
+					<exp op="in" dbField="LookupPlatformUserActionType.ProcessTypeLookUpCode" paramId="ProcessLookUpCode" />
+					<optional depends="UserActionType!='0'">
+						<exp op="in" dbField="PlatformUserAction.ActionTypeLookUpCode" paramId="UserActionType" />
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+</statements>

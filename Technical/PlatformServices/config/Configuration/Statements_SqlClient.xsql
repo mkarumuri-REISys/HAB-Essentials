@@ -1,0 +1,105 @@
+<statements modulename="ApplicationConfig/data">
+  <statement name="LoadConfigurations" connection="Common">
+    <param id="Environment" type="String" required="true" />
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="ProgramSpecificSystemId" type="Int32" required="true"/>
+    <param id="LookupExternalSystemDimension" type="Int32"/>
+    <param id="ConfigKey" type="String"/>
+    <sql>
+      SET NOCOUNT ON;
+
+      DECLARE @ConfigurationKeyValues TABLE
+      (LookupCode varchar(50) NOT NULL,
+      [Key] varchar(36) NOT NULL,
+      Value varchar(max) NULL);
+
+      <optional depends="UserTypeCode">
+        --*** Solution Configured Values ***--
+        --Environment Specific for Current External System
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_SolutionWebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue=<exp paramId="Environment"/>
+        AND c.UserTypeCode = <exp paramId="UserTypeCode"/>
+        AND c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/>
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode AND n.OverrideFlag=1
+
+        --All Environments for Current External System
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_SolutionWebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue='All'
+        AND c.UserTypeCode = <exp paramId="UserTypeCode"/>
+        AND c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/>
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode AND n.OverrideFlag=1
+        WHERE n.LookupCode NOT IN(select LookupCode from @ConfigurationKeyValues)
+      </optional>
+
+      <optional depends="LookupExternalSystemDimension">
+        -- EIS Config for current environment (where we don't have any user and external system code)
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_SolutionWebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue=<exp paramId="Environment"/>
+        AND c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/>
+        AND c.ExternalSystemDimensionCode=<exp paramId="LookupExternalSystemDimension"/>
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode AND n.OverrideFlag=1
+        WHERE n.LookupCode NOT IN(select LookupCode from @ConfigurationKeyValues)
+
+        -- EIS Config for all environments (where we don't have any user and external system code)
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_SolutionWebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue='All'
+        AND c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/>
+        AND c.ExternalSystemDimensionCode=<exp paramId="LookupExternalSystemDimension"/>
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode AND n.OverrideFlag=1
+        WHERE n.LookupCode NOT IN(select LookupCode from @ConfigurationKeyValues)
+      </optional>
+
+      <optional depends="UserTypeCode">
+        --*** Platform Configured Values ***--
+        -- Current Environment
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_WebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue =<exp paramId="Environment"/>
+        AND c.UserTypeCode = <exp paramId="UserTypeCode"/>
+        AND (c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/> OR c.ExternalSystemsCode IS NULL)
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode
+        WHERE c.WebConfigNodeCode NOT IN(select LookupCode from @ConfigurationKeyValues)
+        ORDER BY c.ExternalSystemsCode DESC
+
+        --All Environments
+        INSERT INTO @ConfigurationKeyValues(LookupCode, [Key], Value)
+        SELECT n.LookupCode as LookupCode, n.DisplayValue as [Key], c.WebConfigValue as Value
+        FROM LU_PFM_Environment e
+        INNER JOIN dbo.PFM_WebConfig_P c ON
+        e.LookupCode=c.EnvironmentCode
+        AND e.DisplayValue = 'All'
+        AND c.UserTypeCode = <exp paramId="UserTypeCode"/>
+        AND (c.ExternalSystemsCode = <exp paramId="ProgramSpecificSystemId"/> OR c.ExternalSystemsCode IS NULL)
+        INNER JOIN dbo.LU_PFM_WebConfigNode n on  n.LookupCode=c.WebConfigNodeCode
+        WHERE c.WebConfigNodeCode NOT IN(select LookupCode from @ConfigurationKeyValues)
+        ORDER BY c.ExternalSystemsCode DESC
+      </optional>
+
+      SELECT [Key], Value FROM @ConfigurationKeyValues
+      <optional depends="ConfigKey">
+          where [Key]=<exp paramId="ConfigKey"/>
+      </optional>
+        
+    </sql>
+  </statement>   
+ </statements>
+

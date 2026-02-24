@@ -1,0 +1,25 @@
+<root>
+    <solution>
+        <config>Solution\Solution.config</config>
+    </solution>
+  <dataEngine>
+    <config>DataAccess\dataAccess.xml</config>
+  </dataEngine>
+  <AccessControl>
+    <solutionConfig>AccessControl\AccessControl.xml</solutionConfig>
+  </AccessControl>
+  <documentManagement>
+    <config>DocumentManagement\DocumentManagement.xml</config>
+    <documentManager>
+      <customConfig>DocumentManagement\DocumentManager.xml</customConfig>
+    </documentManager>
+  </documentManagement>
+  <EISEncapsulator>
+    <config>EISEncapsulator\EISEncapsulatorConfig.xml</config>
+    <schema>EISEncapsulator\Schemas\Schema_V1.xml</schema>
+    <connector>EISEncapsulator\EISConnectorConfig.xml</connector>
+  </EISEncapsulator>
+  <asynchronousTask>
+    <customConfig>AsynchronousTask\ProcessConfig.xml</customConfig>
+  </asynchronousTask>
+</root>

@@ -1,0 +1,30 @@
+/* CSS Document */
+
+#topnav {margin-right: 14px; float: right;}
+
+#.search-block {clear:both; margin-top: 12px; margin-right: 25px;}
+
+#subnav_list a:hover { padding: 3px 14px 2px 14px; }
+
+.pagenote  .pagenote_close {margin-right: 0px; margin-bottom:0px;}
+.btn-slide {
+	
+	position: relative;
+	top: 0px;
+	float: right;
+	text-decoration:none;
+	cursor: pointer;	
+}
+
+#footer ul#footer_list li { padding-bottom: 0px;}
+#navigation  {margin-left: 20px;}
+#colleft #hidePanel { margin: -20px 3px 0 0; }
+#topRnav li.hover ul ul,
+#topRnav li.hover li.hover ul ul,
+#topRnav li.hover li.hover li.hover ul ul,
+#topRnav li.hover li.hover li.hover li.hover ul ul	{ margin-left: -9999px; }
+
+#topRnav li.hover ul,
+#topRnav li.hover li.hover ul,
+#topRnav li.hover li.hover li.hover ul,
+#topRnav li.hover li.hover li.hover li.hover ul	{ margin-left: 0; }

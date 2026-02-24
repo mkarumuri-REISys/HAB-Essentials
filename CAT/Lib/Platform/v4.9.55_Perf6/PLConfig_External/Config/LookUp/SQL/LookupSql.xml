@@ -1,0 +1,159 @@
+<statements>
+  <statement name="GetIssuePriorityLookup">
+    <sql>
+      SELECT * FROM LU_PFM_IssuePriority (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetIssueStateLookup">
+    <sql>
+      SELECT * FROM LU_PFM_IssueState (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetIssueStatusLookup">
+    <sql>
+      SELECT * FROM LU_PFM_IssueStatus (NOLOCK)
+    </sql>
+  </statement>
+	<statement name="GetAttachmentPurposeLookup">
+		<param id="LookupCode" type="Int32" />
+		<sql>
+			select * from LookupAttachmentPurpose (NOLOCK)
+			<where>
+				<exp op="=" dbField="LookupCode" paramId="LookupCode"/>
+			</where>
+		</sql>
+	</statement>
+	<statement name="GetNoteTypeLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupNoteType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetNoteReasonLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupNoteReason (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTermTypeLookup" connection="Gems">
+		<sql>
+			SELECT * FROM LookupTermType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetNewBureauIdsLookup">
+		<sql>
+			SELECT InternalOrgId as LookUpCode,Null as InactiveDate,OrgCode as DisplayValue, *
+			from Gems.dbo.INTERNALORGANIZATIONS IORG
+			JOIN Gems.dbo.InternalOrganizationRelationships IR ON IORG.InternalOrgId = IR.InternalOrg1Id AND IORG.InternalOrgInstance = IR.InternalOrg1Instance
+			WHERE InternalOrgTypeCode=6 AND IR.InternalOrgRelationshipTypeCode = 6
+			order by OrgCode
+		</sql>
+	</statement>
+	<statement name="GetTaskProcessTypeCodeLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupTaskProcessType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTaskProcessTypeLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupTaskProcessType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetResourceTypeLookup" connection="Gems">
+		<sql>
+			SELECT * FROM LookupResourceType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTaskTypeLookup">
+		<sql>
+			<param id="TaskPhaseCode" type="Int32" />
+			<param id="RoleId" type="Int32" />
+			SELECT * FROM Gems.dbo.LookupTaskType (NOLOCK)
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="TaskPhaseCode" paramId="TaskPhaseCode" />
+					<exp op="=" dbField="RoleId" paramId="RoleId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="GetTaskStatusLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupTaskStatus (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTaskPhasesLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupTaskPhases (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetExternalSystemsLookup" connection="Gems">
+		<sql>
+			SELECT * FROM LookupExternalSystems (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetExternalSystemDimensionsLookup" connection="Gems">
+		<sql>
+			SELECT * FROM LookupExternalSystemDimension (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetResourceFormatTypeLookup">
+		<sql>
+			SELECT * FROM Gems.dbo.LookupResourceFormatType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetCommentQuestionLookup">
+		<sql>
+			SELECT LookupCode, Title AS DisplayValue, SummaryQuestion AS LongDisplayValue, DetailedQuestion AS Description FROM UCM_CommentQuestion (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetUserActionProcess">
+		<sql>
+			SELECT * FROM LookupPlatformUserActionProcess (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetUserActionType">
+		<sql>
+			SELECT * FROM LookupPlatformUserActionType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTemplateType">
+		<sql>
+			SELECT * FROM LookupTemplateType (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetTemplateInfo">
+		<sql>
+			SELECT CAST(ROW_NUMBER() OVER (ORDER BY TemplateId) AS INT)   As LookupCode,TemplateId AS DisplayValue, TemplateName as LongDisplayValue FROM Templates (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetPrivileges" connection="Gems">
+		<sql>
+			SELECT PrivilegeId AS LookupCode,PrivilegeName AS DisplayValue, PrivilegeName  AS LongDisplayValue FROM AC_Privilege (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetRoles" connection="Gems">
+		<sql>
+			SELECT RoleId AS LookupCode, RoleName AS DisplayValue, RoleName AS LongDisplayValue FROM AC_Role (NOLOCK)
+		</sql>
+	</statement>
+	<statement name="GetStandardMessageContext">
+		<sql>
+			SELECT * FROM LookupStandardMessageContext (NOLOCK)
+		</sql>
+	</statement>
+  <statement name="GetAnnouncementCategories" connection="GEMS">
+    <sql>
+      select LookupCode, DisplayValue from LU_PFM_ANMT_Category
+    </sql>
+  </statement>
+  <!--<statement name="GetRecentlyAccessedCategories" connection="GEMS">
+    <sql>
+      select LookupCode, DisplayValue from PFM_RCNT_Group
+    </sql>
+  </statement>-->
+  <statement name="GetPageUrls" connection="GEMS">
+    Select p.Id as LookupCode, (cast(DimensionValue as varchar) + RelativeUrl) as DisplayValue from PFM_CORE_PreDefinedPage p
+    join ExternalSystemDimensionValue v on
+      p.ExternalSystemCode = v.ExternalSystemCode and
+      p.ExternalSystemDimensionCode = v.ExternalSystemDimensionCode
+  </statement>
+</statements>

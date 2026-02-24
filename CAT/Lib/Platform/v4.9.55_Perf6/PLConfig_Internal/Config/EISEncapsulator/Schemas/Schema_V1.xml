@@ -1,0 +1,317 @@
+<schemas>
+	<schema    name ="login">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<login>
+					<session id ="" startDateTime="" counter=""/>
+					<action>new</action>
+				</login>
+			</sac>
+		</node>
+	</schema>
+
+	<schema    name ="isLoggedIn">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<isLoggedIn>
+					<user id  =""/>
+					<session id="" startDateTime="" counter=""/>
+					<action>update</action>
+				</isLoggedIn>
+			</sac>
+		</node>
+	</schema>
+
+	<schema    name="user">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<user id="">
+					<action>getall</action>
+				</user>
+			</sac>
+		</node>
+	</schema>
+
+
+	<schema    name ="hasPermission">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<hasPermission >
+					<user id=""/>
+					<session id="" startDateTime=""/>
+					<role id=""/>
+					<privilege id=""/>
+					<resource code="" formatType="" value=""/>
+					<action>getmin</action>
+				</hasPermission>
+			</sac>
+		</node>
+	</schema>
+
+	<schema    name ="logout">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<logout>
+					<user id =""/>
+					<session id ="" startDateTime="" counter=""/>
+					<action>update</action>
+				</logout>
+			</sac>
+		</node>
+	</schema>
+
+	<schema    name ="checkAndGetPermission">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<sac>
+				<checkAndGetPermission>
+					<user id=""/>
+					<session id="" startDateTime=""/>
+					<currentRole id=""/>
+					<role id=""/>
+					<privilege id=""/>
+					<resource code="" formatType="" value=""/>
+					<action>getAll</action>
+				</checkAndGetPermission>
+			</sac>
+		</node>
+	</schema>
+
+	<schema    name="updateGrantDeliverable">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<grants>
+				<grant id="">
+					<deliverables>
+						<deliverable id="">
+							<action>update</action>
+							<scheduleStatus code=""/>
+							<EHBuser id=""/>
+							<external id="" instance="" trackingNo=""/>
+							<externalStatus></externalStatus>
+							<comment></comment>
+						</deliverable>
+					</deliverables>
+				</grant>
+			</grants>
+		</node>
+	</schema>
+
+	<schema    name="getGrantDeliverablesData">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<grants>
+				<grant id="">
+					<deliverables>
+						<deliverable id="">
+							<action>getAll</action>
+						</deliverable>
+					</deliverables>
+				</grant>
+			</grants>
+		</node>
+	</schema>
+
+	<schema name="attachment">
+		<params>
+			<param />
+		</params>
+		<node>
+			<attachment id="">
+				<purpose code="" />
+				<filename/>
+				<extension/>
+			</attachment>
+		</node>
+	</schema>
+
+	<schema name="getApplicationSectionStatus">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<applications>
+				<application id="">
+					<sections>
+						<action>getAll</action>
+					</sections>
+				</application>
+			</applications>
+		</node>
+	</schema>
+
+	<schema name="updateApplicationSectionStatus">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<applications>
+				<application id="">
+					<sections>
+						<section id="">
+							<action>update</action>
+							<status code="" />
+						</section>
+					</sections>
+				</application>
+			</applications>
+		</node>
+	</schema>
+	<schema    name="GetGrantDetail">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<grants>
+				<grant id="">
+					<action>getAll</action>
+
+				</grant>
+			</grants>
+		</node>
+	</schema>
+
+	<schema    name="GetGrantDeliverable">
+		<params>
+			<param/>
+		</params>
+		<node>
+			<grants>
+				<grant id="">
+					<deliverables>
+						<deliverable id="">
+							<action>getAll</action>
+						</deliverable>
+
+					</deliverables>
+
+
+				</grant>
+			</grants>
+		</node>
+	</schema>
+
+	<schema name="ADUserFeed">
+		<params>
+			<param />
+		</params>
+		<node>
+			<AD>
+				<userFeed cid="">
+					<domain></domain>
+					<firstName></firstName>
+					<middleName></middleName>
+					<lastName></lastName>
+					<action>getAll</action>
+				</userFeed>
+			</AD>
+		</node>
+	</schema>
+	<schema name="GetApplicationDetails">
+		<params>
+			<param />
+		</params>
+		<node>
+			<applications>
+				<application id="">
+
+					<action>getAll</action>
+
+				</application>
+			</applications>
+		</node>
+	</schema>
+	<schema name="GetLookupState">
+		<params>
+			<param />
+		</params>
+		<node>
+			<lookupData>
+				<lookupState>
+					<action>getAll</action>
+				</lookupState>
+			</lookupData>
+		</node>
+	</schema>
+	<schema name="GetLookupApplicantType">
+		<params>
+			<param />
+		</params>
+		<node>
+			<lookupData>
+				<lookupApplicantType>
+					<action>getAll</action>
+				</lookupApplicantType>
+			</lookupData>
+		</node>
+	</schema>
+	<schema name="GetLookupApplicationType">
+		<params>
+			<param />
+		</params>
+		<node>
+			<lookupData>
+				<lookupApplicationType>
+					<action>getAll</action>
+				</lookupApplicationType>
+			</lookupData>
+		</node>
+	</schema>
+	<schema name="GetGrantsData">
+		<params>
+			<param />
+		</params>
+		<node>
+			<grants>
+				<grant id="">
+					<detail>
+						<action>getAll</action>
+					</detail>
+				</grant>
+			</grants>
+		</node>
+	</schema>
+	<schema name="GetAllLookup">
+		<params>
+			<param />
+		</params>
+		<node>
+			<lookupData>
+				<action>getAll</action>
+			</lookupData>
+		</node>
+	</schema>
+	<schema name="GetGaamApplications">
+		<params>
+			<param />
+		</params>
+		<node>
+			<gaamApplications>
+				<applicationId></applicationId>
+				<populationServed code=""/>
+				<action>getAll</action>
+			</gaamApplications>
+		</node>
+	</schema>
+</schemas>

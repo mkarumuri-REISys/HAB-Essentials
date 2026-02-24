@@ -1,0 +1,1664 @@
+<statements  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+
+  <statement name="GetCurrentNote" connection = "Common">
+    <param id="NoteId" type="String" size="36" />
+    <sql>
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode as ResourceType,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId
+      ) as AttachmentCount,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName,
+
+      -1 as versionId,
+      nd.EntityTrackingNumber as ResourceTrackingNumber,
+      nd.EntityType,
+      nd.QueryStrings
+
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+      LEFT JOIN PFM_NoteDetails_P nd on nd.NoteDetailsId = NT.NoteId
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.NoteId" paramId="NoteId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetCurrentNotes" connection = "Common">
+    <param id="ResourceValue" type="String" size="36" />
+    <param id="ResourceTypeCode" type="Int16" />
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate" />
+
+    <param id="Subject" type="String" />
+    <param id="Description" type="String" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="NoteTypeCode" type="String" size="4000" />
+    <param id="CreatorId" type="Guid"/>
+
+    <sql>
+
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId
+      ) as AttachmentCount,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName,
+
+      nd.EntityTrackingNumber as ResourceTrackingNumber,
+      nd.EntityType,
+      nd.QueryStrings
+
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+      LEFT JOIN PFM_NoteDetails_P nd on nd.NoteDetailsId = NT.NoteId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="NT.ResourceTypeCode" paramId="ResourceTypeCode" />
+
+          <exp op="=" dbField="NT.Subject" paramId="Subject" />
+          <exp op="=" dbField="NT.Description" paramId="Description" />
+          <exp op="=" dbField="NT.RecordedDate" paramId="RecordedDate" />
+          <exp op="=" dbField="NT.NoteTypeCode" paramId="NoteTypeCode" />
+          <exp op="=" dbField="NT.CreatorId" paramId="CreatorId" />
+
+        </exp>
+      </where>
+      <orderby paramId="SortParam"/>
+    </sql>
+  </statement>
+  <!-- gets notes for a resource and other hierarchicaly related resources. The realted resources could be decendants or ansectors-->
+  <statement name="GetCurrentNotesConsiderHierarchy" connection = "Common">
+    <param id="HierarchyWhereCondition" type="String" required="true"/>
+    <!-- this is the concatenated resoourcevalue and typecode fieldname operator values of all releavant resources in the hierarchy-->
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate" />
+    <param id="Subject" type="String" />
+    <param id="Description" type="String" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="NoteTypeCode" type="String" size="4000" />
+    <param id="CreatorId" type="Guid"/>
+    <sql>
+
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId
+      ) as AttachmentCount,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName,
+
+      nd.EntityTrackingNumber as ResourceTrackingNumber,
+      nd.EntityType,
+      nd.QueryStrings
+
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+      LEFT JOIN PFM_NoteDetails_P nd on nd.NoteDetailsId = NT.NoteId
+      <where>
+
+        <exp op="AND">
+          <dynamic paramId ="HierarchyWhereCondition"/>
+          <exp op="=" dbField="NT.Subject" paramId="Subject" />
+          <exp op="=" dbField="NT.Description" paramId="Description" />
+          <exp op="=" dbField="NT.RecordedDate" paramId="RecordedDate" />
+          <exp op="=" dbField="NT.NoteTypeCode" paramId="NoteTypeCode" />
+          <exp op="=" dbField="NT.CreatorId" paramId="CreatorId" />
+
+        </exp>
+      </where>
+      <orderby paramId="SortParam"/>
+    </sql>
+  </statement>
+
+  <statement name="GetCurrentNotesPaged" connection = "Common">
+    <param id="ResourceValue" type="String" size="36" />
+    <param id="ResourceTypeCode" type="Int16" />
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate" />
+
+    <param id="Subject" type="String" />
+    <param id="Description" type="String" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="NoteTypeCode" type="String" size="4000" />
+    <param id="CreatorId" type="Guid"/>
+
+    <sql>
+      <select>
+        NT.NoteId AS Id,
+        NT.ResourceValue,
+        NT.ResourceTypeCode,
+        NT.NoteTypeCode,
+        NT.OtherTypeDescription,
+        NT.RecordedDate,
+        NT.Subject,
+        NT.Description AS Details,
+        NT.CreatorId,
+        NT.CreatedDate,
+        NT.LastUpdateId,
+        NT.LastUpdateDate,
+        (
+        Select count(*) from PFM_Note_Attachment_R ATT
+        where ATT.NoteId = NT.NoteId
+        ) as AttachmentCount,
+
+        (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+        THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+        ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+        END) AS CreatorName,
+
+        (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+        THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+        ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+        END) AS UpdatedByName,
+
+        nd.EntityTrackingNumber as ResourceTrackingNumber,
+        nd.EntityType,
+        nd.QueryStrings
+      </select>
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+      LEFT JOIN PFM_NoteDetails_P nd on nd.NoteDetailsId = NT.NoteId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="NT.ResourceTypeCode" paramId="ResourceTypeCode" />
+
+          <exp op="=" dbField="NT.Subject" paramId="Subject" />
+          <exp op="=" dbField="NT.Description" paramId="Description" />
+          <exp op="=" dbField="NT.RecordedDate" paramId="RecordedDate" />
+          <exp op="=" dbField="NT.NoteTypeCode" paramId="NoteTypeCode" />
+          <exp op="=" dbField="NT.CreatorId" paramId="CreatorId" />
+
+        </exp>
+      </where>
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+  <!-- get paged notes for a resource and other hierarchicaly related resources. The realted resources could be ansectors or decendants-->
+  <statement name="GeCurrentNotesPagedIncludeHierarchy" connection = "Common">
+    <param id="HierarchyWhereCondition" type="String" required="true"/>
+    <!-- this is the concatenated resoourcevalue and typecode fieldname operator values of all releavant resources in the hierarchy-->
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate" />
+    <param id="Subject" type="String" />
+    <param id="Description" type="String" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="NoteTypeCode" type="String" size="4000" />
+    <param id="CreatorId" type="Guid"/>
+
+    <sql>
+      <select>
+        NT.NoteId AS Id,
+        NT.ResourceValue,
+        NT.ResourceTypeCode,
+        NT.NoteTypeCode,
+        NT.OtherTypeDescription,
+        NT.RecordedDate,
+        NT.Subject,
+        NT.Description AS Details,
+        NT.CreatorId,
+        NT.CreatedDate,
+        NT.LastUpdateId,
+        NT.LastUpdateDate,
+        (
+        Select count(*) from PFM_Note_Attachment_R ATT
+        where ATT.NoteId = NT.NoteId
+        ) as AttachmentCount,
+
+        (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+        THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+        ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+        END) AS CreatorName,
+
+        (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+        THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+        ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+        END) AS UpdatedByName
+      </select>
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+
+      <where>
+        <exp op="AND">
+
+          <dynamic paramId ="HierarchyWhereCondition"/>
+          <exp op="=" dbField="NT.Subject" paramId="Subject" />
+          <exp op="=" dbField="NT.Description" paramId="Description" />
+          <exp op="=" dbField="NT.RecordedDate" paramId="RecordedDate" />
+          <exp op="=" dbField="NT.NoteTypeCode" paramId="NoteTypeCode" />
+          <exp op="=" dbField="NT.CreatorId" paramId="CreatorId" />
+
+        </exp>
+
+      </where>
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+  <statement name="GetCurrentNotesPagedParameterized" connection = "Common">
+    <param id="ResourceValue" type="String" size="36" />
+    <param id="ResourceTypeCode" type="Int16" />
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate DESC" />
+
+    <param id ="NoteId" type="String" size="36"/>
+    <param id ="NoteId_OPERATION" type="String" />
+
+    <param id ="NoteTypeCode" type="String"/>
+    <param id ="NoteTypeCode_OPERATION" type="String" />
+
+    <param id ="OtherTypeDescription" type="String"/>
+    <param id ="OtherTypeDescription_OPERATION" type="String" />
+
+    <param id ="Subject" type="String"/>
+    <param id ="Subject_OPERATION" type="String" />
+
+    <param id ="Description" type="String"/>
+    <param id ="Description_OPERATION" type="String" />
+
+    <param id ="HasAttachments" type="String"/>
+    <param id ="HasAttachments_OPERATION" type="String" />
+
+    <param id ="RecordedDate" type="String"/>
+    <param id ="RecordedDate_OPERATION" type="String" />
+
+    <param id ="RecordedDateFrom" type="String"/>
+    <param id ="RecordedDateFrom_OPERATION" type="String" />
+
+    <param id ="RecordedDateTo" type="String"/>
+    <param id ="RecordedDateTo_OPERATION" type="String" />
+
+    <param id ="LastUpdateDate" type="String"/>
+    <param id ="LastUpdateDate_OPERATION" type="String" />
+
+    <param id ="LastUpdateDateFrom" type="String"/>
+    <param id ="LastUpdateDateFrom_OPERATION" type="String" />
+
+    <param id ="LastUpdateDateTo" type="String"/>
+    <param id ="LastUpdateDateTo_OPERATION" type="String" />
+
+    <param id ="LastUpdateId" type="String"/>
+    <param id ="LastUpdateId_OPERATION" type="String" />
+
+    <param id ="UpdatedByName" type="String"/>
+    <param id ="UpdatedByName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByLastName" type="String"/>
+    <param id ="LastUpdateByLastName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByMiddleName" type="String"/>
+    <param id ="LastUpdateByMiddleName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByFirstName" type="String"/>
+    <param id ="LastUpdateByFirstName_OPERATION" type="String" />
+
+    <param id ="CreatedDate" type="String"/>
+    <param id ="CreatedDate_OPERATION" type="String" />
+
+    <param id ="CreatedDateFrom" type="String"/>
+    <param id ="CreatedDateFrom_OPERATION" type="String" />
+
+    <param id ="CreatedDateTo" type="String"/>
+    <param id ="CreatedDateTo_OPERATION" type="String" />
+
+    <param id ="CreatorId" type="String"/>
+    <param id ="CreatorId_OPERATION" type="String" />
+
+    <param id ="CreatedByName" type="String"/>
+    <param id ="CreatedByName_OPERATION" type="String" />
+
+    <param id ="CreatedByLastName" type="String"/>
+    <param id ="CreatedByLastName_OPERATION" type="String" />
+
+    <param id ="CreatedByMiddleName" type="String"/>
+    <param id ="CreatedByMiddleName_OPERATION" type="String" />
+
+    <param id ="CreatedByFirstName" type="String"/>
+    <param id ="CreatedByFirstName_OPERATION" type="String" />
+
+    <sql>
+      <!--<optional depends="CreatedByName">
+                DECLARE @CreatedNameCopy as varchar(500)
+                SET @CreatedNameCopy = <exp paramId="CreatedByName"/>
+
+                DECLARE @CreatedNamePart1 AS VARCHAR(100)
+                DECLARE @CreatedNamePart2 AS VARCHAR(100)
+                DECLARE @CreatedNamePart3 AS VARCHAR(100)
+
+                DECLARE @CleanedName AS VARCHAR(500)
+                SET @CleanedName = @CreatedNameCopy
+                SET @CleanedName = REPLACE(@CleanedName, ',', '' )
+                SET @CleanedName = REPLACE(@CleanedName, '.', '' )
+                SET @CleanedName = REPLACE(@CleanedName, ' ', '.' )
+
+                SET @CreatedNamePart1 = PARSENAME(@CleanedName,1)
+                SET @CreatedNamePart2 = PARSENAME(@CleanedName,2)
+                SET @CreatedNamePart3 = PARSENAME(@CleanedName,3)
+            </optional>
+
+            <optional depends="UpdatedByName">
+                DECLARE @UpdatedByNameCopy as varchar(500)
+                SET @UpdatedByNameCopy = <exp paramId="UpdatedByName"/>
+
+                DECLARE @UpdatedNamePart1 AS VARCHAR(100)
+                DECLARE @UpdatedNamePart2 AS VARCHAR(100)
+                DECLARE @UpdatedNamePart3 AS VARCHAR(100)
+
+                DECLARE @CleanedName AS VARCHAR(500)
+                SET @CleanedName = @UpdatedByNameCopy
+                SET @CleanedName = REPLACE(@CleanedName, ',', '' )
+                SET @CleanedName = REPLACE(@CleanedName, '.', '' )
+                SET @CleanedName = REPLACE(@CleanedName, ' ', '.' )
+
+                SET @UpdatedNamePart1 = PARSENAME(@CleanedName,1)
+                SET @UpdatedNamePart2 = PARSENAME(@CleanedName,2)
+                SET @UpdatedNamePart3 = PARSENAME(@CleanedName,3)
+            </optional>-->
+
+      <select>
+        NT.NoteId AS Id,
+        NT.ResourceValue,
+        NT.ResourceTypeCode,
+        NT.NoteTypeCode,
+        LNT.Description AS NoteDescription,
+        NT.OtherTypeDescription,
+        NT.RecordedDate,
+        NT.Subject,
+        NT.Description AS Details,
+        NT.CreatorId,
+        DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) as CreatedDate,
+        NT.LastUpdateId,
+        NT.LastUpdateDate,
+        PPC.FirstName AS CreatedByFirstName,
+        PPC.MiddleName AS CreatedByMiddleName,
+        PPC.LastName AS CreatedByLastName,
+        PPU.MiddleName AS LastUpdateByMiddleName,
+        PPU.FirstName AS LastUpdateByFirstName,
+        PPU.LastName AS LastUpdateByLastName,
+        (
+        Select count(*) from PFM_Note_Attachment_R ATT
+        where ATT.NoteId = NT.NoteId
+        ) as AttachmentCount,
+
+        (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+        THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+        ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+        END) AS CreatorName,
+
+        (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+        THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+        ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+        END) AS UpdatedByName
+      </select>
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.ResourceValue" paramId="ResourceValue" />
+          <exp op="=" dbField="NT.ResourceTypeCode" paramId="ResourceTypeCode" />
+
+          <optional depends="NoteId">
+            NT.NoteId <dynamic paramId="NoteId_OPERATION"/> <exp paramId="NoteId"/>
+          </optional>
+
+          <optional depends="NoteTypeCode">
+            NT.NoteTypeCode <dynamic paramId="NoteTypeCode_OPERATION"/> <exp paramId="NoteTypeCode"/>
+          </optional>
+
+          <optional depends="OtherTypeDescription">
+            NT.OtherTypeDescription <dynamic paramId="OtherTypeDescription_OPERATION"/> <exp paramId="OtherTypeDescription"/>
+          </optional>
+
+          <optional depends="Subject">
+            NT.Subject <dynamic paramId="Subject_OPERATION"></dynamic> <exp paramId="Subject"/>
+          </optional>
+
+          <optional depends="Description">
+            NT.Description <dynamic paramId="Description_OPERATION"></dynamic> <exp paramId="Description"/>
+          </optional>
+
+          <optional depends="RecordedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDate_OPERATION"/> <exp paramId="RecordedDate"/>
+          </optional>
+
+          <optional depends="RecordedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateFrom_OPERATION"/> <exp paramId="RecordedDateFrom"/>
+          </optional>
+
+          <optional depends="RecordedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateTo_OPERATION"/> <exp paramId="RecordedDateTo"/>
+          </optional>
+
+          <optional depends="CreatedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDate_OPERATION"/> <exp paramId="CreatedDate"/>
+          </optional>
+
+          <optional depends="CreatedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateTo_OPERATION"/> <exp paramId="CreatedDateTo"/>
+          </optional>
+
+          <optional depends="CreatedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateFrom_OPERATION"/> <exp paramId="CreatedDateFrom"/>
+          </optional>
+
+          <optional depends="LastUpdateDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDate_OPERATION"/> <exp paramId="LastUpdateDate"/>
+          </optional>
+
+          <optional depends="LastUpdateDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateFrom_OPERATION"/> <exp paramId="LastUpdateDateFrom"/>
+          </optional>
+
+          <optional depends="LastUpdateDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateTo_OPERATION"/> <exp paramId="LastUpdateDateTo"/>
+          </optional>
+
+          <optional depends="HasAttachments=='false'">
+            (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) = 0
+          </optional>
+
+          <optional depends="HasAttachments=='true'">
+            (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) > 0
+          </optional>
+
+          <optional depends="CreatorId">
+            NT.CreatorId <dynamic paramId="CreatorId_OPERATION"/> <exp paramId="CreatorId"/>
+          </optional>
+
+          <optional depends="CreatedByName">
+            (
+            <!-- FirstName + MiddleName + LastName -->
+            ((PPC.FirstName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END
+            + PPC.LastName)
+            <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + MiddleName + FirstName -->
+            ((PPC.LastName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END
+            + PPC.FirstName) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + FirstName + MiddleName -->
+            ((PPC.LastName + ' ' + PPC.FirstName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- FirstName + LastName + MiddleName -->
+            ((PPC.FirstName + ' ' + PPC.LastName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            )
+          </optional>
+
+          <optional depends="CreatedByLastName">
+            PPC.LastName <dynamic paramId="CreatedByLastName_OPERATION"></dynamic> <exp paramId="CreatedByLastName"/>
+          </optional>
+
+          <optional depends="CreatedByMiddleName">
+            PPC.MiddleName <dynamic paramId="CreatedByMiddleName_OPERATION"></dynamic> <exp paramId="CreatedByMiddleName"/>
+          </optional>
+
+          <optional depends="CreatedByFirstName">
+            PPC.FirstName <dynamic paramId="CreatedByFirstName_OPERATION"></dynamic> <exp paramId="CreatedByFirstName"/>
+          </optional>
+
+          <optional depends="LastUpdateId">
+            NT.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"></dynamic> <exp paramId="LastUpdateId"/>
+          </optional>
+
+          <optional depends="UpdatedByName">
+            (
+            <!-- FirstName + MiddleName + LastName -->
+            ((PPU.FirstName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END
+            + PPU.LastName)
+            <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + MiddleName + FirstName -->
+            ((PPU.LastName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END
+            + PPU.FirstName) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + FirstName + MiddleName -->
+            ((PPU.LastName + ' ' + PPU.FirstName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- FirstName + LastName + MiddleName -->
+            ((PPU.FirstName + ' ' + PPU.LastName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            )
+          </optional>
+
+          <optional depends="LastUpdateByLastName">
+            PPU.LastName <dynamic paramId="LastUpdateByLastName_OPERATION"></dynamic> <exp paramId="LastUpdateByLastName"/>
+          </optional>
+
+          <optional depends="LastUpdateByMiddleName">
+            PPU.MiddleName <dynamic paramId="LastUpdateByMiddleName_OPERATION"></dynamic> <exp paramId="LastUpdateByMiddleName"/>
+          </optional>
+
+          <optional depends="LastUpdateByFirstName">
+            PPU.FirstName <dynamic paramId="LastUpdateByFirstName_OPERATION"></dynamic> <exp paramId="LastUpdateByFirstName"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+
+  <statement name="GetNoteAttachments" connection = "Common">
+    <param id="NoteId" type="String" size="36" />
+    <sql>
+      select
+      na.noteid,
+      na.AttachmentPurposeCode,
+      na.AttachmentInstance,
+      na.AttachmentId AS Id,
+      na.CreatorId,
+      na.CreatedDate,
+      na.LastUpdateId,
+      na.LastUpdateDate
+      from PFM_Note_Attachment_R na
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="na.noteid" paramId="NoteId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="GetNoteHistory" connection = "Common">
+    <param id="NoteId" type="String" size="36" />
+    <sql>
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from PFM_Note_Attachment_R ATT --HIST_PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId --and att.noteversionid = nt.versionid
+      ) as AttachmentCount,
+      NT.VersionId,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName
+
+      FROM Hist_PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.noteid" paramId="NoteId" />
+        </exp>
+      </where>
+      Order By NT.VersionId DESC
+    </sql>
+  </statement>
+
+  <statement name="GetAllNoteVersions" connection = "Common">
+    <param id="NoteId" type="String" size="36" />
+    <sql>
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from HIST_PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId and att.noteversionid = nt.versionid
+      ) as AttachmentCount,
+      NT.VersionId,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName
+
+      FROM Hist_PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.noteid" paramId="NoteId" />
+        </exp>
+      </where>
+
+      UNION
+
+      SELECT
+      NT.NoteId AS Id,
+      NT.ResourceValue,
+      NT.ResourceTypeCode,
+      NT.NoteTypeCode,
+      NT.OtherTypeDescription,
+      NT.RecordedDate,
+      NT.Subject,
+      NT.Description AS Details,
+      NT.CreatorId,
+      NT.CreatedDate,
+      NT.LastUpdateId,
+      NT.LastUpdateDate,
+      (
+      Select count(*) from PFM_Note_Attachment_R ATT
+      where ATT.NoteId = NT.NoteId
+      ) as AttachmentCount,
+      -1 as VersionId,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName
+
+      FROM PFM_Note_P NT
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="NT.noteid" paramId="NoteId" />
+        </exp>
+      </where>
+
+      Order By LastUpdateDate DESC
+
+
+    </sql>
+  </statement>
+
+
+  <statement name="GetNoteAttachmentHistory" connection = "Common">
+    <param id="NoteId" type="String" size="36" />
+    <param id="VersionId" type="Int16" required="false"/>
+    <sql>
+      SELECT
+      nt.VersionId as NoteVersionId,
+      nt.noteid,
+      nah.AttachmentPurposeCode,
+      nah.AttachmentInstance,
+      nah.AttachmentId as Id,
+      nah.CreatorId,
+      nah.CreatedDate,
+      nah.LastUpdateId,
+      nah.LastUpdateDate,
+
+      (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+      THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+      ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+      END) AS CreatorName,
+
+      (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+      THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+      ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+      END) AS UpdatedByName
+
+
+      from Hist_PFM_NOTE_P nt
+      left Join Hist_PFM_Note_Attachment_R nah on nt.NoteId = nah.NoteId and nt.versionid = nah.noteversionid
+      LEFT JOIN People PPC ON nah.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON nah.LastUpdateId = PPU.UserId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="nt.noteid" paramId="NoteId" />
+          <optional depends="VersionId != null &amp;&amp; VersionId > -1">
+            <exp op="=" dbField="NT.VersionId" paramId="VersionId"/>
+          </optional>
+        </exp>
+      </where>
+      ORDER BY NT.VersionId DESC
+    </sql>
+  </statement>
+
+
+  <statement name="CreateNote" connection = "Common">
+    <param id="ResourceValue" type="String" size="36" />
+    <param id="ResourceTypeCode" type="Int16" />
+    <param id="NoteId" type="String" size="36"/>
+    <param id="NoteTypeCode" type="Int16" />
+    <param id="OtherTypeDescription" type="String" size="100" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="Subject" type="String"/>
+    <param id="Description" type="String" />
+    <param id="UserId" type="Guid" size="36" />
+    <param id="CreatedDate" type="DateTime" useCurrTime="true" direction="InputOutput"/>
+    <param id="ResourceTrackingNumber" type="String" />
+    <param id="EntityType" type="String"/>
+    <param id="QueryStrings" type="String"/>
+    <sql>
+
+      DECLARE @RowCount int
+
+      INSERT INTO PFM_NOTE_P
+      <columns mode="insert">
+        <column dbField="NoteId" paramId="NoteId" />
+        <column dbField="ResourceValue" paramId="ResourceValue" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="NoteTypeCode" paramId="NoteTypeCode" />
+        <column dbField="OtherTypeDescription" paramId="OtherTypeDescription" />
+        <column dbField="RecordedDate" paramId="RecordedDate" />
+        <column dbField="Subject" paramId="Subject" />
+        <column dbField="Description" paramId="Description" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate" paramId="CreatedDate" />
+        <column dbField="LastUpdateDate" paramId="CreatedDate" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+      </columns>
+
+      SET @RowCount = @@ROWCOUNT
+
+      IF @RowCount != 1
+      RAISERROR ('NOTE_INSERTION_FAILED', 16, 1)
+
+      INSERT INTO PFM_NOTEDetails_P
+      <columns mode="insert">
+        <column dbField="NoteDetailsId" paramId="NoteId" />
+        <column dbField="EntityTrackingNumber" paramId="ResourceTrackingNumber" />
+        <column dbField="QueryStrings" paramId="QueryStrings" />
+        <column dbField="EntityType" paramId="EntityType" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+
+      SET @RowCount = @@ROWCOUNT
+
+      IF @RowCount != 1
+      RAISERROR ('NOTE_INSERTION_FAILED', 16, 1)
+
+    </sql>
+  </statement>
+
+
+  <statement name="UpdateNote" connection = "Common">
+    <param id="NoteId" type="String" size="36" required="true" />
+    <param id="TypeCode" type="Int16" />
+    <param id="OtherTypeDescription" type="String" size="100" />
+    <param id="RecordedDate" type="DateTime" />
+    <param id="Subject" type="String"/>
+    <param id="Details" type="String"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="LastUpdateDate" type="DateTime" />
+    <param id="ResourceValue" type="String" size="36" />
+    <param id="ResourceTypeCode" type="Int16" />
+    <param id="NoteVersionId" type="Int32" direction="Output"/>
+    <param id="ResourceTrackingNumber" type="String" />
+    <param id="EntityType" type="String"/>
+    <param id="QueryStrings" type="String"/>
+    <sql>
+      DECLARE @dbParam_NoteVersionId int
+      set @dbParam_NoteVersionId= <exp paramId="NoteVersionId"/>
+
+      DECLARE @CurLastUpdateDate datetime
+      DECLARE @RecordCount int
+      DECLARE  @CurrentDateTime datetime
+      DECLARE @VersionId int
+      DECLARE @NotesAccessedCount int
+      DECLARE @TotalDiffInSec int
+
+      declare @LastUpdateDateAfterNullCheck datetime
+
+      SET @CurrentDateTime = GETDATE()
+      SET @TotalDiffInSec = 0
+
+      SET @RecordCount = 0
+
+      SELECT @RecordCount = COUNT(NoteTypeCode)
+      FROM PFM_Note_P
+      WHERE NoteId = <exp paramId="NoteId"/>
+
+      -- Check if record exist, to manage concurrency between update and delete
+      IF @RecordCount > 0
+      BEGIN
+      -- Check last update date to manage concurrency between multiple updates
+      SELECT @CurLastUpdateDate = ISNULL(LastUpdateDate,'12:00AM')
+      FROM PFM_Note_P
+      WHERE NoteId = <exp paramId="NoteId"/>
+
+      -- If this record has never been updated, don't calculate the difference
+      -- because it could throw an overflow error for a large period of time
+      -- need to check for incoming NULL equivalent because it causes convert errors
+      IF CAST(<exp paramId="LastUpdateDate" /> AS VARCHAR(20)) = '1/1/0001 12:00:00 AM'
+      SET @LastUpdateDateAfterNullCheck = '12:00AM'
+      Else
+      --         SET @LastUpdateDateAfterNullCheck = CONVERT(DATETIME, <exp paramId="LastUpdateDate" />)
+      SET @LastUpdateDateAfterNullCheck = <exp paramId="LastUpdateDate" />
+
+      IF @LastUpdateDateAfterNullCheck > '12:00AM'
+      BEGIN
+      SET @TotalDiffInSec = DATEDIFF(second, @LastUpdateDateAfterNullCheck, CONVERT(DATETIME, @CurLastUpdateDate))
+      END
+
+      IF (@TotalDiffInSec = 0)
+      BEGIN
+      -- Add old note to the history table
+      SELECT @VersionId = ISNULL(MAX(VersionId)+1,0)
+      FROM Hist_PFM_Note_P
+      WHERE NoteId = <exp paramId="NoteId"/>
+
+      -- copy old note to history
+      INSERT INTO Hist_PFM_Note_P
+      (NoteId, VersionId, NoteTypeCode, OtherTypeDescription,
+      RecordedDate,
+      Subject, Description,
+      CreatorId, CreatedDate, LastUpdateDate, LastUpdateId,
+      ResourceValue, ResourceTypeCode)
+      SELECT
+      NoteId, @VersionId, NoteTypeCode, OtherTypeDescription,
+      RecordedDate,
+      Subject, Description,
+      CreatorId, CreatedDate, LastUpdateDate, LastUpdateId,
+      ResourceValue, ResourceTypeCode
+      FROM PFM_Note_P
+      WHERE NoteId = <exp paramId="NoteId"/>
+
+      -- Update new note
+      UPDATE PFM_Note_P
+      SET NoteTypeCode = <exp paramId="TypeCode"/>, OtherTypeDescription = <exp paramId="OtherTypeDescription"/>,
+      RecordedDate = <exp paramId="RecordedDate"/>,
+      Subject = <exp paramId="Subject"/>, Description = <exp paramId="Details"/>,
+      LastUpdateDate = @CurrentDateTime, LastUpdateId = <exp paramId="UserId"/>
+      WHERE NoteId = <exp paramId="NoteId"/>
+
+      Update PFM_NoteDetails_P
+      <columns mode="update">
+        <column dbField="EntityTrackingNumber" paramId="ResourceTrackingNumber"/>
+        <column dbField="QueryStrings" paramId="QueryStrings" />
+        <column dbField="EntityType" paramId="EntityType" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">@CurrentDateTime</column>
+      </columns>
+      <where>
+        <exp op ="=" dbField ="NoteDetailsId" paramId ="NoteId"/>
+      </where>
+      -- save the version id for passing into DM.ArchiveAttachments
+      SET @NoteVersionId = @VersionId
+      --         Select @dbParam_NoteVersionId @NoteVersionId
+
+      END
+      ELSE
+      BEGIN
+      -- Throw Record not found error
+      RAISERROR ('Note last update timestamp has changed.', 16, 1)
+      RETURN
+      END
+      END
+      ELSE
+      BEGIN
+      -- Throw Record not found error
+      RAISERROR ('Note does not exist.', 16, 1)
+      RETURN
+
+      END
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteNote" connection = "Common">
+    <param id="NoteId" type="String" size="36" required="true"/>
+    <sql>
+      DECLARE @RowCount int
+
+      -- Delete note history
+      DELETE FROM Hist_PFM_Note_P
+      <where>
+        <exp paramId="NoteId" dbField="NoteId" op="="/>
+      </where>
+
+      SET @RowCount = @@ROWCOUNT
+
+      -- Delete note
+      DELETE FROM PFM_NoteDetails_P
+      <where>
+        <exp paramId="NoteId" dbField="NoteDetailsId" op="="/>
+      </where>
+
+      SET @RowCount = @RowCount + @@ROWCOUNT
+
+      -- Delete note
+      DELETE FROM PFM_Note_P
+      <where>
+        <exp paramId="NoteId" dbField="NoteId" op="="/>
+      </where>
+
+      SET @RowCount = @RowCount + @@ROWCOUNT
+
+      IF @RowCount &lt; 1
+      BEGIN
+      RAISERROR ('Failed to delete note records.', 16, 1)
+      END
+    </sql>
+  </statement>
+
+
+  <statement name="GetNotesLookup" connection = "Common">
+    <param id="TableName" />
+    <sql>
+      SELECT *
+      FROM <exp paramId="TableName"/>
+      ORDER BY LookupCode
+    </sql>
+  </statement>
+
+  <!-- get paged notes for a resource and other hierarchicaly related resources. The realted resources could be ansectors or decendants.
+  Note: This query cannot be used separaterly. You need to build either GetParents or GetChildren query first as  this query uses  temp table created by either of the two queries.-->
+  <statement name="GetCurrentNotesHierarchicalPaged" connection = "Common">
+
+    <param id="SortParam" type="String" required="false" default="NT.CreatedDate DESC" />
+    <param id ="Resources" type="String" required ="true"/>
+    <param id ="NoteId" type="String" size="36"/>
+    <param id ="NoteId_OPERATION" type="String" />
+
+    <param id ="NoteTypeCode" type="String"/>
+    <param id ="NoteTypeCode_OPERATION" type="String" />
+
+    <param id ="OtherTypeDescription" type="String"/>
+    <param id ="OtherTypeDescription_OPERATION" type="String" />
+
+    <param id ="Subject" type="String"/>
+    <param id ="Subject_OPERATION" type="String" />
+
+    <param id ="Description" type="String"/>
+    <param id ="Description_OPERATION" type="String" />
+
+    <param id ="HasAttachments" type="String"/>
+    <param id ="HasAttachments_OPERATION" type="String" />
+
+    <param id ="RecordedDate" type="String"/>
+    <param id ="RecordedDate_OPERATION" type="String" />
+
+    <param id ="RecordedDateFrom" type="String"/>
+    <param id ="RecordedDateFrom_OPERATION" type="String" />
+
+    <param id ="RecordedDateTo" type="String"/>
+    <param id ="RecordedDateTo_OPERATION" type="String" />
+
+    <param id ="LastUpdateDate" type="String"/>
+    <param id ="LastUpdateDate_OPERATION" type="String" />
+
+    <param id ="LastUpdateDateFrom" type="String"/>
+    <param id ="LastUpdateDateFrom_OPERATION" type="String" />
+
+    <param id ="LastUpdateDateTo" type="String"/>
+    <param id ="LastUpdateDateTo_OPERATION" type="String" />
+
+    <param id ="LastUpdateId" type="String"/>
+    <param id ="LastUpdateId_OPERATION" type="String" />
+
+    <param id ="UpdatedByName" type="String"/>
+    <param id ="UpdatedByName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByLastName" type="String"/>
+    <param id ="LastUpdateByLastName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByMiddleName" type="String"/>
+    <param id ="LastUpdateByMiddleName_OPERATION" type="String" />
+
+    <param id ="LastUpdateByFirstName" type="String"/>
+    <param id ="LastUpdateByFirstName_OPERATION" type="String" />
+
+    <param id ="CreatedDate" type="String"/>
+    <param id ="CreatedDate_OPERATION" type="String" />
+
+    <param id ="CreatedDateFrom" type="String"/>
+    <param id ="CreatedDateFrom_OPERATION" type="String" />
+
+    <param id ="CreatedDateTo" type="String"/>
+    <param id ="CreatedDateTo_OPERATION" type="String" />
+
+    <param id ="CreatorId" type="String"/>
+    <param id ="CreatorId_OPERATION" type="String" />
+
+    <param id ="CreatedByName" type="String"/>
+    <param id ="CreatedByName_OPERATION" type="String" />
+
+    <param id ="CreatedByLastName" type="String"/>
+    <param id ="CreatedByLastName_OPERATION" type="String" />
+
+    <param id ="CreatedByMiddleName" type="String"/>
+    <param id ="CreatedByMiddleName_OPERATION" type="String" />
+
+    <param id ="CreatedByFirstName" type="String"/>
+    <param id ="CreatedByFirstName_OPERATION" type="String" />
+    <param id ="LinkedFilterFlag"  type="String"/>
+    <param id ="LinkedResourceType" />
+    <!--expect array of linked resource types-->
+    <param id ="LinkedResourceType_OPERATION" type="String" />
+
+    <param id ="LinkedResourceName" type="String" />
+    <param id ="LinkedResourceName_OPERATION" type="String" />
+
+    <param id ="LinkedResourceTrackingNumber"  type="String"/>
+    <param id ="LinkedResourceTrackingNumber_OPERATION" type="String" />
+
+    <param id ="LinkedResourceDescription"  type="String"/>
+    <param id ="LinkedResourceDescription_OPERATION" type="String" />
+
+    <sql>
+      DECLARE @ResourcesXml as XML
+      SELECT @ResourcesXml = '<dynamic paramId="Resources"/>'
+      <optional depends="LinkedFilterFlag">
+        <!-- Construrct CTE containg noteIds filter by linked resource-->
+        ;WITH FilteredLinkedNotes (NoteId) as
+        ( SELECT DISTINCT  NT.NoteId
+        FROM 
+        ( SELECT Items.r.value('@ResourceValue[1]','uniqueidentifier') AS ResourceValue
+        FROM @ResourcesXml.nodes('Resource') as Items(r)
+        )  TH   <!-- this xml contains all resources in the hierarchy--> 
+        Join PFM_Note_P NT on TH.ResourceValue = NT.ResourceValue
+        JOIN  PFM_Resource_Instance RI ON NT.NoteId = RI.SourceId
+        JOIN PFM_Resource_Relationship RR
+        ON  (RI.ResourceIdentifierId = RR.ChildResourceIdentifierId OR RI.ResourceIdentifierId = RR.ResourceIdentifierId) and RelationShipCategoryTypeCode =2 <!-- Link relationship type-->
+        JOIN  PFM_Resource_Instance LRI ON
+        LRI.SourceId &lt;&gt; NT.NoteId and (LRI.ResourceIdentifierId = RR.ChildResourceIdentifierId OR  LRI.ResourceIdentifierId = RR.ResourceIdentifierId) and RelationShipCategoryTypeCode =2 <!-- Link relationship type-->
+
+        <where>
+          <exp op ="And">
+            <!-- filter by linked resource attributes-->
+            <optional depends="LinkedFilterFlag">
+              <exp op ="And">
+                <optional  depends ="LinkedResourceType">
+                  LRI.ResourceTypeCode  <dynamic paramId="LinkedResourceType_OPERATION"/> <exp paramId="LinkedResourceType"/>
+                </optional>
+                <optional  depends ="LinkedResourceName">
+                  LRI.Name  <dynamic paramId="LinkedResourceName_OPERATION"/> <exp paramId="LinkedResourceName"/>
+                </optional>
+                <optional  depends ="LinkedResourceTrackingNumber">
+                  LRI.ResourceTrackingNo  <dynamic paramId="LinkedResourceTrackingNumber_OPERATION"/> <exp paramId="LinkedResourceTrackingNumber"/>
+                </optional>
+                <optional  depends ="LinkedResourceDescription">
+                  LRI.Description  <dynamic paramId="LinkedResourceDescription_OPERATION"/> <exp paramId="LinkedResourceDescription"/>
+                </optional>
+              </exp>
+            </optional>
+            <!-- end of linked resource  filtering-->
+
+            <optional depends="NoteId">
+              NT.NoteId <dynamic paramId="NoteId_OPERATION"/> <exp paramId="NoteId"/>
+            </optional>
+
+            <optional depends="NoteTypeCode">
+              NT.NoteTypeCode <dynamic paramId="NoteTypeCode_OPERATION"/> <exp paramId="NoteTypeCode"/>
+            </optional>
+
+            <optional depends="OtherTypeDescription">
+              NT.OtherTypeDescription <dynamic paramId="OtherTypeDescription_OPERATION"/> <exp paramId="OtherTypeDescription"/>
+            </optional>
+
+            <optional depends="Subject">
+              NT.Subject <dynamic paramId="Subject_OPERATION"></dynamic> <exp paramId="Subject"/>
+            </optional>
+
+            <optional depends="Description">
+              NT.Description <dynamic paramId="Description_OPERATION"></dynamic> <exp paramId="Description"/>
+            </optional>
+
+            <optional depends="RecordedDate">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDate_OPERATION"/> <exp paramId="RecordedDate"/>
+            </optional>
+
+            <optional depends="RecordedDateFrom">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateFrom_OPERATION"/> <exp paramId="RecordedDateFrom"/>
+            </optional>
+
+            <optional depends="RecordedDateTo">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateTo_OPERATION"/> <exp paramId="RecordedDateTo"/>
+            </optional>
+
+            <optional depends="CreatedDate">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDate_OPERATION"/> <exp paramId="CreatedDate"/>
+            </optional>
+
+            <optional depends="CreatedDateTo">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateTo_OPERATION"/> <exp paramId="CreatedDateTo"/>
+            </optional>
+
+            <optional depends="CreatedDateFrom">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateFrom_OPERATION"/> <exp paramId="CreatedDateFrom"/>
+            </optional>
+
+            <optional depends="LastUpdateDate">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDate_OPERATION"/> <exp paramId="LastUpdateDate"/>
+            </optional>
+
+            <optional depends="LastUpdateDateFrom">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateFrom_OPERATION"/> <exp paramId="LastUpdateDateFrom"/>
+            </optional>
+
+            <optional depends="LastUpdateDateTo">
+              DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateTo_OPERATION"/> <exp paramId="LastUpdateDateTo"/>
+            </optional>
+
+            <optional depends="HasAttachments=='false'">
+              (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) = 0
+            </optional>
+
+            <optional depends="HasAttachments=='true'">
+              (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) > 0
+            </optional>
+
+            <optional depends="CreatorId">
+              NT.CreatorId <dynamic paramId="CreatorId_OPERATION"/> <exp paramId="CreatorId"/>
+            </optional>
+          </exp>
+        </where>
+        )
+      </optional>
+      <select>
+        NT.NoteId AS Id,
+        NT.ResourceValue,
+        NT.ResourceTypeCode,
+        NT.NoteTypeCode,
+        LNT.Description AS NoteDescription,
+        NT.OtherTypeDescription,
+        NT.RecordedDate,
+        NT.Subject,
+        NT.Description AS Details,
+        NT.CreatorId,
+        DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) as CreatedDate,
+        NT.LastUpdateId,
+        NT.LastUpdateDate,
+        PPC.FirstName AS CreatedByFirstName,
+        PPC.MiddleName AS CreatedByMiddleName,
+        PPC.LastName AS CreatedByLastName,
+        PPU.MiddleName AS LastUpdateByMiddleName,
+        PPU.FirstName AS LastUpdateByFirstName,
+        PPU.LastName AS LastUpdateByLastName,
+        (
+        Select count(*) from PFM_Note_Attachment_R ATT
+        where ATT.NoteId = NT.NoteId
+        ) as AttachmentCount,
+
+        (CASE WHEN ISNULL(PPC.MiddleName,'') != ''
+        THEN ISNULL(PPC.FirstName,'') + ' ' + PPC.MiddleName + ' ' + ISNULL(PPC.LastName,'')
+        ELSE ISNULL(PPC.FirstName,'') + ' ' + ISNULL(PPC.LastName,'')
+        END) AS CreatorName,
+
+        (CASE WHEN ISNULL(PPU.MiddleName,'') != ''
+        THEN ISNULL(PPU.FirstName,'') + ' ' + PPU.MiddleName + ' ' + ISNULL(PPU.LastName,'')
+        ELSE ISNULL(PPU.FirstName,'') + ' ' + ISNULL(PPU.LastName,'')
+        END) AS UpdatedByName,
+
+        nd.EntityTrackingNumber as ResourceTrackingNumber,
+        nd.EntityType,
+        nd.QueryStrings
+      </select>
+      FROM
+      ( SELECT Items.r.value('@ResourceValue[1]','uniqueidentifier') AS ResourceValue
+      FROM @ResourcesXml.nodes('Resource') as Items(r)
+      )  TH   <!-- this xml contains all resources in the hierarchy-->
+      Join PFM_Note_P NT on TH.ResourceValue = NT.ResourceValue 
+      <optional depends="LinkedFilterFlag">
+        JOIN FilteredLinkedNotes FLN ON FLN.NoteId = NT.NoteId
+      </optional>
+      JOIN LU_PFM_NoteType LNT ON NT.NoteTypeCode = LNT.LookupCode
+      LEFT JOIN People PPC ON NT.CreatorId = PPC.UserId
+      LEFT JOIN People PPU ON NT.LastUpdateId = PPU.UserId
+      LEFT JOIN PFM_NoteDetails_P nd on nd.NoteDetailsId = NT.NoteId
+
+      <where>
+        <exp op ="And">
+
+          <optional depends="NoteId">
+            NT.NoteId <dynamic paramId="NoteId_OPERATION"/> <exp paramId="NoteId"/>
+          </optional>
+
+          <optional depends="NoteTypeCode">
+            NT.NoteTypeCode <dynamic paramId="NoteTypeCode_OPERATION"/> <exp paramId="NoteTypeCode"/>
+          </optional>
+
+          <optional depends="OtherTypeDescription">
+            NT.OtherTypeDescription <dynamic paramId="OtherTypeDescription_OPERATION"/> <exp paramId="OtherTypeDescription"/>
+          </optional>
+
+          <optional depends="Subject">
+            NT.Subject <dynamic paramId="Subject_OPERATION"></dynamic> <exp paramId="Subject"/>
+          </optional>
+
+          <optional depends="Description">
+            NT.Description <dynamic paramId="Description_OPERATION"></dynamic> <exp paramId="Description"/>
+          </optional>
+
+          <optional depends="RecordedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDate_OPERATION"/> <exp paramId="RecordedDate"/>
+          </optional>
+
+          <optional depends="RecordedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateFrom_OPERATION"/> <exp paramId="RecordedDateFrom"/>
+          </optional>
+
+          <optional depends="RecordedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.RecordedDate), 0) <dynamic paramId="RecordedDateTo_OPERATION"/> <exp paramId="RecordedDateTo"/>
+          </optional>
+
+          <optional depends="CreatedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDate_OPERATION"/> <exp paramId="CreatedDate"/>
+          </optional>
+
+          <optional depends="CreatedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateTo_OPERATION"/> <exp paramId="CreatedDateTo"/>
+          </optional>
+
+          <optional depends="CreatedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.CreatedDate), 0) <dynamic paramId="CreatedDateFrom_OPERATION"/> <exp paramId="CreatedDateFrom"/>
+          </optional>
+
+          <optional depends="LastUpdateDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDate_OPERATION"/> <exp paramId="LastUpdateDate"/>
+          </optional>
+
+          <optional depends="LastUpdateDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateFrom_OPERATION"/> <exp paramId="LastUpdateDateFrom"/>
+          </optional>
+
+          <optional depends="LastUpdateDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, NT.LastUpdateDate), 0) <dynamic paramId="LastUpdateDateTo_OPERATION"/> <exp paramId="LastUpdateDateTo"/>
+          </optional>
+
+          <optional depends="HasAttachments=='false'">
+            (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) = 0
+          </optional>
+
+          <optional depends="HasAttachments=='true'">
+            (Select count(*) from PFM_Note_Attachment_R ATT2 where ATT2.NoteId = NT.NoteId) > 0
+          </optional>
+
+          <optional depends="CreatorId">
+            NT.CreatorId <dynamic paramId="CreatorId_OPERATION"/> <exp paramId="CreatorId"/>
+          </optional>
+
+          <optional depends="CreatedByName">
+            (
+            <!-- FirstName + MiddleName + LastName -->
+            ((PPC.FirstName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END
+            + PPC.LastName)
+            <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + MiddleName + FirstName -->
+            ((PPC.LastName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END
+            + PPC.FirstName) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + FirstName + MiddleName -->
+            ((PPC.LastName + ' ' + PPC.FirstName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- FirstName + LastName + MiddleName -->
+            ((PPC.FirstName + ' ' + PPC.LastName +
+            CASE
+            WHEN (PPC.middlename is null) or (PPC.middlename = ' ') THEN ' '
+            ELSE ' ' + PPC.MiddleName + ' '
+            END) <dynamic paramId="CreatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="CreatedByName"/>, ',', '' ), '.', '' ))
+            )
+          </optional>
+
+          <optional depends="CreatedByLastName">
+            PPC.LastName <dynamic paramId="CreatedByLastName_OPERATION"></dynamic> <exp paramId="CreatedByLastName"/>
+          </optional>
+
+          <optional depends="CreatedByMiddleName">
+            PPC.MiddleName <dynamic paramId="CreatedByMiddleName_OPERATION"></dynamic> <exp paramId="CreatedByMiddleName"/>
+          </optional>
+
+          <optional depends="CreatedByFirstName">
+            PPC.FirstName <dynamic paramId="CreatedByFirstName_OPERATION"></dynamic> <exp paramId="CreatedByFirstName"/>
+          </optional>
+
+          <optional depends="LastUpdateId">
+            NT.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"></dynamic> <exp paramId="LastUpdateId"/>
+          </optional>
+
+          <optional depends="UpdatedByName">
+            (
+            <!-- FirstName + MiddleName + LastName -->
+            ((PPU.FirstName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END
+            + PPU.LastName)
+            <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + MiddleName + FirstName -->
+            ((PPU.LastName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END
+            + PPU.FirstName) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- LastName + FirstName + MiddleName -->
+            ((PPU.LastName + ' ' + PPU.FirstName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            OR
+            <!-- FirstName + LastName + MiddleName -->
+            ((PPU.FirstName + ' ' + PPU.LastName +
+            CASE
+            WHEN (PPU.middlename is null) or (PPU.middlename = ' ') THEN ' '
+            ELSE ' ' + PPU.MiddleName + ' '
+            END) <dynamic paramId="UpdatedByName_OPERATION"/>  REPLACE(REPLACE(<exp paramId="UpdatedByName"/>, ',', '' ), '.', '' ))
+            )
+          </optional>
+
+          <optional depends="LastUpdateByLastName">
+            PPU.LastName <dynamic paramId="LastUpdateByLastName_OPERATION"></dynamic> <exp paramId="LastUpdateByLastName"/>
+          </optional>
+
+          <optional depends="LastUpdateByMiddleName">
+            PPU.MiddleName <dynamic paramId="LastUpdateByMiddleName_OPERATION"></dynamic> <exp paramId="LastUpdateByMiddleName"/>
+          </optional>
+
+          <optional depends="LastUpdateByFirstName">
+            PPU.FirstName <dynamic paramId="LastUpdateByFirstName_OPERATION"></dynamic> <exp paramId="LastUpdateByFirstName"/>
+          </optional>
+        </exp>
+
+      </where>
+      <sort paramId="SortParam"/>
+     
+    </sql>
+  </statement>
+
+  <!--<statement name="GetChildren" connection="Common">
+    <param id="ResourceValue" type="String" length="36" required="true" />
+    <param id="ResourceTypeCode" type="Int32" required="true" />
+    <param id="Level" type="Int32" required="true" />
+    <sql>
+
+      DECLARE @TempHierarchy TABLE
+      (
+      ResourceTypeCode int,
+      ResourceValue uniqueidentifier
+      )
+
+      ;  WITH RecursiveResourceHierarchy(  [Level],Id, ResourceValue, ResourceTypeCode
+      )
+      AS
+      (
+      --><!-- anchor query--><!--
+      SELECT
+      1 [Level],
+      rr.ChildResourceIdentifierId AS Id,
+      ric.SourceId as ResourceValue,
+      ric.ResourceTypeCode ResourceTypeCode
+      FROM PFM_Resource_Instance ri
+      JOIN PFM_Resource_Relationship rr ON rr.ResourceIdentifierId = ri.ResourceIdentifierId
+      JOIN PFM_Resource_Instance ric ON ric.ResourceIdentifierId = rr.ChildResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="ri.SourceId" paramId="ResourceValue" op="=" />
+          <exp dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+        </exp>
+      </where>
+      --><!-- end anchor query--><!--
+      UNION ALL
+      --><!-- recursive query--><!--
+      SELECT Level + 1 [Level],
+      rr.ChildResourceIdentifierId AS Id,
+      ric.SourceId as ResourceValue,
+      ric.ResourceTypeCode ResourceTypeCode
+      FROM RecursiveResourceHierarchy rh
+      JOIN PFM_Resource_Relationship rr ON rh.Id = rr.ResourceIdentifierId
+      JOIN PFM_Resource_Instance ric ON ric.ResourceIdentifierId = rr.ChildResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="level" paramId="Level" op="&lt;" />
+        </exp >
+      </where>
+      )
+      --><!-- end of recursive query--><!--
+      --><!--query CTE and populate into temp variable --><!--
+
+      INSERT INTO @TempHierarchy
+      SELECT ResourceTypeCode,ResourceValue FROM RecursiveResourceHierarchy
+      --><!-- Add the resource parameter itself. This will make the temp table content Child and self--><!--
+      INSERT INTO @TempHierarchy Values(<exp paramId="ResourceTypeCode" />, <exp paramId="ResourceValue" />)
+
+    </sql>
+  </statement>
+  
+  
+   <statement name="GetParents" connection="Common">
+    <sql>
+      <param id="ResourceValue" type="String" lenght="36"  required="true" />
+      <param id="ResourceTypeCode" type="Int32" required="true" />
+      <param id="Level" type="Int32" required="true" />
+
+
+      DECLARE @TempHierarchy TABLE
+      (
+      Id uniqueidentifier,
+      ResourceValue uniqueidentifier,
+      ResourceTypeCode int,
+      ParentId uniqueidentifier
+      )
+      
+      ; WITH RecursiveResourceHierarchy(  [Level],Id, ResourceValue, ResourceTypeCode
+    
+      )
+      AS
+      (
+      --><!-- begin anchor query--><!--
+      SELECT
+      0 as [Level],
+      ri.ResourceIdentifierId AS Id,
+      ri.SourceId as ResourceValue,
+      ri.ResourceTypeCode    
+      FROM PFM_Resource_Instance ri
+      JOIN PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = ri.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="ri.SourceId" paramId="ResourceValue" op="=" />
+          <exp dbField="ri.ResourceTypeCode" paramId="ResourceTypeCode" op="=" />
+         
+        </exp>
+      </where>
+   --><!-- end of anchor query --><!--
+    UNION ALL
+--><!-- begin recursive query--><!--
+      SELECT
+      level + 1  [Level],
+      rp.ResourceIdentifierId AS Id,
+      rp.SourceId as ResourceValue,
+      rp.ResourceTypeCode      
+      FROM RecursiveResourceHierarchy rh
+      JOIN PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = rh.Id
+      join PFM_Resource_Instance rp on rr.ResourceIdentifierId = rp.ResourceIdentifierId
+      <where>
+        <exp op="AND">
+          rr.RelationShipCategoryTypeCode in (1,3)
+          <exp dbField="level" paramId="Level" op="&lt;" />
+        </exp>    
+      </where>
+      )
+      --><!-- end of recursive query--><!--
+
+      INSERT INTO  @TempHierarchy
+      SELECT
+      rh.Id,
+      rh.ResourceValue,
+      rh.ResourceTypeCode,
+      rp.ResourceIdentifierId AS ParentId
+
+      FROM RecursiveResourceHierarchy rh
+      left JOIN  PFM_Resource_Relationship rr ON rr.ChildResourceIdentifierId = rh.Id
+      left join PFM_Resource_Instance rp on rr.ResourceIdentifierId = rp.ResourceIdentifierId
+
+      --><!-- now do the final select--><!--
+
+      INSERT INTO  @TempHierarchy
+      SELECT rp.ResourceIdentifierId,
+      rp.SourceId ,
+      rp.ResourceTypeCode,
+      null AS ParentId
+      FROM @TempHierarchy rh
+      join PFM_Resource_Instance rp   ON rh.parentId = rp.ResourceIdentifierId
+      WHERE rh.ParentId not in (SELECT ID from @TempHierarchy)
+    </sql>
+  </statement>-->
+
+  <!--<statement name ="GetNotesIncludeParentsNotes">
+    <statement name ="GetParents" />
+    <statement name ="GetCurrentNotesHierarchicalPaged"/>
+  </statement>
+
+  <statement name ="GetNotesIncludeChildrensNotes">
+    <statement name ="GetChildren" />
+      <statement name ="GetCurrentNotesHierarchicalPaged"/>
+  </statement>-->
+
+</statements>
+

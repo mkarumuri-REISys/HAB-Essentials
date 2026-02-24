@@ -1,0 +1,377 @@
+﻿<statements>
+
+	<statement name ="AddEvent" connection = "Common">
+		<param id ="Name" type ="String" required ="true"/>
+		<param id ="Description" type ="String" required ="true"/>
+		<param id ="Subject" type ="String"/>
+		<param id ="Location" type ="String"/>
+		<param id ="EventTypeCode" type="Int32" required ="true" />
+		<param id ="CalendarTypeCode" type="Int32"  required ="true" />
+		<param id ="SeriesId" type="String" size="36"  />
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="StartDate" type="DateTime" required ="true" />
+		<param id="Duration" type="Int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<sql>
+			INSERT INTO PFM_CLDR_Event_P
+			<columns mode="insert">
+				<column dbField="CLDREventId">newid()</column>
+				<column dbField="Name" paramId="Name" />
+				<column dbField="Description" paramId="Description" />
+				<column dbField ="Subject" paramId ="Subject" />
+				<column dbField ="Location" paramId ="Location" />
+				<column dbField ="SeriesId" paramId ="SeriesId" />
+				<column dbField ="CreatorId" paramId ="UserId" />
+				<column dbField ="CreatedDate">getDate()</column>
+				<column dbField ="LastUpdateId" paramId ="UserId" />
+				<column dbField ="LastUpdateDate">getDate()</column>
+				<column dbField ="EventTypeCode" paramId ="EventTypeCode" />
+				<column dbField ="StartDate" paramId ="StartDate" />
+				<column dbField ="DurationInMinutes" paramId ="Duration" />
+				<column dbField ="CalendarTypeCode" paramId ="CalendarTypeCode" />
+				<column dbField ="ClientEventId" paramId ="ClientEventId" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name ="UpdateEvent" connection = "Common">
+		<param id ="Name" type ="String" required ="true"/>
+		<param id ="Description" type ="String" required ="true"/>
+		<param id ="Subject" type ="String"/>
+		<param id ="Location" type ="String"/>
+		<param id ="EventTypeCode" type="Int32" required ="true" />
+		<param id ="CalendarTypeCode" type="Int32"  required ="true" />
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="StartDate" type="DateTime" required ="true" />
+		<param id="DurationInMinutes" type="int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<sql>
+			Update  PFM_CLDR_Event_P
+			set
+			Name =  <exp paramId="Name" />
+			,Description = <exp paramId="Description" />
+			,Subject =  <exp paramId="Subject" />
+			,Location =  <exp paramId="Location" />
+			,CalendarTypeCode =  <exp paramId="CalendarTypeCode" />
+			,StartDate = <exp paramId="StartDate" />
+			,DurationInMinutes = <exp paramId="DurationInMinutes" />
+			,LastUpdateId= <exp paramId="UserId" />
+			,LastUpdateDate=getDate()
+			where EventTypeCode = <exp paramId="EventTypeCode" /> and ClientEventId = <exp paramId="ClientEventId" /> 
+			
+
+
+		</sql>
+	</statement>
+	<statement name ="SubscribeEvent" connection = "Common">
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="EventTypeCode"  type="Int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<param id="RequiredFlag" type="Int32" required ="true"/>
+		<sql>
+			Declare @cldrEventId uniqueidentifier
+			Select @cldrEventId = CLDREventId  from  PFM_CLDR_Event_P(nolock) where EventTypeCode =<exp paramId="EventTypeCode" /> and ClientEventId= <exp paramId="ClientEventId" />
+			if(@cldrEventId is not null)
+			Begin
+			Declare @CLDREventRecepientId uniqueidentifier
+			Select @CLDREventRecepientId = CLDREventRecepientId from PFM_CLDR_Event_Recipient_P where userid=<exp paramId="UserId" />  and CLDREventId =@cldrEventId
+			and UnsubscribedDate is null
+					if(@CLDREventRecepientId is  null)
+						Begin
+							insert into PFM_CLDR_Event_Recipient_P
+							(CLDREventRecepientId, userId, RequiredFlag, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate, CLDREventId)
+							values
+							(newid(),<exp paramId="UserId" />,<exp paramId="RequiredFlag" />,<exp paramId="UserId" />,GetDate(),<exp paramId="UserId" />,getDate(),@cldrEventId)
+
+			End
+			End
+
+			select @cldrEventId as EventId,@CLDREventRecepientId as RecepientId
+		</sql>
+	</statement>
+	<statement name ="GetSubscribedEvents" connection = "Common">
+		<param id="EventTypeCode"  type="String" />
+		<param id="CalendarTypeCode"  type="Int32" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<param id="Count" type="Int32"  />
+		<param id="CurrentDate" type="DateTime"  required ="true" />
+		
+		
+		<sql>
+			select
+			<optional depends ="Count">
+				top(<exp paramId="Count" />)
+			</optional>
+      event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+      StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId
+      from PFM_CLDR_Event_Recipient_P rep
+      join PFM_CLDR_Event_P event on event.CLDREventId = rep.CLDREventId
+      <where>
+      <exp op="AND">
+        <optional depends ="EventTypeCode">
+          <!--and EventTypeCode in  <exp paramId="EventTypeCode" />-->
+          <exp dbField="EventTypeCode" op="IN" paramId="EventTypeCode"/>
+        </optional>
+        <optional depends ="CalendarTypeCode">
+          CalendarTypeCode = <exp paramId="CalendarTypeCode" />
+        </optional>
+        <optional depends ="UserId">
+          rep.UserId=<exp paramId="UserId" />
+        </optional>
+        event.InactiveDateTime is Null
+      </exp>
+      and StartDate >= <exp paramId="CurrentDate" />
+      and rep.UnSubScribedDate is Null
+
+    </where>
+  		order by StartDate
+		</sql>
+	</statement>
+	<statement name ="SyncEvent" connection = "Common">
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="EventTypeCode"  type="Int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<param id="EventSyncCode" type="Int32" required ="true" />
+		<sql>
+			Declare @cldrEventId uniqueidentifier
+			Select @cldrEventId = CLDREventId  from  PFM_CLDR_Event_P where EventTypeCode =<exp paramId="EventTypeCode" /> and ClientEventId= <exp paramId="ClientEventId" />
+			if(@cldrEventId is not null)
+			Begin
+
+			insert into PFM_CLDR_EventSync_P
+			(CLDREventSyncId, UserId, SyncDateTime, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate, EventSyncTypeCode, CLDREventId)
+			values
+			(newid(),<exp paramId="UserId" />,GetDate(),<exp paramId="UserId" />,GetDate(),<exp paramId="UserId" />,GetDate(),<exp paramId="EventSyncCode" />,@cldrEventId)
+
+
+			End
+
+			--select @cldrEventId as EventId
+		</sql>
+	</statement>
+	<!---->
+	<statement name ="GetEvents" connection = "Common">
+		<param id="CalendarTypeCode"  type="Int32" />
+		<param id="FromDate" type="DateTime"  required ="true" />
+		<param id="ToDate" type="DateTime"  required ="true" />
+
+		<sql>
+			select
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId
+			from  PFM_CLDR_Event_P event
+			where (StartDate BETWEEN  <exp paramId="FromDate" />
+			and <exp paramId="ToDate" />)
+			<optional depends ="CalendarTypeCode">
+				and CalendarTypeCode = <exp paramId="CalendarTypeCode" />
+			</optional>
+			and InactiveDateTime is Null
+			order by StartDate
+
+
+		</sql>
+	</statement>
+	<statement name ="GetUserEventInfo" connection = "Common">
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="EventTypeCode"  type="Int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<sql>
+			select
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId,ca.ContactAddress as OrganizerEmail
+			from
+			PFM_CLDR_Event_P event
+			join people pl  on event.CreatorId = pl.userid
+			join contactaddresses  ca
+			on  pl.PersonId= ca.EntityId and ContactAddressTypeCode=1
+			join PFM_CLDR_EVENT_RECIPIENT_P RR on  RR.CLDREvenTid  = event.CLDREvenTid
+			and RR.UserId = <exp paramId="UserId" />
+			where EventTypeCode = <exp paramId="EventTypeCode" />
+			and ClientEventId= <exp paramId="ClientEventId" />;
+
+			select contactaddress from  contactaddresses  ca
+			join people pl
+			on  pl.PersonId= ca.EntityId and ContactAddressTypeCode=1
+			and pl.userid=<exp paramId="UserId" />;
+
+		</sql>
+	</statement>
+	<statement name ="CancelEvent" connection = "Common">
+
+		<param id ="EventTypeCode" type="Int32" required ="true"  />
+		<param id="ClientEventId" size="100" type="String" required ="true"  />
+		<param id="CancelDate" type="DateTime" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true"/>
+		<sql>
+			Update  PFM_CLDR_Event_P
+			set InactiveDateTime = <exp paramId="CancelDate" />,
+			LastUpdateId = <exp paramId="UserId" />,
+			LastUpdateDate = GetDate()
+			where
+			EventTypeCode = <exp paramId="EventTypeCode" /> and ClientEventId = <exp paramId="ClientEventId" />
+
+		</sql>
+	</statement>
+	<statement name ="GetSyncedUserInfo" connection = "Common">
+
+		<param id ="EventTypeCode" type="Int32" required ="true"  />
+		<param id="ClientEventId" size="100" type="String" required ="true"  />
+		
+		<sql>
+			select distinct
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId,ca.ContactAddress as OrganizerEmail,ca1.ContactAddress  as UserEmail,
+			es.UserId
+			from
+			PFM_CLDR_Event_P event  WITH (NOLOCK)
+			join people pl  on event.CreatorId = pl.userid
+			join contactaddresses  ca
+			on  pl.PersonId= ca.EntityId and ContactAddressTypeCode=1
+			join PFM_CLDR_Event_Recipient_P rp  WITH (NOLOCK) on event.CLDREvenTid  = rp.CLDREvenTid
+			join PFM_CLDR_EVENTSync_P ES on  ES.UserId  = rp.UserId
+			join people pl1  on ES.UserId = pl1.userid
+			join contactaddresses  ca1
+			on  pl1.PersonId= ca1.EntityId and ca1.ContactAddressTypeCode=1
+			where
+			rp.UnSubScribedDate is null
+			and
+			EventTypeCode = <exp paramId="EventTypeCode" /> and ClientEventId = <exp paramId="ClientEventId" />
+			and EventSyncTypeCode=1
+
+		</sql>
+	</statement>
+
+	<statement name ="GetCalendarInfo" connection = "Common">
+		<param id ="Roles" type="String" required ="true"  size="500" />
+    
+		<sql>
+			select  LookUpCode, Description, DisplayValue, ColorCode, ViewConfigBinary, DisplayOrder from
+			LU_PFM_CLDR_CalendarType where LookupCode  = 1			
+			union	
+			select LookUpCode, Description, DisplayValue, ColorCode, ViewConfigBinary,
+			DisplayOrder from  LU_PFM_CLDR_CalendarType CT
+			inner join  LU_PFM_CLDR_CalendarType_AC_Role_R ACR on ACR.CalendarTypeCode= CT.LookUpCode
+			and ACR.ROleId in <exp paramId="Roles" />
+			and CT.LookupCode &lt;&gt;1
+			order by DisplayOrder
+		</sql>
+	</statement>
+  <statement name ="GetCalendarInfoByUserTypeCode" connection = "Common">
+    <param id ="Roles" type="String" required ="true"  size="500" />
+    <param id ="UserTypeCode" type="Int32" required ="true"  />
+    <sql>
+      SELECT LookUpCode, Description, DisplayValue, ColorCode, ViewConfigBinary, DisplayOrder FROM LU_PFM_CLDR_CalendarType where LookupCode  = 1
+      UNION
+      SELECT LookUpCode, Description, DisplayValue, ColorCode, ViewConfigBinary, DisplayOrder FROM LU_PFM_CLDR_CalendarType CT
+      INNER JOIN LU_PFM_CLDR_CalendarType_AC_Role_R ACR on ACR.CalendarTypeCode = CT.LookUpCode
+      INNER JOIN LU_PFM_CLDR_CalendarType_LookupUserType_R ACUT on ACUT.CalendarTypeCode = CT.LookUpCode
+      and ACR.ROleId in <exp paramId="Roles" />
+      and CT.LookupCode &lt;&gt;1
+      and ACUT.UserTypeCode = <exp paramId="UserTypeCode" />
+      order by DisplayOrder
+    </sql>
+  </statement>
+	<statement name ="GetSubscribedEventsByDateRange" connection = "Common">
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<param id="FromDate" type="DateTime"  required ="true" />
+		<param id="ToDate" type="DateTime"  required ="true" />
+
+
+		<sql>
+			select
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId
+			from PFM_CLDR_Event_Recipient_P rep
+			join PFM_CLDR_Event_P event on event.CLDREventId = rep.CLDREventId
+			where
+			
+			(StartDate BETWEEN  <exp paramId="FromDate" />
+			and <exp paramId="ToDate" />)
+			and rep.UserId=<exp paramId="UserId" />
+			and event.InactiveDateTime is Null
+			and UnSubScribedDate is Null
+			order by StartDate
+
+
+		</sql>
+	</statement>
+	<statement name ="GetSubscribedEventsSearch" connection = "Common">
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<param id="FromDate" type="string" size="1000"/>
+		<param id="ToDate" type="string" size="1000"/>
+		<param id="filterExpression" type="String" size="1000"/>
+		<param id="sortExpression" type="String" size="1000"/>
+
+
+
+		<sql>
+			select
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId , event.LastUpdateDate
+			from PFM_CLDR_Event_Recipient_P rep
+			join PFM_CLDR_Event_P event on event.CLDREventId = rep.CLDREventId
+
+			where
+			<optional depends ="FromDate">
+				StartDate BETWEEN  <exp paramId="FromDate" />
+				and <exp paramId="ToDate" />
+				and
+			</optional>
+			rep.UserId=<exp paramId="UserId" />
+			and UnSubScribedDate is Null
+			<optional depends="filterExpression">
+				And <dynamic paramId="filterExpression"/>
+			</optional>
+
+			and event.InactiveDateTime is Null
+			<optional depends="sortExpression">
+			order by <dynamic paramId="sortExpression"/>
+		</optional>
+
+
+		</sql>
+	</statement>
+	<statement name ="UnSubscribeEvent" connection = "Common">
+		<param id="ClientEventId" size="100" type="String" required ="true" />
+		<param id="EventTypeCode"  type="Int32" required ="true" />
+		<param id="UserId" type="String" size="36"  required ="true" />
+		<sql>
+			Declare @cldrEventId uniqueidentifier
+			Select @cldrEventId = CLDREventId  from  PFM_CLDR_Event_P where EventTypeCode =<exp paramId="EventTypeCode" /> and ClientEventId= <exp paramId="ClientEventId" />
+			and InactiveDateTime is Null
+			if(@cldrEventId is not null)
+			Begin
+			Declare @CLDREventRecepientId uniqueidentifier
+			Select @CLDREventRecepientId = CLDREventRecepientId from PFM_CLDR_Event_Recipient_P where userid=<exp paramId="UserId" />  and CLDREventId =@cldrEventId
+			and UnsubscribedDate is null
+			if(@CLDREventRecepientId is not  null)
+			Begin
+			Update  PFM_CLDR_Event_Recipient_P
+			set
+			UnSubScribedDate = GetDate(),
+			LastUpdateId = <exp paramId="UserId" />,
+				LastUpdateDate = GetDate()
+				where CLDREventRecepientId = @CLDREventRecepientId
+			End
+			End
+
+			select @CLDREventRecepientId as RecepientId
+		</sql>
+	</statement>
+	<statement name ="GetEvent" connection = "Common">
+		<param id="EventTypeCode"  type="Int32"  required ="true"  />
+		<param id="ClientEventId" type="string" size="100" required ="true"  />
+		
+
+		<sql>
+			select
+			event.CLDREventId, Name, Description, Subject, Location, InactiveDateTime, SeriesId, EventTypeCode,
+			StartDate, DurationInMinutes, CalendarTypeCode, ClientEventId
+			from  PFM_CLDR_Event_P event
+			where
+			EventTypecode=<exp paramId="EventTypeCode" />
+			and clienteventid=<exp paramId="ClientEventId" />
+
+		</sql>
+	</statement>
+
+</statements>

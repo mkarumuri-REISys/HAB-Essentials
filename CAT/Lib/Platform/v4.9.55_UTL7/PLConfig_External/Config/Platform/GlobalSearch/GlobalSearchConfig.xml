@@ -1,0 +1,6 @@
+<root>
+  <executionDelayTime>200</executionDelayTime>
+  <suggestionPanel>
+    <recordCount>10</recordCount>
+  </suggestionPanel>
+</root>

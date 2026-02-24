@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+    <!--<statement name="SaveRunTimePageView">
+        <param id="Id" required="false" default="" type="Guid" />
+        <param id="ViewName" required="false" default="" type="String" />
+        <param id="CreatorId" required="false" default="" type="Guid" />
+        <param id="CreatedDate" required="false" default="" type="DateTime" />
+        <param id="LastUpdateId" required="false" default="" type="Int32" />
+        <param id="LastUpdateDate" required="false" default="" type="DateTime" />
+        <param id="CORERuntimePageId" required="false" default="" type="Guid" />
+        <sql>
+            Insert into PFM_CORE_RunTimePageView
+            <columns mode="insert">
+                <column dbField="ViewId" paramId="Id" />
+                <column dbField="ViewName" paramId="ViewName" />
+                <column dbField="CreatorId" paramId="CreatorId" />
+                <column dbField="CreatedDate" paramId="CreatedDate" />
+                <column dbField="LastUpdateId" paramId="LastUpdateId" />
+                <column dbField="LastUpdateDate" paramId="LastUpdateDate" />
+                <column dbField="CORERuntimePageId" paramId="CORERuntimePageId" />
+            </columns>
+        </sql>
+    </statement>-->
+    <statement name="GetRuntimePageView" connection="Common">
+        <param id="Id" required="false" type="Guid" newGuid="true" />
+        <param id="ViewName" required="true" default="" type="String" />
+        <param id="Description" required="false" default="" type="String" />
+        <param id="ExternalSystemCode" required="false" default="" type="Int32" />
+        <param id="ExternalSystemDimensionCode" required="false" default="" type="Int32" />
+        <param id="RelativeURL" required="false" default="" type="String" />
+        <param id="PageTypeCode" required="false" default="" type="Int32" />
+        <param id="userId" required="true" type="Guid" />
+        <param id="timeStamp" required="false" useCurrTime="true" type="DateTime" />
+        <sql>
+            
+            -- If view exists -- 
+            if not exists(Select *
+                          from PFM_CORE_RunTimePageView
+                          Where ViewName=<exp paramId="ViewName" />
+                          and CORERuntimePageId IN (Select CORERuntimePageId
+                                                 from PFM_CORE_RunTimePage
+                                                 Where ExternalSystemCode= <exp paramId="ExternalSystemCode" />
+                                                 and ExternalSystemDimensionCode= <exp paramId="ExternalSystemDimensionCode" />
+                                                 and RelativeURL= <exp paramId="RelativeURL" />
+                                                 and PageTypeCode= <exp paramId="PageTypeCode" />))
+            BEGIN
+            declare @runtimePageId uniqueidentifier
+
+            if exists(Select *
+            from PFM_CORE_RunTimePage
+            Where ExternalSystemCode= <exp paramId="ExternalSystemCode" />
+                and ExternalSystemDimensionCode= <exp paramId="ExternalSystemDimensionCode" />
+                and RelativeURL= <exp paramId="RelativeURL" />
+                and PageTypeCode= <exp paramId="PageTypeCode" /> )
+                        BEGIN
+                            Select @runtimePageId=CORERuntimePageId
+                            from PFM_CORE_RunTimePage
+                            Where ExternalSystemCode= <exp paramId="ExternalSystemCode" />
+                            and ExternalSystemDimensionCode= <exp paramId="ExternalSystemDimensionCode" />
+                            and RelativeURL= <exp paramId="RelativeURL" />
+                            and PageTypeCode= <exp paramId="PageTypeCode" />
+                        END
+                        ELSE
+                        BEGIN
+                            Insert into PFM_CORE_RunTimePage
+                            <columns mode="insert">
+                                    <column dbField="CORERuntimePageId" paramId="Id" />
+                                    <column dbField="Description" paramId="Description" />
+                                    <column dbField="ExternalSystemCode" paramId="ExternalSystemCode" />
+                                    <column dbField="ExternalSystemDimensionCode" paramId="ExternalSystemDimensionCode" />
+                                    <column dbField="RelativeURL" paramId="RelativeURL" />
+                                    <column dbField="PageTypeCode" paramId="PageTypeCode" />
+                                    <column dbField="CreatorId" paramId="userId" />
+                                    <column dbField="CreatedDate" paramId="timeStamp" />
+                                    <column dbField="LastUpdateId" paramId="userId" />
+                                    <column dbField="LastUpdateDate" paramId="timeStamp" />
+                                </columns>
+                            set @runtimePageId=<exp paramId="Id" />
+            END
+
+            Insert into PFM_CORE_RunTimePageView
+            (ViewId,ViewName,CreatorId,CreatedDate,LastUpdateId,LastUpdateDate,CORERuntimePageId)
+            values
+            ( newid()
+              ,<exp paramId="ViewName" />
+              ,<exp paramId="userId" />
+              ,<exp paramId="timeStamp" />
+              ,<exp paramId="userId" />
+              ,<exp paramId="timeStamp" />
+            ,@runtimePageId
+            )
+
+            END
+            Select TOP 1 ViewId Id,*
+            from PFM_CORE_RunTimePageView
+            Where ViewName=<exp paramId="ViewName" />
+            and CORERuntimePageId IN (Select CORERuntimePageId
+            from PFM_CORE_RunTimePage
+            Where ExternalSystemCode= <exp paramId="ExternalSystemCode" />
+            and ExternalSystemDimensionCode= <exp paramId="ExternalSystemDimensionCode" />
+            and RelativeURL= <exp paramId="RelativeURL" />
+            and PageTypeCode= <exp paramId="PageTypeCode" />)
+            ORDER BY CreatedDate
+
+
+        </sql>
+    </statement>
+
+  <statement name="GetUrl" connection="Common">
+    <param id="UrlId" required="true" type="Guid"/>
+    <sql>
+      select REPLACE(RelativeUrl,'{0}',cast(DimensionValue as varchar(MAX)))  from PFM_CORE_PreDefinedPage p
+      join ExternalSystemDimensionValue v on
+      p.ExternalSystemCode = v.ExternalSystemCode and
+      p.ExternalSystemDimensionCode = v.ExternalSystemDimensionCode
+      where p.COREPreDefinedPageId = <exp paramId="UrlId"/>
+    </sql>
+  </statement>
+
+  <statement name="GetUrlExternalSystems" connection="Common">
+    <param id="ExternalSystemCode" required="true" type="Int32"/>
+    <param id="ExternalSystemDimensionCode" required="true" type="Int32"/>
+    <sql>
+      select REPLACE(RelativeUrl,'{0}',cast(DimensionValue as varchar(MAX)))  from PFM_CORE_PreDefinedPage p
+      join ExternalSystemDimensionValue v on
+      p.ExternalSystemCode = v.ExternalSystemCode and
+      p.ExternalSystemDimensionCode = v.ExternalSystemDimensionCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="p.ExternalSystemCode" paramId="ExternalSystemCode" />
+          <exp op="=" dbField="p.ExternalSystemDimensionCode" paramId="ExternalSystemDimensionCode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetPageConfigXML" connection="Common">
+    <param id="COREPreDefinedPageId" required="true" type="Guid"/>
+    <sql>
+      SELECT PageConfig
+      FROM PFM_PageConfig_P p
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="p.COREPreDefinedPageId" paramId="COREPreDefinedPageId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>

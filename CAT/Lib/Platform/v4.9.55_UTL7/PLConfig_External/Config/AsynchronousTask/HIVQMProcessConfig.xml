@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/Workspace/Tools/REISchemas/AsynchronousTask.xsd">
+  <userId>49F8AC75-5D25-4F81-86D9-48E895824257</userId>
+  <itemRepositories>
+    <default pollInterval="300"
+			itemTable="AsynchronousTaskItem"
+		  itemProcessedTable="AsynchronousTaskCompletedItem"
+			errorTable="AsynchronousTaskError"/>
+  </itemRepositories>  
+  <processes> 
+    <process processType="146" maxThreads="1" finalStatus="2">    
+      <task input="1" output="2" assembly="HIVQMAsynchronousService" type="HIVQMAsynchronousService.HIVQMUpload"/>   
+    </process>     
+  </processes>
+</root>
+

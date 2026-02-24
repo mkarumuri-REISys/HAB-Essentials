@@ -1,0 +1,14 @@
+﻿<root>
+  <Internal>
+    <add name="ToolTip" value="Provide Feedback"  />
+    <add name="CorePredefinedPageId" value="65CFAA16-0C64-461B-BE9A-41C7367DA38C"/>
+  </Internal>
+  <External>
+    <add name="ToolTip" value="Questions/Comments"  />
+    <add name="CorePredefinedPageId" value="A22E9B06-D09F-46B2-9B48-9988CF14A3B1"/>
+  </External>
+  <FIReviewer>
+    <add name="ToolTip" value="Questions/Comments"  />
+    <add name="CorePredefinedPageId" value="C5564169-DF72-489D-A278-DC316B877777"/>
+  </FIReviewer>
+</root>

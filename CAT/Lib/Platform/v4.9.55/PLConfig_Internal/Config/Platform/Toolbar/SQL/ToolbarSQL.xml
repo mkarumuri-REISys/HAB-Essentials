@@ -1,0 +1,28 @@
+﻿<statements>
+  <statement name="GetFolders" connection="Common">
+    <param id="UserId" type="Guid" />
+    <sql>
+      WITH folders AS (
+      SELECT lpf.[FolderId]
+      , lpf.[FolderName]
+      , isnull(replace(convert(VARCHAR(MAX), esdv.DimensionValue) + rtrim(ltrim(pcpdp.RelativeURL)), '{0}', ''),'#') as NevigationUrl
+      , rlpfar.RoleId
+      , rlpfar.Hierarchy
+      , ROW_NUMBER() OVER(PARTITION BY lpf.FolderId ORDER BY rlpfar.Hierarchy DESC, rlpfar.RoleId DESC) AS FolderRank
+      , lpf.DisplayOrder
+      FROM [LU_PFM_Folders] lpf
+      join [Rel_LU_PFM_Folder_AC_Role] rlpfar on lpf.FolderId = rlpfar.FolderId
+      join PFM_CORE_PreDefinedPage pcpdp on lpf.COREPreDefinedPageId = pcpdp.COREPreDefinedPageId
+      join dbo.ExternalSystemDimensionValue esdv on pcpdp.ExternalSystemDimensionCode = esdv.ExternalSystemDimensionCode AND pcpdp.ExternalSystemCode = esdv.ExternalSystemCode
+      join AC_RelUserRole r on r.RoleId = rlpfar.RoleId
+      <where>
+        <exp op="=" dbField="r.UserId" paramId="UserId" />
+      </where>
+      )
+      SELECT f.FolderId, f.FolderName, f.NevigationUrl, f.RoleId [Role], f.DisplayOrder
+      FROM folders f
+      WHERE f.FolderRank = 1
+      ORDER BY f.DisplayOrder
+    </sql>
+  </statement>
+</statements>

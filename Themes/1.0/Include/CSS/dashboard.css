@@ -1,0 +1,204 @@
+
+.textSmall
+{
+    FONT-SIZE: 80%;    
+}
+
+.dashboardSelectMenu
+{
+	background-color: #e9e9e9;
+	font-size: 9pt;
+}
+
+.dashboardMainHeader
+{
+	background-color: #003366;
+	color: white;
+	font-size: 10pt;
+}
+.dashboardMainHeader2
+{
+	background-color: #669966;
+	color: white;
+}
+.dashboardSubHeader
+{
+	background-color: #6699CC;
+	font-size: 9pt;
+}
+.dashboardSubHeader2
+{
+	background-color: #D7E4BC;
+}
+.dashboardTable
+{
+	font-family: Verdana; 
+	font-size: 8pt; 
+	color: black;
+	background-color: white;
+}
+.dashboardTableBreadcrumbs
+{
+	color: black;
+	font-size:9pt;
+}
+.dashboardTableBreadcrumbs a:link 
+{
+	text-decoration: underline;
+	color: black;
+	font-size:9pt;
+}
+.dashboardTable a:link 
+{
+	text-decoration: underline;
+	color: black;
+}
+.dashboardTable a:visited a:hover
+{
+	text-decoration: underline;
+	color: black;
+}
+.dashboardTableINCDEC 
+{
+	text-decoration: none;
+	color: black;
+	font-size: 8pt;
+}
+.dashboardTableINCDEC a:link 
+{
+	text-decoration: none;
+	color: black;
+	font-size: 8pt;
+}
+.dashboardTableINCDEC a:visited 
+{
+	text-decoration: none;
+	color: black;
+	font-size: 8pt;
+}
+.dashboardTableINCDEC a:hover
+{
+	text-decoration: none;
+	color: black;
+	font-size: 8pt;
+}
+
+.dashboardTableLineFirstCol a:visited a:hover
+{
+	text-decoration: none;
+	color: black;
+}
+.dashboardTableLineFirstCol 
+{
+	text-decoration: none;
+	color: black;
+		font-size: 8pt;
+}
+.dashboardTableLineFirstCol a:link 
+{
+	text-decoration: none;
+	color: black;
+}
+.dashboardTableHeader
+{
+	font-family: Verdana; 
+	font-size: 12pt;
+}
+.dashboardTableSubHeaderTitle
+{
+	font-family: Verdana; 
+	font-size: 10pt;
+	border-bottom: #e9e9e9 1pt solid;
+	background-color: #e9e9e9;
+}
+.dashboardTableTertiaryHeaderTitle
+{
+	font-family: Verdana; 
+	font-size: 8pt;
+	border-bottom: #e9e9e9 1pt solid;
+}
+.dashboardTableHeaderBorder
+{
+	font-family: Verdana; 
+	font-size: 11pt;
+	border-bottom: #989898 1pt solid;
+}
+.dashboardTableHeaderBorder2
+{
+	font-family: Verdana; 
+	font-size: 11pt;
+	border-bottom: #989898 1pt solid;
+}
+.dashboardTableHeader a:link
+{
+	text-decoration: none;
+	color: black;
+}
+.dashboardMenu
+{
+	position:absolute; 
+	z-index:5; 
+	width:150px;
+	visibility:hidden;
+}
+.dashboardMenu a:link
+{
+	text-decoration:none;
+}
+#dashboardSubMenu
+{
+	list-style: none;
+}
+#dashboardMenu li {
+  float: right;
+  position: relative;
+  }
+  
+#dashboardMenu li ul {
+  display: none;
+  position: absolute; 
+  top: 1em;
+  }
+
+.dashboardTableHeader a:visited
+{
+	text-decoration: none;
+	color: black;
+}
+.dashboardTableHeader a:hover
+{
+	color: #6699CC;
+}
+.dashboardTableSubHeader
+{
+	font-family: Verdana; 
+	font-size: 8pt;
+	border-bottom: #989898 1pt solid;
+}
+
+.dashboardTableLine
+{
+	border-bottom: #e9e9e9 1pt solid;
+	border-left: #e9e9e9 1pt solid;
+	border-collapse:collapse;
+}
+.dashboardTableLineFirstCol
+{
+	border-bottom: #e9e9e9 1pt solid;
+}
+.dashboardTableMenuItem
+{
+	font-family: Verdana; 
+	font-size: 8pt;
+	border-bottom: #989898 1pt solid;
+}
+
+.DashBoardNormal
+{
+    FONT-WEIGHT: normal;	
+}
+.DashBoardBold
+{
+    FONT-WEIGHT:bold;	
+}
+

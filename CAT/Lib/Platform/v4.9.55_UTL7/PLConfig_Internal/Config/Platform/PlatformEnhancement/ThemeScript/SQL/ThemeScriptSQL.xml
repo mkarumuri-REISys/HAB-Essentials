@@ -1,0 +1,43 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+  <statement name="GetThemesData" connection="Common">
+    <param id="pfmVersion" type="String"/>
+    <sql>
+      SELECT
+      PFMBD.TASVersionCode as ThemeVersion,
+      ExtSys.DimensionValue as BaseURL,
+      REPLACE(pcp.RelativeUrl, '{0}', CAST(ExtSys.DimensionValue as varchar(200))) as AbsoluteUrl
+      FROM
+      PFM_TASVersionConfig PFMBD
+      INNER JOIN LU_PFM_Version PFMVersion on PFMVersion.LookupCode = PFMBD.CoreVersionCode
+      INNER JOIN PFM_CORE_PreDefinedPage PCP on PCP.COREPreDefinedPageId = PFMBD.COREPreDefinedPageId
+      INNER JOIN ExternalSystemDimensionValue ExtSys on ExtSys.ExternalSystemCode = PCP.ExternalSystemCode AND ExtSys.ExternalSystemDimensionCode = PCP.ExternalSystemDimensionCode
+      <where>
+      <exp op="AND">
+        <exp op="=" dbField="PFMVersion.DisplayValue" paramId="pfmVersion" />
+        <exp op="=" dbField="ExtSys.ExternalSystemCode">203</exp>
+      </exp>
+    </where>
+    </sql>
+  </statement>
+  <statement name="GetScriptsData" connection="Common">
+    <param id="pfmVersion" type="String"/>
+    <sql>
+      SELECT
+      PFMBD.TASVersionCode as ScriptVersion,
+      ExtSys.DimensionValue as BaseURL,
+      REPLACE(pcp.RelativeUrl, '{0}', CAST(ExtSys.DimensionValue as varchar(200))) as AbsoluteUrl
+      FROM
+      PFM_TASVersionConfig PFMBD
+      INNER JOIN LU_PFM_Version PFMVersion on PFMVersion.LookupCode = PFMBD.CoreVersionCode
+      INNER JOIN PFM_CORE_PreDefinedPage PCP on PCP.COREPreDefinedPageId = PFMBD.COREPreDefinedPageId
+      INNER JOIN ExternalSystemDimensionValue ExtSys on ExtSys.ExternalSystemCode = PCP.ExternalSystemCode AND ExtSys.ExternalSystemDimensionCode = PCP.ExternalSystemDimensionCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="PFMVersion.DisplayValue" paramId="pfmVersion" />
+          <exp op="=" dbField="ExtSys.ExternalSystemCode">204</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>
+

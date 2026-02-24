@@ -1,0 +1,124 @@
+<objectMap>
+	<source type="1">
+		<all>
+			<component>workflowProcess</component>		
+			<statement for="get">getAll</statement>
+			<statement for="write">insert</statement>
+			<statement for="remove">remove</statement>
+		</all>
+		<target type="11">
+			<component>workflowProcess</component>			
+			<statement for="get">getApp</statement>
+		</target>
+		<target type="12">
+			<component>workflowProcess</component>			
+			<statement for="get">getGrant</statement>
+		</target>
+		<target type="12" thruType="11">
+			<component>workflowProcess</component>			
+			<statement for="get">getGrantThruApp</statement>
+		</target>
+		<target type="13">
+			<component>workflowProcess</component>			
+			<statement for="get">getProg</statement>
+		</target>
+		<target type="13" thruType="11">
+			<component>workflowProcess</component>			
+			<statement for="get">getProgThruApp</statement>
+		</target>
+		<target type="13" thruType="12">
+			<component>workflowProcess</component>			
+			<statement for="get">getProgThruGrant</statement>
+		</target>
+	</source>
+	<source type="2">
+		<all>
+			<component>workflowActivity</component>		
+			<statement for="get">getAll</statement>
+			<statement for="write">insert</statement>
+			<statement for="remove">remove</statement>
+		</all>
+	</source>
+	<source type="3">
+		<all>
+			<component>workflowWorkItem</component>		
+			<statement for="get">getAll</statement>
+			<statement for="write">insert</statement>
+			<statement for="remove">removeAll</statement>
+		</all>
+	</source>
+	<source type="11">
+		<target type="1">
+			<component>applications</component>
+			<statement for="get">getProcInst</statement>
+		</target>
+		<target type="4">
+			<component>messages</component>
+			<statement for="get">getMessagesForApplication</statement>
+		</target>
+		<target type="6">
+			<component>issues</component>
+			<statement for="get">getIssuesForApplication</statement>
+		</target>
+	</source>
+	<source type="12">
+		<target type="1">
+			<component>grants</component>
+			<statement for="get">getProcInst</statement>
+		</target>
+		<target type="1" thruType="11">
+			<component>programs</component>
+			<statement for="get">getProcInstThruApp</statement>
+		</target>
+		<target type="4">
+			<component>messages</component>
+			<statement for="get">getMessagesForGrant</statement>
+		</target>
+		<target type="6">
+			<component>issues</component>
+			<statement for="get">getIssuesForGrant</statement>
+		</target>
+	</source>
+	<source type="13">
+		<target type="1">
+			<component>programs</component>
+			<statement for="get">getProcInst</statement>
+		</target>
+		<target type="1" thruType="11">
+			<component>programs</component>
+			<statement for="get">getProcInstThruApp</statement>
+		</target>
+		<target type="1" thruType="12">
+			<component>programs</component>
+			<statement for="get">getProcInstThruGrant</statement>
+		</target>
+		<target type="4">
+			<component>messages</component>
+			<statement for="get">getMessagesForProgram</statement>
+		</target>
+		<target type="6">
+			<component>issues</component>
+			<statement for="get">getIssuesForProgram</statement>
+		</target>
+	</source>
+	<source type="4">
+		<all>
+			<component>messages</component>		
+			<statement for="get">getAll</statement>
+			<statement for="write">insertAll</statement>
+			<statement for="remove">removeAll</statement>
+		</all>
+	</source>
+	<source type="6">
+		<all>
+			<component>issues</component>		
+			<statement for="get">getAll</statement>
+			<statement for="write">insertAll</statement>
+			<statement for="remove">removeAll</statement>
+		</all>
+		<target type="1">
+			<component>issues</component>
+			<statement for="get">getProcessInstance</statement>
+		</target>
+	</source>
+</objectMap>

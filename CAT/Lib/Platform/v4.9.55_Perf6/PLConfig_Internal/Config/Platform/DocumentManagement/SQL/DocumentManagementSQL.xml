@@ -1,0 +1,832 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="GetDMInfo">
+    <param id="FileName" type="string" size="500" />
+    <param id="FileType"/>
+    <param id="FileDescription" type="string" size="500" />
+    <param id="UploadedBy" type="string" size="500" />
+    <param id="UploadedByFirstName" type="string" size="500" />
+    <param id="UploadedByLastName" type="string" size="500" />
+    <param id="AttachmentListOrderBy" type="string" size="100" />
+    <param id="PostDMStatements" type="string" size="5" />
+    <sql>
+      select
+      TRI.*,
+      DM.FileName,
+      DM.FileSize,
+      DM.FileDescription,
+      DM.UploadedDateTime,
+      P.FirstName + ' ' + P.LastName as UploadedBy
+      <optional depends="PostDMStatements == 'True'">
+        into #TempDMInfo
+      </optional>
+      from #TempResourceInfo TRI
+      join DM_Attachment DM on DM.AttachmentId = TRI.AttachmentId
+      and DM.AttachmentInstance = TRI.AttachmentInstance
+      join People P on P.UserId = DM.CreatorId
+      <where>
+        <exp op="and">
+          <exp op="like" dbField="DM.FileName" paramId="FileName" />
+          <exp op="IN" dbField="DM.FileExtension" paramId="FileType" />
+          <exp op="like" dbField="DM.FileDescription" paramId="FileDescription" />
+          <exp op="like" dbField="IsNull(P.LastName, '') + IsNull(P.FirstName, '')" paramId="UploadedBy" />
+          <exp op="like" dbField="P.FirstName" paramId="UploadedByFirstName" />
+          <exp op="like" dbField="P.LastName" paramId="UploadedByLastName" />
+        </exp>
+      </where>
+      <optional depends="AttachmentListOrderBy != null &amp;&amp; AttachmentListOrderBy != ''">
+        order by <dynamic paramId="AttachmentListOrderBy" />
+      </optional>;
+      drop table #TempResourceInfo
+    </sql>
+  </statement>
+  <statement name="GetCurrentResourceInstance">
+    <param id="ParentTable" type="String" size="128"/>
+    <param id="ResourceInstanceColumn" type="String" size="128"/>
+    <param id="ResourceValueColumn" type="String" size="128"/>
+    <param id="ResourceValue" type="String" size="36"/>
+
+    <sql>
+      SELECT
+      <dynamic paramId="ResourceInstanceColumn"/>
+      FROM
+      <dynamic paramId="ParentTable"/>
+      WHERE
+      <dynamic paramId="ResourceValueColumn"/>='<dynamic paramId="ResourceValue"/>'
+    </sql>
+  </statement>
+  <statement name="copyAttachments">
+    <param id="FromTableName" type="String" required="true"/>
+    <param id="ToTableName" type="String" required="true"/>
+    <param id="FromSelect" type="String" required="true" />
+    <param id="FromWhere" type="String" required="true" />
+    <param id="ToFields" type="String" required="true"/>
+    <param id="ToSelect" type="String" required="true"/>
+    <param id="ToFileLocation" type="String"/>
+    <param id="ToDatabaseName" type="String"/>
+    <param id="FromDatabaseName" type="String"/>
+    <param id="UserId" type="String"/>
+
+    <sql>
+      declare @T_Attachments table (
+      PurposeCode			int,
+      AttachmentId		varchar(36),
+      AttachmentInstance	varchar(36),
+      OldFileLocation		varchar(200),
+      OldPhysicalFileName	varchar(50),
+      NewPhysicalFileName	varchar(50),
+      OldAttachmentId		varchar(36),
+      OldAttachmentInst	varchar(36));
+
+      INSERT INTO
+      @T_Attachments(
+      OldAttachmentId,
+      OldAttachmentInst,
+      PurposeCode,
+      AttachmentId,
+      AttachmentInstance
+      )
+      SELECT
+      <dynamic paramId="FromSelect"/>,
+      NewID(),
+      0
+      FROM
+      <dynamic paramId="FromTableName"/>
+      <where>
+        <dynamic paramId="FromWhere"/>
+      </where>;
+
+      /* Update T_Attachments to add the old Physical File Name.  Implemented via an update query in a desire not to risk breaking dynamic column names. */
+
+      UPDATE
+      @T_Attachments
+      SET
+      OldPhysicalFileName= sourceMainTable.PhysicalFileName
+      FROM
+      @T_Attachments cachedColumns
+      INNER JOIN
+      <dynamic paramId="FromDatabaseName"/>DM_Attachment sourceMainTable
+      ON
+      cachedColumns.OldAttachmentId=sourceMainTable.attachmentId
+      /* PFM-2136 : Add back attachment instance conjunction */
+      AND
+      cachedColumns.OldAttachmentInst = sourceMainTable.AttachmentInstance;
+      /* Insert into the Target Main Attachment Table */
+
+      INSERT INTO
+      <dynamic paramId="ToDatabaseName"/>DM_Attachment(AttachmentId, FileLocation, FileName, FileExtension, AttachmentInstance, FileSize, UploadedDateTime, PhysicalFileName, FileDescription, CreatorId, CreatedDate, LastUpdateDate, LastUpdateId)
+      SELECT
+      mappings.AttachmentId,
+      source.FileLocation,
+      source.FileName,
+      source.FileExtension,
+      mappings.AttachmentInstance,
+      source.FileSize,
+      source.UploadedDateTime,
+      mappings.AttachmentId + '_V0.' + source.FileExtension AS PhysicalFileName,
+      source.FileDescription,
+      <exp paramId="UserId"/>,
+      getdate(),
+      getdate(),
+      <exp paramId="UserId"/>
+      FROM
+      <dynamic paramId="FromDatabaseName"/>DM_Attachment source
+      INNER JOIN
+      @T_Attachments mappings
+      ON
+      source.AttachmentId=mappings.OldAttachmentId
+      AND
+      source.AttachmentInstance=mappings.OldAttachmentInst
+
+      /* Insert into the Target Wrapper Table */
+
+      INSERT INTO
+      <dynamic paramId="ToTableName"/>
+      (<dynamic paramId="ToFields"/>)
+      SELECT
+      <dynamic paramId="ToSelect"/>
+      FROM
+      @T_Attachments;
+
+      /* Former Conditional Update Part 1 */
+      UPDATE
+      @T_Attachments
+      SET
+      OldFileLocation = DM.FileLocation + case right(DM.FileLocation,1) when '\' then '' else '\' end,
+      NewPhysicalFileName = DM.PhysicalFileName
+      FROM
+      <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      JOIN
+      @T_Attachments T
+      ON
+      T.AttachmentId = DM.AttachmentId
+      AND
+      T.AttachmentInstance = DM.AttachmentInstance;
+
+      /* Former Conditional Update Part 2 */
+      UPDATE
+      <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      <columns mode="update">
+        <column dbField="FileLocation" paramId="ToFileLocation"/>
+      </columns>
+      FROM
+      <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      JOIN
+      @T_Attachments T
+      ON
+      T.AttachmentId = DM.AttachmentId
+      AND
+      T.AttachmentInstance = DM.AttachmentInstance;
+
+
+      /* Select the result set */
+      SELECT
+      OldFileLocation,
+      OldPhysicalFileName,
+      NewPhysicalFileName,
+      OldAttachmentId,
+      AttachmentId AS NewAttachmentId
+      FROM
+      @T_Attachments
+    </sql>
+  </statement>
+  <statement name="deleteAttachments">
+    <param id="WrapperTableName" type="String" required="true"/>
+    <param id="AttachmentIdColumn" type="String" required="true"/>
+    <param id="AttachmentInstanceColumn" type="String"/>
+    <param id="WhereClause" type="String"/>
+    <param id="AttachmentId" type="String"/>
+    <param id="AttachmentInstance" type="String"/>
+    <param id="HistoryTableName" type="String" />
+    <param id="HistAttachmentIdColumn" type="String" />
+    <param id="ToDatabaseName" type="String"/>
+    <param id="AttachmentPurposeCode" type="String"/>
+    <param id="AttachmentPurposeCodeColumn" type="String"/>
+    <sql>
+      declare @T_Attachments table (
+      AttachmentId varchar(36),
+      AttachmentInstance int,
+      FilePath varchar(500));
+
+      insert into @T_Attachments(
+      AttachmentId,
+      AttachmentInstance,
+      FilePath)
+      select
+      DM.AttachmentId,
+      DM.AttachmentInstance,
+      DM.FileLocation + case right(DM.FileLocation,1) when '\' then '' else '\' end + DM.PhysicalFileName
+      from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      join <dynamic paramId="WrapperTableName"/> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+      <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+        and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+      </optional>
+      <optional depends="AttachmentPurposeCodeColumn != '' &amp;&amp; AttachmentPurposeCodeColumn != null &amp;&amp; AttachmentPurposeCode != '' &amp;&amp; AttachmentPurposeCode != null">
+        and WT.<dynamic paramId="AttachmentPurposeCodeColumn"/> = <exp paramId="AttachmentPurposeCode" />
+      </optional>
+      <optional depends="AttachmentInstanceColumn == null || AttachmentInstanceColumn==''">
+        INNER JOIN
+        (
+        SELECT
+        filter.AttachmentId,
+        Max(filter.AttachmentInstance) AS AttachmentInstance
+        FROM
+        <dynamic paramId="ToDatabaseName"/>DM_Attachment filter
+        GROUP BY
+        filter.AttachmentId
+        ) ff
+        ON
+        DM.AttachmentID=ff.AttachmentID
+        AND
+        DM.AttachmentInstance=ff.AttachmentInstance
+      </optional>
+
+
+      <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentPurposeCode"/>
+
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+          <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+          <dynamic paramId="WhereClause"/>
+
+        </exp>
+      </where>
+
+      <optional depends="HistoryTableName!=null">
+        UNION ALL
+
+        SELECT
+        DM.AttachmentId,
+        DM.AttachmentInstance,
+        DM.FileLocation + case right(DM.FileLocation,1) when '\' then '' else '\' end + DM.PhysicalFileName
+        FROM
+        <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+        join
+        <dynamic paramId="HistoryTableName" /> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+        <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+          and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+        </optional>
+        <optional depends="AttachmentPurposeCodeColumn != '' &amp;&amp; AttachmentPurposeCodeColumn != null &amp;&amp; AttachmentPurposeCode != '' &amp;&amp; AttachmentPurposeCode != null">
+          and WT.<dynamic paramId="AttachmentPurposeCodeColumn"/> = <exp paramId="AttachmentPurposeCode" />
+        </optional>
+        <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentPurposeCode"/>
+
+        <where>
+          <exp op="and">
+            <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+            <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+            <dynamic paramId="WhereClause"/>
+          </exp>
+        </where>
+
+
+      </optional>
+
+
+      ;
+      delete from <dynamic paramId="WrapperTableName"/>
+      where <dynamic paramId="AttachmentIdColumn"/> in (select AttachmentId from @T_Attachments);
+      <optional depends="HistoryTableName != null">
+        --Delete history
+        delete from <dynamic paramId="HistoryTableName" />
+        where <dynamic paramId="HistAttachmentIdColumn" /> in (select AttachmentId from @T_Attachments);
+        delete from <dynamic paramId="ToDatabaseName"/>DM_Attachment
+        where AttachmentId in (select AttachmentId from @T_Attachments);
+      </optional>
+      <optional depends="HistoryTableName == null">
+        DELETE
+        <dynamic paramId="ToDatabaseName"/>DM_Attachment
+        FROM
+        <dynamic paramId="ToDatabaseName"/>DM_Attachment da
+        INNER JOIN
+        @T_Attachments ta
+        ON
+        da.AttachmentId=ta.AttachmentId
+        AND
+        da.AttachmentInstance=ta.AttachmentInstance
+      </optional>
+      select FilePath as FilePath
+      from @T_Attachments
+    </sql>
+  </statement>
+  <statement name="getAttachmentDetailByAttachmentId">
+    <param id="AttachmentId" type="String"/>
+    <param id="AttachmentInstance" type="String"/>
+    <param id="ToDatabaseName" type="String"/>
+    <sql>
+      select
+      DM.CreatorId as DocumentCreatorId,
+      DM.AttachmentId,
+      DM.AttachmentInstance,
+      DM.FileLocation,
+      DM.FileName,
+      DM.FileSize,
+      DM.FileExtension,
+      DM.FileDescription,
+      DM.PhysicalFileName,
+      DM.UploadedDateTime as CreatedDate,
+      IsNull(
+      '&lt;a class="regText tooltip" href="#" title="'
+      + substring(convert(varchar(20), DM.UploadedDateTime, 9), 13, 5)
+      + ' '
+      + substring(convert(varchar(30), DM.UploadedDateTime, 9), 25, 2)
+      + '" style="text-decoration: none">'
+      + CONVERT(VARCHAR(10),DM.UploadedDateTime,101)
+      +'&lt;/a>','-'
+      ) as CreatedDateString,
+      isnull(P.FirstName, '') + case when P.FirstName is null or P.LastName is null then '' else ' ' end + isnull(P.LastName, '') as CreatedBy
+      from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      join <dynamic paramId="ToDatabaseName"/>People P on P.UserId = DM.CreatorId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+          <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+        </exp>
+      </where>
+      order by DM.AttachmentInstance desc
+    </sql>
+  </statement>
+  <statement name="getAttachmentDetails">
+    <param id="WrapperTableName" type="String" required="true"/>
+    <param id="AttachmentIdColumn" type="String" required="true"/>
+    <param id="AttachmentInstanceColumn" type="String"/>
+    <param id="PurposeCodeColumn" type="String"/>
+    <param id="WhereClause" type="String"/>
+    <param id="AttachmentId" type="String"/>
+    <param id="AttachmentInstance" type="String"/>
+    <param id="orderBy" type="String" default="DM.UploadedDateTime desc"/>
+    <param id="ToDatabaseName" type="String"/>
+    <param id="ResourceValueColumn" type="String" />
+    <param id="ResourceInstanceColumn" type="String" />
+    <param id="TablePrefix" type="String" />
+    <param id="AdditionalWrapperSelect" type="String" />
+
+    <sql>
+      select
+      DM.CreatorId as DocumentCreatorId,
+      DM.AttachmentId,
+      DM.AttachmentInstance,
+      DM.FileLocation,
+      DM.FileName,
+      DM.FileSize,
+      DM.FileExtension,
+      DM.FileDescription,
+      DM.PhysicalFileName,
+      DM.UploadedDateTime as CreatedDate,
+      IsNull(
+      '&lt;a class="regText tooltip" href="#" title="'
+      + substring(convert(varchar(20), DM.UploadedDateTime, 9), 13, 5)
+      + ' '
+      + substring(convert(varchar(30), DM.UploadedDateTime, 9), 25, 2)
+      + '" style="text-decoration: none">'
+      + CONVERT(VARCHAR(10),DM.UploadedDateTime,101)
+      +'&lt;/a>','-'
+      ) as CreatedDateString,
+      isnull(P.FirstName, '') + case when P.FirstName is null or P.LastName is null then '' else ' ' end + isnull(P.LastName, '') as CreatedBy
+      <optional depends="PurposeCodeColumn != '' &amp;&amp; PurposeCodeColumn != null">
+        ,LAP.LookupCode as PurposeCode
+        ,LAP.LongDisplayValue as PurposeDescription
+      </optional>
+      <optional depends="ResourceValueColumn != '' &amp;&amp; ResourceValueColumn != null">
+        ,<dynamic paramId="ResourceValueColumn" /> AS ResourceValue
+      </optional>
+      <optional depends="ResourceInstanceColumn != '' &amp;&amp; ResourceInstanceColumn != null">
+        ,<dynamic paramId="ResourceInstanceColumn" /> AS ResourceInstance
+      </optional>
+      <optional depends="AdditionalWrapperSelect != '' &amp;&amp; AdditionalWrapperSelect != null">
+        ,<dynamic paramId="AdditionalWrapperSelect"/>
+      </optional>
+      from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      <optional depends="AttachmentInstance == null || AttachmentInstance == ''">
+        join (
+        select
+        DM.AttachmentId,
+        max(DM.AttachmentInstance) as AttachmentInstance
+        from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+        join <dynamic paramId="WrapperTableName"/> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+        <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+          and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+        </optional>
+        <where>
+          <exp op="and">
+            <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+            <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+            <dynamic paramId="WhereClause"/>
+          </exp>
+        </where>
+        group by DM.AttachmentId
+        ) as MaxInst on MaxInst.AttachmentId = DM.AttachmentId and MaxInst.AttachmentInstance = DM.AttachmentInstance
+      </optional>
+      join <dynamic paramId="WrapperTableName"/> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+      <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+        and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+      </optional>
+      <optional depends="PurposeCodeColumn != '' &amp;&amp; PurposeCodeColumn != null">
+        join <dynamic paramId="ToDatabaseName"/>LookupAttachmentPurpose LAP on LAP.LookupCode = WT.<dynamic paramId="PurposeCodeColumn"/>
+      </optional>
+      join <dynamic paramId="TablePrefix"/>People P on P.UserId = DM.CreatorId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+          <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+          <dynamic paramId="WhereClause"/>
+        </exp>
+      </where>
+      <sort paramId="orderBy"/>
+    </sql>
+  </statement>
+  <statement name="getAttachmentListResourcePurpose">
+    <param id="ToDatabaseName" type="String"/>
+    <param id="WrapperTableName" type="String" required="true"/>
+    <param id="AttachmentIdColumn" type="String" required="true"/>
+    <param id="AttachmentInstanceColumn" type="String"/>
+    <param id="PurposeCodeColumn" type="String"/>
+    <param id="ResourceValueColumn" type="String" />
+    <param id="ResourceInstanceColumn" type="String" />
+    <param id="WhereClause" type="String"/>
+    <param id="AttachmentId" type="String"/>
+    <param id="AttachmentInstance" type="String"/>
+    <param id="orderBy" type="String" default="DM.UploadedDateTime desc"/>
+
+
+    <param id="TablePrefix" type="String" />
+    <sql>
+      select
+      CAST (DM.CreatorId as varchar(36)) as DocumentCreatorId,
+      CAST(DM.AttachmentId as varchar(36)) as AttachmentId,
+      CAST( DM.AttachmentInstance as varchar(36)) as AttachmentInstance,
+      DM.FileLocation as FileLocation,
+      DM.FileName as FileName,
+      DM.FileSize as FileSize,
+      DM.FileExtension as FileExtension,
+      DM.FileDescription as FileDescription,
+      DM.PhysicalFileName as PhysicalFileName,
+      DM.UploadedDateTime as UploadedDateTime,
+      IsNull(
+      '&lt;a class="regText tooltip" href="#" title="'
+      + substring(convert(varchar(20), DM.UploadedDateTime, 9), 13, 5)
+      + ' '
+      + substring(convert(varchar(30), DM.UploadedDateTime, 9), 25, 2)
+      + '" style="text-decoration: none">'
+      + CONVERT(VARCHAR(10),DM.UploadedDateTime,101)
+      +'&lt;/a>','-'
+      ) as CreatedDateString,
+      isnull(P.FirstName, '') + case when P.FirstName is null or P.LastName is null then '' else ' ' end + isnull(P.LastName, '') as CreatedBy
+      <optional depends="PurposeCodeColumn != '' &amp;&amp; PurposeCodeColumn != null">
+        ,LAP.LookupCode as PurposeCode
+        ,LAP.LongDisplayValue as PurposeDescription
+      </optional>
+      <optional depends="ResourceValueColumn != '' &amp;&amp; ResourceValueColumn != null">
+        ,<dynamic paramId="ResourceValueColumn" /> AS ResourceValue
+      </optional>
+      <optional depends="ResourceInstanceColumn != '' &amp;&amp; ResourceInstanceColumn != null">
+        ,<dynamic paramId="ResourceInstanceColumn" /> AS ResourceInstance
+      </optional>
+      from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      <optional depends="AttachmentInstance == null || AttachmentInstance == ''">
+        join (
+        select
+        DM.AttachmentId,
+        max(DM.AttachmentInstance) as AttachmentInstance
+        from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+        join <dynamic paramId="WrapperTableName"/> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+        <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+          and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+        </optional>
+        <where>
+          <exp op="and">
+            <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+            <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+            <dynamic paramId="WhereClause"/>
+          </exp>
+        </where>
+        group by DM.AttachmentId
+        ) as MaxInst on MaxInst.AttachmentId = DM.AttachmentId and MaxInst.AttachmentInstance = DM.AttachmentInstance
+      </optional>
+      join <dynamic paramId="WrapperTableName"/> WT on WT.<dynamic paramId="AttachmentIdColumn"/> = DM.AttachmentId
+      <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+        and WT.<dynamic paramId="AttachmentInstanceColumn"/> = DM.AttachmentInstance
+      </optional>
+      <optional depends="PurposeCodeColumn != '' &amp;&amp; PurposeCodeColumn != null">
+        join <dynamic paramId="ToDatabaseName"/>LookupAttachmentPurpose LAP on LAP.LookupCode = WT.<dynamic paramId="PurposeCodeColumn"/>
+      </optional>
+      join <dynamic paramId="TablePrefix"/>People P on P.UserId = DM.CreatorId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="DM.AttachmentId" paramId="AttachmentId"/>
+          <exp op="=" dbField="DM.AttachmentInstance" paramId="AttachmentInstance"/>
+          <dynamic paramId="WhereClause"/>
+        </exp>
+      </where>
+      <sort paramId="orderBy"/>
+    </sql>
+  </statement>
+  <statement name="moveAttachments">
+    <param id="FromTableName" type="String" required="true"/>
+    <param id="ToTableName" type="String" required="true"/>
+    <param id="FromSelect" type="String" required="true" />
+    <param id="FromWhere" type="String" required="true" />
+    <param id="ToFields" type="String" required="true"/>
+    <param id="ToSelect" type="String" required="true"/>
+    <param id="ToFileLocation" type="String"/>
+    <param id="ToDatabaseName" type="String"/>
+    <param id="FromDatabaseName" type="String"/>
+    <param id="AddFromSelect" type="String"/>
+    <param id="AddTempTableData" type="String"/>
+    <param id="AddToSelect" type="String"/>
+    
+
+    <sql>
+      declare @T_Attachments table (
+      PurposeCode			int,
+      AttachmentId		varchar(36),
+      AttachmentInstance	varchar(36),
+      OldFileLocation		varchar(200),
+      PhysicalFileName	varchar(50)
+      <optional depends="AddTempTableData != '' &amp;&amp; AddTempTableData != null">
+        ,<dynamic paramId="AddTempTableData"/>
+      </optional>
+      );
+
+      insert into @T_Attachments(
+      AttachmentId,
+      AttachmentInstance,
+      PurposeCode
+      <optional depends="AddFromSelect != '' &amp;&amp; AddFromSelect != null">
+        ,<dynamic paramId="AddFromSelect"/>
+      </optional>
+      )
+      select <dynamic paramId="FromSelect"/>
+      from <dynamic paramId="FromTableName"/>
+      <where>
+        <dynamic paramId="FromWhere"/>
+      </where>;
+      delete from <dynamic paramId="FromTableName"/>
+      <where>
+        <dynamic paramId="FromWhere"/>
+      </where>;
+      insert into <dynamic paramId="ToTableName"/>
+      (<dynamic paramId="ToFields"/>
+
+      <optional depends="AddToSelect != '' &amp;&amp; AddToSelect != null">
+        ,<dynamic paramId="AddToSelect"/>
+      </optional>)
+      select <dynamic paramId="ToSelect"/>
+      from 		@T_Attachments;
+
+      <optional depends="FromDatabaseName != ToDatabaseName">
+        insert into <dynamic paramId="ToDatabaseName"/>DM_Attachment(AttachmentId, FileLocation, FileName, FileExtension, AttachmentInstance, FileSize, UploadedDateTime, PhysicalFileName, FileDescription, CreatorId, CreatedDate, LastUpdateDate, LastUpdateId)
+        select AttachmentId, FileLocation, FileName, FileExtension, AttachmentInstance, FileSize, UploadedDateTime, PhysicalFileName, FileDescription, CreatorId, CreatedDate, LastUpdateDate, LastUpdateId
+        
+        from <dynamic paramId="FromDatabaseName"/>DM_Attachment
+        <where>
+          AttachmentId in (select AttachmentId from @T_Attachments)
+        </where>
+        delete from <dynamic paramId="FromDatabaseName"/>DM_Attachment
+        <where>
+          AttachmentId in (select AttachmentId from @T_Attachments)
+        </where>
+      </optional>
+
+      <optional depends="FromTableName != ToTableName">
+        update @T_Attachments
+        set OldFileLocation = DM.FileLocation + case right(DM.FileLocation,1) when '\' then '' else '\' end,
+        PhysicalFileName = DM.PhysicalFileName
+        from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+        join @T_Attachments T on T.AttachmentId = DM.AttachmentId
+        and T.AttachmentInstance = DM.AttachmentInstance;
+
+        update <dynamic paramId="ToDatabaseName"/>DM_Attachment
+        <columns mode="update">
+          <column dbField="FileLocation" paramId="ToFileLocation"/>
+        </columns>
+        from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+        join @T_Attachments T on T.AttachmentId = DM.AttachmentId
+        and T.AttachmentInstance = DM.AttachmentInstance;
+      </optional>
+
+      select OldFileLocation, PhysicalFileName
+      from @T_Attachments
+    </sql>
+  </statement>
+  <statement name="updateAttachmentDescription">
+    <param id="AttachmentId" type="String" size="36" required="true"/>
+    <param id="AttachmentInstance" type="Int32"/>
+    <param id="Description" type="String" size="600"/>
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="ToDatabaseName" type="String"/>
+    <sql>
+      update <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      <columns mode="update">
+        <column dbField="FileDescription" paramId="Description" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GetDate()</column>
+      </columns>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="AttachmentId" paramId="AttachmentId" />
+          <exp op="=" dbField="AttachmentInstance" paramId="AttachmentInstance" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="updateDocumentDescription">
+    <param id="AttachmentId" type="String" size="36" required="true"/>
+    <param id="Description" type="String" size="600"/>
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="ToDatabaseName" type="String"/>
+    <sql>
+      update <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      <columns mode="update">
+        <column dbField="FileDescription" paramId="Description" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GetDate()</column>
+      </columns>
+      WHERE
+      <exp op="=" dbField="AttachmentId" paramId="AttachmentId" />
+      AND
+      AttachmentInstance = (
+      SELECT
+      Max(AttachmentInstance)
+      FROM
+      <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      WHERE
+      <exp op="=" dbField="AttachmentId" paramId="AttachmentId" />
+      )
+
+    </sql>
+  </statement>
+  <statement name="uploadAttachment">
+    <param id="AttachmentId" type="String" required="true"/>
+    <param id="AttachmentInstance" type="Int32" required="true"/>
+    <param id="FileLocation" type="String" required="true"/>
+    <param id="FileName" type="String" required="true"/>
+    <param id="FileExtension" type="String" required="true"/>
+    <param id="FileSize" type="String" required="true"/>
+    <param id="PhysicalFileName" type="String" required="true"/>
+    <param id="FileDescription" type="String"/>
+    <param id="UserId" type="String" required="true"/>
+    <param id="WrapperTableName" type="String" required="true"/>
+    <param id="WrapperTableFields" type="String" required="true"/>
+    <param id="WrapperTableValues" type="String" required="true"/>
+    <param id="MaxAttachmentCount" type="Int32"/>
+    <param id="MaxAttachmentWhereClause" type="String"/>
+    <param id="ToDatabaseName" type="String"/>
+    <sql>
+      declare @MaxAttachmentCount int,
+      @CurrentAttachmentCount int,
+      @ReturnCode int;
+      set @MaxAttachmentCount = 1;
+      set @CurrentAttachmentCount = 0;
+      <optional depends="MaxAttachmentCount != null &amp;&amp; MaxAttachmentCount != ''">
+        set @MaxAttachmentCount = <exp paramId="MaxAttachmentCount"/>;
+        select @CurrentAttachmentCount = count(*)
+        from <dynamic paramId="WrapperTableName"/> WT
+        where <dynamic paramId="MaxAttachmentWhereClause"/>;
+      </optional>
+      if @CurrentAttachmentCount &lt; @MaxAttachmentCount
+      begin
+      declare @Date datetime;
+      set @Date = GetDate();
+      insert into <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      <columns mode="insert">
+        <column dbField="AttachmentId" paramId="AttachmentId" />
+        <column dbField="AttachmentInstance" paramId="AttachmentInstance" />
+        <column dbField="FileLocation" paramId="FileLocation" />
+        <column dbField="FileName" paramId="FileName" />
+        <column dbField="FileExtension" paramId="FileExtension" />
+        <column dbField="FileSize" paramId="FileSize" />
+        <column dbField="UploadedDateTime">GetDate()</column>
+        <column dbField="PhysicalFileName" paramId="PhysicalFileName" />
+        <column dbField="FileDescription" paramId="FileDescription" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate">@Date</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">@Date</column>
+      </columns>;
+      insert into <dynamic paramId="WrapperTableName"/>
+      (<dynamic paramId="WrapperTableFields"/>)
+      values (<dynamic paramId="WrapperTableValues"/>);
+      set @ReturnCode = 0;
+      end
+      <!--max count already reached-->
+      else
+      begin
+      set @ReturnCode = 1;
+      end
+      select @ReturnCode as ReturnCode
+    </sql>
+  </statement>
+  <statement name="archiveAttachments">
+    <param id="FromTableName" type="String"/>
+    <param id="FromSelect" type="String"/>
+    <param id="FromWhere" type="String"/>
+    <param id="HistoryTableName" type="String"/>
+    <param id="HistoryFields" type="String"/>
+    <param id="HistorySelect" type="String"/>
+    <param id="AttachmentIdColumn" type="String"/>
+    <param id="AttachmentInstanceColumn" type="String"/>
+    <param id="AttachmentPurposeCodeColumn" type="String"/>
+    <param id="AttachmentModeTypeCodeColumn" type="String"/>
+    <param id="LastUpdateIdColumn" type="String"/>
+    <param id="LastUpdateDateColumn" type="String"/>
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="ToDatabaseName" type="String"/>
+    <param id="FileLocation" type="String"/>
+    
+    <sql>
+      declare @T_Attachments table (
+      AttachmentId		varchar(36),
+      AttachmentInstance	int,
+      NewFileName			varchar(100),
+      OldFilePath			varchar(200),
+      NewFilePath			varchar(200));
+
+      insert into @T_Attachments(
+      AttachmentId,
+      AttachmentInstance)
+      select <dynamic paramId="FromSelect"/>
+      from <dynamic paramId="FromTableName"/>
+      <where>
+        <dynamic paramId="FromWhere"/>
+      </where>;
+
+      update @T_Attachments
+      set NewFileName = T.AttachmentId + '_V' + convert(varchar, T.AttachmentInstance+1) + '.' + DM.FileExtension,
+      OldFilePath = DM.FileLocation + case right(DM.FileLocation,1) when '\' then '' else '\' end + DM.PhysicalFileName,
+      NewFilePath = <exp paramId="FileLocation"/> + case right(<exp paramId="FileLocation"/>,1) when '\' then '' else '\' end + T.AttachmentId + '_V' + convert(varchar, T.AttachmentInstance+1) + '.' + DM.FileExtension
+      from <dynamic paramId="ToDatabaseName"/>DM_Attachment DM
+      join @T_Attachments T on T.AttachmentId = DM.AttachmentId
+      and T.AttachmentInstance = DM.AttachmentInstance;
+
+      insert into <dynamic paramId="ToDatabaseName"/>DM_Attachment
+      select T.AttachmentId,
+      <exp paramId="FileLocation"/>,
+      DM.FileName,
+      DM.FileExtension,
+      T.AttachmentInstance+1,
+      DM.FileSize,
+      DM.UploadedDateTime,
+      T.NewFileName,
+      DM.FileDescription,
+      DM.CreatorId,
+      DM.CreatedDate,
+      getdate(),
+      <exp paramId="UserId"/>
+      from @T_Attachments T
+      join <dynamic paramId="ToDatabaseName"/>DM_Attachment DM on DM.AttachmentId = T.AttachmentId and DM.AttachmentInstance = T.AttachmentInstance;
+
+      <optional depends="HistoryTableName != '' &amp;&amp; HistoryTableName != null">
+        insert into <dynamic paramId="HistoryTableName"/>
+        (<dynamic paramId="HistoryFields"/>)
+        select <dynamic paramId="HistorySelect"/>
+        from @T_Attachments T
+        join <dynamic paramId="FromTableName"/> WT
+        on WT.<dynamic paramId="AttachmentIdColumn"/> = T.AttachmentId
+        and WT.<dynamic paramId="AttachmentInstanceColumn"/> = T.AttachmentInstance
+        <optional depends="AttachmentPurposeCodeColumn != '' &amp;&amp; AttachmentPurposeCodeColumn != null">
+          join <dynamic paramId="ToDatabaseName"/>LookupAttachmentPurpose LAP
+          on LAP.LookupCode = WT.<dynamic paramId="AttachmentPurposeCodeColumn"/>
+        </optional>
+        <optional depends="AttachmentModeTypeCodeColumn != '' &amp;&amp; AttachmentModeTypeCodeColumn != null">
+          join LookupAttachmentModeType LAMT
+          on LAMT.LookupCode = WT.<dynamic paramId="AttachmentModeTypeCodeColumn"/>
+        </optional>;
+      </optional>
+
+      <optional depends="AttachmentInstanceColumn != '' &amp;&amp; AttachmentInstanceColumn != null">
+        update <dynamic paramId="FromTableName"/>
+        set <dynamic paramId="AttachmentInstanceColumn"/> = T.AttachmentInstance+1
+        <optional depends="LastUpdateIdColumn != '' &amp;&amp; LastUpdateIdColumn != null">
+          ,<dynamic paramId="LastUpdateIdColumn"/> = <exp paramId="UserId"/>
+        </optional>
+        <optional depends="LastUpdateIdColumn != '' &amp;&amp; LastUpdateIdColumn != null">
+          ,<dynamic paramId="LastUpdateDateColumn"/> = getdate()
+        </optional>
+        from @T_Attachments T
+        join <dynamic paramId="FromTableName"/> WT
+        on WT.<dynamic paramId="AttachmentIdColumn"/> = T.AttachmentId
+        and WT.<dynamic paramId="AttachmentInstanceColumn"/> = T.AttachmentInstance;
+      </optional>
+
+      select OldFilePath, NewFilePath
+      from @T_Attachments
+    </sql>
+  </statement>
+
+  <statement name="GetAttachmentPrivilegeForRole">
+    <param id="roleIds" type="String" required="true"/>
+    <param id="attachmentPurposeCode" type="String" required="true"/>
+    <sql>
+      SELECT DISTINCT P.RoleId, P.PrivilegeId, P.AttachmentPurposeCode from PFM_DMNT_PurposePermission_R P
+      JOIN LU_PFM_CMN_Privileges Priv on P.PrivilegeId = Priv.LookupCode
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="P.RoleId" paramId="roleIds"/>
+          <exp op="IN" dbField="P.AttachmentPurposeCode" paramId="attachmentPurposeCode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+</statements>

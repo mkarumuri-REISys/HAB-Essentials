@@ -1,0 +1,113 @@
+/********Dashboards CSS********/
+
+/****MasterPage***/
+.dashpagebody {width: auto; padding: 10px 10px 0 12px;}
+
+/****Scorecard****/
+.dashwrapper {overflow:hidden;}
+.dashtop{ border-bottom:3px solid #f2f2f2;}
+.dashleft{ border-right:3px solid #f2f2f2;}
+.Scorecard {overflow:hidden;background-image:url(./Images/scorecard-pipe.png); padding:0 5px; background-repeat:no-repeat; background-position: center top;}
+
+.dash-divide{background-image:url(./Images/scorecard-border.png); background-position:center; margin-bottom:20px;  background-repeat:no-repeat;}
+.dash-pipe{ margin-left:1.5%; margin-right:1%; background-image:url(./Images/scorecard-pipe.png);  height:250px; padding:0 5px; background-repeat:no-repeat; float:left; display:block;}
+
+.dashwrapper .dashmodule {background-color: #fff; padding:0 0 15px 0; margin-bottom: 0; width:48%; margin-top:10px;}
+
+.dashwrapper .EHB_dashtable {background-image:url(./Images/dashtable-bg.png); background-repeat:repeat-x; background-position:bottom;}
+.EHB_dashtable tr.coleven {background:none;}
+.EHB_dashtable tr.colodd {background:none;}
+
+.dashwrapper .EHB_dashtable{ width:100%;}
+.dashwrapper .EHB_dashtable {border-collapse:collapse; border: 0px;}
+
+
+.dashwrapper .EHB_dashtable  {background-color: #fff; height: 25px; margin-top: 0; border-bottom: 1px solid #E5E5E5;}
+
+.dashwrapper .EHB_dashtable th { padding:4px 10px 4px 7px;}
+.dashwrapper .EHB_dashtable .header{text-align:left;}
+
+.dashwrapper .EHB_dashtable td { padding: 10px 10px 4px 4px; border-bottom: 1px solid #E5E5E5;}
+.dashwrapper .EHB_dashtable tr { border-top:1px solid #efefef;}
+
+.dashwrapper .dashmodule .dashtitle  { font-family:Georgia; font-size:14px; color:#7e330f; display:block; padding: 8px 10px 10px 0;}
+.dash-highlight{color:#658F22; display:inline;}
+
+.dashtitle h3 {font-size:14px;}
+.dashwrapper .rowheader{ background:none; border:0 !important; color:#000000;}
+.dashwrapper .rowheader td {border-top:0;}
+.dashspacing {padding-bottom:0;}
+
+/****Dashboard****/
+.dashwrapper .dashbox {background-color: #fff; padding:10px 10px 15px 10px; margin-bottom: 0; width:47%; margin-top:25px; border: 1px solid #eff0f1;}
+.dashcontainer {width:100%; margin-left:auto; margin-right:auto; display:inline-block;}
+.dashdate{padding-left:25px; font-size:11px; margin-top:-10px;}
+.dashheight{min-height:575px;}
+.dashchart {padding: 25px 0 0 0;}
+.dashblockprimary {margin-top: 5px;}
+.dashblocksecondary {margin-top: 2%;}
+
+.dashheaderspacing{padding-bottom:5px !important;}
+.dashwrapper dashbox .runner{background-color: #eff2f7; border-top: 1px solid #eff0f1; float:left; margin: 40px 0 -16px -11px; padding:0 20px 25px 0; width:100%; border: 1px solid #dbdada;}
+.runnerarrow { position:relative; background-image:url(./Images/runner-arrow.png); padding-left:20px; background-repeat:no-repeat; margin-left:12px; margin-top:-12px;float:left;}
+
+/****Dash Display All****/
+.dashbox_all {width:98% !important; margin-left:auto !important; margin-right:auto !important; }
+
+.dashwrapper .dashbox .dashtitle  { font-family:Georgia; font-size:14px; color:#24567f; display:block; padding: 5px 5px 5px 5px; background-color:#ffffff; margin-top:-25px;}
+
+.dashdown{border: 1px solid #c0cad6; padding-bottom:4px;}
+
+.tableSubLink{font-size:11px;}
+.menuGearIcon{padding-top:4px;}
+
+
+.filterBoxes{  float:left; margin-top:0; position:absolute; }
+.comboboxRight{bottom:0; position:relative;  }
+.comboboxLeft{float:left; padding-top:4px; margin-right:-10px; bottom:0; position:relative; }
+.indicatorcol {text-align:center;}
+
+.indentcol {padding-left:30px;}
+
+
+.dashblock {background-color:#E5E5E5; padding-left:3px; padding-right:3px;}
+.statuscontainer {display:inline; padding-bottom:3px;}
+.dashstatus{border: 1px solid #c1c1c1;padding: 3px 3px 3px 3px; display:inline; background-image:url(./Images/dashstatus-bg.png); background-repeat:repeat-x; background-position:bottom; color:#000000;margin-bottom:8px;}
+.dashstatus .subtext {font-size:14px; display:inline; padding:0; background:none;}
+.dashstatusarrow{ margin-top:-1px; left:7px; background-repeat:no-repeat; display:inline; position:relative;}
+.dashstatus-symbols{border: 1px solid #c1c1c1;padding: 3px 6px 3px 6px; display:inline; background-image:url(./Images/dashstatus-symbol-bg.png); background-repeat:repeat-x;  color:#c1c1c1; font-weight:normal; margin-left:5px;}
+
+/****Dashboard Data Table View****/
+.dashwrapper .EHB_datatable .rowheader{ background:url(./Images/datatable-bg-alt.png) 0 0; background-repeat:repeat-x; background-color:#ededed; }
+.EHB_datatable tr.coleven {background:#ffffff;}
+.EHB_datatable tr.colodd {background:#f4f5f5;}
+
+.dashwrapper .EHB_datatable{ width:100%; margin-top:20px !important;}
+.dashwrapper .EHB_datatable {border-collapse:collapse; border: 0;}
+
+
+.dashwrapper .EHB_datatable  {background-color: #fff; height: 25px; margin-top: 0; border-bottom: 1px solid #E5E5E5;}
+.dashwrapper .dashbox_all .EHB_datatable {margin-top:9px !important;}
+
+.dashwrapper .EHB_datatable th {padding:4px 0 2px 7px; border-top:1px solid #e1e1e1; border-bottom:1px solid #e1e1e1; text-align:left;}
+.dashwrapper .EHB_datatable .header{text-align:left;}
+
+.dashwrapper .EHB_datatable td {padding: 4px 0 4px 7px; border-bottom: 1px solid #E5E5E5;}
+.dashwrapper .EHB_datatable tr { border-top:1px solid #efefef;}
+ 
+.contextmenu_selected{background-color:#e5f0fc; border: 1px solid #abc9eb; }
+.contextmenu_disable{color:#a7a7a7 !important; text-decoration:none !important; cursor:default;}
+
+.insight_table{width:100%; padding-right:0; padding-left:0;}
+.dashall_table{min-width:42%; vertical-align:top; float:right !important; padding-right:0;}
+.dashchart_all{width:47%;height: 250px; padding-right:50px;}
+
+/***repeat from global.css***/
+.posLeft {float:left;}
+.posRight {float:right !important;}
+
+.posFilterText {float:left; padding-top:5px; font-weight:bold;}
+
+input.hrsaSkingreybtn, input.hrsaSkingreydisbled, .hrsaSkingreylink{color:#404040; background:#F3F3F4 url(./Images/hrsa_theme_sprite_01.png) repeat-x 0 -473px; height:22px; border:1px solid #999; cursor:pointer; letter-spacing:.45px; -moz-border-radius-bottomleft:3px; -moz-border-radius-bottomright:3px; -moz-border-radius-topleft:3px; -moz-border-radius-topright:3px; margin:0 1px 1px; padding:2px 4px 5px;}
+input.hrsaSkingreybtn:hover{background:#F6F7DF url(./Images/hrsa_theme_sprite_01.png) repeat-x 0 -416px;border:1px solid #999;color:#404040;}
+/*** .buttonadjustment {padding-bottom:3px !important;}***/

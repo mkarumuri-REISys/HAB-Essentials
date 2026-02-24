@@ -1,0 +1,152 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+  <!-- You can get a copy of the schema at https://recovery-svn.reisys.com:10007/HRSA/Tools/Trunk/REISchemas/REIData.xsd -->
+  <statement name="SaveSearch" connection = "Common">
+    <param id="DisplayText" type="String" required="true" />
+    <param id="Parameters"  type="String" required="true" />
+    <param id="UserId"      type="String" required="true" />
+    <sql>
+      UPDATE PFM_ENSR_SavedSearch
+      SET SearchParams = '<dynamic paramId="Parameters"/>', LastUpdateDate = GETDATE(),  Deleted = 0
+      WHERE DisplayText = '<dynamic paramId="DisplayText"/>' AND UserId = '<dynamic paramId="UserId"/>'
+
+      DECLARE @ExistingCount AS INT
+      SELECT @ExistingCount = COUNT(*)
+      FROM PFM_ENSR_SavedSearch 
+      WHERE DisplayText = '<dynamic paramId="DisplayText"/>' AND UserId = '<dynamic paramId="UserId"/>' AND Deleted = 0
+
+      IF (@ExistingCount = 0)
+      BEGIN
+      INSERT INTO PFM_ENSR_SavedSearch
+      (
+      ID,
+      DisplayText,
+      SearchParams,
+      UserId,
+      CreatorId,
+      CreatedDate,
+      LastUpdateId,
+      LastUpdateDate,
+      Deleted
+      )
+      VALUES
+      (
+      NEWID(),
+      '<dynamic paramId="DisplayText" />',
+      	  '<dynamic paramId="Parameters" />',
+          '<dynamic paramId="UserId" />',
+          '16901559-AEC6-4754-831B-94B413E5B36B',
+          GETDATE(),
+          '16901559-AEC6-4754-831B-94B413E5B36B',
+          GETDATE(),
+          0
+        )
+      END
+
+      DECLARE @RowsInserted AS INT
+      SELECT @RowsInserted = COUNT(*)
+      FROM PFM_ENSR_SavedSearch
+      WHERE DisplayText = '<dynamic paramId="DisplayText" />' AND UserId = '<dynamic paramId="UserId" />'
+
+      IF(@RowsInserted > 10)
+      BEGIN
+        DELETE FROM PFM_ENSR_SavedSearch
+        WHERE ID = (SELECT TOP 1 ID
+                    FROM PFM_ENSR_SavedSearch
+                    WHERE UserId = '<dynamic paramId="UserId" />'
+      ORDER BY LastUpdateDate)
+      END
+
+      SELECT TOP 1 ID
+      FROM PFM_ENSR_SavedSearch
+      WHERE DisplayText = '<dynamic paramId="DisplayText"/>' AND UserId = '<dynamic paramId="UserId"/>'
+    </sql>
+  </statement>
+
+  <statement name="GetSearches" connection = "Common">
+    <param id="UserId" type="String" required="true" />
+    <sql>
+      <select>
+        ID,
+        UserId,
+        DisplayText,
+        SearchParams,
+        LastUpdateDate
+      </select>
+      
+      FROM PFM_ENSR_SavedSearch
+      
+      <where>
+        <exp op="=" dbField="UserId" paramId="UserId" />
+      </where>
+      AND Deleted != 1
+      order by LastUpdateDate desc
+    </sql>
+  </statement>
+
+  <statement name="GetSearch" connection = "Common">
+    <param id="ID"     type="String" required="true" />
+    <param id="UserId" type="String" required="true" />
+    <sql>
+      <select>
+        ID,
+        UserId,
+        DisplayText,
+        SearchParams
+      </select>
+      
+      FROM PFM_ENSR_SavedSearch
+      
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ID"     paramId="ID" />
+          <exp op="=" dbField="UserId" paramId="UserId" />
+        </exp>
+      </where>
+      AND Deleted != 1
+    </sql>
+  </statement>
+  
+  <statement name="DeleteSearch" connection = "Common">
+    <param id="UserId" type="Guid" required="true" />
+    <param id="Count"  type="Int32" required="false" />
+    
+    <sql>
+      DECLARE @DeleteCount AS INT
+      SET @DeleteCount = 10
+
+      <optional depends="Count">
+       SET @DeleteCount = <exp paramId="Count" />
+      </optional>
+
+      BEGIN
+      UPDATE PFM_ENSR_SavedSearch SET Deleted = 1
+      WHERE ID IN (SELECT TOP (@DeleteCount) ID
+      FROM PFM_ENSR_SavedSearch
+      <where>
+        <exp op="=" dbField="UserId" paramId="UserId" />
+      </where>
+      ORDER BY LastUpdateDate DESC)
+      END
+
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteSearchAll" connection = "Common">
+    <param id="UserId" type="Guid" required="true" />
+
+
+    <sql>
+
+
+      BEGIN
+
+      UPDATE PFM_ENSR_SavedSearch SET Deleted = 1
+      <where>
+        <exp op="=" dbField="UserId" paramId="UserId" />
+      </where>
+      END
+
+    </sql>
+  </statement>
+</statements>

@@ -1,0 +1,34 @@
+<statements>
+	<statement name="GetGlossaryTermDescription" connection="Common">
+		<param id="GlossaryTerms" type="String" />
+		<sql>
+      
+      
+      
+      SELECT UPPER(GlossaryTerm) AS GlossaryTerm, Description, Abbreviation,
+      IndexCharacter, HTMLAnchor, IsDescriptionHTML
+      FROM GlossaryTerm
+      <where>
+				<exp op="IN" dbField="GlossaryTerm" paramId="GlossaryTerms" />
+			</where>
+
+      
+    </sql>
+	</statement>
+	<statement name="GetExternalSystemUrl" connection="Common">
+		<param id="ExternalSystemCode" type="Int32" />
+		<param id="ExternalSystemDimensionCode" type="Int32" />
+		<param id="UserTypeCode" type="Int32" />
+		<sql>
+			SELECT DimensionValue as ExternalSystemUrl, ExternalSystemCode, ExternalSystemDimensionCode
+			FROM ExternalSystemDimensionValue
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ExternalSystemCode" paramId="ExternalSystemCode"/>
+					<exp op="=" dbField="ExternalSystemDimensionCode" paramId="ExternalSystemDimensionCode"/>
+					<exp op="=" dbField="UserTypeCode" paramId="UserTypeCode"/>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

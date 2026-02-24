@@ -1,0 +1,8 @@
+﻿<config>
+  <username>InternalUser</username>
+  <encryptedPassword>SWy1VEUKa9U+xBUjOuM2WQ==</encryptedPassword>
+  <!--pwd2login Use AdminTools.exe "Quick Encrypt" to encrypt a password -->
+  <provider>ESRI</provider>
+  <!--<provider>HDW</provider>-->
+
+</config>

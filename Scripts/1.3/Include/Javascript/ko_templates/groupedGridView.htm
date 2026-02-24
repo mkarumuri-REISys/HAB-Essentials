@@ -1,0 +1,60 @@
+﻿<div class="RadGrid RadGrid_EHB">
+    <table style="width: 100%; border-collapse: collapse">
+        <colgroup data-bind="foreach: columns">
+            <!-- ko if: $index() === 0 -->
+            <col style="width: 5px" />
+            <!-- /ko -->
+            <col data-bind="style: { width: width + '%' }" />
+        </colgroup>
+        <thead>
+            <tr data-bind="foreach: columns">
+                <!-- ko if: $index() === 0 -->
+                <th scope="col" class="rgHeader rgGroupCol"></th>
+                <!-- /ko -->
+                <th scope="col" class="rgHeader" style="font-weight: bold; text-align: left;" 
+                    data-bind="text: headerText, css: colClass"></th>
+            </tr>
+            <!-- ko if: hasFilters -->
+            <tr class="rgFilterRow" data-bind="foreach: columns">
+                <!-- ko if: $index() === 0 -->
+                <td></td>
+                <!-- /ko -->
+                <td>
+                    <select title=" " data-bind="options: filterItems, visible: (filterItems != null && filterItems.length > 0), value: selectedFilter, attr: { title: headerText + ' Filter'}"></select>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </thead>
+        <tbody  id="gridBody">
+            <!-- ko foreach: groupedItems -->
+            <tr class="rgGroupHeader">
+                <td class="rgGroupCol">
+                    <input value="Expand/Collapse Group" title="Collapse group"
+                    type="button" data-bind="click: $root.ToggleGroupAction, css: expanded ? 'rgCollapse' : 'rgExpand'" />
+                </td>
+                <th class="RadGridGroupTH" scope="rowgroup" data-bind="attr: { colspan: $root.columns.length}">
+                    <p class="RadGridGroupP" data-bind="text: ($parent.groupBy.title + ': ' + groupName())"></p>
+                </th>
+            </tr>
+            <!-- ko if: expanded -->
+            <!-- ko foreach: data -->
+            <tr data-bind="foreach: $root.columns,css: $index() % 2 === 0 ? 'rgRow' : 'rgAltRow'">
+                <!-- ko if: $index() === 0 -->
+                <td class="rgGroupCol"></td>
+                <!-- /ko -->
+                <!-- ko if: typeof itemExp == 'function' -->
+                <td data-bind="css: colClass, attr: { none: itemExp($parent, $element)}"></td>
+                <!-- /ko -->
+                <!-- ko ifnot: typeof itemExp == 'function' -->
+                <td data-bind="css: colClass, text: $root.GetValue($parent,itemExp)"></td>
+                <!-- /ko -->
+            </tr>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <tr data-bind="visible: $root.data().length === 0">
+                <td class="datacenter" style="padding:8px"  data-bind="attr: { colspan: ($root.columns.length + 1)}">No data available</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

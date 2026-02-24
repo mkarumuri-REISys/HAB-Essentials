@@ -1,0 +1,940 @@
+/*Telerik RadCalendar Common CSS*/
+
+table.RadCalendar
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	width:220px;
+}
+
+.RadCalendar,
+.RadCalendar .rcTitlebar .rcPrev,
+.RadCalendar .rcTitlebar .rcNext,
+.RadCalendar .rcTitlebar .rcFastPrev,
+.RadCalendar .rcTitlebar .rcFastNext,
+.RadCalendar caption div,
+.RadCalendarTimeView
+{
+	color: inherit;
+}
+
+/*titlebar*/
+
+.RadCalendar .rcTitlebar
+{
+	width:100%;
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+}
+
+.RadCalendar .rcTitlebar table
+{
+	table-layout:auto;
+	width:100%;
+	border-collapse:separate;
+	border:0;
+}
+
+.RadCalendar .rcTitlebar td
+{
+	border:0;
+	padding:0;
+	text-align:center;
+	vertical-align:middle;
+}
+
+.RadCalendar .rcTitlebar .rcTitle
+{
+	width:100%;
+	cursor:pointer;
+}
+.RadCalendar .rcNoNav .rcTitle
+{
+	cursor:default;
+}
+
+.RadCalendar .rcTitlebar .rcPrev,
+.RadCalendar .rcTitlebar .rcNext,
+.RadCalendar .rcTitlebar .rcFastPrev,
+.RadCalendar .rcTitlebar .rcFastNext
+{
+	display:block;
+	width:15px;
+	height:15px;
+	overflow:hidden;
+	margin:0 4px;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-decoration:none;
+}
+
+.RadCalendar .rcMain
+{
+	width:100%;
+	border-style:solid;
+	border-width:0 1px 1px;
+	padding:0;
+}
+
+.RadCalendar .rcMainTable
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	width:100%;
+}
+
+.RadCalendar .rcHeader,
+.RadCalendar .rcFooter
+{
+	border-style:solid;
+	border-width:0 1px 1px;
+	padding:0;
+}
+
+/*week numbers and days*/
+
+.RadCalendar .rcRow th,
+.RadCalendar .rcWeek th
+{
+	border:0;
+	padding:0;
+	font-weight:normal;
+	vertical-align:middle;
+	cursor:default;
+}
+
+.RadCalendar .rcWeek th
+{
+	text-align:right;
+}
+
+.RadCalendar .rcWeek .rcViewSel,
+.RadCalendar .rcRow th
+{
+	text-align:center;
+}
+
+/*date cells*/
+
+.RadCalendar .rcRow td
+{
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+	text-align:right;
+	vertical-align:middle;
+}
+
+.RadCalendar .rcMain .rcRow a,
+.RadCalendar .rcMain .rcRow span
+{
+	display:block;
+	padding:1px 5px 1px 0;
+	text-decoration:none;
+}
+
+.RadCalendar .rcPreview .rcRow a
+{
+	outline:none;
+}
+
+.RadCalendar .rcMain .rcOutOfRange span
+{
+	cursor:default;
+}
+
+/*multimonth view*/
+
+table.RadCalendarMultiView
+{
+	width:auto;
+}
+
+.RadCalendarMultiView .rcCalendar
+{
+	width:220px;
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+}
+
+.RadCalendarMultiView .rcMainTable .rcTitle
+{
+	border-style:solid;
+	border-width:0 0 1px;
+	padding:0;
+	text-align:center;
+}
+
+/*month view*/
+
+table.RadCalendarMonthView
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border-style:solid;
+	border-width:1px;
+}
+
+table.RadCalendarMonthView td
+{
+	border:0;
+	padding:5px 2px 0;
+}
+
+.RadCalendarMonthView a
+{
+	display:block;
+	padding:2px 4px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarMonthView .rcHover a,
+.RadCalendarMonthView .rcSelected a
+{
+	border-style:solid;
+	border-width:1px;
+	padding:1px 3px;
+}
+
+.RadCalendarMonthView #rcMView_PrevY a,
+.RadCalendarMonthView #rcMView_NextY a
+{
+	display:block;
+	overflow:hidden;
+	margin:0 auto;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarMonthView .rcButtons
+{
+	border:0;
+	text-align:center;
+}
+
+.RadCalendarMonthView input
+{
+	border-style:solid;
+	border-width:1px;
+	cursor:pointer;
+}
+
+*+html .RadCalendarMonthView input{padding:0;}/*IE7*/
+* html .RadCalendarMonthView input{padding:0;}/*IE6*/
+
+.RadCalendarMonthView #rcMView_Today
+{
+	margin:0 0.4em 0 0;
+}
+
+*+html .RadCalendarMonthView #rcMView_OK{padding:0 0.2em;}/*IE7*/
+* html .RadCalendarMonthView #rcMView_OK{padding:0 0.2em;}/*IE6*/
+
+/*time view*/
+
+table.RadCalendarTimeView
+{
+	border-collapse:separate;
+	border-style:solid;
+	border-width:1px;
+}
+
+.RadCalendarTimeView th
+{
+	border:0;
+	text-align:center;
+	cursor:default;
+	font-weight:normal;
+}
+
+table.RadCalendarTimeView td
+{
+	border-style:solid;
+	border-width:0 0 0 1px;
+	padding:2px 2px 3px;
+}
+
+table.RadCalendarTimeView td:first-child
+{
+	border-left:0;
+}
+
+.RadCalendarTimeView a
+{
+	display:block;
+	padding:2px 6px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarTimeView td.rcSelected a,
+.RadCalendarTimeView td.rcHover a
+{
+	border-style:solid;
+	border-width:1px;
+	padding:1px 5px;
+}
+
+.RadCalendarTimeView .rcFooter
+{
+	border-style:solid;
+	border-width:1px 0 0;
+	padding:0;
+}
+
+/*pickers*/
+
+.RadPicker,
+.RadPicker td
+{
+	vertical-align:middle;
+}
+
+.RadPicker .RadInput
+{
+	vertical-align:baseline;
+}
+
+.RadPicker .rcTable
+{
+	table-layout:auto;
+}
+
+.RadPicker table.rcTable,
+.RadPicker table.rcTable td
+{
+	border:0;
+	margin:0;
+	padding:0;
+}
+
+.RadPicker table.rcTable .rcInputCell
+{
+	padding:0 4px 0 0;
+}
+
+.RadPicker td a
+{
+	position:relative;/*FF*/
+	outline:none;/*FF*/
+	z-index:2;/*Opera*/
+	margin:0 2px;
+	text-decoration:none;
+}
+* html .RadPicker td a{position:static}/*IE6*/
+*+html .RadPicker td a{position:static}/*IE7*/
+
+.RadPicker .rcCalPopup,
+.RadPicker .rcTimePopup
+{
+	display:block;
+	overflow:hidden;
+	width:22px;
+	height:22px;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-align:center;
+}
+
+.RadPicker .rcDisabled,
+.RadCalendarMonthView .rcDisabled
+{
+	opacity:0.5;
+	filter:alpha(opacity=50);
+}
+
+/*shadows*/
+
+body>.RadCalendarPopupShadows
+{
+	padding: 0 5px 5px 0;
+}
+
+.RadCalendarPopupShadows>.rcShadTR,
+.RadCalendarPopupShadows>.rcShadBL,
+.RadCalendarPopupShadows>.rcShadBR
+{
+	position:absolute;
+	background-repeat:no-repeat;
+	background-color:transparent;
+}
+
+.RadCalendarPopupShadows>.rcShadBL,
+.RadCalendarPopupShadows>.rcShadBR
+{
+	height:5px;
+	bottom:0;
+	background-image:url('Common/Menu/ShadowBottom.png');
+}
+
+.RadCalendarPopupShadows>.rcShadBL
+{
+	left:0;
+	width:100%;
+	background-position:0 -3px;
+}
+
+.RadCalendarPopupShadows>.rcShadBR
+{
+	width:5px;
+	right:0;
+	background-position:100% 100%;
+}
+
+.RadCalendarPopupShadows>.rcShadTR
+{
+	width:5px;
+	height:100%;
+	top:0;
+	right:0;
+	background-image:url('Common/Menu/ShadowRight.png');
+	background-position:100% 0;
+}
+
+.rcIE>.rcShadBL,
+.rcIE>.rcShadBR,
+.rcIE>.rcShadTR
+{
+	background-image:none;
+}
+
+/*rtl*/
+
+.RadPickerRTL table.rcTable .rcInputCell
+{
+	padding:0 0 0 4px;
+}
+
+/*Telerik RadCalendar EHB skin*/
+
+table.RadCalendar_EPM
+{
+    width:auto;
+	background:#fff;
+	color:#333;
+	font:12px "segoe ui",arial,sans-serif;
+}
+
+/*titlebar*/
+
+.RadCalendar_EPM .rcTitlebar
+{
+	border-color:#cddaea;
+	border-bottom-color:#d4dbe5;
+	background:#f1f5fb;
+	color:#1e395b;
+}
+
+.RadCalendar_EPM .rcTitlebar table
+{
+	font:12px/18px "segoe ui",arial,sans-serif;
+}
+
+.RadCalendar_EPM .rcTitlebar td
+{
+	padding:3px 0 2px;
+}
+
+.RadCalendar_EPM .rcTitlebar .rcPrev,
+.RadCalendar_EPM .rcTitlebar .rcNext,
+.RadCalendar_EPM .rcTitlebar .rcFastPrev,
+.RadCalendar_EPM .rcTitlebar .rcFastNext
+{
+	width:17px;
+	height:16px;
+	background-image:url('Calendar/sprite.gif');
+	color:#ccc;
+}
+
+.RadCalendar_EPM .rcTitlebar .rcFastPrev
+{
+	margin-left:5px;
+	background-position:0 -200px;
+}
+
+.RadCalendar_EPM .rcTitlebar a.rcFastPrev:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendar_EPM .rcTitlebar .rcPrev
+{
+	background-position:0 -300px;
+}
+
+.RadCalendar_EPM .rcTitlebar a.rcPrev:hover
+{
+	background-position:0 -350px;
+}
+
+.RadCalendar_EPM .rcTitlebar .rcNext
+{
+	background-position:0 -400px;
+}
+
+.RadCalendar_EPM .rcTitlebar a.rcNext:hover
+{
+	background-position:0 -450px;
+}
+
+.RadCalendar_EPM .rcTitlebar .rcFastNext
+{
+	margin-right:5px;
+	background-position:0 -500px;
+}
+
+.RadCalendar_EPM .rcTitlebar a.rcFastNext:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendar_EPM .rcMain
+{
+	border-color:#cddaea;
+}
+
+.RadCalendar_EPM .rcMainTable
+{
+	font:12px/20px "segoe ui",arial,sans-serif;
+}
+
+/*header, footer*/
+
+.RadCalendar_EPM .rcHeader,
+.RadCalendar_EPM .rcFooter
+{
+	border-color:#cddaea;
+}
+
+/*week numbers and days*/
+
+.RadCalendar_EPM .rcWeek th
+{
+	border-bottom:1px solid #d4dbe5;
+	padding:2px 0 1px 0;
+	text-align:center;
+}
+
+.RadCalendar_EPM .rcWeek .rcViewSel
+{
+	border-bottom-color:#fff;
+}
+
+.RadCalendar_EPM .rcRow th
+{
+	width:28px;
+	color:#4c607a;
+}
+
+.RadCalendar_EPM .rcViewSel,
+.RadCalendar_EPM .rcRow th
+{
+	background:#e7ebf6;
+}
+
+/*date cells*/
+
+.RadCalendar_EPM .rcRow td
+{
+	width:26px;
+	border:0;
+	padding:0 0 1px 1px;
+}
+
+.RadCalendar_EPM .rcMain .rcRow a,
+.RadCalendar_EPM .rcMain .rcRow span
+{
+	width:20px;
+	padding:0 6px 0 0;
+	color:#000;
+}
+
+.RadCalendar_EPM .rcMain .rcWeekend a
+{
+	color:#444;
+}
+
+.RadCalendar_EPM .rcMain .rcRow .rcToday a
+{
+	background:100% -1800px no-repeat url('Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendar_EPM .rcMain .rcOtherMonth a
+{
+	color:#a7a7a7;
+}
+
+.RadCalendar_EPM .rcMain .rcOutOfRange span
+{
+	color:#ccc;
+}
+
+.RadCalendar_EPM .rcMain .rcRow .rcSelected a
+{
+	background:100% -1700px no-repeat url('Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendar_EPM .rcMain .rcRow .rcHover a
+{
+	background:100% -1600px no-repeat url('Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+/*multimonth view*/
+
+.RadCalendarMultiView_EPM .rcTitlebar
+{
+	border-color:#cddaea;
+	background:#e4edf8 0 -1199px repeat-x url('Calendar/sprite.gif');
+	color:#1e395b;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar table
+{
+	border:1px solid;
+	border-color:#fbfdfe #f1f7fc #ebf3fb;
+	line-height:22px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar td
+{
+	padding:4px 0 1px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar .rcFastPrev
+{
+	width:20px;
+	height:19px;
+	background-position:0 -600px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar a.rcFastPrev:hover
+{
+	background-position:0 -650px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar .rcPrev
+{
+	width:20px;
+	height:19px;
+	background-position:0 -700px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar a.rcPrev:hover
+{
+	background-position:0 -750px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar .rcNext
+{
+	width:20px;
+	height:19px;
+	background-position:0 -800px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar a.rcNext:hover
+{
+	background-position:0 -850px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar .rcFastNext
+{
+	width:20px;
+	height:19px;
+	background-position:0 -900px;
+}
+
+.RadCalendarMultiView_EPM .rcTitlebar a.rcFastNext:hover
+{
+	background-position:0 -950px;
+}
+
+.RadCalendarMultiView_EPM .rcMain
+{
+	border-color:#cddaea;
+}
+
+.RadCalendarMultiView_EPM .rcCalendar
+{
+    width:auto;
+	border-color:#cddaea;
+}
+
+.RadCalendarMultiView_EPM .rcMain .rcTitle
+{
+	border-color:#d4dbe5;
+	padding:3px 0 4px;
+	background:#f1f5fb;
+	color:#1e395b;
+}
+
+/*month view*/
+
+table.RadCalendarMonthView_EPM
+{
+	border-color:#a5b3c5;
+	background:#fcfcfc;
+	font:12px "segoe ui",arial,sans-serif;
+	color:#000;
+}
+
+.RadCalendarMonthView_EPM #rcMView_Feb,
+.RadCalendarMonthView_EPM #rcMView_Apr,
+.RadCalendarMonthView_EPM #rcMView_Jun,
+.RadCalendarMonthView_EPM #rcMView_Aug,
+.RadCalendarMonthView_EPM #rcMView_Oct,
+.RadCalendarMonthView_EPM #rcMView_Dec
+{
+	border-right:1px solid #e0e0e0;
+}
+
+.RadCalendarMonthView_EPM a
+{
+	color:#000;
+}
+
+.RadCalendarMonthView_EPM .rcHover a
+{
+	border-color:#a8d8eb;
+	background:#f1f4f6;
+	color:#4c607a;
+}
+
+.RadCalendarMonthView_EPM .rcSelected a
+{
+	border-color:#8fb0d6;
+	background:#cfe3fc;
+	color:#4c607a;
+}
+
+.RadCalendarMonthView_EPM #rcMView_PrevY a,
+.RadCalendarMonthView_EPM #rcMView_NextY a
+{
+	width:12px;
+	height:15px;
+	background-image:url('Calendar/sprite.gif');
+	color:#ccc;
+}
+
+.RadCalendarMonthView_EPM #rcMView_PrevY a
+{
+	background-position:0 -200px;
+}
+
+.RadCalendarMonthView_EPM #rcMView_PrevY a:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendarMonthView_EPM #rcMView_NextY a
+{
+	background-position:0 -500px;
+}
+
+.RadCalendarMonthView_EPM #rcMView_NextY a:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendarMonthView_EPM .rcButtons
+{
+	padding:4px 7px 6px;
+}
+
+.RadCalendarMonthView_EPM input
+{
+	border:0;
+	margin:0 3px;
+	padding:1px 0 0;
+	background:0 100% repeat-x url('Calendar/sprite.gif');
+	color:#005bc6;
+	font:12px "segoe ui",arial,sans-serif;
+}
+
+.RadCalendarMonthView_EPM #rcMView_Today
+{
+	margin-right:20px;
+}
+
+/*time view*/
+
+table.RadCalendarTimeView_EPM
+{
+	border-color:#a5b3c5;
+	background:#fcfcfc;
+	font:12px "segoe ui",arial,sans-serif;
+	color:#000;
+}
+
+.RadCalendarTimeView_EPM th
+{
+	border-bottom:1px solid #d4dbe5;
+	padding:3px 0;
+	background:#f1f5fb;
+	color:#1e395b;
+	line-height:18px;
+}
+
+table.RadCalendarTimeView_EPM td
+{
+	border-color:#e0e0e0;
+	padding:2px 2px 3px;
+}
+
+.RadCalendarTimeView_EPM a
+{
+	width:59px;
+	padding:1px 6px 1px 1px;
+	line-height:15px;
+	text-align:right;
+	color:#000;
+}
+
+.RadCalendarTimeView_EPM td.rcSelected a
+{
+    border:0;
+    padding:1px 6px 1px 1px;
+	background:100% -2550px no-repeat url('Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendarTimeView_EPM td.rcHover a
+{
+    border:0;
+    padding:1px 6px 1px 1px;
+	background:100% -2500px no-repeat url('Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendarTimeView_EPM .rcFooter
+{
+	border-color:#e0e0e0;
+}
+
+/*pickers*/
+
+.RadPicker_EPM .rcCalPopup,
+.RadPicker_EPM .rcTimePopup
+{
+	background-image:url('Calendar/sprite.gif');
+}
+
+.RadPicker_EPM .rcCalPopup,
+.RadPicker_EPM a.rcDisabled.rcCalPopup:hover
+{
+	background-position:0 0;
+}
+
+.RadPicker_EPM a.rcCalPopup:hover,
+.RadPicker_EPM a.rcCalPopup:focus,
+.RadPicker_EPM a.rcCalPopup:active
+{
+	background-position:0 -50px;
+}
+
+.RadPicker_EPM .rcTimePopup,
+.RadPicker_EPM a.rcDisabled.rcTimePopup:hover
+{
+	background-position:0 -100px;
+}
+
+.RadPicker_EPM a.rcTimePopup:hover,
+.RadPicker_EPM a.rcTimePopup:focus,
+.RadPicker_EPM a.rcTimePopup:active
+{
+	background-position:0 -150px;
+}
+
+/*rtl*/
+
+.RadCalendarRTL_EPM .rcTitlebar .rcFastPrev
+{
+	background-position:0 -500px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar a.rcFastPrev:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar .rcPrev
+{
+	background-position:0 -400px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar a.rcPrev:hover
+{
+	background-position:0 -450px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar .rcNext
+{
+	background-position:0 -300px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar a.rcNext:hover
+{
+	background-position:0 -350px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar .rcFastNext
+{
+	background-position:0 -200px;
+}
+
+.RadCalendarRTL_EPM .rcTitlebar a.rcFastNext:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar .rcFastPrev
+{
+	background-position:0 -900px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar a.rcFastPrev:hover
+{
+	background-position:0 -950px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar .rcPrev
+{
+	background-position:0 -800px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar a.rcPrev:hover
+{
+	background-position:0 -850px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar .rcNext
+{
+	background-position:0 -700px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar a.rcNext:hover
+{
+	background-position:0 -750px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar .rcFastNext
+{
+	background-position:0 -600px;
+}
+
+.RadCalendarMultiViewRTL_EPM .rcTitlebar a.rcFastNext:hover
+{
+	background-position:0 -650px;
+}

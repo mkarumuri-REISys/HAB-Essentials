@@ -1,0 +1,7 @@
+<REItextBoxConfig version="1.0">
+	<defaultValues>
+		<charactersPerLine>100</charactersPerLine>
+		<linesPerParagraph>10</linesPerParagraph>
+		<paragraphsPerPage>3</paragraphsPerPage>
+	</defaultValues>
+</REItextBoxConfig>

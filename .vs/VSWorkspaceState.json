@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\WebConfigs",
+    "\\WebConfigs\\ADR",
+    "\\WebConfigs\\AETC",
+    "\\WebConfigs\\HAT",
+    "\\WebConfigs\\HIVQM",
+    "\\WebConfigs\\PTR",
+    "\\WebConfigs\\RSR"
+  ],
+  "SelectedNode": "\\SetupBRS_Access.ps1",
+  "PreviewInSolutionExplorer": false
+}

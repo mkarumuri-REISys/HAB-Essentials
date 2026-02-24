@@ -1,0 +1,113 @@
+<statements>
+	<statement name="getMessagesForApplication">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select distinct cast(a.MessageId as varchar(36)),a.subject,
+			cast(a.ThreadId as varchar(36)),a.SenderId,a.MessageDate,
+			a.Attachments,a.ThreadLevel,b.ReceiptToList 
+			from mail_message as a inner join Mail_messageLog as b
+			on a.messageid=b.messageid inner join Mail_Message_Context as c
+			on a.messageid=c.messageid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="c.ResourceTypeCode">11</exp>
+					<exp op="=" dbField="c.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			<optional depends="orderByField">
+			order by 
+			</optional>
+			<exp paramId="orderByField" />
+			<exp paramId="orderMode" />
+		</sql>
+	</statement>
+	<statement name="getMessagesForProgram">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select distinct cast(a.MessageId as varchar(36)),a.subject,
+			cast(a.ThreadId as varchar(36)),a.SenderId,a.MessageDate,
+			a.Attachments,a.ThreadLevel, b.ReceiptToList 
+			from mail_message as a inner join Mail_messageLog as b
+			on a.messageid=b.messageid inner join Mail_Message_Context as c
+			on a.messageid=c.messageid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="c.ResourceTypeCode">13</exp>
+					<exp op="=" dbField="c.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			<optional depends="orderByField">
+			order by 
+			</optional>
+			<exp paramId="orderByField" />
+			<exp paramId="orderMode" />
+		</sql>
+	</statement>
+	<statement name="getMessagesForGrant">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="orderByField"  />		
+		<param id="orderMode"  />
+		<sql>
+			select distinct cast(a.MessageId as varchar(36)),a.subject,
+			cast(a.ThreadId as varchar(36)),a.SenderId,a.MessageDate,
+			a.Attachments, a.ThreadLevel, b.ReceiptToList 
+			from mail_message as a inner join Mail_messageLog as b
+			on a.messageid=b.messageid inner join Mail_Message_Context as c
+			on a.messageid=c.messageid
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="c.ResourceTypeCode">12</exp>
+					<exp op="=" dbField="c.ResourceValue" paramId="sourceId" />
+				</exp>
+			</where>
+			<optional depends="orderByField">
+			order by 
+			</optional>
+			<exp paramId="orderByField" />
+			<exp paramId="orderMode" />
+		</sql>
+	</statement>
+	<statement name="getAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<sql>
+			select ResourceTypeCode as targetObjectType,
+					ResourceValue as targetObjectID
+			from Mail_Message_Context
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="MessageId" paramId="sourceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="insertAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="targetType" type="adSmallInt" required="true"/>
+		<param id="targetId" type="adVarChar" size="75" required="true"/>
+		<sql>
+			insert into Mail_Message_Context
+			<columns mode="insert">
+				<column dbField="MessageId" paramId="sourceId" />
+				<column dbField="ResourceTypeCode" paramId="targetType" />
+				<column dbField="ResourceValue" paramId="targetId" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name="removeAll">
+		<param id="sourceId" type="adVarChar" size="36" required="true"/>
+		<param id="targetType" type="adSmallInt" />
+		<sql>
+			delete from Mail_Message_Context
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="MessageId" paramId="sourceId" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="targetType" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

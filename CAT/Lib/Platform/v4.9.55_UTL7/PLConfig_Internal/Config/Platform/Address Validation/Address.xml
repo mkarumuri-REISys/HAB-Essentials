@@ -1,0 +1,5 @@
+﻿<config>
+  <!--<addressStandardizationType>HDW</addressStandardizationType>-->
+  <addressStandardizationType>webservice</addressStandardizationType>
+  <addressStandardizationEnabled>true</addressStandardizationEnabled>
+</config>

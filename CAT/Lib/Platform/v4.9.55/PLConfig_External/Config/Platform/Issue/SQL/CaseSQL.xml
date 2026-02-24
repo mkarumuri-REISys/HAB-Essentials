@@ -1,0 +1,1308 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+
+  <statement name ="InsertIssue" connection="Common">
+    <param id ="IssueId" type ="Guid"/>
+    <param id ="VersionId" type="Int16"/>
+    <param id ="Title" type ="String"/>
+    <param id ="Description" type ="String"/>
+    <param id ="StatusCode" type ="Int16"/>
+    <param id ="StateCode" type ="Int16"/>
+    <param id ="PriorityCode" type ="Int16"/>
+    <param id ="TargetDate" type ="DateTime"/>
+    <param id ="AssigneeId" type ="Guid"/>
+    <!--param id ="ResourceValue" type ="Guid"/>
+    <param id ="ResourceTypeCode" type ="Int16"/-->
+    <param id ="ReadAccess" type ="Boolean"/>
+    <param id ="ClosedById" type ="Guid"/>
+    <param id ="ClosedDate" type ="DateTime"/>  
+    <param id ="ResourceValue" type="String"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id="HasPendingTask" type="Boolean"/>
+    <param id ="Comments" type ="String"/>
+    <param id="IssueType" type = "Int32" required="true" />
+    <param id="SourceSystemCode" type = "Int32"  />
+    <param id ="AdditionalFields" type="String"/>
+
+    <sql>
+     
+      DECLARE @TempIssueId AS UniqueIdentifier
+      SELECT @TempIssueId = <exp paramId="IssueId" />
+      DECLARE @ResourcesXml as XML
+      SELECT @ResourcesXml = '<dynamic paramId="ResourceValue"/>'
+
+      INSERT INTO PFM_Issue_P
+      <columns mode ="insert">
+        <column dbField ="IssueId" paramId ="IssueId"/>
+        <column dbField ="VersionId" paramId ="VersionId"/>
+        <column dbField ="Title" paramId ="Title"/>
+        <column dbField ="Description" paramId ="Description"/>
+        <column dbField ="StatusCode" paramId ="StatusCode"/>
+        <column dbField ="StateCode" paramId ="StateCode"/>
+        <column dbField ="PriorityCode" paramId ="PriorityCode"/>
+        <column dbField ="TargetDate" paramId ="TargetDate"/>
+        <column dbField ="AssigneeId" paramId ="AssigneeId"/>
+        <!--column dbField ="ResourceValue" paramId ="ResourceValue"/>
+        <column dbField ="ResourceTypeCode" paramId ="ResourceTypeCode"/-->
+        <column dbField ="Comments" paramId ="Comments"/>
+        <column dbField ="ReadAccess" paramId ="ReadAccess"/>
+        <column dbField ="ClosedById" paramId ="ClosedById"/>
+        <column dbField ="ClosedDate" paramId ="ClosedDate"/>
+        <column dbField ="CreatorId" paramId ="CreatorId"/>
+        <column dbField ="CreatedDate" paramId ="CreatedDate"/>
+        <column dbField ="LastUpdateId" paramId ="LastUpdateId"/>
+        <column dbField ="LastUpdateDate" paramId ="LastUpdateDate"/>
+        <column dbField ="HasPendingTask" paramId ="HasPendingTask"/>
+        <column dbField ="IssueResourceType"  paramId ="IssueType"/>
+        <column dbField ="sourceSystemCode"  paramId ="SourceSystemCode"/>        
+      </columns>
+      <!-- PFM-6360 -->
+      INSERT INTO PFM_Issue_Resource_R (IssueId, ResourceValue,ResourceTypeCode, CreatorId, CreatedDate, LastUpdateId ,  LastUpdateDate,SourceName,QueryStrings)
+      SELECT @TempIssueId, Items.r.value('@value[1]','uniqueidentifier'),Items.r.value('@typecode[1]','int'), Items.r.value('@CreatorId[1]','uniqueidentifier'),
+      Items.r.value('@CreatedDate[1]','datetime'),Items.r.value('@LastUpdateId[1]','uniqueidentifier') ,
+      Items.r.value('@LastUpdateDate[1]','datetime'),
+      Items.r.value('@SourceName[1]','varchar(100)'),
+      Items.r.value('@QueryStrings[1]','varchar(2000)')
+      FROM @ResourcesXml.nodes('resource') as Items(r);
+                  
+      
+      UPDATE PFM_Issue_Resource_R 
+      <columns mode ="update">         
+        <column dbField ="AdditionalFields" paramId ="AdditionalFields"/>
+      </columns>
+      <where>
+        <exp op ="=" dbField ="IssueId" paramId ="IssueId"/>
+      </where>
+      
+      SELECT SCOPE_IDENTITY()
+
+    </sql>
+
+  </statement>
+
+  <statement name ="UpdateIssue" connection="Common">
+    <param id ="IssueId" type ="Guid"/>
+    <param id ="VersionId" type="Int16"/>
+    <param id ="Title" type ="String"/>
+    <param id ="Description" type ="String"/>
+    <param id ="StatusCode" type ="Int16"/>
+    <param id ="StateCode" type ="Int16"/>
+    <param id ="PriorityCode" type ="Int16"/>
+    <param id ="TargetDate" type ="DateTime"/>
+    <param id ="AssigneeId" type ="Guid"/>
+    <!--param id ="ResourceValue" type ="Guid"/>
+    <param id ="ResourceTypeCode" type ="Int16"/-->
+    <param id ="ReadAccess" type ="Boolean"/>
+    <param id ="Comments" type ="String"/>
+    <param id ="ClosedById" type ="Guid"/>
+    <param id ="ClosedDate" type ="DateTime"/>
+    <param id ="Contributors" type ="String"/>
+    <param id ="CreatorId" type ="Guid"/>
+    <param id ="CreatedDate" type ="DateTime"/>
+    <param id ="LastUpdateId" type ="Guid"/>
+    <param id ="LastUpdateDate" type ="DateTime"/>
+    <param id ="ResourceValue" type="String"/>
+    <param id ="AdditionalFields" type="String"/>
+    <sql>
+
+      DECLARE @ContributorsXml AS XML
+      SELECT @ContributorsXml = '<dynamic paramId="Contributors"/>'
+      DECLARE @TempIssueId AS UniqueIdentifier
+      SELECT @TempIssueId = <exp paramId="IssueId" />
+      DECLARE @ResourcesXml as XML
+      SELECT @ResourcesXml = '<dynamic paramId="ResourceValue"/>'
+
+      UPDATE PFM_Issue_P
+      <columns mode ="update">
+        <column dbField ="VersionId" paramId ="VersionId"/>
+        <column dbField ="Title" paramId ="Title"/>
+        <column dbField ="Description" paramId ="Description"/>
+        <column dbField ="StatusCode" paramId ="StatusCode"/>
+        <column dbField ="StateCode" paramId ="StateCode"/>
+        <column dbField ="PriorityCode" paramId ="PriorityCode"/>
+        <column dbField ="TargetDate" paramId ="TargetDate"/>
+        <column dbField ="AssigneeId" paramId ="AssigneeId"/>
+        <column dbField ="ReadAccess" paramId ="ReadAccess"/>
+        <column dbField ="Comments" paramId ="Comments"/>
+        <column dbField ="ClosedById" paramId ="ClosedById"/>
+        <column dbField ="ClosedDate" paramId ="ClosedDate"/>
+        <column dbField ="LastUpdateId" paramId ="LastUpdateId"/>
+        <column dbField ="LastUpdateDate" paramId ="LastUpdateDate"/>
+      </columns>
+      <where>
+        <exp op ="=" dbField ="IssueId" paramId ="IssueId"/>
+      </where>
+
+      DELETE FROM PFM_Issue_Contributor_R
+      WHERE IssueId = @TempIssueId
+
+      INSERT INTO PFM_Issue_Contributor_R (IssueId, UserId, CreatorId, CreatedDate, LastUpdateId ,  LastUpdateDate)
+      SELECT @TempIssueId, Items.r.value('@UserId[1]','uniqueidentifier'), Items.r.value('@CreatorId[1]','uniqueidentifier'), Items.r.value('@CreatedDate[1]','datetime'),Items.r.value('@LastUpdateId[1]','uniqueidentifier') ,Items.r.value('@LastUpdateDate[1]','datetime')
+      FROM @ContributorsXml.nodes('contributor') as Items(r)
+
+
+      <!--complex logic - Deleting from issue contributors who ever existing and deleted with current update list -->
+      <!--DELETE FROM PFM_Issue_Contributor_R
+      WHERE IssueId = @TempIssueId
+      AND UserId not in (
+            SELECT  Items.r.value('@UserId[1]','uniqueidentifier')   FROM @ContributorsXml.nodes('contributor') as Items(r)
+      )-->
+
+      <!--Inserting contributors who ever newly added into list. -->
+      <!--;
+      With TempContributors(IssueId, UserId, CreatorId, CreatedDate, LastUpdateId ,  LastUpdateDate)
+      AS
+      (
+          SELECT @TempIssueId, Items.r.value('@UserId[1]','uniqueidentifier') AS UserId, Items.r.value('@CreatorId[1]','uniqueidentifier'), Items.r.value('@CreatedDate[1]','datetime'),Items.r.value('@LastUpdateId[1]','uniqueidentifier') ,Items.r.value('@LastUpdateDate[1]','datetime')
+          FROM @ContributorsXml.nodes('contributor') as Items(r)
+      )
+      ,TempList(IssueId, UserId)
+      AS
+      (
+          SELECT issueid, userid  FROM TempContributors  except SELECT issueid, userid FROM PFM_Issue_Contributor_R
+      )
+      INSERT INTO PFM_Issue_Contributor_R (IssueId, UserId, CreatorId, CreatedDate, LastUpdateId ,  LastUpdateDate)
+      SELECT main.* FROM TempContributors main INNER JOIN TempList tl ON main.IssueId = tl.IssueId AND main.UserId = tl.UserId-->
+
+      DELETE FROM PFM_Issue_Resource_R
+      WHERE IssueId = @TempIssueId
+
+      INSERT INTO PFM_Issue_Resource_R (IssueId, ResourceValue,ResourceTypeCode, CreatorId, CreatedDate, LastUpdateId ,  LastUpdateDate,SourceName,QueryStrings)
+      SELECT @TempIssueId, Items.r.value('@value[1]','uniqueidentifier'),Items.r.value('@typecode[1]','int'), Items.r.value('@CreatorId[1]','uniqueidentifier'),
+      Items.r.value('@CreatedDate[1]','datetime'),Items.r.value('@LastUpdateId[1]','uniqueidentifier') ,
+      Items.r.value('@LastUpdateDate[1]','datetime'),
+      Items.r.value('@SourceName[1]','varchar(100)'),
+      Items.r.value('@QueryStrings[1]','varchar(2000)')
+      FROM @ResourcesXml.nodes('resource') as Items(r);
+
+      UPDATE PFM_Issue_Resource_R
+      <columns mode ="update">         
+        <column dbField ="AdditionalFields" paramId ="AdditionalFields"/>
+      </columns>
+      <where>
+        <exp op ="=" dbField ="IssueId" paramId ="IssueId"/>
+      </where>
+
+    </sql>
+
+  </statement>
+
+  <statement name="GetIssue" connection="Common">
+    <param id="IssueId" type="Guid" />
+    <sql>
+      ;WITH
+
+      IssueResources(ResourceTypeCode,IssueId 
+      )
+      AS (
+      SELECT Distinct ir.ResourceTypeCode,ir.issueid
+      FROM[dbo].[PFM_Issue_Resource_R] ir
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+      <where>
+        <exp op="=" dbField="ir.IssueId" paramId="IssueId" />
+      </where>
+
+      )
+
+      SELECT
+      iss.IssueId  as 'Id'
+      ,iss.IssueId  as 'IssueId'
+      ,iss.VersionId  as 'VersionId'
+      ,iss.TrackingNo as 'TrackingNo'
+      ,iss.Title as 'Title'
+      ,iss.Description as 'Description'
+      ,iss.StatusCode  as 'StatusCode'
+      ,iss.StateCode   as 'StateCode'
+      ,iss.PriorityCode  as 'PriorityCode'
+      ,iss.AssigneeId  as 'AssigneeId'
+      ,iss.TargetDate  as 'TargetDate'
+      ,iss.TargetDate  as 'TargetDateFrom'
+      ,iss.TargetDate  as 'TargetDateTo'
+      ,iss.ClosedById   as 'ClosedById'
+      ,iss.ClosedDate  as 'ClosedDate'
+      ,iss.ClosedDate  as 'ClosedDateFrom'
+      ,iss.ClosedDate  as 'ClosedDateTo'
+      ,iss.Comments  as 'Comments'
+      ,iss.ResourceValue  as 'ResourceValue'
+      ,iss.ResourceTypeCode  as 'ResourceTypeCode'
+      ,iss.ReadAccess  as 'ReadAccess'
+      ,iss.HasPendingTask as 'HasPendingTask'
+      ,iss.CreatorId   as 'CreatorId'
+      ,iss.CreatedDate  as 'CreatedDate'
+      ,iss.CreatedDate  as 'CreatedDateFrom'
+      ,iss.CreatedDate  as 'CreatedDateTo'
+      ,iss.CreatedDate as 'DateAssigned'
+      ,iss.LastUpdateId  as 'LastUpdateId'
+      ,iss.LastUpdateDate  as 'LastUpdateDate'
+      ,'' as 'ContributorId'
+      ,ppa.FirstName as 'AssigneeFirstName'
+      ,ppa.LastName as 'AssigneeLastName'
+      ,ppa.MiddleName as 'AssigneeMiddleName'
+      ,ppa.LastName + ' ' + ppa.FirstName as 'AssigneeFullName'
+      ,ppa.Title as 'AssigneeTitle'
+      ,ppc.FirstName as 'CreatorFirstName'
+      ,ppc.LastName as 'CreatorLastName'
+      ,ppc.MiddleName as 'CreatorMiddleName'
+      ,ppc.LastName + ' ' + ppc.FirstName as 'CreatorFullName'
+      ,ppc.Title as 'CreatorTitle'
+      ,ppu.FirstName as 'UpdatedByFirstName'
+      ,ppu.LastName as 'UpdatedByLastName'
+      ,ppu.MiddleName as 'UpdatedByMiddleName'
+      ,ppu.LastName + ' ' + ppu.FirstName as 'UpdatedByFullName'
+      ,ppu.Title as 'UpdatedByTitle'
+      <!--,pri.Name as 'ResourceName'-->
+      ,lrt.LongDisplayValue  as 'ResourceDescription'
+      
+      ,iss.sourceSystemCode  as SourceSystemCode
+
+      <!--,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as 'URL'-->
+
+      FROM PFM_Issue_P iss
+      join IssueResources ir on ir.IssueId = iss.IssueId
+      LEFT JOIN People ppc ON iss.CreatorId = ppc.UserId
+      LEFT JOIN People ppu ON iss.LastUpdateId = ppu.UserId
+      LEFT JOIN People ppa ON iss.AssigneeId = ppa.UserId
+    
+      <!--LEFT JOIN PFM_Resource_Instance pri ON ir.ResourceValue = pri.SourceId-->       
+      JOIN LookupResourceType lrt ON ir.ResourceTypeCode = lrt.LookupCode
+    
+      <!--LEFT JOIN REL_CaseResourceType_PFM_CORE_PreDefinedPage rip ON ir.ResourceTypeCode = rip.ResourceTypeCode
+      LEFT JOIN PFM_CORE_PreDefinedPage cp       ON rip.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      LEFT JOIN [ExternalSystemDimensionValue] esdv      ON cp.[ExternalSystemCode]= esdv.[ExternalSystemCode] and cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]-->
+      <where>
+        <exp op="=" dbField="iss.IssueId" paramId="IssueId" />
+      </where>
+    
+
+      SELECT
+      AttachmentId  as 'Id'
+      ,AttachmentInstance as 'AttachmentInstance'
+      ,IssueId  as 'IssueId'
+      ,AttachmentPurposeCode as 'AttachmentPurposeCode'
+      ,[CreatorId]   as 'CreatorId'
+      ,[CreatedDate]  as 'CreatedDate'
+      ,[LastUpdateId]  as 'LastUpdateId'
+      ,[LastUpdateDate]  as 'LastUpdateDate'
+      FROM PFM_Issue_Attachment_R
+      <where>
+        <exp op="=" dbField="IssueId" paramId="IssueId" />
+      </where>
+
+      SELECT ir.[IssueId]
+      ,ir.[ResourceValue]
+      ,ir.[ResourceTypeCode]
+      ,ir.[CreatorId]
+      ,ir.[CreatedDate]
+      ,ir.[LastUpdateId]
+      ,ir.[LastUpdateDate]
+      ,pi.Name as Name
+      ,lrt.LongDisplayValue as Description
+      ,pi.ResourceTrackingNo as TrackingNo
+      ,SourceName as SourceName <!-- PFM-6360 -->
+      ,QueryStrings as QueryStrings
+      ,ir.AdditionalFields
+      FROM[dbo].[PFM_Issue_Resource_R] ir
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+      <where>
+        <exp op="=" dbField="ir.[IssueId]" paramId="IssueId" />
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetIssues" connection="Common">
+    <param id ="IssueId"  />
+    <param id ="ResourceValue"  />
+    <param id ="TrackingNo"  />
+    <param id ="Title"  />
+    <param id ="Description"  />
+    <param id ="StatusCode"  />
+    <param id ="StateCode"  />
+    <param id ="PriorityCode"  />
+    <param id ="TargetDate"  />
+    <param id ="AssigneeFirstName"  />
+    <param id ="AssigneeLastName"  />
+    <param id ="AssigneeFullName"  />
+    <param id ="CreatorFirstName"  />
+    <param id ="CreatorLastName"  />
+    <param id ="CreatorFullName"  />
+    <param id ="DateAssigned"  />
+    <param id ="ClosedDate"  />
+    <param id ="CreatorId"  />
+    <param id ="LastUpdateId"  />
+    <param id ="AssigneeId"  />
+    <param id ="ContributorId"  />
+    <param id ="HasPendingTask"  />
+    <param id ="ResourceTrackingNo"  />
+    <param id ="ResourceName"  />
+    <param id ="ResourceDescription"  />
+    <param id ="TargetDateFrom"  />
+    <param id ="TargetDateTo"  />
+    <param id ="ClosedDateFrom"  />
+    <param id ="ClosedDateTo"  />
+    <param id ="CreatedDate"  />
+    <param id ="CreatedDateFrom"  />
+    <param id ="CreatedDateTo"  />
+
+    <param id ="IssueId_OPERATION"  />
+    <param id ="ResourceValue_OPERATION"  />
+    <param id ="TrackingNo_OPERATION"  />
+    <param id ="Title_OPERATION"  />
+    <param id ="Description_OPERATION"  />
+    <param id ="StatusCode_OPERATION"  />
+    <param id ="StateCode_OPERATION"  />
+    <param id ="PriorityCode_OPERATION"  />
+    <param id ="TargetDate_OPERATION"  />
+    <param id ="AssigneeFirstName_OPERATION"  />
+    <param id ="AssigneeLastName_OPERATION"  />
+    <param id ="AssigneeFullName_OPERATION"  />
+    <param id ="CreatorFirstName_OPERATION"  />
+    <param id ="CreatorLastName_OPERATION"  />
+    <param id ="CreatorFullName_OPERATION"  />
+    <param id ="DateAssigned_OPERATION"  />
+    <param id ="ClosedDate_OPERATION"  />
+    <param id ="CreatorId_OPERATION"  />
+    <param id ="LastUpdateId_OPERATION"  />
+    <param id ="AssigneeId_OPERATION"  />
+    <param id ="ContributorId_OPERATION"  />
+    <param id ="HasPendingTask_OPERATION"  />
+    <param id ="ResourceTrackingNo_OPERATION"  />
+    <param id ="ResourceName_OPERATION"  />
+    <param id ="ResourceDescription_OPERATION"  />
+    <param id ="TargetDateFrom_OPERATION"  />
+    <param id ="TargetDateTo_OPERATION"  />
+    <param id ="ClosedDateFrom_OPERATION"  />
+    <param id ="ClosedDateTo_OPERATION"  />
+    <param id ="CreatedDate_OPERATION"  />
+    <param id ="CreatedDateFrom_OPERATION"  />
+    <param id ="CreatedDateTo_OPERATION"  />
+    <param id ="SortParam"   />
+    <param id="IssueType" type = "Int32" required="true" />
+    <param id ="IssueType_OPERATION"  required="true"  />
+    <sql>
+      ;WITH
+
+      IssueResources(ResourceTypeCode,IssueId)
+      AS (
+      SELECT Distinct ir.ResourceTypeCode,ir.issueid
+      FROM[dbo].[PFM_Issue_Resource_R] ir
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+      <where>
+        <exp op="AND">          
+          <optional depends="ResourceValue">
+            ir.ResourceValue <dynamic paramId="ResourceValue_OPERATION"/>  <exp paramId="ResourceValue"/>
+          </optional>
+          <optional depends="ResourceTrackingNo">
+            pi.ResourceTrackingNo <dynamic paramId="ResourceTrackingNo_OPERATION"/>  <exp paramId="ResourceTrackingNo"/>
+          </optional>
+          <optional depends="ResourceName">
+            pi.Name <dynamic paramId="ResourceName_OPERATION"/>  <exp paramId="ResourceName"/>
+          </optional>
+          <optional depends="ResourceDescription">
+            lrt.LongDisplayValue <dynamic paramId="ResourceDescription_OPERATION"/>  <exp paramId="ResourceDescription"/>
+          </optional>
+        </exp>
+      </where>
+
+      )
+
+      SELECT
+      iss.IssueId  as 'Id'
+      ,iss.IssueId  as 'IssueId'
+      ,iss.VersionId  as 'VersionId'
+      ,iss.TrackingNo as 'TrackingNo'
+      ,iss.Title as 'Title'
+      ,iss.Description as 'Description'
+      ,iss.StatusCode  as 'StatusCode'
+      ,iss.StateCode   as 'StateCode'
+      ,iss.PriorityCode  as 'PriorityCode'
+      ,iss.AssigneeId  as 'AssigneeId'
+      ,iss.TargetDate  as 'TargetDate'
+      ,iss.TargetDate  as 'TargetDateFrom'
+      ,iss.TargetDate  as 'TargetDateTo'
+      ,iss.ClosedById   as 'ClosedById'
+      ,iss.ClosedDate  as 'ClosedDate'
+      ,iss.ClosedDate  as 'ClosedDateFrom'
+      ,iss.ClosedDate  as 'ClosedDateTo'
+      ,iss.Comments  as 'Comments'
+      ,iss.ResourceValue  as 'ResourceValue'
+      ,iss.ResourceTypeCode  as 'ResourceTypeCode'
+      ,iss.ReadAccess  as 'ReadAccess'
+      ,iss.HasPendingTask as 'HasPendingTask'
+      ,iss.CreatorId   as 'CreatorId'
+      ,iss.CreatedDate  as 'CreatedDate'
+      ,iss.CreatedDate  as 'CreatedDateFrom'
+      ,iss.CreatedDate  as 'CreatedDateTo'
+      ,iss.CreatedDate as 'DateAssigned'
+      ,iss.LastUpdateId  as 'LastUpdateId'
+      ,iss.LastUpdateDate  as 'LastUpdateDate'
+      ,'' as 'ContributorId'
+      ,ppa.FirstName as 'AssigneeFirstName'
+      ,ppa.LastName as 'AssigneeLastName'
+      ,ppa.MiddleName as 'AssigneeMiddleName'
+      ,ppa.LastName + ' ' + ppa.FirstName as 'AssigneeFullName'
+      ,ppa.Title as 'AssigneeTitle'
+      ,ppc.FirstName as 'CreatorFirstName'
+      ,ppc.LastName as 'CreatorLastName'
+      ,ppc.MiddleName as 'CreatorMiddleName'
+      ,ppc.LastName + ' ' + ppc.FirstName as 'CreatorFullName'
+      ,ppc.Title as 'CreatorTitle'
+      ,ppu.FirstName as 'UpdatedByFirstName'
+      ,ppu.LastName as 'UpdatedByLastName'
+      ,ppu.MiddleName as 'UpdatedByMiddleName'
+      ,ppu.LastName + ' ' + ppu.FirstName as 'UpdatedByFullName'
+      ,ppu.Title as 'UpdatedByTitle'
+      ,lrt.ShortDisplayValue  as 'ResourceDescription'
+      ,iss.sourceSystemCode  as SourceSystemCode
+      <!--,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as 'URL'-->
+      FROM  IssueResources IR
+      Join  PFM_Issue_P iss on IR.IssueId = iss.IssueId
+      LEFT JOIN People ppc ON iss.CreatorId = ppc.UserId
+      LEFT JOIN People ppu ON iss.LastUpdateId = ppu.UserId
+      LEFT JOIN People ppa ON iss.AssigneeId = ppa.UserId
+      left JOIN LookupResourceType lrt ON ir .ResourceTypeCode = lrt.LookupCode      
+      <!--LEFT JOIN REL_CaseResourceType_PFM_CORE_PreDefinedPage rip ON IR.ResourceTypeCode = rip.ResourceTypeCode
+      LEFT JOIN PFM_CORE_PreDefinedPage cp       ON rip.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      LEFT JOIN [ExternalSystemDimensionValue] esdv      ON cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]
+      and cp.[ExternalSystemDimensionCode] = esdv.[ExternalSystemDimensionCode]-->    
+
+      <where>
+        <exp op="and">
+          <optional depends="IssueType">
+            iss.IssueResourceType <dynamic paramId="IssueType_OPERATION"/>  <exp paramId="IssueType"/>
+          </optional>
+          <optional depends="IssueId">
+            iss.IssueId <dynamic paramId="IssueId_OPERATION"/>  <exp paramId="IssueId"/>
+          </optional>
+          <optional depends="TrackingNo">
+            iss.TrackingNo <dynamic paramId="TrackingNo_OPERATION"/>  <exp paramId="TrackingNo"/>
+          </optional>
+          <optional depends="Title">
+            iss.Title <dynamic paramId="Title_OPERATION"/>  <exp paramId="Title"/>
+          </optional>
+          <optional depends="Description">
+            iss.Description <dynamic paramId="Description_OPERATION"/>  <exp paramId="Description"/>
+          </optional>
+          <optional depends="StatusCode">
+            iss.StatusCode <dynamic paramId="StatusCode_OPERATION"/>  <exp paramId="StatusCode"/>
+          </optional>
+          <optional depends="StateCode">
+            iss.StateCode <dynamic paramId="StateCode_OPERATION"/>  <exp paramId="StateCode"/>
+          </optional>
+          <optional depends="PriorityCode">
+            iss.PriorityCode <dynamic paramId="PriorityCode_OPERATION"/>  <exp paramId="PriorityCode"/>
+          </optional>
+          <optional depends="TargetDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDate_OPERATION"/>  <exp paramId="TargetDate"/>
+          </optional>
+          <optional depends="TargetDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateFrom_OPERATION"/>  <exp paramId="TargetDateFrom"/>
+          </optional>
+          <optional depends="TargetDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateTo_OPERATION"/>  <exp paramId="TargetDateTo"/>
+          </optional>
+          <optional depends="AssigneeFirstName">
+            ppa.FirstName <dynamic paramId="AssigneeFirstName_OPERATION"/>  <exp paramId="AssigneeFirstName"/>
+          </optional>
+          <optional depends="AssigneeLastName">
+            ppa.LastName <dynamic paramId="AssigneeLastName_OPERATION"/>  <exp paramId="AssigneeLastName"/>
+          </optional>
+          <optional depends="AssigneeFullName">
+            (ppa.FirstName + ' ' + ppa.LastName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/> or ppa.LastName + ' ' + ppa.FirstName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/>)
+          </optional>
+          <optional depends="CreatorFirstName">
+            ppc.FirstName <dynamic paramId="CreatorFirstName_OPERATION"/>  <exp paramId="CreatorFirstName"/>
+          </optional>
+          <optional depends="CreatorLastName">
+            ppc.LastName <dynamic paramId="CreatorLastName_OPERATION"/>  <exp paramId="CreatorLastName"/>
+          </optional>
+          <optional depends="CreatorFullName">
+            (ppc.FirstName + ' ' + ppc.LastName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>  or ppc.LastName + ' ' + ppc.FirstName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>)
+          </optional>
+          <optional depends="DateAssigned">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0) <dynamic paramId="DateAssigned_OPERATION"/>  <exp paramId="DateAssigned"/>
+          </optional>
+          <optional depends="ClosedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDate_OPERATION"/>  <exp paramId="ClosedDate"/>
+          </optional>
+          <optional depends="ClosedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateFrom_OPERATION"/>  <exp paramId="ClosedDateFrom"/>
+          </optional>
+          <optional depends="ClosedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateTo_OPERATION"/>  <exp paramId="ClosedDateTo"/>
+          </optional>
+          <optional depends="CreatedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDate_OPERATION"/>  <exp paramId="CreatedDate"/>
+          </optional>
+          <optional depends="CreatedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateFrom_OPERATION"/>  <exp paramId="CreatedDateFrom"/>
+          </optional>
+          <optional depends="CreatedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateTo_OPERATION"/>  <exp paramId="CreatedDateTo"/>
+          </optional>
+          <optional depends="CreatorId">
+            iss.CreatorId <dynamic paramId="CreatorId_OPERATION"/>  <exp paramId="CreatorId"/>
+          </optional>
+          <optional depends="LastUpdateId">
+            iss.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"/>  <exp paramId="LastUpdateId"/>
+          </optional>
+          <optional depends="AssigneeId">
+            iss.AssigneeId <dynamic paramId="AssigneeId_OPERATION"/>  <exp paramId="AssigneeId"/>
+          </optional>
+          <optional depends="HasPendingTask">
+            iss.HasPendingTask <dynamic paramId="HasPendingTask_OPERATION"/>  <exp paramId="HasPendingTask"/>
+          </optional>
+       
+        </exp>
+      </where>
+      <optional depends="SortParam">
+        order by <dynamic paramId="SortParam"/>
+      </optional>
+
+           SELECT
+      att.AttachmentId  as 'Id'
+      ,att.AttachmentInstance as 'AttachmentInstance'
+      ,att.IssueId  as 'IssueId'
+      ,att.AttachmentPurposeCode as 'AttachmentPurposeCode'
+      ,att.[CreatorId]   as 'CreatorId'
+      ,att.[CreatedDate]  as 'CreatedDate'
+      ,att.[LastUpdateId]  as 'LastUpdateId'
+      ,att.[LastUpdateDate]  as 'LastUpdateDate'
+      FROM PFM_Issue_Attachment_R att
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = att.IssueId
+      <where>
+        <exp op ="=" dbField ="iss.IssueId" paramId ="IssueId"/>
+      </where>
+
+      SELECT ir.[IssueId]
+      ,ir.[ResourceValue]
+      ,ir.[ResourceTypeCode]
+      ,ir.[CreatorId]
+      ,ir.[CreatedDate]
+      ,ir.[LastUpdateId]
+      ,ir.[LastUpdateDate]
+      ,pi.Name as Name
+      ,lrt.LongDisplayValue as Description
+      ,pi.ResourceTrackingNo as TrackingNo
+
+      FROM[dbo].[PFM_Issue_Resource_R] ir
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+
+      <where>
+        <exp op="AND">
+          <optional depends="ResourceValue">
+            ir.ResourceValue <dynamic paramId="ResourceValue_OPERATION"/>  <exp paramId="ResourceValue"/>
+          </optional>
+          <optional depends="ResourceTrackingNo">
+            pi.ResourceTrackingNo <dynamic paramId="ResourceTrackingNo_OPERATION"/>  <exp paramId="ResourceTrackingNo"/>
+          </optional>
+          <optional depends="ResourceName">
+            pi.Name <dynamic paramId="ResourceName_OPERATION"/>  <exp paramId="ResourceName"/>
+          </optional>
+          <optional depends="ResourceDescription">
+            lrt.LongDisplayValue <dynamic paramId="ResourceDescription_OPERATION"/>  <exp paramId="ResourceDescription"/>
+          </optional>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetIssuesByPage" connection="Common">
+    <param id ="IssueId"  />
+    <param id ="ResourceValue"  />
+    <param id ="TrackingNo"  />
+    <param id ="Title"  />
+    <param id ="Description"  />
+    <param id ="StatusCode"  />
+    <param id ="StateCode"  />
+    <param id ="PriorityCode"  />
+    <param id ="TargetDate"  />
+    <param id ="AssigneeFirstName"  />
+    <param id ="AssigneeLastName"  />
+    <param id ="AssigneeFullName"  />
+    <param id ="CreatorFirstName"  />
+    <param id ="CreatorLastName"  />
+    <param id ="CreatorFullName"  />
+    <param id ="DateAssigned"  />
+    <param id ="ClosedDate"  />
+    <param id ="CreatorId"  />
+    <param id ="LastUpdateId"  />
+    <param id ="AssigneeId"  />
+    <param id ="ContributorId"  />
+    <param id ="HasPendingTask"  />
+    <param id ="ResourceTrackingNo"  />
+    <param id ="ResourceName"  />
+    <param id ="ResourceDescription"  />
+    <param id ="TargetDateFrom"  />
+    <param id ="TargetDateTo"  />
+    <param id ="ClosedDateFrom"  />
+    <param id ="ClosedDateTo"  />
+    <param id ="CreatedDate"  />
+    <param id ="CreatedDateFrom"  />
+    <param id ="CreatedDateTo"  />
+
+    <param id ="IssueId_OPERATION"  />
+    <param id ="ResourceValue_OPERATION"  />
+    <param id ="TrackingNo_OPERATION"  />
+    <param id ="Title_OPERATION"  />
+    <param id ="Description_OPERATION"  />
+    <param id ="StatusCode_OPERATION"  />
+    <param id ="StateCode_OPERATION"  />
+    <param id ="PriorityCode_OPERATION"  />
+    <param id ="TargetDate_OPERATION"  />
+    <param id ="AssigneeFirstName_OPERATION"  />
+    <param id ="AssigneeLastName_OPERATION"  />
+    <param id ="AssigneeFullName_OPERATION"  />
+    <param id ="CreatorFirstName_OPERATION"  />
+    <param id ="CreatorLastName_OPERATION"  />
+    <param id ="CreatorFullName_OPERATION"  />
+    <param id ="DateAssigned_OPERATION"  />
+    <param id ="ClosedDate_OPERATION"  />
+    <param id ="CreatorId_OPERATION"  />
+    <param id ="LastUpdateId_OPERATION"  />
+    <param id ="AssigneeId_OPERATION"  />
+    <param id ="ContributorId_OPERATION"  />
+    <param id ="HasPendingTask_OPERATION"  />
+    <param id ="ResourceTrackingNo_OPERATION"  />
+    <param id ="ResourceName_OPERATION"  />
+    <param id ="ResourceDescription_OPERATION"  />
+    <param id ="TargetDateFrom_OPERATION"  />
+    <param id ="TargetDateTo_OPERATION"  />
+    <param id ="ClosedDateFrom_OPERATION"  />
+    <param id ="ClosedDateTo_OPERATION"  />
+    <param id ="CreatedDate_OPERATION"  />
+    <param id ="CreatedDateFrom_OPERATION"  />
+    <param id ="CreatedDateTo_OPERATION"  />
+    <param id="SortParam" type="String" required="false" default="CreatedDate" />
+    <param id="IssueType" type = "Int32" required="true" />   
+    <param id ="IssueType_OPERATION"  required="true"  />
+
+    <sql>
+      ;WITH
+
+      IssueResources(ResourceTypeCode,IssueId )
+      AS (
+      select Distinct ir.ResourceTypeCode,ir.IssueId
+      FROM[dbo].[PFM_Issue_Resource_R] ir
+      INNER JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+      <where>
+        <exp op="AND">
+          <optional depends="AssigneeId">
+            iss.AssigneeId <dynamic paramId="AssigneeId_OPERATION"/>  <exp paramId="AssigneeId"/>
+          </optional>
+          <optional depends="ResourceValue">
+            ir.ResourceValue <dynamic paramId="ResourceValue_OPERATION"/>  <exp paramId="ResourceValue"/>
+          </optional>
+          <optional depends="ResourceTrackingNo">
+            pi.ResourceTrackingNo <dynamic paramId="ResourceTrackingNo_OPERATION"/>  <exp paramId="ResourceTrackingNo"/>
+          </optional>
+          <optional depends="ResourceName">
+            pi.Name <dynamic paramId="ResourceName_OPERATION"/>  <exp paramId="ResourceName"/>
+          </optional>
+          <optional depends="ResourceDescription">
+            lrt.LongDisplayValue <dynamic paramId="ResourceDescription_OPERATION"/>  <exp paramId="ResourceDescription"/>
+          </optional>
+        </exp>
+      </where>
+
+      )
+
+      <select>
+        main.*
+
+      </select>
+      From
+      (
+      Select
+      iss.IssueId  as 'Id'
+      ,iss.IssueId  as 'IssueId'
+      ,iss.VersionId  as 'VersionId'
+      ,iss.TrackingNo as 'TrackingNo'
+      ,iss.Title as 'Title'
+      ,iss.Description as 'Description'
+      ,iss.StatusCode  as 'StatusCode'
+      ,iss.StateCode   as 'StateCode'
+      ,iss.PriorityCode  as 'PriorityCode'
+      ,iss.AssigneeId  as 'AssigneeId'
+      ,iss.TargetDate  as 'TargetDate'
+      ,iss.TargetDate  as 'TargetDateFrom'
+      ,iss.TargetDate  as 'TargetDateTo'
+      ,iss.ClosedById   as 'ClosedById'
+      ,iss.ClosedDate  as 'ClosedDate'
+      ,iss.ClosedDate  as 'ClosedDateFrom'
+      ,iss.ClosedDate  as 'ClosedDateTo'
+      ,iss.Comments  as 'Comments'
+      ,iss.ResourceValue  as 'ResourceValue'
+      ,IR.ResourceTypeCode  as 'ResourceTypeCode'
+      ,iss.ReadAccess  as 'ReadAccess'
+      ,iss.HasPendingTask as 'HasPendingTask'
+      ,iss.CreatorId   as 'CreatorId'
+      ,iss.CreatedDate  as 'CreatedDate'
+      ,iss.CreatedDate  as 'CreatedDateFrom'
+      ,iss.CreatedDate  as 'CreatedDateTo'
+      ,iss.CreatedDate as 'DateAssigned'
+      ,iss.LastUpdateId  as 'LastUpdateId'
+      ,iss.LastUpdateDate  as 'LastUpdateDate'
+      ,'' as 'ContributorId'
+
+      ,ppa.FirstName as 'AssigneeFirstName'
+      ,ppa.LastName as 'AssigneeLastName'
+      ,ppa.MiddleName as 'AssigneeMiddleName'
+      ,ppa.LastName + ' ' + ppa.FirstName as 'AssigneeFullName'
+      ,ppa.Title as 'AssigneeTitle'
+      ,ppc.FirstName as 'CreatorFirstName'
+      ,ppc.LastName as 'CreatorLastName'
+      ,ppc.MiddleName as 'CreatorMiddleName'
+      ,ppc.LastName + ' ' + ppc.FirstName as 'CreatorFullName'
+      ,ppc.Title as 'CreatorTitle'
+      ,ppu.FirstName as 'UpdatedByFirstName'
+      ,ppu.LastName as 'UpdatedByLastName'
+      ,ppu.MiddleName as 'UpdatedByMiddleName'
+      ,ppu.LastName + ' ' + ppu.FirstName as 'UpdatedByFullName'
+      ,ppu.Title as 'UpdatedByTitle'
+
+      ,lrt.ShortDisplayValue  as 'ResourceDescription'
+      ,iss.sourceSystemCode  as SourceSystemCode
+      <!--,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as 'URL'-->
+      From IssueResources IR
+      join PFM_Issue_P iss on IR.IssueId = iss.IssueId
+      LEFT JOIN People ppc ON iss.CreatorId = ppc.UserId
+      LEFT JOIN People ppu ON iss.LastUpdateId = ppu.UserId
+      LEFT JOIN People ppa ON iss.AssigneeId = ppa.UserId
+      LEFT JOIN LookupResourceType lrt ON ir.ResourceTypeCode = lrt.LookupCode
+
+      <!--LEFT JOIN REL_CaseResourceType_PFM_CORE_PreDefinedPage rip ON IR.ResourceTypeCode = rip.ResourceTypeCode 
+      LEFT JOIN PFM_CORE_PreDefinedPage cp       ON rip.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      LEFT JOIN [ExternalSystemDimensionValue] esdv      ON cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]
+      and cp.[ExternalSystemDimensionCode]= esdv.[ExternalSystemDimensionCode]-->
+
+      <where>
+        <exp op="AND">
+          <optional depends="IssueType">
+            iss.IssueResourceType <dynamic paramId="IssueType_OPERATION"/>  <exp paramId="IssueType"/>
+          </optional>
+          <optional depends="IssueId">
+            iss.IssueId <dynamic paramId="IssueId_OPERATION"/>  <exp paramId="IssueId"/>
+          </optional>
+          <optional depends="TrackingNo">
+            iss.TrackingNo <dynamic paramId="TrackingNo_OPERATION"/>  <exp paramId="TrackingNo"/>
+          </optional>
+          <optional depends="Title">
+            iss.Title <dynamic paramId="Title_OPERATION"/>  <exp paramId="Title"/>
+          </optional>
+          <optional depends="Description">
+            iss.Description <dynamic paramId="Description_OPERATION"/>  <exp paramId="Description"/>
+          </optional>
+          <optional depends="StatusCode">
+            iss.StatusCode <dynamic paramId="StatusCode_OPERATION"/>  <exp paramId="StatusCode"/>
+          </optional>
+          <optional depends="StateCode">
+            iss.StateCode <dynamic paramId="StateCode_OPERATION"/>  <exp paramId="StateCode"/>
+          </optional>
+          <optional depends="PriorityCode">
+            iss.PriorityCode <dynamic paramId="PriorityCode_OPERATION"/>  <exp paramId="PriorityCode"/>
+          </optional>
+          <optional depends="TargetDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDate_OPERATION"/>  <exp paramId="TargetDate"/>
+          </optional>
+          <optional depends="TargetDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateFrom_OPERATION"/>  <exp paramId="TargetDateFrom"/>
+          </optional>
+          <optional depends="TargetDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateTo_OPERATION"/>  <exp paramId="TargetDateTo"/>
+          </optional>
+          <optional depends="AssigneeFirstName">
+            ppa.FirstName <dynamic paramId="AssigneeFirstName_OPERATION"/>  <exp paramId="AssigneeFirstName"/>
+          </optional>
+          <optional depends="AssigneeLastName">
+            ppa.LastName <dynamic paramId="AssigneeLastName_OPERATION"/>  <exp paramId="AssigneeLastName"/>
+          </optional>
+          <optional depends="AssigneeFullName">
+            (ppa.FirstName + ' ' + ppa.LastName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/> or ppa.LastName + ' ' + ppa.FirstName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/>)
+          </optional>
+          <optional depends="CreatorFirstName">
+            ppc.FirstName <dynamic paramId="CreatorFirstName_OPERATION"/>  <exp paramId="CreatorFirstName"/>
+          </optional>
+          <optional depends="CreatorLastName">
+            ppc.LastName <dynamic paramId="CreatorLastName_OPERATION"/>  <exp paramId="CreatorLastName"/>
+          </optional>
+          <optional depends="CreatorFullName">
+            (ppc.FirstName + ' ' + ppc.LastName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>  or ppc.LastName + ' ' + ppc.FirstName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>)
+          </optional>
+          <optional depends="DateAssigned">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0) <dynamic paramId="DateAssigned_OPERATION"/>  <exp paramId="DateAssigned"/>
+          </optional>
+          <optional depends="ClosedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDate_OPERATION"/>  <exp paramId="ClosedDate"/>
+          </optional>
+          <optional depends="ClosedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateFrom_OPERATION"/>  <exp paramId="ClosedDateFrom"/>
+          </optional>
+          <optional depends="ClosedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateTo_OPERATION"/>  <exp paramId="ClosedDateTo"/>
+          </optional>
+          <optional depends="CreatedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDate_OPERATION"/>  <exp paramId="CreatedDate"/>
+          </optional>
+          <optional depends="CreatedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateFrom_OPERATION"/>  <exp paramId="CreatedDateFrom"/>
+          </optional>
+          <optional depends="CreatedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateTo_OPERATION"/>  <exp paramId="CreatedDateTo"/>
+          </optional>
+          <optional depends="CreatorId">
+            iss.CreatorId <dynamic paramId="CreatorId_OPERATION"/>  <exp paramId="CreatorId"/>
+          </optional>
+          <optional depends="LastUpdateId">
+            iss.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"/>  <exp paramId="LastUpdateId"/>
+          </optional>
+          <optional depends="AssigneeId">
+            iss.AssigneeId <dynamic paramId="AssigneeId_OPERATION"/>  <exp paramId="AssigneeId"/>
+          </optional>
+          <optional depends="HasPendingTask">
+            iss.HasPendingTask <dynamic paramId="HasPendingTask_OPERATION"/>  <exp paramId="HasPendingTask"/>
+          </optional>
+      
+
+
+        </exp>
+      </where>
+
+
+      ) main
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+  <statement name="GetIssuesDetailsByPage" connection="Common">
+    <param id="IssueIds" type="String" />
+    <sql>
+
+      DECLARE @IssueXml AS XML
+      SELECT @IssueXml = '<dynamic paramId="IssueIds"/>'  
+      SELECT
+      AttachmentId  as 'Id'
+      ,AttachmentInstance as 'AttachmentInstance'
+      ,att.IssueId  as 'IssueId'
+      ,AttachmentPurposeCode as 'AttachmentPurposeCode'
+      ,[CreatorId]   as 'CreatorId'
+      ,[CreatedDate]  as 'CreatedDate'
+      ,[LastUpdateId]  as 'LastUpdateId'
+      ,[LastUpdateDate]  as 'LastUpdateDate'
+      FROM PFM_Issue_Attachment_R  att
+      INNER JOIN (
+      SELECT Items.r.value('@id[1]','uniqueidentifier') AS IssueId
+      FROM @IssueXml.nodes('issue') as Items(r)
+      )  iss
+      ON iss.IssueId = att.IssueId
+
+      SELECT ir.[IssueId]
+      ,ir.[ResourceValue]
+      ,ir.[ResourceTypeCode]
+      ,ir.[CreatorId]
+      ,ir.[CreatedDate]
+      ,ir.[LastUpdateId]
+      ,ir.[LastUpdateDate]
+      ,pi.Name as Name
+      ,lrt.LongDisplayValue as Description
+      ,pi.ResourceTrackingNo as TrackingNo
+
+      FROM [PFM_Issue_Resource_R]
+      ir
+      INNER JOIN (
+      SELECT Items.r.value('@id[1]','uniqueidentifier') AS IssueId
+      FROM @IssueXml.nodes('issue') as Items(r)
+      )  iss
+      ON iss.IssueId = ir.IssueId
+
+      join PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      join LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+    </sql>
+  </statement>
+
+  <statement name ="DeleteIssue" connection="Common">
+    <param id ="IssueId" type ="Guid"/>
+    <sql>  
+
+      DELETE FROM PFM_Issue_Resource_R
+      <where>
+        <exp op ="=" dbField ="IssueId" paramId ="IssueId"/>
+      </where>
+
+      DELETE FROM PFM_Issue_P
+      <where>
+        <exp op ="=" dbField ="IssueId" paramId ="IssueId"/>
+      </where>
+
+
+    </sql>
+
+  </statement>
+
+  <statement name="GetEmailDetails">
+    <param id="TrackingNumber" />
+    <param id="GrantNumber" />
+    <param id="Title" />
+    <param id ="TargetDate" />
+    <param id="Priority" />
+    <param id="AssignedTo"  />
+    <param id="NotificationContributor" />
+    <param id="CreatedBy" />
+    <param id="ReAssignedBy" />
+    <param id="Comments" />
+    <param id="ResourceTrackingNo" />
+    <param id="ResourceDescription" />
+    <param id="ExternalWebsiteURL" />
+
+    <sql>
+      select <exp paramId="TrackingNumber"/> as TrackingNumber,
+      <exp paramId="GrantNumber"/> as GrantNumber,
+      <exp paramId="Title"/> as Title,
+      <exp paramId="TargetDate"/> as TargetDate,
+      <exp paramId="Priority"/> as Priority,
+      <exp paramId="AssignedTo"/> as AssignedTo,
+      <exp paramId="NotificationContributor"/> as NotificationContributor,
+      <exp paramId="CreatedBy"/> as CreatedBy,
+      <exp paramId="ReAssignedBy"/> as ReAssignedBy,
+      <exp paramId="Comments"/> as Comments,
+      <exp paramId="ResourceTrackingNo"/> as ResourceTrackingNo,
+      <exp paramId="ResourceDescription"/> as ResourceDescription,
+      <exp paramId="ExternalWebsiteURL"/> as ExternalWebsiteURL
+
+    </sql>
+  </statement>
+
+  <statement name="GetLookups" connection="Common">
+    <sql>
+      SELECT LookupCode, Description as 'Name', DisplayValue, 1 as 'LookupType'  FROM LU_PFM_IssuePriority (NOLOCK)
+      union
+      SELECT LookupCode, Description as 'Name',DisplayValue,  2 as 'LookupType' FROM LU_PFM_IssueState (NOLOCK)
+      union
+      SELECT LookupCode, Description as 'Name', DisplayValue,  4 as 'LookupType' FROM LU_PFM_IssueStatus (NOLOCK)
+    </sql>
+
+
+  </statement>
+
+  <statement name="GetIssuesByPageHierarchical" connection="Common">
+    <param id ="IssueId"  />
+    <param id ="ResourceValue"  />
+    <param id ="TrackingNo"  />
+    <param id ="Title"  />
+    <param id ="Description"  />
+    <param id ="StatusCode"  />
+    <param id ="StateCode"  />
+    <param id ="PriorityCode"  />
+    <param id ="TargetDate"  />
+    <param id ="AssigneeFirstName"  />
+    <param id ="AssigneeLastName"  />
+    <param id ="AssigneeFullName"  />
+    <param id ="CreatorFirstName"  />
+    <param id ="CreatorLastName"  />
+    <param id ="CreatorFullName"  />
+    <param id ="DateAssigned"  />
+    <param id ="ClosedDate"  />
+    <param id ="CreatorId"  />
+    <param id ="LastUpdateId"  />
+    <param id ="AssigneeId"  />
+    <param id ="ContributorId"  />
+    <param id ="HasPendingTask"  />
+    <param id ="ResourceTrackingNo"  />
+    <param id ="ResourceName"  />
+    <param id ="ResourceDescription"  />
+    <param id ="TargetDateFrom"  />
+    <param id ="TargetDateTo"  />
+    <param id ="ClosedDateFrom"  />
+    <param id ="ClosedDateTo"  />
+    <param id ="CreatedDate"  />
+    <param id ="CreatedDateFrom"  />
+    <param id ="CreatedDateTo"  />
+    <param id="IssueType" type = "Int32" required="true" />
+    <param id="Resources" type ="String" required="true" />  <!-- this param contains xml representation of resource vlaues-->
+    <param id ="LinkedResourceType" />
+    <param id ="LinkedResourceName" type="String" />
+    <param id ="LinkedResourceTrackingNumber"  type="String"/>
+    <param id ="LinkedResourceDescription"  type="String"/>
+    <param id ="LinkedFilterFlag"  type="String"/>
+    <param id ="IssueId_OPERATION"  />
+    <param id ="ResourceValue_OPERATION"  />
+    <param id ="TrackingNo_OPERATION"  />
+    <param id ="Title_OPERATION"  />
+    <param id ="Description_OPERATION"  />
+    <param id ="StatusCode_OPERATION"  />
+    <param id ="StateCode_OPERATION"  />
+    <param id ="PriorityCode_OPERATION"  />
+    <param id ="TargetDate_OPERATION"  />
+    <param id ="AssigneeFirstName_OPERATION"  />
+    <param id ="AssigneeLastName_OPERATION"  />
+    <param id ="AssigneeFullName_OPERATION"  />
+    <param id ="CreatorFirstName_OPERATION"  />
+    <param id ="CreatorLastName_OPERATION"  />
+    <param id ="CreatorFullName_OPERATION"  />
+    <param id ="DateAssigned_OPERATION"  />
+    <param id ="ClosedDate_OPERATION"  />
+    <param id ="CreatorId_OPERATION"  />
+    <param id ="LastUpdateId_OPERATION"  />
+    <param id ="AssigneeId_OPERATION"  />
+    <param id ="ContributorId_OPERATION"  />
+    <param id ="HasPendingTask_OPERATION"  />
+    <param id ="ResourceTrackingNo_OPERATION"  />
+    <param id ="ResourceName_OPERATION"  />
+    <param id ="ResourceDescription_OPERATION"  />
+    <param id ="TargetDateFrom_OPERATION"  />
+    <param id ="TargetDateTo_OPERATION"  />
+    <param id ="ClosedDateFrom_OPERATION"  />
+    <param id ="ClosedDateTo_OPERATION"  />
+    <param id ="CreatedDate_OPERATION"  />
+    <param id ="CreatedDateFrom_OPERATION"  />
+    <param id ="CreatedDateTo_OPERATION"  />
+    <param id="SortParam" type="String" required="false" default="CreatedDate" />  
+    <param id ="IssueType_OPERATION"  required="true"  /> 
+    <param id ="LinkedResourceType_OPERATION" type="String" />
+    <param id ="LinkedResourceName_OPERATION" type="String" />
+    <param id ="LinkedResourceTrackingNumber_OPERATION"  type="String"/>
+    <param id ="LinkedResourceDescription_OPERATION"  type="String"/>
+
+
+    <sql>
+      
+      DECLARE @ResourcesXml as XML
+      SELECT @ResourcesXml = '<dynamic paramId="Resources"/>'
+      ;WITH
+
+      IssueResources(ResourceTypeCode,IssueId )
+      AS (
+      select Distinct ir.ResourceTypeCode,ir.IssueId    
+     From  
+       ( SELECT Items.r.value('@ResourceValue[1]','uniqueidentifier') AS ResourceValue
+        FROM @ResourcesXml.nodes('Resource') as Items(r)
+        )  HR   <!-- this xml contains all resources in the hierarchy-->
+      JOIN [dbo].[PFM_Issue_Resource_R] ir on  HR.ResourceValue =  ir.ResourceValue
+      JOIN PFM_Issue_P iss ON iss.IssueId = ir.IssueId
+      JOIN PFM_Resource_Instance pi on pi.SourceId = ir.ResourceValue
+      JOIN LookupResourceType lrt on lrt.LookupCode = ir.ResourceTypeCode
+      <optional depends="LinkedFilterFlag">   <!-- joins required for filtering by linked resource attribute-->
+        JOIN  PFM_Resource_Instance RI ON ir.IssueId = RI.SourceId
+        JOIN PFM_Resource_Relationship RR
+        ON  (RI.ResourceIdentifierId = RR.ChildResourceIdentifierId OR RI.ResourceIdentifierId = RR.ResourceIdentifierId) and RelationShipCategoryTypeCode =2 <!-- Link relationship type-->
+        JOIN  PFM_Resource_Instance LRI ON
+        LRI.SourceId &lt;&gt; ir.IssueId and (LRI.ResourceIdentifierId = RR.ChildResourceIdentifierId OR  LRI.ResourceIdentifierId = RR.ResourceIdentifierId) and RelationShipCategoryTypeCode =2 <!-- Link relationship type-->
+
+      </optional>
+        <where>
+        <exp op="AND">
+          <!-- filter by linked resource attributes-->
+          <optional depends="LinkedFilterFlag">
+            <exp op ="And">
+              <optional  depends ="LinkedResourceType">
+                LRI.ResourceTypeCode  <dynamic paramId="LinkedResourceType_OPERATION"/> <exp paramId="LinkedResourceType"/>
+              </optional>
+              <optional  depends ="LinkedResourceName">
+                LRI.Name  <dynamic paramId="LinkedResourceName_OPERATION"/> <exp paramId="LinkedResourceName"/>
+              </optional>
+              <optional  depends ="LinkedResourceTrackingNumber">
+                LRI.ResourceTrackingNo  <dynamic paramId="LinkedResourceTrackingNumber_OPERATION"/> <exp paramId="LinkedResourceTrackingNumber"/>
+              </optional>
+              <optional  depends ="LinkedResourceDescription">
+                LRI.Description  <dynamic paramId="LinkedResourceDescription_OPERATION"/> <exp paramId="LinkedResourceDescription"/>
+              </optional>
+            </exp>
+          </optional>
+          <!-- end of linked resource  filtering-->
+          <optional depends="AssigneeId">
+            iss.AssigneeId <dynamic paramId="AssigneeId_OPERATION"/>  <exp paramId="AssigneeId"/>
+          </optional>          
+          <optional depends="ResourceTrackingNo">
+            pi.ResourceTrackingNo <dynamic paramId="ResourceTrackingNo_OPERATION"/>  <exp paramId="ResourceTrackingNo"/>
+          </optional>
+          <optional depends="ResourceName">
+            pi.Name <dynamic paramId="ResourceName_OPERATION"/>  <exp paramId="ResourceName"/>
+          </optional>
+          <optional depends="ResourceDescription">
+            lrt.LongDisplayValue <dynamic paramId="ResourceDescription_OPERATION"/>  <exp paramId="ResourceDescription"/>
+          </optional>
+        </exp>
+      </where>
+
+      )
+
+      <select>
+        main.*
+
+      </select>
+      From
+      (
+      Select
+      iss.IssueId  as 'Id'
+      ,iss.IssueId  as 'IssueId'
+      ,iss.VersionId  as 'VersionId'
+      ,iss.TrackingNo as 'TrackingNo'
+      ,iss.Title as 'Title'
+      ,iss.Description as 'Description'
+      ,iss.StatusCode  as 'StatusCode'
+      ,iss.StateCode   as 'StateCode'
+      ,iss.PriorityCode  as 'PriorityCode'
+      ,iss.AssigneeId  as 'AssigneeId'
+      ,iss.TargetDate  as 'TargetDate'
+      ,iss.TargetDate  as 'TargetDateFrom'
+      ,iss.TargetDate  as 'TargetDateTo'
+      ,iss.ClosedById   as 'ClosedById'
+      ,iss.ClosedDate  as 'ClosedDate'
+      ,iss.ClosedDate  as 'ClosedDateFrom'
+      ,iss.ClosedDate  as 'ClosedDateTo'
+      ,iss.Comments  as 'Comments'
+      ,iss.ResourceValue  as 'ResourceValue'
+      ,IR.ResourceTypeCode  as 'ResourceTypeCode'
+      ,iss.ReadAccess  as 'ReadAccess'
+      ,iss.HasPendingTask as 'HasPendingTask'
+      ,iss.CreatorId   as 'CreatorId'
+      ,iss.CreatedDate  as 'CreatedDate'
+      ,iss.CreatedDate  as 'CreatedDateFrom'
+      ,iss.CreatedDate  as 'CreatedDateTo'
+      ,iss.CreatedDate as 'DateAssigned'
+      ,iss.LastUpdateId  as 'LastUpdateId'
+      ,iss.LastUpdateDate  as 'LastUpdateDate'
+      ,'' as 'ContributorId'
+
+      ,ppa.FirstName as 'AssigneeFirstName'
+      ,ppa.LastName as 'AssigneeLastName'
+      ,ppa.MiddleName as 'AssigneeMiddleName'
+      ,ppa.LastName + ' ' + ppa.FirstName as 'AssigneeFullName'
+      ,ppa.Title as 'AssigneeTitle'
+      ,ppc.FirstName as 'CreatorFirstName'
+      ,ppc.LastName as 'CreatorLastName'
+      ,ppc.MiddleName as 'CreatorMiddleName'
+      ,ppc.LastName + ' ' + ppc.FirstName as 'CreatorFullName'
+      ,ppc.Title as 'CreatorTitle'
+      ,ppu.FirstName as 'UpdatedByFirstName'
+      ,ppu.LastName as 'UpdatedByLastName'
+      ,ppu.MiddleName as 'UpdatedByMiddleName'
+      ,ppu.LastName + ' ' + ppu.FirstName as 'UpdatedByFullName'
+      ,ppu.Title as 'UpdatedByTitle'
+
+      ,lrt.ShortDisplayValue  as 'ResourceDescription'
+      ,iss.sourceSystemCode  as SourceSystemCode
+      <!--,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as 'URL'-->
+      From IssueResources IR
+      join PFM_Issue_P iss on IR.IssueId = iss.IssueId
+      LEFT JOIN People ppc ON iss.CreatorId = ppc.UserId
+      LEFT JOIN People ppu ON iss.LastUpdateId = ppu.UserId
+      LEFT JOIN People ppa ON iss.AssigneeId = ppa.UserId
+      LEFT JOIN LookupResourceType lrt ON ir.ResourceTypeCode = lrt.LookupCode
+
+      <!--LEFT JOIN REL_CaseResourceType_PFM_CORE_PreDefinedPage rip ON IR.ResourceTypeCode = rip.ResourceTypeCode 
+      LEFT JOIN PFM_CORE_PreDefinedPage cp       ON rip.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      LEFT JOIN [ExternalSystemDimensionValue] esdv      ON cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]
+      and cp.[ExternalSystemDimensionCode]= esdv.[ExternalSystemDimensionCode]-->
+
+      <where>
+        <exp op="AND">
+          <optional depends="IssueType">
+            iss.IssueResourceType <dynamic paramId="IssueType_OPERATION"/>  <exp paramId="IssueType"/>
+          </optional>
+          <optional depends="IssueId">
+            iss.IssueId <dynamic paramId="IssueId_OPERATION"/>  <exp paramId="IssueId"/>
+          </optional>
+          <optional depends="TrackingNo">
+            iss.TrackingNo <dynamic paramId="TrackingNo_OPERATION"/>  <exp paramId="TrackingNo"/>
+          </optional>
+          <optional depends="Title">
+            iss.Title <dynamic paramId="Title_OPERATION"/>  <exp paramId="Title"/>
+          </optional>
+          <optional depends="Description">
+            iss.Description <dynamic paramId="Description_OPERATION"/>  <exp paramId="Description"/>
+          </optional>
+          <optional depends="StatusCode">
+            iss.StatusCode <dynamic paramId="StatusCode_OPERATION"/>  <exp paramId="StatusCode"/>
+          </optional>
+          <optional depends="StateCode">
+            iss.StateCode <dynamic paramId="StateCode_OPERATION"/>  <exp paramId="StateCode"/>
+          </optional>
+          <optional depends="PriorityCode">
+            iss.PriorityCode <dynamic paramId="PriorityCode_OPERATION"/>  <exp paramId="PriorityCode"/>
+          </optional>
+          <optional depends="TargetDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDate_OPERATION"/>  <exp paramId="TargetDate"/>
+          </optional>
+          <optional depends="TargetDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateFrom_OPERATION"/>  <exp paramId="TargetDateFrom"/>
+          </optional>
+          <optional depends="TargetDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.TargetDate), 0)  <dynamic paramId="TargetDateTo_OPERATION"/>  <exp paramId="TargetDateTo"/>
+          </optional>
+          <optional depends="AssigneeFirstName">
+            ppa.FirstName <dynamic paramId="AssigneeFirstName_OPERATION"/>  <exp paramId="AssigneeFirstName"/>
+          </optional>
+          <optional depends="AssigneeLastName">
+            ppa.LastName <dynamic paramId="AssigneeLastName_OPERATION"/>  <exp paramId="AssigneeLastName"/>
+          </optional>
+          <optional depends="AssigneeFullName">
+            (ppa.FirstName + ' ' + ppa.LastName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/> or ppa.LastName + ' ' + ppa.FirstName <dynamic paramId="AssigneeFullName_OPERATION"/>  <exp paramId="AssigneeFullName"/>)
+          </optional>
+          <optional depends="CreatorFirstName">
+            ppc.FirstName <dynamic paramId="CreatorFirstName_OPERATION"/>  <exp paramId="CreatorFirstName"/>
+          </optional>
+          <optional depends="CreatorLastName">
+            ppc.LastName <dynamic paramId="CreatorLastName_OPERATION"/>  <exp paramId="CreatorLastName"/>
+          </optional>
+          <optional depends="CreatorFullName">
+            (ppc.FirstName + ' ' + ppc.LastName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>  or ppc.LastName + ' ' + ppc.FirstName <dynamic paramId="CreatorFullName_OPERATION"/>  <exp paramId="CreatorFullName"/>)
+          </optional>
+          <optional depends="DateAssigned">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0) <dynamic paramId="DateAssigned_OPERATION"/>  <exp paramId="DateAssigned"/>
+          </optional>
+          <optional depends="ClosedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDate_OPERATION"/>  <exp paramId="ClosedDate"/>
+          </optional>
+          <optional depends="ClosedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateFrom_OPERATION"/>  <exp paramId="ClosedDateFrom"/>
+          </optional>
+          <optional depends="ClosedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.ClosedDate), 0)  <dynamic paramId="ClosedDateTo_OPERATION"/>  <exp paramId="ClosedDateTo"/>
+          </optional>
+          <optional depends="CreatedDate">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDate_OPERATION"/>  <exp paramId="CreatedDate"/>
+          </optional>
+          <optional depends="CreatedDateFrom">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateFrom_OPERATION"/>  <exp paramId="CreatedDateFrom"/>
+          </optional>
+          <optional depends="CreatedDateTo">
+            DATEADD(DAY, DATEDIFF(DAY, 0, iss.CreatedDate), 0)  <dynamic paramId="CreatedDateTo_OPERATION"/>  <exp paramId="CreatedDateTo"/>
+          </optional>
+          <optional depends="CreatorId">
+            iss.CreatorId <dynamic paramId="CreatorId_OPERATION"/>  <exp paramId="CreatorId"/>
+          </optional>
+          <optional depends="LastUpdateId">
+            iss.LastUpdateId <dynamic paramId="LastUpdateId_OPERATION"/>  <exp paramId="LastUpdateId"/>
+          </optional>
+          <optional depends="AssigneeId">
+            iss.AssigneeId <dynamic paramId="AssigneeId_OPERATION"/>  <exp paramId="AssigneeId"/>
+          </optional>
+          <optional depends="HasPendingTask">
+            iss.HasPendingTask <dynamic paramId="HasPendingTask_OPERATION"/>  <exp paramId="HasPendingTask"/>
+          </optional>
+
+
+
+        </exp>
+      </where>
+
+
+      ) main
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+
+</statements>

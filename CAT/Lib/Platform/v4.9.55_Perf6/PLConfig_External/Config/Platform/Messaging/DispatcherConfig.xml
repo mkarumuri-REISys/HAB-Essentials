@@ -1,0 +1,11 @@
+<root>
+  <!--use smtp4dev as the local dev SMTP server-->
+  <!--use smtpHost == 127.0.0.1 for locahost on a dev box-->
+  <!--use smtpPort == 25 on a dev box-->
+  <smtpHost>mail.reisys.com</smtpHost>
+  <smtpPort>25</smtpPort>
+  <fetchSize>100</fetchSize>
+  <sysadminEmailAddress>lpfister@reisys.com</sysadminEmailAddress>
+  <smtpSenderAddress>dispatcher@mydevbox.reisys.com</smtpSenderAddress>
+  <activeThreadLimit>1</activeThreadLimit>
+</root>

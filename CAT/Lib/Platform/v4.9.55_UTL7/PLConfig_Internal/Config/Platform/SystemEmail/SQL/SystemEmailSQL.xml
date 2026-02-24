@@ -1,0 +1,32 @@
+﻿<statements>
+  <statement name="GetUserType" connection="Common" >
+    <param id="UserId" type="String" size="36" />
+    <sql>
+      select UserTypeCode from ac_user
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="userid" paramId="UserId" />
+        </exp>
+      </where>
+      union
+      select UserTypeCode from AC_UserProfile
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="userid" paramId="UserId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetSystemEmail" connection="Common" >
+    <param id="messagecontextcode" type="Int32"/>
+    <sql>
+      select SenderUserID from Mail_StandardMessage msm
+      join Mail_StandardContext msc on msm.StandardMessageId = msc.StandardMessageId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MessageContextCode" paramId="messagecontextcode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>

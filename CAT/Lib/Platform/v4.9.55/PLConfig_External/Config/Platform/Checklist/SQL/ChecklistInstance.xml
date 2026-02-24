@@ -1,0 +1,200 @@
+<statements>
+	<statement name="get">
+		<param id="checklistInstanceId" 	type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="resourceValue"		 	type="String" size="36" />
+		<param id="resourceTypeCode"		type="String" size="36"/>
+		<param id="resourceInstance"		type="int32"/>
+		<param id="description" 			type="String" size="255" />
+		<param id="definitionVersionId" type="Int32" />
+		<param id="answerResourceInstance" type="Int32" />
+		<param id="checkForUpdatedInstance" type="Boolean" default="false" />
+		<sql>
+			SELECT
+			<optional depends="definitionVersionId == null || checkForUpdatedInstance == true">
+				top 1
+			</optional>
+			CI.ChecklistInstanceId,
+			CI.ResourceValue,
+			CI.ResourceInstance,
+			CI.ResourceTypeCode,
+			CI.ChecklistDefinitionId,
+			CI.ChecklistDefinitionVersion,
+			CI.CreatorId,
+			CI.CreatedDate,
+			CI.LastUpdateId,
+			CI.LastUpdateDate,
+			CI.Description,
+			CD.XSLTPath,
+			CD.ReadOnlyXSLTPath
+			from ChecklistInstance CI
+			join ChecklistDefinition CD on CD.ChecklistDefinitionId = CI.ChecklistDefinitionId and CD.version = CI.ChecklistDefinitionVersion
+			<optional depends="checkForUpdatedInstance">
+				JOIN Hist_ChecklistInstanceAnswer CIA ON CIA.ChecklistInstanceId = CI.ChecklistInstanceId
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="checklistInstanceId" paramId="checklistInstanceId" />
+					<exp op="=" dbField="ResourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="resourceTypeCode" />
+					<exp op="=" dbField="CI.checklistDefinitionId" paramId="checklistDefinitionId" />
+					<exp op="=" dbField="CI.ChecklistDefinitionVersion" paramId="definitionVersionId" />
+					<exp op="=" dbField="CI.ResourceInstance" paramId="resourceInstance" />
+					<exp op="=" dbField="CIA.ResourceInstance" paramId="answerResourceInstance" />
+					<exp op="LIKE" dbField="description" paramId="description" />
+				</exp>
+			</where>
+			Order by CI.ChecklistDefinitionVersion desc
+		</sql>
+	</statement>
+
+	<statement name="new">
+		<param id="checklistInstanceId" 	type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="resourceValue" 			type="String" size="36" />
+		<param id="resourceInstance" 		type="int32"/>
+		<param id="resourceTypeCode" 		type="String" size="36" />
+		<param id="description" 			type="String" size="255" />
+		<param id="creatorId" 				type="String" size="36" />
+		<param id="createdDate"				type="String" size="25" />
+		<param id="definitionVersionId" type="Int32" />
+		<sql>
+			declare @LatestDefinitionVersionId int;
+			select @LatestDefinitionVersionId = max(Version)
+			from ChecklistDefinition
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="checklistDefinitionId" paramId="checklistDefinitionId" />
+				</exp>
+			</where>;
+			<optional depends="definitionVersionId!=null">
+				SET @LatestDefinitionVersionId=<exp paramId="definitionVersionId"/>
+			</optional>
+
+			INSERT INTO ChecklistInstance
+			<columns mode="insert">
+				<column dbField="ChecklistInstanceId" paramId="checklistInstanceId" />
+				<column dbField="ChecklistDefinitionId" paramId="checklistDefinitionId" />
+				<column dbField="ChecklistDefinitionVersion">@LatestDefinitionVersionId </column>
+				<column dbField="ResourceValue" paramId="resourceValue" />
+				<column dbField="ResourceInstance" paramId="resourceInstance" />
+				<column dbField="ResourceTypeCode" paramId="resourceTypeCode" />
+				<column dbField="Description" paramId="description" />
+				<column dbField="CreatorId" paramId="creatorId" />
+				<column dbField="CreatedDate" paramId="createdDate" />
+				<column dbField="LastUpdateId" paramId="creatorId" />
+				<column dbField="LastUpdateDate" paramId="createdDate" />
+			</columns>
+		</sql>
+	</statement>
+
+	<statement name="UpdateAuditForChecklistInstance">
+		<param id="InstanceId" type="String" size="36" />
+		<param id="lastUpdateId" type="String" size="36" />
+		<param id="lastUpdateDate" type="string" size="36" />
+		<sql>
+			set nocount on;
+			Declare @LastUpdateInstanceDate DateTime;
+			SET @LastUpdateInstanceDate = getDate();
+			<optional depends="lastUpdateDate">
+				SET @LastUpdateInstanceDate = <exp paramId="lastUpdateDate" />;
+			</optional>
+			update ChecklistInstance
+			<columns mode="update">
+				<column dbField="lastUpdateId" paramId="lastUpdateId" />
+				<column dbField="lastUpdateDate">@LastUpdateInstanceDate</column>
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="checklistInstanceId" paramId="InstanceId" />
+				</exp>
+			</where>
+			set nocount off;
+		</sql>
+	</statement>
+
+	<statement name="CheckConcurrencyForChecklistInstance">
+		<param id="InstanceId" type="String" size="36" />
+		<param id="lastUpdateId" type="String" size="36" />
+		<param id="lastUpdateDateDB" type="DateTime" />
+		<sql>
+
+			SET NOCOUNT ON;
+
+			DECLARE @dateDiff int;
+			DECLARE @newUpdateDate datetime;
+			DECLARE @lastUpdateDatefromDB datetime;
+
+			SET @lastUpdateDatefromDB = <exp paramId="lastUpdateDateDB" />;
+
+			SELECT @dateDiff = case
+			when @lastUpdateDatefromDB = '' and LastUpdateDate is null then
+			0
+			when @lastUpdateDatefromDB = '' and LastUpdateDate is not null then
+			1
+			when @lastUpdateDatefromDB != '' then
+			datediff(s,LastUpdateDate,@lastUpdateDatefromDB)
+			end
+			FROM ChecklistInstance
+			WHERE  checklistInstanceId = <exp paramId="InstanceId" />;
+
+			IF @dateDiff != 0
+			BEGIN
+			RAISERROR('concurrency_error',16,1);
+			END
+			set nocount off;
+		</sql>
+	</statement>
+
+	<statement name="getLastUpdateDate">
+		<param id="checklistInstanceId" 		type="String" size="36" />
+		<sql>
+			SELECT LastUpdateDate
+			FROM ChecklistInstance
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ChecklistInstanceId" paramId="checklistInstanceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="UpdateResourceInstance" >
+		<param id="ChecklistInstanceId" type="string" size="36" required="true"/>
+		<param id="ResourceInstance" type="Int32" required="true"/>
+		<param id="UserId" type="string" size="36" />
+		<sql>
+			update ChecklistInstance
+			<columns mode="update">
+				<column dbField="lastUpdateId" paramId="UserId" />
+				<column dbField="lastUpdateDate">getDate()</column>
+				<column dbField="ResourceInstance" paramId="ResourceInstance" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="checklistInstanceId" paramId="ChecklistInstanceId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="delete">
+		<param id="resourceValue" 			type="String" size="36" />
+		<param id="resourceTypeCode" 		type="String" size="36" />
+		<param id="checklistDefinitionId" 	type="String" size="36" />
+		<param id="definitionVersionId" type="Int32" />
+		<sql>
+			DELETE dbo.ChecklistInstance
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ResourceValue" paramId="resourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="resourceTypeCode" />
+					<exp op="=" dbField="ChecklistDefinitionId" paramId="checklistDefinitionId" />
+					<optional depends="definitionVersionId != null">
+						<exp op="=" dbField="definitionVersion" paramId="definitionVersionId" />
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

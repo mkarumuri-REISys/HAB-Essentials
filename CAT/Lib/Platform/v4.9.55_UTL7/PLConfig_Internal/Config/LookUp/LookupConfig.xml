@@ -1,0 +1,34 @@
+<lookup>
+	<cacheTimeout>3600</cacheTimeout>
+	<definitions>
+		<definition name="State" type="EIS" schemaName="lookupState" />
+		<definition name="ApplicationType" type="EIS" schemaName="lookupApplicationType" />
+		<definition name="ApplicantType" type="EIS" schemaName="lookupApplicantType" />
+		<definition name="TermType" type="XML" documentMapXPath="lookup/xml/lookupTermType" />
+		<definition name="NoteType" type="DB" className="REISys.Platform.Lookup.NoteTypeLookup" />
+		<definition name="NoteReason" type="DB" statmentName="GetNoteReasonLookup" documentMapXPath="lookup" />
+		<definition name="TaskProcessType" type="DB" statmentName="GetTaskProcessTypeLookup" documentMapXPath="lookup" />
+		<definition name="ExternalSystem" type="DB" statmentName="GetExternalSystemsLookup" documentMapXPath="lookup" />
+		<definition name="TaskType" type="DB" className="REISys.Platform.Lookup.TaskTypeLookup" />
+		<definition name="TaskStatus" type="DB" statmentName="GetTaskStatusLookup" documentMapXPath="lookup" />
+		<definition name="ResourceType" type="DB" statmentName="GetResourceTypeLookup" documentMapXPath="lookup" />
+		<definition name="TaskPhases" type="DB" statmentName="GetTaskPhasesLookup" documentMapXPath="lookup" />
+		<definition name="AttachmentPurpose" type="DB" statmentName="GetAttachmentPurposeLookup" documentMapXPath="lookup" />
+		<definition name="ResourceFormatType" type="DB" statmentName="GetResourceFormatTypeLookup" documentMapXPath="lookup" />
+		<definition name="CommentQuestion" type="DB" statmentName="GetCommentQuestionLookup" documentMapXPath="lookup" />
+		<definition name="UserActionProcess" type="DB" statmentName="GetUserActionProcess" documentMapXPath="lookup" />
+		<definition name="UserActionType" type="DB" statmentName="GetUserActionType" documentMapXPath="lookup" />
+		<definition name="TemplateType" type="DB" statmentName="GetTemplateType" documentMapXPath="lookup" />
+		<definition name="ExternalSystemDimension" type="DB" statementName="GetExternalSystemDimensionsLookup" documentMapXPath="lookup" />
+		<definition name="Templates" type="DB" statementName="GetTemplateInfo" documentMapXPath="lookup"/>
+		<definition name="Roles" type="DB" statementName="GetRoles" documentMapXPath="lookup"/>
+		<definition name="Privileges" type="DB" statementName="GetPrivileges" documentMapXPath="lookup"/>
+		<definition name="StandardMessageContext" type="DB" statmentName="GetStandardMessageContext" documentMapXPath="lookup" />
+    <definition name="AnnouncementCategories" type="DB" statementName="GetAnnouncementCategories" documentMapXPath="lookup"/>
+    <definition name="PageUrl" type="DB" statementName="GetPageUrls" documentMapXPath="lookup"/>
+    <!--<definition name="RecentlyAccessedCategory" type="DB" statementName="GetRecentlyAccessedCategories" documentMapXPath="lookup"/>-->
+    <definition name="IssuePriority" type="DB" statmentName="GetIssuePriorityLookup" documentMapXPath="lookup" />
+    <definition name="IssueState" type="DB" statmentName="GetIssueStateLookup" documentMapXPath="lookup" />
+    <definition name="IssueStatus" type="DB" statmentName="GetIssueStatusLookup" documentMapXPath="lookup" />
+  </definitions>
+</lookup>

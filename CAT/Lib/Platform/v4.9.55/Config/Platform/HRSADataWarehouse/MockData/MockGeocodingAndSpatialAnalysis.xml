@@ -1,0 +1,326 @@
+﻿<response>
+  <settings>
+    <setting>
+      <name>Street</name>
+      <value>waterSide view drive</value>
+    </setting>
+    <setting>
+      <name>City</name>
+      <value>reston</value>
+    </setting>
+    <setting>
+      <name>State</name>
+      <value>va</value>
+    </setting>
+    <setting>
+      <name>Zip</name>
+      <value>20194</value>
+    </setting>
+    <setting>
+      <name>Providers</name>
+      <value>ESRI</value>
+    </setting>
+    <setting>
+      <name>Targets</name>
+      <value>RURAL,PCHPSA,PCHPSAMC,ZIPCODE,CONGDIST,COUNTY,TRACT,COUNTYSUB,STATES</value>
+    </setting>
+  </settings>
+  <inputaddress>
+    <street>waterSide view drive</street>
+    <city>reston</city>
+    <state>va</state>
+    <zip>20194</zip>
+  </inputaddress>
+  <standardaddress>
+    <street>waterSide view drive</street>
+    <city>reston</city>
+    <state>va</state>
+    <zip>20194</zip>
+  </standardaddress>
+  <geocodingresult>
+    <candidates count="1">
+      <candidate>
+        <matchaddress>12004 Waterside View Dr, Reston, VA, 20194</matchaddress>
+        <lat>38.9704312296921</lat>
+        <lon>-77.3582828533312</lon>
+        <score>100</score>
+        <locatorname>Street Address</locatorname>
+      </candidate>
+    </candidates>
+  </geocodingresult>
+  <spatialanalysisresult>
+    <targets count="9">
+      <target targetname="COUNTY">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>County Name</name>
+                <value>Fairfax</value>
+              </attribute>
+              <attribute>
+                <name>State FIPS Code</name>
+                <value>51</value>
+              </attribute>
+              <attribute>
+                <name>State Name</name>
+                <value>Virginia</value>
+              </attribute>
+              <attribute>
+                <name>HHS Region Name</name>
+                <value>Region III</value>
+              </attribute>
+              <attribute>
+                <name>In U.S. - Mexico Border Health Initiative Area</name>
+                <value>N</value>
+              </attribute>
+              <attribute>
+                <name>State Indicator</name>
+                <value>Y</value>
+              </attribute>
+              <attribute>
+                <name>Senator Name (1)</name>
+                <value>Jim Webb</value>
+              </attribute>
+              <attribute>
+                <name>Senator Name (2)</name>
+                <value>Mark R. Warner</value>
+              </attribute>
+              <attribute>
+                <name>In U.S. - Mexico Border Health Initiative Area</name>
+                <value>N</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="PCHPSA">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="CONGDIST">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>State Name</name>
+                <value>Virginia</value>
+              </attribute>
+              <attribute>
+                <name>Congress Number</name>
+                <value>112</value>
+              </attribute>
+              <attribute>
+                <name>Congressional District</name>
+                <value>Virginia District 8</value>
+              </attribute>
+              <attribute>
+                <name>Congressional District Representative Name</name>
+                <value>James P. Moran</value>
+              </attribute>
+              <attribute>
+                <name>Congressional District Representative Party Affiliation</name>
+                <value>D</value>
+              </attribute>
+              <attribute>
+                <name>Congressional District Representative Website</name>
+                <value>http://moran.house.gov/</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="COUNTYSUB">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>Minor Civil Division FIPS Code</name>
+                <value>5105993943</value>
+              </attribute>
+              <attribute>
+                <name>Minor Civil Division Name</name>
+                <value>Hunter Mill district</value>
+              </attribute>
+              <attribute>
+                <name>County Name</name>
+                <value>Fairfax County</value>
+              </attribute>
+              <attribute>
+                <name>State Name</name>
+                <value>Virginia</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="TRACT">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>FIPS Code</name>
+                <value>51059480500</value>
+              </attribute>
+              <attribute>
+                <name>Tract Number</name>
+                <value>480500</value>
+              </attribute>
+              <attribute>
+                <name>County Name</name>
+                <value>Fairfax County</value>
+              </attribute>
+              <attribute>
+                <name>State Name</name>
+                <value>Virginia</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="ZIPCODE">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>ZIP Code</name>
+                <value>20194</value>
+              </attribute>
+              <attribute>
+                <name>Post Office Name</name>
+                <value>RESTON</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="RURAL">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="STATES">
+        <resultcode>
+          <code>SAR001</code>
+          <description>The address is in a feature in the target layer.  Analysis indicates that this is the most probable result.</description>
+        </resultcode>
+        <preferred count="1">
+          <row>
+            <attributes>
+              <attribute>
+                <name>State</name>
+                <value>Virginia</value>
+              </attribute>
+              <attribute>
+                <name>State FIPS Code</name>
+                <value>51</value>
+              </attribute>
+            </attributes>
+          </row>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+      <target targetname="PCHPSAMC">
+        <resultcode>
+          <code>SAR002</code>
+          <description>The address is not in any feature in the target layer.</description>
+        </resultcode>
+        <preferred count="0">
+          <message>
+            <code>SAR006</code>
+            <description>The address point did not fall into any feature in the target layer.</description>
+          </message>
+        </preferred>
+        <possible count="0">
+          <message>
+            <code>SAR007</code>
+            <description>The uncertainty analysis buffer did not intersect any feature in the target layer.</description>
+          </message>
+        </possible>
+      </target>
+    </targets>
+  </spatialanalysisresult>
+</response>
+

@@ -1,0 +1,15 @@
+﻿<root>
+  <federationConfiguration>
+    <cookieHandler  name="EHB_FedAuth" path="/" persistentSessionLifetime="0.60:0:0" 
+                   requireSSL="true" domain="" >
+      <customCookieHandler type="REISys.Platform.Services.Authentication.PlatformCookieHandler,REISys.Platform.Services"/>
+    </cookieHandler>
+    <wsFederation passiveRedirectEnabled="true" 
+                  issuer="https://adfs.adfsreisystems.com/adfs/ls/" 
+                  realm="https://mydevbox.reisys.com/webepsinternal/" 
+                  requireHttps="true"
+                  homeRealm="https://itruststage.nih.gov/IDP"/>
+  </federationConfiguration>
+  <sessionTimeOut>40</sessionTimeOut>
+  <logoutURL>https://citdecadssoweb.cit.nih.gov/siteminderagent/smlogout.asp</logoutURL>
+</root>

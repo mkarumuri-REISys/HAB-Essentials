@@ -1,0 +1,198 @@
+﻿<statements>
+  <statement name="GetNavigationItems" connection = "Common">
+    <param id="ItemTypeCode" type="Int32" />
+    <param id="MarkUpId" type="String" />
+    <sql>
+      declare @outPut xml
+      select @outPut=(
+      Select	[NVGNItemId] as "@Id"
+      ,[MarkupId] as "@MarkupId"
+      ,[DisplayValue] as "@Text"
+      ,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as "@Destination"
+      ,pni.[Description] as "@ToolTip"
+      ,[ParentNVGNItemId] as "@ParentNavigationItemId"
+      ,[DisplayOrder] as "@DisplaySequence"
+      ,dbo.ufnPFM_NVGN_GetChildNavigationItems([NVGNItemId])
+      FROM PFM_NVGN_Item pni
+      Left Outer Join PFM_CORE_PreDefinedPage cp
+      on pni.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      left outer join [ExternalSystemDimensionValue] esdv
+      on cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]
+      and cp.[ExternalSystemDimensionCode]= esdv.[ExternalSystemDimensionCode]
+      <optional depends="MarkUpId == null">
+        where [ParentNVGNItemId] is null
+      </optional>
+      <optional depends="MarkUpId != null">
+        where [ParentNVGNItemId]  = (select top 1 NVGNItemId from PFM_NVGN_Item where MarkUpId = <exp paramId="MarkUpId" />)
+      </optional>
+      and [DisplayOrder]!=-1
+      and ItemTypeCode = <exp paramId="ItemTypeCode" />
+      order by [DisplayOrder]
+      FOR XML PATH('NavigationItemModel'), TYPE , ROOT('ChildNavigationItems'))
+      if (@outPut is null)
+      set  @outPut='&lt;NavigationItemModel&gt;&lt;/NavigationItemModel&gt;';
+      else
+      set @outPut='&lt;NavigationItemModel&gt;'+convert(varchar(max),@outPut)+'&lt;/NavigationItemModel&gt;'
+      select @outPut
+    </sql>
+  </statement>
+  <statement name="GetNavigationItems_New" connection = "Common" >
+    <param id="MarkUpId" type="String" />
+    <param id="UserTypeCode" type="Int32" />
+    <sql>
+      declare @outPut xml
+      select @outPut=(
+      Select [NVGNItemId] as "@Id"
+      ,[NVGNItemId] as "@rootNVGNItemIdId"
+      ,pni.ItemTypeCode as "@itemTypeCode"
+      ,[MarkupId] as "@markupId"
+      ,[DisplayValue] as "@displayValue"
+      ,REPLACE(isnull(cp.RelativeURL,'#'),'{0}',isnull(convert(varchar(MAX),esdv.[DimensionValue]),'')) as "@destination"
+      ,pni.[Description] as "@description"
+      ,[ParentNVGNItemId] as "@ParentID"
+      ,[DisplayOrder] as "@DisplaySequence"
+      ,[PopUp] as "@PopUP"
+      ,dbo.ufnPFM_NVGN_GetChildNavigationItems_New([NVGNItemId], 2)
+      FROM PFM_NVGN_Item pni
+      Left Outer Join PFM_CORE_PreDefinedPage cp
+      on pni.COREPreDefinedPageId=cp.COREPreDefinedPageId
+      left outer join [ExternalSystemDimensionValue] esdv
+      on cp.[ExternalSystemCode]= esdv.[ExternalSystemCode]
+      and cp.[ExternalSystemDimensionCode]= esdv.[ExternalSystemDimensionCode]
+      where
+      1=1
+      <optional depends="MarkUpId == null">
+        and [ParentNVGNItemId] is null
+      </optional>
+      <optional depends="MarkUpId != null">
+        and [ParentNVGNItemId]  = (select top 1 NVGNItemId
+        from PFM_NVGN_Item ppni
+        where ppni.MarkUpId = <exp paramId="MarkUpId" /> and (ppni.UserTypeCode = <exp paramId="UserTypeCode" /> or ppni.UserTypeCode = 0))
+      </optional>
+      and [DisplayOrder]!=-1
+      and (pni.UserTypeCode = <exp paramId="UserTypeCode" /> or pni.UserTypeCode = 0)
+      order by [DisplayOrder]
+      FOR XML PATH('navigation'), TYPE )
+      if (@outPut is null)
+      set  @outPut='&lt;NavigationItemEntity&gt;&lt;/NavigationItemEntity&gt;';
+      else
+      set @outPut='&lt;NavigationItemEntity&gt;'+convert(varchar(max),@outPut)+'&lt;/NavigationItemEntity&gt;'
+      select @outPut
+    </sql>
+  </statement>
+  <statement name="GetNavigationItemsRoles_New" connection="Common">
+    <sql>
+      select NVGNItemId, RoleId from PFM_NVGN_Item_AC_Role_R;
+    </sql>
+  </statement>
+  <statement name="GetConfigurationLevelNavigationDestination" connection = "Common">
+    <param id="Destination" />
+    <param id="ExternalSystemCode" />
+    <param id="ExternalSystemDimensionCode" />
+    <sql>
+      SELECT TOP 1
+      REPLACE(<exp paramId="Destination" />,'{0}',convert(varchar(MAX),[ExternalSystemDimensionValue].[DimensionValue])) as Destination
+      FROM
+      ExternalSystemDimensionValue
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ExternalSystemCode" paramId="ExternalSystemCode" />
+          <exp op="=" dbField="ExternalSystemDimensionCode" paramId="ExternalSystemDimensionCode" />
+        </exp>
+      </where>
+
+    </sql>
+
+  </statement>
+ 
+  <statement name="CreateError" connection = "Common">
+    <param id="ErrorId" type="String" required="true" />
+    <param id="ErrorDescription" type="String"  />
+    <param id="UserId" type="String" />
+   
+    <sql>
+      IF EXISTS
+            ( 
+                    SELECT ErrorId FROM PFM_ERF_Error_P
+                    <where>
+                      <exp op="AND">
+                        <exp op="=" dbField="ErrorId" paramId="ErrorId" />
+                      </exp>
+                    </where>
+            )
+      BEGIN
+      UPDATE PFM_ERF_Error_P
+      <columns mode="UPDATE">
+        <column dbField="ErrorDescription" paramId="ErrorDescription" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ErrorId" paramId="ErrorId" />
+        </exp>
+      </where>
+      END
+      ELSE
+      BEGIN
+      INSERT INTO PFM_ERF_Error_P
+      <columns mode="INSERT">
+        <column dbField="ErrorId" paramId="ErrorId" />
+        <column dbField="ErrorDescription" paramId="ErrorDescription" />
+        <column dbField="CreatedDate">GETDATE()</column>
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="LastUpdateDate">GETDATE()</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+      </columns>
+      END
+    </sql>
+  </statement>
+
+  <statement name="GetError" connection = "Common">
+    <param id="ErrorId" type="String" required="true" />
+    <sql>
+
+      SELECT ErrorId, ErrorDescription  FROM PFM_ERF_Error_P
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ErrorId" paramId="ErrorId" />
+        </exp>
+      </where>
+      
+    </sql>
+  </statement>
+
+
+  <statement name="GetResourcesItems" connection="Common">
+    <param id="rootId" type="Guid" required="true"/>
+
+    <sql>
+      SELECT
+      convert(nvarchar(36), cs.NVGNContentGroupId)  RootNVGNItemIdId,
+      convert(nvarchar(36), cs.NVGNContentSectionId) ParentNavigationItemId,
+      cs.DisplayValue ParentText,
+      CASE WHEN ci.ContentItemCOREPreDefinedPageId IS NOT NULL THEN isnull(replace(convert(VARCHAR(MAX), esdv.DimensionValue) + rtrim(ltrim(pcpdp.RelativeURL)), '{0}', ''),'#') ELSE ci.NavigationURL END AS Destination,
+      ci.DisplayValue Text,
+      convert(nvarchar(36), ci.NVGNContentItemId) Id,
+      ci.CssClass Class,
+      ci.IsPopUp,
+      ci.Description PopUpTitle
+
+      FROM PFM_NVGN_ContentItem ci
+      JOIN Rel_PFM_NVGN_ContentItem_PFM_NVGN_ContentSection cics
+      ON cics.NVGNContentItemId = ci.NVGNContentItemId
+      JOIN PFM_NVGN_ContentSection cs
+      ON cs.NVGNContentSectionId = cics.NVGNContentSectionId
+      JOIN Rel_PFM_NVGN_ContentItem_PFM_NVGN_ContentGroup cicg
+      ON cicg.NVGNContentItemId = ci.NVGNContentItemId
+      JOIN PFM_NVGN_ContentGroup cg
+      ON cicg.NVGNContentGroupId = cg.NVGNContentGroupId and cg.NVGNContentGroupId = cs.NVGNContentGroupId
+
+      left outer join PFM_CORE_PreDefinedPage pcpdp on pcpdp.COREPreDefinedPageId = ci.ContentItemCOREPreDefinedPageId
+      left OUTER JOIN ExternalSystemDimensionValue esdv ON pcpdp.ExternalSystemDimensionCode = esdv.ExternalSystemDimensionCode AND pcpdp.ExternalSystemCode = esdv.ExternalSystemCode
+      <where>
+        <exp op="=" dbField="cs.NVGNContentGroupId" paramId="rootId"></exp>
+      </where>
+      order by cs.DisplayOrder,ci.DisplayOrder
+    </sql>
+  </statement>
+</statements>

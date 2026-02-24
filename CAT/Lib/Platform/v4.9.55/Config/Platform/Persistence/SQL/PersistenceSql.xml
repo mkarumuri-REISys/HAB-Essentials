@@ -1,0 +1,134 @@
+<statements>
+	<statement name="GetPageStateTree" connection="Common">
+		<param id="SessionId" type="String" size="36" />
+		<sql>
+			SELECT PageStateTree FROM PersistencePageStateTree P (NOLOCK)
+			<where>
+				<exp op="=" dbField="P.SessionId" paramId="SessionId" />
+			</where>
+		</sql>
+	</statement>
+	<statement name="SavePageStateTree" connection="Common" >
+		<param id="SessionId" type="String" size="36" />
+		<param id="PageStateTree" type="Binary" />
+		<sql>
+			DECLARE @TreeCount int
+			SELECT @TreeCount = COUNT(*)
+			FROM PersistencePageStateTree (NOLOCK)
+			WHERE SessionId = @SessionId
+
+			IF @TreeCount > 0
+			BEGIN
+			UPDATE PersistencePageStateTree
+			<columns mode="update">
+				<column dbField="PageStateTree" paramId="PageStateTree" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			<where>
+				<exp op="=" dbField="SessionId" paramId="SessionId" />
+			</where>
+			END
+			ELSE
+			BEGIN
+			INSERT PersistencePageStateTree
+			<columns mode="insert">
+				<column dbField="SessionId" paramId="SessionId"/>
+				<column dbField="PageStateTree" paramId="PageStateTree" />
+				<column dbField="CreatedDate">GETDATE()</column>
+			</columns>
+			END
+		</sql>
+
+	</statement>
+	<statement name="DeletePageStateTree" connection="Common" >
+		<param id="SessionId" type="String" size="36" />
+		<sql>
+			DELETE PersistencePageStateTree
+			<where>
+				<exp op="=" dbField="SessionId" paramId="SessionId" />
+			</where>			
+		</sql>
+		
+	</statement>
+	<statement name="GetPageStateNode" connection="Common" >
+		<param id="SessionId" type="String" size="36" />
+		<param id="BranchId" type="String" size="36" />
+		<param id="PageId" type="String" size="255" />
+		<param id="CustomId" type="String" size="50" />
+		<sql>
+			SELECT PageState FROM PersistencePageState (NOLOCK)
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="SessionId" paramId="SessionId"/>
+					<exp op="=" dbField="BranchId" paramId="BranchId"/>
+					<exp op="=" dbField="PageId" paramId="PageId"/>
+					<exp op="=" dbField="CustomId" paramId="CustomId"/>
+				</exp>
+			</where>
+
+		</sql>
+
+	</statement>
+	<statement name="SavePageState" connection="Common" >
+		<param id="SessionId" type="String" size="36" />
+		<param id="BranchId" type="String" size="36" />
+		<param id="PageId" type="String" size="255" />
+		<param id="CustomId" type="String" size="50" />
+		<param id="PageState" type="Binary" />
+		<sql>
+			DECLARE @PageCount int
+			SELECT @PageCount = COUNT(*)
+			FROM PersistencePageState (NOLOCK)
+			WHERE SessionId = @SessionId
+				AND BranchId = @BranchId AND PageId = @PageId AND CustomId = @CustomId
+
+			IF @PageCount > 0
+			BEGIN
+				UPDATE PersistencePageState
+				<columns mode="update">				
+					<column dbField="PageState" paramId="PageState" />
+					<column dbField="LastUpdateDate">GETDATE()</column>
+				</columns>
+				<where>
+					<exp op="AND">
+						<exp op="=" dbField="SessionId" paramId="SessionId" />
+						<exp op="="  dbField="BranchId" paramId="BranchId"/>
+						<exp op="="  dbField="PageId" paramId="PageId"/>
+						<exp op="="  dbField="CustomId" paramId="CustomId"/>
+					</exp>
+				</where>			
+			END
+			ELSE
+			BEGIN
+				INSERT INTO PersistencePageState
+				<columns mode="insert">				
+					<column dbField="SessionId" paramId="SessionId"/>
+					<column dbField="BranchId" paramId="BranchId"/>
+					<column dbField="PageId" paramId="PageId"/>
+					<column dbField="CustomId" paramId="CustomId"/>
+					<column dbField="PageState" paramId="PageState" />
+					<column dbField="CreatedDate">GETDATE()</column>
+				</columns>			
+			END
+		</sql>
+		
+	</statement>
+	<statement name="DeletePageState" connection="Common" >
+		<param id="SessionId" type="String" size="36" />
+		<param id="BranchId" type="String" size="36" />
+		<param id="PageId" type="String" size="255" />
+		<param id="CustomId" type="String" size="50" />
+		<sql>
+			DELETE PersistencePageState			
+			<where>
+				<exp op="AND">	
+					<exp op="=" dbField="SessionId" paramId="SessionId" />
+					<exp op="=" dbField="BranchId" paramId="BranchId" />
+					<exp op="=" dbField="PageId" paramId="PageId" />
+					<exp op="=" dbField="CustomId" paramId="CustomId" />
+				</exp>
+			</where>	
+		</sql>
+		
+	</statement>
+</statements>

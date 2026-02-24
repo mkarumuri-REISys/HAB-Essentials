@@ -1,0 +1,328 @@
+/*******************************
+RadTabStrip CSS Resource Theme
+
+********************************/
+.RadTabStrip_ResourcesTheme .rtsLI,
+.RadTabStrip_ResourcesTheme .rtsLink
+{
+	color: #000;
+	font: 1.00em/26px, Arial, sans-serif;
+}
+
+.RadTabStripLeft_ResourcesTheme .rtsSeparator,
+.RadTabStripRight_ResourcesTheme .rtsSeparator
+{
+	background: #898C95;
+}
+
+/* <disabled tabs> */
+.RadTabStrip_ResourcesTheme .rtsDisabled
+{
+	color: #aaa;
+}
+/* </disabled tabs> */
+
+/* <scrolling arrows> */
+.RadTabStrip_ResourcesTheme .rtsNextArrow,
+.RadTabStrip_ResourcesTheme .rtsPrevArrow,
+.RadTabStrip_ResourcesTheme .rtsPrevArrowDisabled,
+.RadTabStrip_ResourcesTheme .rtsNextArrowDisabled
+{
+	background-image: url('./Platform/Include/Skins/EHB/TabStrip/TabStripStatesResources.png');
+}
+/* </scrolling arrows> */
+
+/* <tab backgrounds> */
+
+.RadTabStripTop_ResourcesTheme .rtsLevel { background-color: transparent; }
+
+.RadTabStripTop_ResourcesTheme .rtsLevel .rtsLink,
+.RadTabStripTop_ResourcesTheme .rtsLevel .rtsOut,
+.RadTabStripBottom_ResourcesTheme .rtsLevel .rtsLink,
+.RadTabStripBottom_ResourcesTheme .rtsLevel .rtsOut,
+.RadTabStripTop_ResourcesTheme_Baseline .rtsLevel,
+.RadTabStripBottom_ResourcesTheme_Baseline .rtsLevel { background-image: transparent; }
+
+.RadTabStripLeft_ResourcesTheme .rtsLink,
+.RadTabStripRight_ResourcesTheme .rtsLink { background-image: url('./Platform/Include/Skins/EHB/TabStrip/TabStripVStatesResourcess.png'); }
+
+.RadTabStripLeft_ResourcesTheme .rtsLast .rtsLink,
+.RadTabStripRight_ResourcesTheme .rtsLast .rtsLink
+{
+	border-bottom: 0px solid #898C95;
+}
+
+.RadTabStripRight_ResourcesTheme .rtsLink,
+.RadTabStripRight_ResourcesTheme .rtsLI .rtsDisabled:hover { background-position: 100% 0; }
+.RadTabStripRight_ResourcesTheme .rtsLink:hover { background-position: 0px 0px; }
+.RadTabStripRight_ResourcesTheme .rtsSelected,
+.RadTabStripRight_ResourcesTheme .rtsSelected:hover { background-position: 100% -400px; }
+/* </tab backgrounds> */
+
+
+/* <background positioning: tabs with hovers> */
+
+/* <orientation: top> */
+
+.RadTabStripTop_ResourcesTheme .rtsLink { background-position: 0 0; }
+.RadTabStripTop_ResourcesTheme .rtsOut { background-position: 100% 0; }
+
+.RadTabStripTop_ResourcesTheme .rtsLink:hover { background-position: 0 -52px; }
+.RadTabStripTop_ResourcesTheme .rtsLink:hover .rtsOut { background-position: 100% -52px; }
+
+.RadTabStripTop_ResourcesTheme .rtsSelected,
+.RadTabStripTop_ResourcesTheme .rtsSelected:hover { background-position: 0 -26px; }
+.RadTabStripTop_ResourcesTheme .rtsSelected .rtsOut,
+.RadTabStripTop_ResourcesTheme .rtsSelected:hover .rtsOut { background-position: 100% -26px; }
+
+.RadTabStripTop_ResourcesTheme .rtsDisabled:hover { background-position: 0 0; }
+.RadTabStripTop_ResourcesTheme .rtsDisabled:hover .rtsOut { background-position: 100% 0; }
+
+.RadTabStripTop_ResourcesTheme_Baseline .rtsLevel { background-position: 0 100%; background-repeat: repeat-x; }
+
+/* </orientation: top> */
+
+/* <orientation: bottom> */
+
+.RadTabStripBottom_ResourcesTheme .rtsLink { background-position: 0 -182px; }
+.RadTabStripBottom_ResourcesTheme .rtsOut { background-position: 100% -182px; }
+
+.RadTabStripBottom_ResourcesTheme .rtsLink:hover { background-position: 0 -130px; }
+.RadTabStripBottom_ResourcesTheme .rtsLink:hover .rtsOut { background-position: 100% -130px; }
+
+.RadTabStripBottom_ResourcesTheme .rtsSelected,
+.RadTabStripBottom_ResourcesTheme .rtsSelected:hover { background-position: 0 -156px; }
+.RadTabStripBottom_ResourcesTheme .rtsSelected .rtsOut,
+.RadTabStripBottom_ResourcesTheme .rtsSelected:hover .rtsOut { background-position: 100% -156px; }
+
+.RadTabStripBottom_ResourcesTheme .rtsDisabled:hover { background-position: 0 -182px; }
+.RadTabStripBottom_ResourcesTheme .rtsDisabled:hover .rtsOut { background-position: 100% -182px; }
+
+.RadTabStripBottom_ResourcesTheme_Baseline .rtsLevel { background-position: 0 -599px; background-repeat: repeat-x; }
+
+/* </orientation: bottom> */
+
+/* <orientation: right> */
+
+.RadTabStripRight_ResourcesTheme .rtsUL .rtsLink,
+.RadTabStripRight_ResourcesTheme .rtsUL .rtsLI .rtsDisabled:hover { background-position: 100% 0; text-align: left; }
+.RadTabStripRight_ResourcesTheme .rtsUL .rtsLink:hover { background-position: 100% -200px; }
+.RadTabStripRight_ResourcesTheme .rtsUL .rtsSelected,
+.RadTabStripRight_ResourcesTheme .rtsUL .rtsSelected:hover { background-position: 100% -400px; }
+
+/* </orientation: right> */
+
+/* </background positioning: tabs with hovers> */
+
+/* <simplistic sub-item styles> */
+
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel2,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel3,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel4 { background: #fff; }
+
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel2 .rtsSelected,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel3 .rtsSelected,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel4 .rtsSelected
+{
+	text-decoration: underline;
+}
+
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel2 .rtsLink,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel2 .rtsOut,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel2 .rtsIn,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel3 .rtsLink,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel3 .rtsOut,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel3 .rtsIn,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel4 .rtsLink,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel4 .rtsOut,
+.RadTabStrip_ResourcesTheme_SimpleSubItems .rtsLevel4 .rtsIn
+{
+	background: none;
+}
+
+/* </simplistic sub-item styles> */
+
+
+
+
+
+
+ div.RadTabStrip_ResourcesTheme {
+
+	background-color: transparent;
+
+	background-position: 0% 0%;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsLevel1 {
+
+	background-image: none;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsLink {
+
+	background-image: none;
+
+	background-color: rgb(255, 255, 255);
+
+	background-position: 0px 0px;
+
+	padding-left: 10px !Important;
+
+	line-height: 22px;
+
+	text-indent: 0px;
+
+	border-style: solid;
+
+	border-width: 1px;
+
+	border-color: #E3E5E7;
+
+	color: rgb(51, 51, 51);
+
+	padding-right: 5px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsLink .rtsOut {
+
+	background-image: none;
+
+	border-right: 0px solid rgb(226, 226, 226);
+
+	border-left: 0px solid rgb(226, 226, 226);
+
+	line-height: 22px;
+
+	padding-right: 0px;
+
+	padding-left: 0px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsLink .rtsIn {
+
+	padding-left: 0px;
+
+	padding-right: 0px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsLink:hover {
+
+	background-image: url('./Platform/Include/Skins/EHB/TabStrip/subtabs_bgResources.png') ;
+
+	font-weight: bold;
+
+	color: rgb(121, 44, 15);
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected {
+
+	background-color: rgb(233, 242, 249);
+
+	padding-left: 10px;
+
+	border-bottom: 1px solid rgb(233, 242, 249);
+
+	border-color: rgb(182, 205, 222) rgb(255, 255, 255) rgb(233, 242, 249);
+
+	font-weight: bold;
+
+	font-family: Segoe UI, Arial, sans-serif;
+
+	color: rgb(41, 77, 115);
+
+	border-left: 0px solid rgb(255, 255, 255);
+
+	background: url('./Platform/Include/Skins/EHB/TabStrip/subtabs_bgResources.png') !Important;
+
+	border-right: 0px solid rgb(255, 255, 255);
+
+	padding-right: 10px;
+
+	background-repeat: repeat-x;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected:hover {
+
+	background-color: rgb(233, 242, 249);
+
+	padding-left: 10px;
+
+	border-bottom: 1px solid rgb(233, 242, 249);
+
+	border-color: rgb(182, 205, 222) rgb(255, 255, 255) rgb(233, 242, 249);
+
+	font-weight: bold;
+
+	font-family: Segoe UI, Arial, sans-serif;
+
+	color: rgb(41, 77, 115);
+
+	border-left: 0px solid rgb(255, 255, 255);
+
+	
+	border-right: 0px solid rgb(255, 255, 255);
+
+	padding-right: 10px;
+
+	background-repeat: repeat-x;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected .rtsOut {
+
+	padding-right: 0px;
+
+	border-right-color: rgb(0, 161, 214);
+
+	border-left: 0px solid rgb(255, 255, 255);
+
+	padding-left: 0px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected:hover .rtsOut {
+
+	padding-right: 0px;
+
+	border-right-color: rgb(0, 161, 214);
+
+	border-left: 0px solid rgb(255, 255, 255);
+
+	padding-left: 0px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected .rtsIn {
+
+	padding-left: 0px;
+
+	padding-right: 0px;
+
+}
+
+ div.RadTabStrip_ResourcesTheme .rtsSelected:hover .rtsIn {
+
+	padding-left: 0px;
+
+	padding-right: 0px;
+
+}
+
+.RadTabStrip_ResourcesTheme a.rtsLink:focus:after,
+.RadTabStripVertical_ResourcesTheme a.rtsLink:focus:after {
+      content: "";
+      border: 1px dotted #555;
+      display: block;
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      right: 1px;
+      bottom: 0; }

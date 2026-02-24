@@ -1,0 +1,454 @@
+<statements>
+	<statement name="get" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="desc" type="String" size="30" />
+		<param id="procInstId" type="String" size="36" />
+		<param id="procInstIdAll" type="String" size="36" />
+		<param id="procDefId" type="String" size="36" />
+		<param id="actDefId" type="String" size="36" />
+		<param id="actDefIdList" />
+		<param id="state" type="Int32" />
+		<param id="procRelObjType" type="Int32" />
+		<param id="procRelObjIdList" />
+		<param id="stateList" />
+		<param id="implementationList" type="Int32" />
+		<param id="statusList"/>
+		<param id="orderBy" default="''"/>
+		<param id="getClientInfo"/>
+		<param id="Status"/>
+		<param id="initialOnly"/>
+		<param id="forPullingWork"/>
+		<param id="getStatus" type="Boolean" />
+		<param id="taskStatusLookupCode" type="Int16" />
+		<param id="taskStatusLookupCodeList" type="Int16" />
+		<param id="StartRow" type="Int32"/>
+		<param id="EndRow" type="Int32" />
+
+		<sql>
+			select * from
+			(select distinct cast(fai.activity_instance_id as varchar(36)) as id, ROW_NUMBER() OVER
+			<optional depends="orderBy == ''">
+				(order by fai.activity_instance_id) AS RowNumber,
+			</optional>
+			<optional depends="orderBy != ''">
+				(<sort paramId="orderBy" />) AS RowNumber,
+			</optional>
+			count(*) over() as QueryCount1,
+			cast(fai.activity_definition_id as varchar(36)) as activityDefinitionID,
+			cast(fai.process_instance_id as varchar(36)) as processInstanceID,
+			fai.current_state_id as state,
+			fai.container_xml as containerXML,
+			fai.client_status_msg as clientStatusMsg,
+			fai.priority as priority,
+			fai.automated_class_name as automatedClass,
+			fai.activity_desc as description,
+			fai.finish_mode_id as finishModeID,
+			fai.activity_implementation_id as implementationID,
+			fai.loop_condition as loopCondition,
+			fai.client_status_msg_xml as clientStatusMsgXml,
+			fai.required_work_item_count as requiredWorkItemCount,
+			fai.start_mode_id as startModeID,
+			cast(fai.sub_process_definition_id as varchar(36)) as subProcessDefID,
+			cast(fai.sub_process_instance_id as varchar(36)) as subProcessInstID,
+			fai.transition_restriction_id as transitionRestrictionID,
+			fai.work_item_limit as workItemLimit,
+			fai.update_datetime as lastUpdateDate,
+			fai.create_datetime as createdDate,
+			case when fai.activity_implementation_id in (2, 3) and fai.start_mode_id = 2 and fai.current_state_id = 4 and (fai.work_item_limit is null or fai.work_item_limit > (select count(cast(work_item_id as varchar(36))) workItemCount from fact_work_item fwi2 WITH (NOLOCK) where fai.activity_instance_id = fwi2.activity_instance_id and fwi2.latest_flag = 1)) then 1 else 0 end pullable
+			<optional depends="(orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0)" >
+				,(select
+				case
+				when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed'
+				when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+				else min(faiAll.activity_desc)
+				end
+				from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK)
+				left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+				where fpiAll.root_process_instance_id = fpi.process_instance_id
+				or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+				or fpiAll.process_instance_id = fpi.process_instance_id) status
+			</optional>
+			<optional depends="getClientInfo == 'true'">
+				, dtl.*
+			</optional>
+			<optional depends="getStatus == true">
+				,isnull(lts.lookupcode,0) taskStatusLookupCode
+				, isnull(lts.displayvalue,'N/A') taskStatusDisplayValue
+			</optional>
+			from FACT_ACTIVITY_INSTANCE fai WITH (NOLOCK)
+			<optional depends="(procInstIdAll !=null || procDefId != null || procRelObjType != null || procRelObjIdList != null || Status != null || (getClientInfo == 'true')) || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) ">
+				inner join FACT_PROCESS_INSTANCE fpi WITH (NOLOCK)  on fai.process_instance_id = fpi.process_instance_id
+			</optional>
+			<optional depends="(procRelObjType != null || procRelObjIdList != null || Status != null || (getClientInfo == 'true')) || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) ">
+				left outer join FACT_ACTIVITY_INSTANCE fai2 WITH (NOLOCK)  on fai.process_instance_id = fai2.sub_process_instance_id
+				inner join PROCESS_INSTANCE_CONTEXT pic WITH (NOLOCK) on fai2.process_instance_id = pic.process_instance_id
+			</optional>
+			<optional depends="getClientInfo == 'true'">
+				inner join #tmpDetails dtl WITH (NOLOCK) on pic.object_id = dtl.object_id and pic.object_type_id = dtl.object_type_id
+			</optional>
+			<optional depends="initialOnly == 'true'">
+				left outer join FACT_TRANSITION_RUNTIME ftr WITH (NOLOCK)
+				on fai.activity_instance_id = ftr.to_activity_instance_id and
+				((fai.activity_implementation_id in (5, 6) and ftr.transition_type_id &lt;&gt; 2) or
+				fai.activity_implementation_id in (1, 2, 3, 4))
+			</optional>
+			<optional depends="getStatus == true">
+				left outer join gems.dbo.tasks t WITH (NOLOCK) on fai.Activity_Instance_Id = t.ClientTaskId
+				left outer join gems.dbo.lookuptaskstatus lts WITH (NOLOCK) on t.taskstatuscode = lts.lookupcode
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fai.activity_instance_id" paramId="id" />
+					<exp op="=" dbField="fai.activity_desc" paramId="desc" />
+					<exp op="=" dbField="fai.process_instance_id" paramId="procInstId" />
+					<exp op="or">
+						<exp op="=" dbField="fpi.process_instance_id" paramId="procInstIdAll" />
+						<exp op="=" dbField="fpi.root_process_instance_id" paramId="procInstIdAll" />
+					</exp>
+					<optional depends="getStatus == true">
+						<exp op="=" dbField="t.TaskStatusCode" paramId="taskStatusLookupCode" />
+						<exp op="IN" dbField="t.TaskStatusCode" paramId="taskStatusLookupCodeList" />
+					</optional>
+					<exp op="=" dbField="fai.activity_definition_id" paramId="actDefId" />
+					<exp op="IN" dbField="fai.activity_definition_id" paramId="actDefIdList" />
+					<exp op="=" dbField="fai.current_state_id" paramId="state" />
+					<exp op="IN" dbField="fai.current_state_id" paramId="stateList" />
+					<exp op="IN" dbField="fai.activity_implementation_id" paramId="implementationList" />
+					<exp op="=" dbField="fpi.process_definition_id" paramId="procDefId" />
+					<exp op="=" dbField="pic.object_type_id" paramId="procRelObjType" />
+					<exp op="IN" dbField="pic.object_id" paramId="procRelObjIdList" />
+					<exp op="IN" dbField="(select 
+											case 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed' 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+												else min(faiAll.activity_desc)
+											end
+										from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK)
+											left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+										where fpiAll.root_process_instance_id = fpi.process_instance_id 
+											or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+											or fpiAll.process_instance_id = fpi.process_instance_id)" paramId="statusList" />
+					<optional depends="initialOnly == 'true'">
+						<exp op="is" dbField="ftr.transition_runtime_id">null</exp>
+					</optional>
+					<optional depends="forPullingWork =='all'">
+						<exp op="and">
+							<exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+							<exp op="=" dbField="fai.start_mode_id">2</exp>
+							<exp op="or">
+								<exp op="and">
+									<exp op="=" dbField="fai.current_state_id">4</exp>
+									<exp op="or">
+										<exp op="is" dbField="fai.work_item_limit">null</exp>
+										<exp op="&gt;" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+									</exp>
+								</exp>
+								<exp op="=" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+							</exp>
+						</exp>
+					</optional>
+					<optional depends="forPullingWork =='true'">
+						<exp op="and">
+							<exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+							<exp op="=" dbField="fai.start_mode_id">2</exp>
+							<exp op="=" dbField="fai.current_state_id">4</exp>
+							<exp op="or">
+								<exp op="is" dbField="fai.work_item_limit">null</exp>
+								<exp op="&gt;" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+							</exp>
+						</exp>
+					</optional>
+					<optional depends="forPullingWork == 'false'">
+						<exp op="and">
+							<exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+							<exp op="=" dbField="fai.start_mode_id">2</exp>
+							<exp op="=" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+						</exp>
+					</optional>
+				</exp>
+			</where> 
+      <!-- Start PFM-7241/PLSUP-4605 -->
+      UNION
+      select distinct cast(fai.activity_instance_id as varchar(36)) as id, ROW_NUMBER() OVER
+      <optional depends="orderBy == ''">
+        (order by fai.activity_instance_id) AS RowNumber,
+      </optional>
+      <optional depends="orderBy != ''">
+        (<sort paramId="orderBy" />) AS RowNumber,
+      </optional>
+      count(*) over() as QueryCount1,
+      cast(fai.activity_definition_id as varchar(36)) as activityDefinitionID,
+      cast(fai.process_instance_id as varchar(36)) as processInstanceID,
+      fai.current_state_id as state,
+      fai.container_xml as containerXML,
+      fai.client_status_msg as clientStatusMsg,
+      fai.priority as priority,
+      fai.automated_class_name as automatedClass,
+      fai.activity_desc as description,
+      fai.finish_mode_id as finishModeID,
+      fai.activity_implementation_id as implementationID,
+      fai.loop_condition as loopCondition,
+      fai.client_status_msg_xml as clientStatusMsgXml,
+      fai.required_work_item_count as requiredWorkItemCount,
+      fai.start_mode_id as startModeID,
+      cast(fai.sub_process_definition_id as varchar(36)) as subProcessDefID,
+      cast(fai.sub_process_instance_id as varchar(36)) as subProcessInstID,
+      fai.transition_restriction_id as transitionRestrictionID,
+      fai.work_item_limit as workItemLimit,
+      fai.update_datetime as lastUpdateDate,
+      fai.create_datetime as createdDate,
+      case when fai.activity_implementation_id in (2, 3) and fai.start_mode_id = 2 and fai.current_state_id = 4 and (fai.work_item_limit is null or fai.work_item_limit > (select count(cast(work_item_id as varchar(36))) workItemCount from fact_work_item fwi2 WITH (NOLOCK) where fai.activity_instance_id = fwi2.activity_instance_id and fwi2.latest_flag = 1)) then 1 else 0 end pullable
+      <optional depends="(orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0)" >
+        ,(select
+        case
+        when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed'
+        when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+        else min(faiAll.activity_desc)
+        end
+        from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK)
+        left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+        where fpiAll.root_process_instance_id = fpi.process_instance_id
+        or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+        or fpiAll.process_instance_id = fpi.process_instance_id) status
+      </optional>
+      <optional depends="getClientInfo == 'true'">
+        , dtl.*
+      </optional>
+      <optional depends="getStatus == true">
+        ,isnull(lts.lookupcode,0) taskStatusLookupCode
+        , isnull(lts.displayvalue,'N/A') taskStatusDisplayValue
+      </optional>
+      from FACT_ACTIVITY_INSTANCE fai WITH (NOLOCK)
+      <optional depends="(procInstIdAll !=null || procDefId != null || procRelObjType != null || procRelObjIdList != null || Status != null || (getClientInfo == 'true')) || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) ">
+        inner join FACT_PROCESS_INSTANCE fpi WITH (NOLOCK)  on fai.process_instance_id = fpi.process_instance_id
+      </optional>
+      <optional depends="(procRelObjType != null || procRelObjIdList != null || Status != null || (getClientInfo == 'true')) || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) ">
+        left outer join FACT_ACTIVITY_INSTANCE fai2 WITH (NOLOCK)  on fai.process_instance_id = fai2.sub_process_instance_id
+        inner join PROCESS_INSTANCE_CONTEXT pic WITH (NOLOCK) on fpi.process_instance_id = pic.process_instance_id
+      </optional>
+      <optional depends="getClientInfo == 'true'">
+        inner join #tmpDetails dtl WITH (NOLOCK) on pic.object_id = dtl.object_id and pic.object_type_id = dtl.object_type_id
+      </optional>
+      <optional depends="initialOnly == 'true'">
+        left outer join FACT_TRANSITION_RUNTIME ftr WITH (NOLOCK)
+        on fai.activity_instance_id = ftr.to_activity_instance_id and
+        ((fai.activity_implementation_id in (5, 6) and ftr.transition_type_id &lt;&gt; 2) or
+        fai.activity_implementation_id in (1, 2, 3, 4))
+      </optional>
+      <optional depends="getStatus == true">
+        left outer join gems.dbo.tasks t WITH (NOLOCK) on fai.Activity_Instance_Id = t.ClientTaskId
+        left outer join gems.dbo.lookuptaskstatus lts WITH (NOLOCK) on t.taskstatuscode = lts.lookupcode
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="fai.activity_instance_id" paramId="id" />
+          <exp op="=" dbField="fai.activity_desc" paramId="desc" />
+          <exp op="=" dbField="fai.process_instance_id" paramId="procInstId" />
+          <exp op="or">
+            <exp op="=" dbField="fpi.process_instance_id" paramId="procInstIdAll" />
+            <exp op="=" dbField="fpi.root_process_instance_id" paramId="procInstIdAll" />
+          </exp>
+          <optional depends="getStatus == true">
+            <exp op="=" dbField="t.TaskStatusCode" paramId="taskStatusLookupCode" />
+            <exp op="IN" dbField="t.TaskStatusCode" paramId="taskStatusLookupCodeList" />
+          </optional>
+          <exp op="=" dbField="fai.activity_definition_id" paramId="actDefId" />
+          <exp op="IN" dbField="fai.activity_definition_id" paramId="actDefIdList" />
+          <exp op="=" dbField="fai.current_state_id" paramId="state" />
+          <exp op="IN" dbField="fai.current_state_id" paramId="stateList" />
+          <exp op="IN" dbField="fai.activity_implementation_id" paramId="implementationList" />
+          <exp op="=" dbField="fpi.process_definition_id" paramId="procDefId" />
+          <exp op="=" dbField="pic.object_type_id" paramId="procRelObjType" />
+          <exp op="IN" dbField="pic.object_id" paramId="procRelObjIdList" />
+          <exp op="IN" dbField="(select 
+											case 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed' 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+												else min(faiAll.activity_desc)
+											end
+										from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK)
+											left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+										where fpiAll.root_process_instance_id = fpi.process_instance_id 
+											or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+											or fpiAll.process_instance_id = fpi.process_instance_id)" paramId="statusList" />
+          <optional depends="initialOnly == 'true'">
+            <exp op="is" dbField="ftr.transition_runtime_id">null</exp>
+          </optional>
+          <optional depends="forPullingWork =='all'">
+            <exp op="and">
+              <exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+              <exp op="=" dbField="fai.start_mode_id">2</exp>
+              <exp op="or">
+                <exp op="and">
+                  <exp op="=" dbField="fai.current_state_id">4</exp>
+                  <exp op="or">
+                    <exp op="is" dbField="fai.work_item_limit">null</exp>
+                    <exp op="&gt;" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+                  </exp>
+                </exp>
+                <exp op="=" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+              </exp>
+            </exp>
+          </optional>
+          <optional depends="forPullingWork =='true'">
+            <exp op="and">
+              <exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+              <exp op="=" dbField="fai.start_mode_id">2</exp>
+              <exp op="=" dbField="fai.current_state_id">4</exp>
+              <exp op="or">
+                <exp op="is" dbField="fai.work_item_limit">null</exp>
+                <exp op="&gt;" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+              </exp>
+            </exp>
+          </optional>
+          <optional depends="forPullingWork == 'false'">
+            <exp op="and">
+              <exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+              <exp op="=" dbField="fai.start_mode_id">2</exp>
+              <exp op="=" dbField="fai.work_item_limit">(select count(cast(fwi.work_item_id as varchar(36))) from FACT_WORK_ITEM fwi WITH (NOLOCK) where fai.activity_instance_id = fwi.activity_instance_id and fwi.latest_flag = 1)</exp>
+            </exp>
+          </optional>
+        </exp>
+      </where>
+      <!--END PFM-7241/PLSUP-4605-->
+      )
+      as dtl
+      <optional depends="StartRow == null || StartRow != -1">
+      <where>
+        <exp op="and">
+          <exp op="&gt;=" dbField="RowNumber" paramId="StartRow" />
+          <exp op="&lt;=" dbField="RowNumber" paramId="EndRow" />
+        </exp>
+      </where>
+      </optional>
+			<optional depends="orderBy != ''">
+				<sort paramId="orderBy" />
+			</optional>
+			<optional depends="getClientInfo == 'true'">
+				; drop table #tmpDetails
+			</optional>
+		</sql>
+	</statement>
+
+	<statement name="getProcessRelatedObjects" connection="Workflow">
+		<param id="activityList" type="Int32" required="true"/>
+		<param id="objectTypeList" />
+		<sql>
+			select cast(fai.activity_instance_id as varchar(36)) as activityId,
+			pic.object_type_id as objectTypeId,
+			pic.object_id as objectId
+			from fact_activity_instance fai inner join
+			fact_process_instance fpi on fpi.process_instance_id = fai.process_instance_id left outer join
+			fact_process_instance fpir on fpi.root_process_instance_id = fpir.process_instance_id inner join
+			process_instance_context pic on (fpi.process_instance_id = pic.process_instance_id or fpir.process_instance_id = pic.process_instance_id)
+			<where>
+				<exp op="and">
+					<exp op="IN" dbField="fai.activity_instance_id" paramId="activityList" />
+					<exp op="IN" dbField="pic.object_type_id" paramId="objectTypeList" />
+				</exp>
+			</where>			
+			order by fai.activity_instance_id, pic.object_type_id
+		</sql>
+	</statement>
+	
+	<statement name="getOutgoingTransitions" connection="Workflow">
+		<param id="activityInstList" type="Int32" required="true"/>
+		<sql>
+			select cast(faiFrom.activity_instance_id as varchar(36)) as activityId, 
+					cast(ftr.transition_runtime_id as varchar(36)) as transitionId,
+					ftr.transition_desc as description,
+					ftr.transition_type_id as typeId,
+					cast(ftr.from_activity_instance_id as varchar(36)) as fromId,
+					cast(ftr.to_activity_instance_id as varchar(36)) as toId,
+					ftr.condition as condition
+			from FACT_TRANSITION_RUNTIME ftr inner join 				
+				FACT_ACTIVITY_INSTANCE faiFrom on ftr.from_activity_instance_id = faiFrom.activity_instance_id
+			<where>
+				<exp op="IN" dbField="faiFrom.activity_instance_id" paramId="activityInstList" />
+			</where>
+			order by faiFrom.activity_instance_id, ftr.transition_desc
+		</sql>
+	</statement>
+		
+	<statement name="getRunningActivities" connection="Workflow">
+		<param id="activityInstList" type="Int32" required="true"/>
+		<sql>
+			select distinct cast(fai.activity_instance_id as varchar(36)) as activityId, 
+					cast(faiRun.activity_instance_id as varchar(36)) as runActivityId, 
+					cast(faiRun.activity_definition_id as varchar(36)) as activityDefinitionID, 
+					cast(faiRun.process_instance_id as varchar(36)) as processInstanceID,
+					faiRun.current_state_id as state, 
+					faiRun.container_xml as containerXML,
+					faiRun.client_status_msg as clientStatusMsg,
+					faiRun.priority as priority,
+					faiRun.automated_class_name as automatedClass,
+					faiRun.activity_desc as description,
+					faiRun.finish_mode_id as finishModeID,
+					faiRun.activity_implementation_id as implementationID,
+					faiRun.loop_condition as loopCondition,
+					faiRun.client_status_msg_xml as clientStatusMsgXml,
+					faiRun.required_work_item_count as requiredWorkItemCount,
+					faiRun.start_mode_id as startModeID,
+					cast(faiRun.sub_process_definition_id as varchar(36)) as subProcessDefID,
+					cast(faiRun.sub_process_instance_id as varchar(36)) as subProcessInstID,
+					faiRun.transition_restriction_id as transitionRestrictionID,
+					faiRun.work_item_limit as workItemLimit,
+					faiRun.update_datetime as lastUpdateDate,
+					faiRun.create_datetime as createdDate
+			from FACT_ACTIVITY_INSTANCE fai
+				inner join FACT_PROCESS_INSTANCE fpi on fai.process_instance_id = fpi.process_instance_id
+				left outer join FACT_PROCESS_INSTANCE fpir on fpi.root_process_instance_id = fpir.process_instance_id
+				left outer join FACT_PROCESS_INSTANCE fpisub on fpisub.root_process_instance_id = fpir.process_instance_id or fpisub.root_process_instance_id = fpi.process_instance_id
+				inner join FACT_ACTIVITY_INSTANCE faiRun on faiRun.process_instance_id = fpi.process_instance_id or faiRun.process_instance_id = fpir.process_instance_id or faiRun.process_instance_id = fpisub.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="IN" dbField="fai.activity_instance_id" paramId="activityInstList" />
+					<exp op="=" dbField="faiRun.current_state_id">4</exp>
+					<exp op="IN" dbField="faiRun.activity_implementation_id">(2, 3)</exp>
+				</exp>
+			</where>
+			order by activityId, faiRun.activity_desc
+		</sql>
+	</statement>
+
+	<statement name="update" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="procDefId" type="String" size="36" />
+		<param id="actDefId" type="String" size="36" />
+		<param id="procInstId" type="String" size="36" />
+		<param id="stateList" type="String"/>
+		<param id="newStateId" type="Int32" />
+		<param id="newPriority" type="Int32" />
+		<param id="containerXML" type="String" size="2000" />
+		<param id="clientStatusMsg" type="String" size="100" />
+		<param id="subProcInstId" type="String" size="36" />
+		<param id="userId" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			update workflow.dbo.FACT_ACTIVITY_INSTANCE
+			<columns mode="update">
+				<column dbField="current_state_id" paramId="newStateId" />
+				<column dbField="priority" paramId="newPriority" />
+				<column dbField="container_xml" paramId="containerXML" />
+				<column dbField="client_status_msg" paramId="clientStatusMsg" />
+				<column dbField="sub_process_instance_id" paramId="subProcInstId" />
+				<column dbField="updated_by" paramId="userId" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			from workflow.dbo.FACT_ACTIVITY_INSTANCE fai
+			<optional depends="procDefId">
+				inner join workflow.dbo.FACT_PROCESS_INSTANCE fpi on fai.process_instance_id = fpi.process_instance_id
+			</optional>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="activity_instance_id" paramId="id" />
+					<exp op="=" dbField="activity_definition_id" paramId="actDefId" />
+					<exp op="IN" dbField="fai.current_state_id" paramId="stateList" />
+					<exp op="=" dbField="fai.process_instance_id" paramId="procInstId" />
+					<exp op="=" dbField="fpi.process_definition_id" paramId="procDefId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+</statements>

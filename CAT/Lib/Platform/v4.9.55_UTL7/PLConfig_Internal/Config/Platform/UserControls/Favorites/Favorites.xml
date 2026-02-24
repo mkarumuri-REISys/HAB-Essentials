@@ -1,0 +1,28 @@
+<root>
+  <ToolTipAdd>Add To Favorites</ToolTipAdd>
+  <ToolTipAddBig>Add To Favorites</ToolTipAddBig>
+
+  <ToolTipRemove>Remove this Page from Favorites</ToolTipRemove>
+  <ToolTipRemoveBig>Remove this Page from Favorites</ToolTipRemoveBig>
+
+  <ToolTipNo>Shortcut To This Page Unavailable</ToolTipNo>
+  <ToolTipNoP>Shortcut To This Page Unavailable</ToolTipNoP>
+  <!--MarkupId for update top favorite and manage favorites for external users.
+  These values match the entries in the PFM_NVGN_Item table-->
+  <External>
+    <add name="managedFavroite" value="manageFavExt"/>
+    <add name="updateTopFavroite" value="updateTopFavExt"/>
+  </External>
+  <!--MarkupId for update top favorite and manage favorites for internal users.
+  These values match the entries in the PFM_NVGN_Item table-->
+  <Internal>
+    <add name="managedFavroite" value="manageFavInt"/>
+    <add name="updateTopFavroite" value="updateTopFavInt"/>
+  </Internal>
+  <!-- Template for displaytext of favorite flyout menu items-->
+  <DisplayOptions>
+    <displayOption groupName="default" format="{Description|Role}" />
+    <displayOption groupName="Folders" format="{Description}" />
+    <displayOption groupName="Dashboards" format="{Description}" />
+  </DisplayOptions>
+</root>

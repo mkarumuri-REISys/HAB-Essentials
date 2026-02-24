@@ -1,0 +1,14 @@
+<config>
+	<!-- PFM-2034. PFM-2035. PFM-1863. -->
+	<conversionTimeout>90</conversionTimeout>
+	<useEncryption>false</useEncryption>
+	<useAttachmentPermissions>false</useAttachmentPermissions>
+  <tablePrefix>gems.dbo.</tablePrefix>
+
+  <useSFTP>false</useSFTP>
+  <SFTPServerName>doepamsfs.reisys.com</SFTPServerName>
+  <SFTPServerPort>22</SFTPServerPort>
+  <SFTPLoginUserName>gemsapp</SFTPLoginUserName>
+  <SFTPEncryptedPassword>id/ADf1+FyL4L9ivs4KyNA==</SFTPEncryptedPassword>  <!-- #GemsUser1 Use AdminTools.exe "Quick Encrypt" to encrypt a password -->
+  
+</config>

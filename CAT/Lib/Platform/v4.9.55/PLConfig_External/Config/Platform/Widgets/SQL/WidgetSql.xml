@@ -1,0 +1,1047 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="AddAnnouncement" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <param id="Title" type="String" required="true"/>
+    <param id="Description" type="String" required="true"/>
+    <param id="StartDate" type="Date" required="true"/>
+    <param id="EndDate" type="Date" required="false"/>
+    <param id="CategoryCode" type="Int32" required="true"/>
+    <param id="RelatedLinkText" type="String" required="false"/>
+    <param id="RelatedLinkUrl" type="String" required="false"/>
+    <param id="ResourceValue" type="String" required="false"/>
+    <param id="ResourceTypeCode" type="Int32" required="false"/>
+    <param id="ApprovalStatusCode" type="Int32" required="true"/>
+    <param id="CreatorId" type="Guid" required="true"/>
+    <param id="Published" type="Boolean" required="true"/>
+    <param id="AllowAnonymous" type="Boolean" required="false"/>
+
+    <sql>
+      insert into PFM_ANMT_Announcement
+      <columns mode="insert">
+        <column dbField="ANMTAnnouncementId" paramId="Id"/>
+        <column paramId="Title" dbField="Title"/>
+        <column paramId="Description" dbField="Description"/>
+        <column paramId="StartDate" dbField="StartDate"/>
+        <column paramId="EndDate" dbField="EndDate"/>
+        <column paramId="CategoryCode" dbField="CategoryCode"/>
+        <column paramId="RelatedLinkText" dbField="RelatedLinkText"/>
+        <column paramId="RelatedLinkUrl" dbField="RelatedLinkUrl"/>
+        <column paramId="ResourceValue" dbField="ResourceValue"/>
+        <column paramId="ResourceTypeCode" dbField="ResourceTypeCode"/>
+        <column paramId="ApprovalStatusCode" dbField="ApprovalStatusCode"/>
+        <column paramId="CreatorId" dbField="CreatorId"/>
+        <column paramId="CreatorId" dbField="LastUpdateId"/>
+        <column dbField="CreatedDate">getdate()</column>
+        <column dbField="LastUpdateDate">getdate()</column>
+        <!--<column paramId="Published" dbField="Published"/>-->
+        <column paramId="AllowAnonymous" dbField="AllowAnonymous"/>
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="UpdateAnnouncement" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <param id="Title" type="String" required="true"/>
+    <param id="Description" type="String" required="true"/>
+    <param id="StartDate" type="Date" required="true"/>
+    <param id="EndDate" type="Date" required="false"/>
+    <param id="CategoryCode" type="Int32" required="true"/>
+    <param id="RelatedLinkText" type="String" required="false"/>
+    <param id="RelatedLinkUrl" type="String" required="false"/>
+    <param id="ResourceValue" type="String" required="false"/>
+    <param id="ResourceTypeCode" type="Int32" required="false"/>
+    <param id="ApprovalStatusCode" type="Int32" required="true"/>
+    <param id="CreatorId" type="Guid" required="true"/>
+    <param id="Published" type="Boolean" required="true"/>
+    <param id="AllowAnonymous" type="Boolean" required="true"/>
+    <sql>
+      update PFM_ANMT_Announcement
+      <columns mode="update">
+        <column paramId="Title" dbField="Title"/>
+        <column paramId="Description" dbField="Description"/>
+        <column paramId="StartDate" dbField="StartDate"/>
+        <column paramId="EndDate" dbField="EndDate"/>
+        <column paramId="CategoryCode" dbField="CategoryCode"/>
+        <column paramId="RelatedLinkText" dbField="RelatedLinkText"/>
+        <column paramId="RelatedLinkUrl" dbField="RelatedLinkUrl"/>
+        <column paramId="ResourceValue" dbField="ResourceValue"/>
+        <column paramId="ResourceTypeCode" dbField="ResourceTypeCode"/>
+        <column paramId="ApprovalStatusCode" dbField="ApprovalStatusCode"/>
+        <column paramId="CreatorId" dbField="LastUpdateId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+        <!--<column paramId="Published" dbField="Published"/>-->
+        <column paramId="AllowAnonymous" dbField="AllowAnonymous"/>
+      </columns>
+      <where>
+        <exp dbField="ANMTAnnouncementId" op="=" paramId="Id"/>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="MarkAnnouncementAsRead" connection = "Common">
+    <param id="ANMTAnnouncementId" type="Guid" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      insert into PFM_ANMT_Announcement_AC_User_R
+      <columns mode="insert">
+        <column dbField="ANMTAnnouncementId" paramId="ANMTAnnouncementId"/>
+        <column dbField="UserId" paramId="UserId"/>
+        <column dbField="CreatorId" paramId="UserId"/>
+        <column dbField="CreatedDate">getdate()</column>
+        <column dbField="LastUpdateId" paramId="UserId"/>
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="PublishAnnouncement" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <sql>
+      update PFM_ANMT_Announcement
+      set Published = 1
+      where ANMTAnnouncementId = <exp paramId="Id"/>
+    </sql>
+  </statement>
+
+  <statement name="DeleteAnnouncement" connection = "Common">
+    <param id="Id" type="Guid" required="true"/>
+    <sql>
+      delete from PFM_ANMT_Announcement_AC_Role_R
+      where ANMTAnnouncementId = <exp paramId="Id"/>;
+      delete from PFM_ANMT_Announcement_UserType_R
+      where ANMTAnnouncementId = <exp paramId="Id"/>;
+      delete from PFM_ANMT_Announcement
+      where ANMTAnnouncementId = <exp paramId="Id"/>
+    </sql>
+  </statement>
+
+  <statement name="AddRoleToAnnouncement" connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="RoleId" type="Int32" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      INSERT INTO PFM_ANMT_Announcement_AC_Role_R
+      ([ANMTAnnouncementId]
+      ,[RoleId]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      VALUES (
+      <exp paramId="AnnouncementId"/>,
+      <exp paramId="RoleId"/>,
+      <exp paramId="UserId"/>,
+      getdate(),
+      <exp paramId="UserId"/>,
+      getdate()
+      )
+    </sql>
+  </statement>
+
+  <statement name="RemoveRoleFromAnnouncement" connection = "Common" >
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="RoleId" type="Int32" required="true"/>
+    <sql>
+      delete from PFM_ANMT_Announcement_AC_Role_R
+      <where>
+        <exp op="AND">
+          <exp dbField="ANMTAnnouncementId" op="=" paramId="AnnouncementId"/>
+          <exp dbField="RoleId" op="=" paramId="RoleId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="AddUserTypeToAnnouncement"  connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="UserTypeCode" type="Int32" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      INSERT INTO PFM_ANMT_Announcement_UserType_R
+      ([ANMTAnnouncementId]
+      ,[UserTypeCode]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      VALUES (
+      <exp paramId="AnnouncementId"/>,
+      <exp paramId="UserTypeCode"/>,
+      <exp paramId="UserId"/>,
+      getdate(),
+      <exp paramId="UserId"/>,
+      getdate()
+      )
+    </sql>
+  </statement>
+
+  <statement name="RemoveUserTypeFromAnnouncement"  connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="UserTypeCode" type="Int32" required="true"/>
+    <sql>
+      delete from PFM_ANMT_Announcement_UserType_R
+      <where>
+        <exp op="AND">
+          <exp dbField="ANMTAnnouncementId" op="=" paramId="AnnouncementId"/>
+          <exp dbField="UserTypeCode" op="=" paramId="UserTypeCode"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="AddBureauToAnnouncement" connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="BureauId" type="Int32" required="true"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      INSERT INTO PFM_ANMT_Announcement_InternalOrganization_R
+      ([ANMTAnnouncementId]
+      ,[InternalOrgId]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      VALUES (
+      <exp paramId="AnnouncementId"/>,
+      <exp paramId="BureauId"/>,
+      <exp paramId="UserId"/>,
+      getdate(),
+      <exp paramId="UserId"/>,
+      getdate()
+      )
+    </sql>
+  </statement>
+
+  <statement name="RemoveBureauFromAnnouncement"  connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <param id="BureauId" type="Int32" required="true"/>
+    <sql>
+      delete from PFM_ANMT_Announcement_InternalOrganization_R
+      <where>
+        <exp op="AND">
+          <exp dbField="ANMTAnnouncementId" op="=" paramId="AnnouncementId"/>
+          <exp dbField="InternalOrgId" op="=" paramId="BureauId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetGlobalAnnouncement" connection = "Common">
+    <sql>
+      Select Message,UserTypeCode
+      From PFM_MSGS_Messages
+      Where StartDate  &lt;= GetDate()
+      and
+      EndDate  &gt;= GetDate()
+      and
+      Type=1
+    </sql>
+  </statement>
+
+  <statement name="GetGlobalMessage" connection = "Common">
+    <sql>
+      Select Message,EndDate,UserTypeCode
+      From PFM_MSGS_Messages
+      Where StartDate  &lt;= GetDate()
+      and
+      EndDate  &gt;= GetDate()
+      and
+      Type=2
+    </sql>
+  </statement>
+  <statement name="GetAllGlobalMessages" connection="Common">
+    <sql>
+      Select Message, EndDate, UserTypeCode, Type, StartDate
+      From PFM_MSGS_Messages
+      Where StartDate &lt;= GetDate() and EndDate &gt;= GetDate()
+    </sql>
+  </statement>
+  <statement name="GetAnnouncementsForUser" connection = "Common">
+    <param id="RoleIds"       required="true"   type="String"/>
+    <param id="CategoryCodes" required="true"   type="String"/>
+    <param id="MinDate"       required="false"  type="DateTime"/>
+    <param id="MaxDate"       required="false"  type="DateTime"/>
+    <param id="SortParam"     required="false"  type="String" default="StartDate"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="UnreadOnly" type="Boolean"/>
+    <param id="ReadOnly" type="Boolean"/>
+    <sql>
+      <select>
+        a.ANMTAnnouncementId as Id, StartDate , Title, Description, RelatedLinkText, RelatedLinkUrl, UserId
+      </select>
+      from PFM_ANMT_Announcement a (NOLOCK)
+      left join PFM_ANMT_Announcement_AC_Role_R arr on a.ANMTAnnouncementId = arr.ANMTAnnouncementId
+      left join PFM_ANMT_Announcement_AC_User_R ru on a.ANMTAnnouncementId = ru.ANMTAnnouncementId and ru.UserId = <exp paramId="UserId"/>
+      <where>
+        <exp op="AND">
+          <exp dbField="CategoryCode" op="IN" paramId="CategoryCodes"/>
+          <exp op="OR">
+            <exp dbField="RoleId" op="IN" paramId="RoleIds"/>
+            <exp dbField="RoleId" op="IS">NULL</exp>
+          </exp>
+          <exp paramId="MinDate" op=">=" dbField="StartDate"/>
+          <exp paramId="MaxDate" op="&lt;=" dbField="StartDate"/>
+          <optional depends="UnreadOnly">
+            <exp dbField="UserId" op="IS">NULL</exp>
+          </optional>
+          <optional depends="ReadOnly">
+            <exp dbField="UserId" op="=" paramId="UserId"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+  <statement name="GetNumberOfUnreadAnnouncementsForUser" connection = "Common">
+    <param id="RoleIds"       required="true"   type="String"/>
+    <param id="MinDate"       required="false"  type="DateTime"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="UserTypeCode" type="Int32" />    
+    <sql>
+      <select>
+        count(*)
+      </select>
+      from PFM_ANMT_Announcement a (NOLOCK)
+      left join PFM_ANMT_Announcement_AC_Role_R arr on a.ANMTAnnouncementId = arr.ANMTAnnouncementId
+      left join PFM_ANMT_Announcement_AC_User_R ru on a.ANMTAnnouncementId = ru.ANMTAnnouncementId and ru.UserId = <exp paramId="UserId"/>
+      <where>
+        <exp op="AND">
+          <exp dbField="UserId" op="IS">NULL</exp>
+          <exp op="OR">
+            <exp dbField="RoleId" op="IN" paramId="RoleIds"/>
+            <exp dbField="RoleId" op="IS">NULL</exp>
+          </exp>
+          <exp paramId="MinDate" op=">=" dbField="StartDate"/>
+          <optional depends="UserTypeCode">
+            (
+				a.ANMTAnnouncementId IN (
+					SELECT ANMTAnnouncementId
+					FROM PFM_ANMT_Announcement_UserType_R
+					WHERE  <exp dbField="UserTypeCode" op="=" paramId="UserTypeCode"/>
+				)
+			)
+          </optional>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetAnnouncementsCreatedBy" connection = "Common">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="FilterExpression" type="String" required="false"/>
+    <param id="SortExpression" type="String" required="false" default="a.CreatedDate desc"/>
+    <sql>
+      <select>a.*, c.DisplayValue</select>
+      from PFM_ANMT_Announcement a (NOLOCK)
+      left join LU_PFM_ANMT_Category c on c.LookupCode = a.CategoryCode
+      <where>
+        <exp op="AND">
+          <exp dbField="a.CreatorId" op="=" paramId="UserId"/>
+          <optional depends="FilterExpression">
+            <dynamic paramId="FilterExpression"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortExpression"/>
+    </sql>
+  </statement>
+
+  <statement name="GetRolesForAnnouncement" connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <sql>
+      select RoleId from PFM_ANMT_Announcement_AC_Role_R (NOLOCK)
+      where ANMTAnnouncementId = <exp paramId="AnnouncementId"/>
+    </sql>
+  </statement>
+
+  <statement name="GetBureausForAnnouncement" connection = "Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <sql>
+      select InternalOrgId from PFM_ANMT_Announcement_InternalOrganization_R (NOLOCK)
+      where ANMTAnnouncementId = <exp paramId="AnnouncementId"/>
+    </sql>
+  </statement>
+
+  <statement name="GetUserTypesForAnnouncement"  connection="Common">
+    <param id="AnnouncementId" type="Guid" required="true"/>
+    <sql>
+      select UserTypeCode from PFM_ANMT_Announcement_UserType_R (NOLOCK)
+      where ANMTAnnouncementId = <exp paramId="AnnouncementId"/>
+    </sql>
+  </statement>
+
+  <statement name="GetAnnouncement" connection = "Common">
+    <param id="AnnouncementId" required="true" type="Guid"/>
+    <param id="UserId" type="Guid" required="true"/>
+    <sql>
+      select a.*, UserId
+      from PFM_ANMT_Announcement a (NOLOCK)
+      left join PFM_ANMT_Announcement_AC_User_R ru on a.ANMTAnnouncementId = ru.ANMTAnnouncementId and ru.UserId = <exp paramId="UserId"/>
+      <where>
+        <exp dbField="a.ANMTAnnouncementId" op="=" paramId="AnnouncementId"/>
+      </where>
+    </sql>
+  </statement>
+
+  <!-- Get announcments : Not userid dependent version. Good to get public announcement-->
+  <statement name="GetAnnouncements" connection = "Common">
+    <param id="RoleIds"       required="false"   type="String"/>
+    <param id="UserTypeCodes"       required="false"   type="String"/>
+    <param id="CategoryIds" required="false"   type="String"/>
+    <param id="StartDate"       required="false"  type="DateTime"/>
+    <param id="EndDate"       required="false"  type="DateTime"/>
+    <param id="SortParam"     required="false"  type="String" default="StartDate desc"/>
+    <param id="UserId" type="Guid" required="false"/>
+    <param id="UnreadOnly" type="Boolean"/>
+    <param id="ReadOnly" type="Boolean"/>
+    <param id="PublicOnly" type="Boolean"/>
+    <sql>
+      <select>
+        a.ANMTAnnouncementId as Id, StartDate , Title, Description, RelatedLinkText, RelatedLinkUrl, AllowAnonymous, EndDate, ApprovalStatusCode
+        <optional depends="UserId">
+          , UserId
+        </optional>
+      </select>
+      from PFM_ANMT_Announcement a   (NOLOCK)
+      <optional depends="UserId">
+        left join PFM_ANMT_Announcement_AC_User_R ru on a.ANMTAnnouncementId = ru.ANMTAnnouncementId and ru.UserId = <exp paramId="UserId"/>
+      </optional>
+      <where>
+        <exp op="AND">
+          <optional depends="RoleIds">
+            ( a.ANMTAnnouncementId IN (SELECT ANMTAnnouncementId FROM PFM_ANMT_Announcement_AC_Role_R WHERE   <exp dbField="RoleId" op="IN" paramId="RoleIds"/>)
+            or 0 in (select count(*) from PFM_ANMT_Announcement_AC_Role_R where ANMTAnnouncementId=  a.ANMTAnnouncementId) )
+          </optional>
+          <optional depends="UserTypeCodes">
+            (a.ANMTAnnouncementId IN (SELECT ANMTAnnouncementId FROM PFM_ANMT_Announcement_UserType_R  WHERE   <exp dbField="UserTypeCode" op="IN" paramId="UserTypeCodes"/>)
+            or 0 in (select count(*) from PFM_ANMT_Announcement_UserType_R where ANMTAnnouncementId=  a.ANMTAnnouncementId) )
+          </optional>
+          <exp dbField="CategoryCode" op="IN" paramId="CategoryIds"/>
+          <exp paramId="StartDate" op=">=" dbField="StartDate"/>
+          <optional depends="'EndDate'.length > 4">
+            <exp op="OR">
+              <exp paramId="EndDate" op="&lt;=" dbField="EndDate"/>
+              <exp dbField="EndDate" op="IS">NULL</exp>
+            </exp>
+          </optional>
+          <optional depends="UnreadOnly">
+            <exp dbField="UserId" op="IS">NULL</exp>
+          </optional>
+          <optional depends="ReadOnly">
+            <exp dbField="UserId" op="=" paramId="UserId"/>
+          </optional>
+          <optional depends="PublicOnly">
+            <exp dbField="AllowAnonymous" op="=" paramId="PublicOnly"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortParam"/>
+    </sql>
+  </statement>
+
+  <!-- Get announcment : Not userid dependent version.-->
+  <statement name="GetSingleAnnouncement" connection = "Common">
+    <param id="AnnouncementId" required="true" type="Guid"/>
+    <sql>
+      select a.ANMTAnnouncementId as Id, StartDate , Title, Description, RelatedLinkText, RelatedLinkUrl, EndDate, CategoryCode, AllowAnonymous,ResourceValue, ResourceTypeCode,CreatorId,AllowAnonymous
+      from PFM_ANMT_Announcement a (NOLOCK)
+      <where>
+        <exp dbField="a.ANMTAnnouncementId" op="=" paramId="AnnouncementId"/>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetRecentlyAccessedItems" connection = "Common">
+    <param id="UserId" type="Guid" required="true" />
+    <param id="GroupIds" type="String" required="false"/>
+    <param id="NumResults" type="String" required="false" />
+    <param id="SortExpression" type="String" required="false" default="Max(CreatedDate) desc"/>
+    <param id ="UserTypeCode" type="Int32" default="0" />
+    <param id="HasPopUpURL" type="Boolean" default=""/>
+    <sql>
+      <optional depends="NumResults">
+        Select top <dynamic paramId="NumResults"/>
+        Max(CreatedDate) CreatedDate,
+        RCNTGroupId,
+        ResourceValue,
+        ResourceTypeCode,
+        AddtionalQSParam,
+        Title,
+        Description,
+        StaticTooltip,
+        TooltipIsStatic,
+        TooltipCOREPreDefinedPageId,
+        ControllerCOREPreDefinedPageId,
+        CreatorId,
+        HasPopUpURL
+      </optional>
+      <optional depends="NumResults == null">
+        <select>
+          Max(CreatedDate) CreatedDate,
+          RCNTGroupId,
+          ResourceValue,
+          ResourceTypeCode,
+          AddtionalQSParam,
+          Title,
+          Description,
+          StaticTooltip,
+          TooltipIsStatic,
+          TooltipCOREPreDefinedPageId,
+          ControllerCOREPreDefinedPageId,
+          CreatorId,
+          HasPopUpURL
+        </select>
+      </optional>
+      --into #TempRCNTAccessed
+      FROM PFM_RCNT_Item
+      <where>
+        <exp op="AND">
+          <exp dbField="RCNTGroupId" paramId="GroupIds" op="IN" />
+          <exp dbField="CreatorId" paramId="UserId" op="=" />
+        </exp>
+        and RCNTGroupId IN (SELECT RCNTGroupId From PFM_RCNT_Group WHERE UserTypeCode IN (0,  <exp paramId="UserTypeCode"/>) or UserTypeCode IS null)
+        and ResourceValue not in ( Select Distinct di.[ResourceValue]
+        from [PFM_RCNT_DeletedItem] di
+        where di.CreatorId=<exp paramId="UserId"/> ) and CreatedDate>=(GETDATE()- 90)
+      </where>
+      GROUP By RCNTGroupId,
+      ResourceValue,
+      ResourceTypeCode,
+      AddtionalQSParam,
+      Title,
+      Description,
+      StaticTooltip,
+      TooltipIsStatic,
+      TooltipCOREPreDefinedPageId,
+      ControllerCOREPreDefinedPageId,
+      CreatorId,
+      HasPopUpURL
+      <sort paramId="SortExpression"/>
+
+
+    </sql>
+  </statement>
+
+  <statement name="GetRecentlyAccessedGroups" connection = "Common">
+    <param id ="UserTypeCode" type="Int32" default="0"/>
+    <sql>
+      select RCNTGroupId as Id, GroupName as Header, DisplayOrder from PFM_RCNT_Group
+      WHERE UserTypeCode IN (0, <exp paramId="UserTypeCode"/>) or UserTypeCode IS null
+    </sql>
+  </statement>
+
+  <statement name="GetGroupedRecentlyAccessedItems" connection = "Common">
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="Count" type="Int32" required="true"/>
+    <param id ="UserTypeCode" type="Int32" default="0"/>
+    <param id="HasPopUpURL" type="Boolean" default=""/>
+    <sql>
+      select TableWithRank.* from
+      (
+      Select i.* ,rank() over (partition by i.RCNTGroupId order by i.CreatedDate desc) as RankWithinGroup
+      from
+      (
+      Select
+      Max(CreatedDate) CreatedDate,
+      RCNTGroupId,
+      ResourceValue,
+      ResourceTypeCode,
+      AddtionalQSParam,
+      Title,
+      Description,
+      StaticTooltip,
+      TooltipIsStatic,
+      TooltipCOREPreDefinedPageId,
+      ControllerCOREPreDefinedPageId,
+      (select DisplayOrder from PFM_RCNT_Group where RCNTGroupId=i.RCNTGroupId) as  GroupDisplayOrder,
+      HasPopUpURL
+      from PFM_RCNT_Item i
+      Where CreatorId=<exp paramId="UserId"/>
+      and RCNTGroupId IN
+      (
+      SELECT RCNTGroupId From PFM_RCNT_Group
+      WHERE UserTypeCode IN (0, <exp paramId="UserTypeCode"/>) or UserTypeCode IS null
+      )
+      and not exists (SELECT 1 FROM [PFM_RCNT_DeletedItem] d WHERE d.CreatorId=<exp paramId="UserId"/> and d.ResourceValue = i.ResourceValue)
+      GROUP By RCNTGroupId,ResourceValue,ResourceTypeCode,AddtionalQSParam,Title,Description,StaticTooltip,TooltipIsStatic,TooltipCOREPreDefinedPageId,ControllerCOREPreDefinedPageId,HasPopUpURL
+      ) i
+      ) TableWithRank
+      where TableWithRank.RankWithinGroup &lt;= <exp paramId="Count"/>
+      order by GroupDisplayOrder, TableWithRank.CreatedDate
+    </sql>
+  </statement>
+
+  <statement name="GetRuntimePageUrl" connection = "Common">
+    <param id="runtimePageId" required="true" type="Guid"/>
+    <sql>
+      select REPLACE(RelativeUrl,'~',cast(DimensionValue as varchar(MAX)))  from PFM_CORE_RuntimePage p
+      join ExternalSystemDimensionValue v on
+      p.ExternalSystemCode = v.ExternalSystemCode and
+      p.ExternalSystemDimensionCode = v.ExternalSystemDimensionCode
+      where p.CORERuntimePageId = <exp paramId="runtimePageId"/>
+    </sql>
+  </statement>
+
+
+  <statement name="UpdateRecentlyAccessedItems" connection = "Common">
+
+    <param id="Text" type="String" default=""/>
+    <param id="Title" type="String" default=""/>
+    <param id="Description" type="String" default=""/>
+    <param id="StaticTooltip" type="String" default=""/>
+    <param id="TooltipIsStatic" type="Boolean" default=""/>
+    <param id="TooltipUrlId" type="Guid" default=""/>
+    <param id="ControllerUrlId" type="Guid" default=""/>
+    <param id="HasPopUpURL" type="Boolean" default=""/>
+
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="RCNTGroupId"  type="Guid" required="true"/>
+    <param id="ResourceValue" type="Guid" required="true"/>
+    <param id="ResourceTypeCode" required="true" type="Int32"/>
+
+    <sql>
+
+      UPDATE PFM_RCNT_Item
+      Set HasPopUPURL =   <exp paramId="HasPopUpURL" />
+      WHERE [RCNTGroupId] = <exp paramId="RCNTGroupId" />
+      AND [CreatorId] =  <exp paramId="UserId"/>
+      AND [ResourceValue] =<exp paramId="ResourceValue"/>
+      AND [ResourceTypeCode] = <exp paramId="ResourceTypeCode"/>
+      AND [Title] =  <exp paramId="Title" />
+      AND [Description] =  <exp paramId="Description" />
+      AND [TooltipIsStatic]= <exp paramId="TooltipIsStatic" />
+      AND[TooltipCOREPreDefinedPageId] = <exp paramId="TooltipUrlId" />
+      AND [ControllerCOREPreDefinedPageId] = <exp paramId="ControllerUrlId" />
+    </sql>
+  </statement>
+
+  <statement name="SaveRecentlyAccessedItems" connection = "Common">
+    <!--<param id="Id" required="true" type="Guid"/>-->
+    <param id="Text" type="String" default=""/>
+    <param id="Title" type="String" default=""/>
+    <param id="Description" type="String" default=""/>
+    <param id="StaticTooltip" type="String" default=""/>
+    <param id="AddtionalQSParam" type="String" default=""/>
+    <param id="TooltipIsStatic" type="Boolean" default=""/>
+    <param id="TooltipUrlId" type="Guid" default=""/>
+    <param id="ControllerUrlId" type="Guid" default=""/>
+
+    <param id="UserId" type="Guid" required="true"/>
+    <param id="RCNTGroupId"  type="Guid" required="true" />
+    <param id="ResourceValue" type="Guid" required="true"/>
+    <param id="ResourceTypeCode" required="true" type="Int32"/>
+    <param id="HasPopUpURL" type="Boolean" default=""/>
+    <param id="UserTypeCode" type="Int32"/>
+    
+    <sql>
+
+      INSERT INTO [dbo].[PFM_RCNT_Item]
+      ([RCNTItemId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[AddtionalQSParam]
+      ,[Title]
+      ,[Description]
+      ,[StaticTooltip]
+      ,[TooltipIsStatic]
+      ,[TooltipCOREPreDefinedPageId]
+      ,[ControllerCOREPreDefinedPageId]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate]
+      ,[HasPopUpURL])
+      Select
+      newid(),
+      RCNTGroupId RCNTGroupId,
+      <exp paramId="ResourceValue"/>,
+      <exp paramId="ResourceTypeCode"/>,
+      <exp paramId="AddtionalQSParam"/>,
+      isnull(<exp paramId="Title" />, Title) Title,
+      isnull(<exp paramId="Description" />, Description) Description,
+      isnull(<exp paramId="StaticTooltip" />, StaticTooltip) StaticTooltip,
+      isnull(<exp paramId="TooltipIsStatic" />, TooltipIsStatic) TooltipIsStatic,
+      isnull(<exp paramId="TooltipUrlId" />, TooltipCOREPreDefinedPageId) TooltipCOREPreDefinedPageId,
+      isnull(<exp paramId="ControllerUrlId" />, ControllerCOREPreDefinedPageId) ControllerCOREPreDefinedPageId,
+      <exp paramId="UserId"/>,
+      getdate(),
+      <exp paramId="UserId"/>,
+      getdate(),
+      isnull(<exp paramId="HasPopUpURL" />, HasPopUpURL) HasPopUpURL
+      From PFM_RCNT_Group
+      where RCNTGroupId= <exp paramId="RCNTGroupId"/>
+
+    </sql>
+  </statement>
+  <statement name="DeleteRecentlyAccessed" connection = "Common">
+    <param id="RCNTExceptionId" required="false" default="newid()" type="Guid" />
+    <param id="RCNTGroupId" required="false" default="" type="Guid" />
+    <param id="ResourceValue" required="false" default="" type="Guid" />
+    <param id="ResourceTypeCode" required="false" default="" type="Int32" />
+    <param id="UserId" required="false" default="" type="Guid" />
+    <param id="DateTimeStamp" required="false" default="getdate()" type="DateTime" />
+    <sql>
+      Insert into PFM_RCNT_DeletedItem
+      <columns mode="insert">
+        <column dbField="RCNTExceptionId" paramId="RCNTExceptionId" />
+        <column dbField="RCNTGroupId" paramId="RCNTGroupId" />
+        <column dbField="ResourceValue" paramId="ResourceValue" />
+        <column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+        <column dbField="CreatorId" paramId="UserId" />
+        <column dbField="CreatedDate" paramId="DateTimeStamp" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate" paramId="DateTimeStamp" />
+      </columns>
+    </sql>
+  </statement>
+
+  <!--PLSUP-2868
+  updated to get the GroupId based on the usertypecode-->
+  <statement name="SaveRecentlyAccessedTasks" connection = "Common">
+    <!--<param id="Id" required="true" type="Guid"/>-->
+    <param id="Text" type="String" default=""/>
+    <param id="Title" type="String" default=""/>
+    <param id="Description" type="String" default=""/>
+    <param id="StaticTooltip" type="String" default=""/>
+    <param id="AddtionalQSParam" type="String" default=""/>
+    <param id="TooltipIsStatic" type="Boolean" default="" />
+    <param id="TooltipUrlId" type="String" default="" size="36"/>
+    <param id="ControllerUrlId" type="String" size="36"/>
+
+    <param id="UserId" type="String" required="false" size="36" default=""/>
+    <param id="RCNTGroupId"  type="String" required="false" size="36"/>
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="TaskId" type="String" size="36"/>
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="GroupType" type="String" default="Tasks"/>
+
+    <sql>
+      declare @ResourceValueTask uniqueidentifier
+      declare @UserIdTask uniqueidentifier
+      declare @ResourceTypeCodeTask int
+      declare @AddtionalQSParamTask Varchar(max)
+      declare @TaskTitle Varchar(max)
+      declare @TaskDescription Varchar(max)
+      declare @GroupId uniqueidentifier
+
+      Select @GroupId = rcntgroupid from pfm_rcnt_group
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserTypeCode" paramId="UserTypeCode"/>
+          <exp op="=" dbField="GroupName" paramId="GroupType"/>
+        </exp>
+      </where>
+      
+      Select
+      @AddtionalQSParamTask = isnull('PRoleId='+Cast(IsNull(ar.ParentRoleId,ar.RoleId) as varchar(40))+'&amp;','')+'ClientTaskId='+Cast(t.ClientTaskId as Varchar(40))+'&amp;TaskTypeCode='+Cast(T.TaskTypeCode as varchar(40))
+      ,@ResourceTypeCodeTask=110
+      , @ResourceValueTask=T.TaskId
+      ,@UserIdTask=AssigneeId
+      ,@TaskTitle=ltpt.DisplayValue+' - '+ltt.Description+' ('+ IsNull(ar.RoleAbbr, 'General') +')'
+      ,@TaskDescription=trv.FieldValue
+      from Tasks T
+      Inner Join LookupTaskType ltt
+      on ltt.LookupCode=t.TaskTypeCode
+      -- Role and tracking Number
+      left outer join ac_role ar
+      on ltt.RoleId= ar.RoleId
+      inner join RelTaskProcessTask rtpt on  t.TaskId = rtpt.TaskId
+      left outer join TaskRelatedValue trv on
+      (trv.sourceProviderid = t.TaskId or trv.sourceProviderid = rtpt.TaskProcessId) and trv.FieldCode = T.PrimaryFieldCode
+      -- Document/ Processs
+      inner join  RelTaskProcessTypeTaskType rtptt on rtptt.TaskTypeCode= ltt.LookupCode
+      inner join  LookupTaskProcessType ltpt on  rtptt.TaskProcessTypeCode=ltpt.LookupCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="t.TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+
+      -- Tracking Number and Task Type Description
+      -- Select @ResourceValueTask ResourceValue,@UserIdTask  UserId,@ResourceTypeCodeTask ResourceTypeCode, @AddtionalQSParamTask AddtionalQSParam
+      INSERT INTO [dbo].[PFM_RCNT_Item]
+      ([RCNTItemId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[AddtionalQSParam]
+      ,[Title]
+      ,[Description]
+      ,[StaticTooltip]
+      ,[TooltipIsStatic]
+      ,[TooltipCOREPreDefinedPageId]
+      ,[ControllerCOREPreDefinedPageId]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      Select
+      newid(),
+      @GroupId,
+      @ResourceValueTask,
+      @ResourceTypeCodeTask,
+      @AddtionalQSParamTask,
+      isnull(<exp paramId="Title" />, @TaskTitle) Title,
+      isnull(<exp paramId="Description" />, @TaskDescription) Description,
+      isnull(<exp paramId="StaticTooltip" />, StaticTooltip) StaticTooltip,
+      isnull(<exp paramId="TooltipIsStatic" />, TooltipIsStatic) TooltipIsStatic,
+      isnull(<exp paramId="TooltipUrlId" />, TooltipCOREPreDefinedPageId) TooltipCOREPreDefinedPageId,
+      ControllerCOREPreDefinedPageId ControllerCOREPreDefinedPageId,
+      isnull(<exp paramId="UserId"/>,@UserIdTask) UserId,
+      getdate(),
+      isnull(<exp paramId="UserId"/>,@UserIdTask) UserId,
+      getdate()
+      From PFM_RCNT_Group
+      where RCNTGroupId= @GroupId
+
+    </sql>
+  </statement>
+
+  <!--PLSUP-2868
+  updated to get the GroupId based on the usertypecode-->
+  <statement name="DeleteRecentlyAccessedTasks" connection = "Common">
+    <param id="RCNTGroupId" type="String" required="false" size="36"/>
+    <param id="UserId" required="false" type="String" size="36" default=""/>
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="TaskId" type="String" size="36"/>
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="GroupType" type="String" default="Tasks"/>
+    
+    <sql>
+      declare @ResourceValueTask uniqueidentifier
+      declare @ResourceTypeCodeTask int
+      declare @AddtionalQSParamTask Varchar(max)
+      Select
+      @AddtionalQSParamTask = isnull('PRoleId='+Cast(IsNull(ar.ParentRoleId,ar.RoleId) as varchar(40))+'&amp;','')+'ClientTaskId='+Cast(T.ClientTaskId as Varchar(40))+'&amp;TaskTypeCode='+Cast(T.TaskTypeCode as varchar(40))
+      ,@ResourceTypeCodeTask=110
+      , @ResourceValueTask=T.TaskId
+      from Tasks T Inner Join LookupTaskType l
+      on l.LookupCode=t.TaskTypeCode
+      left outer join ac_role ar
+      on l.RoleId= ar.RoleId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+      declare @GroupId uniqueidentifier
+      Select @GroupId = rcntgroupid from pfm_rcnt_group
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserTypeCode" paramId="UserTypeCode"/>
+          <exp op="=" dbField="GroupName" paramId="GroupType"/>
+        </exp>
+      </where>
+
+      INSERT INTO [dbo].[PFM_RCNT_DeletedItem]
+      ([RCNTExceptionId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      Select newid(),@GroupId,InnerTable.*,getdate(),InnerTable.CreatorId,getdate()
+      from (Select Distinct ResourceValue,ResourceTypeCode,CreatorId
+      From PFM_RCNT_Item
+      where ResourceValue=@ResourceValueTask
+      and ResourceTypeCode=@ResourceTypeCodeTask
+      <optional depends="UserId">
+        and CreatorId=<exp paramId="UserId" />
+      </optional>
+      ) InnerTable
+
+    </sql>
+  </statement>
+
+  <!--PLSUP-2868
+  updated to get the GroupId based on the usertypecode-->
+  <statement name="DeleteRecentlyAccessedTasksProcess" connection = "Common">
+    <param id="RCNTGroupId" type="String" required="false" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="TaskProcessId" type="String" size="36" />
+    <param id="UserTypeCode" type="Int32"/>
+    <param id="GroupType" type="String" default="Tasks"/>
+    <sql>
+      declare @GroupId uniqueidentifier
+      Select @GroupId = rcntgroupid from pfm_rcnt_group
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserTypeCode" paramId="UserTypeCode"/>
+          <exp op="=" dbField="GroupName" paramId="GroupType"/>
+        </exp>
+      </where>
+      
+      Select T.TaskId ResourceValue into #TempRADelete
+      from Tasks T Inner Join LookupTaskType l
+      on l.LookupCode=t.TaskTypeCode
+      <where>
+        T.TaskId in (Select Taskid from RelTaskProcessTask where TaskProcessId = <exp paramId="TaskProcessId"/>)
+        <optional depends="TaskTypeCode">
+          and
+          <exp op="AND">
+            <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          </exp>
+        </optional>
+      </where>
+
+      INSERT INTO [dbo].[PFM_RCNT_DeletedItem]
+      ([RCNTExceptionId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      Select newid(),@GroupId,InnerTable.*,getdate(),InnerTable.CreatorId,getdate()
+      from (Select Distinct ResourceValue,ResourceTypeCode,CreatorId
+      From PFM_RCNT_Item
+      where ResourceValue in (Select ResourceValue from #TempRADelete)
+      and ResourceTypeCode=110
+      <!--<optional depends="UserId">
+        and CreatorId=<exp paramId="UserId" />
+      </optional>-->
+      ) InnerTable
+
+      DROP TABLE #TempRADelete
+    </sql>
+  </statement>
+
+  <statement name="DeleteFromRecentlyAccessed" connection = "Common">
+    <param id="UserId" type="String" size="36" />
+    <param id="ResourceValue" type="Guid" required="true"/>
+    <param id="ResourceTypeCode" required="true" type="Int32"/>
+    <param id="LastUpdatedID" type="String" size="36" />
+
+
+    INSERT INTO PFM_RCNT_DeletedItem
+    (RCNTExceptionId, RCNTGroupId, ResourceValue,
+    ResourceTypeCode, CreatorId, CreatedDate,
+    LastUpdateId, LastUpdateDate)
+    SELECT newid(),RCNTGroupId, ResourceValue,
+    ResourceTypeCode, <exp paramId="LastUpdatedID"/>, getdate(),
+    <exp paramId="LastUpdatedID"/>, getdate()
+    FROM PFM_RCNT_Item
+    WHERE ResourceValue LIKE <exp paramId="ResourceValue"/>
+    AND resourcetypecode LIKE <exp paramId="ResourceTypeCode"/>
+    <optional depends="UserId">
+      AND CreatorId = <exp paramId="UserId"  />
+    </optional>
+
+
+    DELETE
+    FROM PFM_RCNT_Item
+    WHERE ResourceValue LIKE <exp paramId="ResourceValue"/>
+    AND resourcetypecode LIKE <exp paramId="ResourceTypeCode"/>
+    <optional depends="UserId">
+      AND CreatorId = <exp paramId="UserId"  />
+    </optional>
+  </statement>
+
+  <statement name="DeleteForRecentlyAccessedTasks" connection = "Common">
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="TaskId" type="String" size="36"/>
+    <param id="UserId" type="String" size="36"/>
+    <sql>
+      DECLARE @TaskIds TABLE
+      (
+        TaskId uniqueidentifier
+      )
+
+      INSERT INTO @TaskIds (TaskId)
+      SELECT TaskId
+      FROM Tasks T
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="T.TaskId" paramId="TaskId"/>
+          <exp op="=" dbField="T.AssigneeId" paramId="UserId"/>
+        </exp>
+      </where>
+
+      INSERT INTO [dbo].[PFM_RCNT_DeletedItem]
+      ([RCNTExceptionId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      Select newid(),R.RCNTGroupId,R.ResourceValue,R.ResourceTypeCode,R.CreatorId,R.CreatedDate,R.LastUpdateId,getdate()
+      From PFM_RCNT_Item R
+      WHERE R.ResourceValue IN (SELECT TaskId FROM @TaskIds) AND R.ResourceTypeCode = 110
+
+      DELETE
+      FROM PFM_RCNT_Item
+      WHERE ResourceValue IN (SELECT TaskId FROM @TaskIds) AND ResourceTypeCode = 110
+    </sql>
+  </statement>
+
+  <statement name="DeleteRecentlyAccessedTasksByTaskIds" connection = "Common">
+    <param id="TaskIds" type="String" />
+    <param id="UserId" type="String" size="36"/>
+    <sql>
+      INSERT INTO [dbo].[PFM_RCNT_DeletedItem]
+      ([RCNTExceptionId]
+      ,[RCNTGroupId]
+      ,[ResourceValue]
+      ,[ResourceTypeCode]
+      ,[CreatorId]
+      ,[CreatedDate]
+      ,[LastUpdateId]
+      ,[LastUpdateDate])
+      Select newid(),R.RCNTGroupId,R.ResourceValue,R.ResourceTypeCode,R.CreatorId,R.CreatedDate,R.LastUpdateId,getdate()
+      From PFM_RCNT_Item R
+      WHERE R.ResourceValue IN (<exp paramId="TaskIds" />) AND R.ResourceTypeCode = 110
+
+      DELETE
+      FROM PFM_RCNT_Item
+      WHERE ResourceValue IN (<exp paramId="TaskIds" />) AND ResourceTypeCode = 110
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteExternalTaskProcessRecentlyAccessedItems" connection = "Common">
+    <param id="TaskProcessId" type="Guid" />
+    <param id="ClientTaskId" type="Guid" />
+    <param id="TaskProcessTypeCode"  type="Int32"/>
+    <param id="ResourceTypeCode"  type="Int32"/>
+
+    DELETE
+    FROM PFM_RCNT_Item
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="Resourcetypecode" paramId="ResourceTypeCode" />
+        <exp op="in" dbField="ResourceValue" >
+          <sql>
+            SELECT t.TaskId from dbo.PFM_EXT_Task t
+            INNER JOIN dbo.PFM_EXT_TaskProcess tp ON t.TaskProcessId = tp.TaskProcessId
+            <where>
+              <exp op="AND">
+                <exp op="=" dbField="tp.ClientTaskId" paramId="ClientTaskId" />
+                <exp op="=" dbField="tp.TaskProcessId" paramId="TaskProcessId" />
+                <exp op="=" dbField="tp.TaskProcessTypeCode" paramId="TaskProcessTypeCode" />
+              </exp>
+            </where>
+          </sql>
+        </exp>
+      </exp>
+    </where>
+
+  </statement>
+
+</statements>

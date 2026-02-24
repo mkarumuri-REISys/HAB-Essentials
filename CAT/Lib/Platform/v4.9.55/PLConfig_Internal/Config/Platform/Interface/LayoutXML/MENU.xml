@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<!-- <?xml:stylesheet type="text/xsl" href="..\XSL\menu.xsl" ?> -->
+
+  <menu>
+    <title>
+      <item>HRSA E-Grants</item>
+    </title>
+    <section>
+     <title>Public Portal</title>
+     <subsection id="1">
+         <title>Options</title>
+         <item id="1" > 
+           <title>Home</title>
+           <pages>
+              <page id ='home' default = 'true'>
+				<url>home.asp</url>
+              </page>
+           </pages> 
+         </item> 
+		<!-- <item id="2"> 
+			<title>About E-Grants</title> 
+			<pages>
+				<page id ='egrants' default = 'true'>
+					<url>egrants.asp</url>
+				</page>
+             </pages>
+        </item>  -->
+		<item id="3" > 
+			<title>Funding Opportunities</title> 
+			<pages>
+				<page id ='fundingOpp' default = 'true'>
+					<url>fundingOpp.asp</url>
+				</page>
+             </pages> 
+        </item> 
+		<!--<item id="4" > 
+			<title>Announcements</title> 
+			<pages>
+				<page id ='announcements' default = 'true'>
+					<url>announcements.asp</url>
+				</page>
+             </pages> 
+        </item> 
+		<item id="5" > 
+			<title>Registration</title> 
+			<pages>
+				<page id ='registration' default = 'true'>
+					<url>registration.asp</url>
+				</page>
+             </pages>
+        </item>--> 
+     </subsection>
+        
+  </section>
+
+</menu>
+ 
+ 
+     

@@ -1,0 +1,91 @@
+<statements modulename="pfm-lookup/sql">
+  <statement name="GetTestValues" connection="Common">
+    <param id="lookupCode" type="String" />
+    <sql>
+      SELECT *, LongDisplayValue TestOtherColumn FROM LookupState
+      <where>
+        <exp op="=" dbField="LookupCode" paramId="lookupCode"/>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetAttachmentPurposes" connection="Common">
+    <param id="LookupCode" type="Int32" />
+    <sql>
+      SELECT * FROM LookupAttachmentPurpose (NOLOCK)
+      <where>
+        <exp op="=" dbField="LookupCode" paramId="LookupCode"/>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetExternalSystemDimensionValues" connection="Common">
+    <sql>
+      SELECT
+      CAST( (CAST(ExternalSystemCode AS VARCHAR(3)) + '000' + CAST(ExternalSystemDimensionCode AS VARCHAR(3))) AS INT) AS LookupCode,
+      ExternalSystemCode as LongDisplayValue,
+      ExternalSystemDimensionCode as ShortDisplayValue,
+      DimensionValue as DisplayValue
+      FROM
+      ExternalSystemDimensionValue (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetResourceTypes" connection="Common">
+    <sql>
+      SELECT LookupCode, Description, ShortDisplayValue as DisplayValue FROM LookupResourceType (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetNoteTypes">
+    <sql>
+      SELECT * FROM GEMS.dbo.LU_PFM_NoteType (NOLOCK) order by LookupCode
+    </sql>
+  </statement>
+  <statement name="GetCountries" connection="Common">
+    Select LongDisplayValue, LookupCode, IsdCode from LookupCountry
+    order by LongDisplayValue asc
+  </statement>
+  <statement name="GetStates" connection="Common">
+    <sql>
+      SELECT
+      LookupCode,
+      ShortDisplayValue
+      ,ShortDisplayValue as DisplayValue
+      FROM
+      LookupState
+      ORDER BY
+      CASE
+      WHEN 'NA' = ShortDisplayValue THEN 1
+      ELSE 0
+      END,
+      ShortDisplayValue
+    </sql>
+  </statement>
+  <statement name="GetAddressSecondaryIdentifierTypes">
+    <sql>
+      SELECT LookupCode, ShortDisplayValue
+      FROM LookupSecondaryIdentifierType
+    </sql>
+  </statement>
+  <statement name="GetRuralRouteTypes" connection="Common">
+    <sql>
+      SELECT LookupCode, LongDisplayValue
+      FROM LookupRuralRouteType
+    </sql>
+  </statement>
+  <statement name="GetIssueStatus" connection="Common">
+    <sql>
+      SELECT LookupCode, DisplayValue
+      FROM LU_PFM_IssueStatus  order by LookupCode asc
+    </sql>
+  </statement>
+  <statement name="GetIssuePriority" connection="Common">
+    <sql>
+      SELECT LookupCode, DisplayValue
+      FROM LU_PFM_IssuePriority order by LookupCode asc
+    </sql>
+  </statement>
+  <statement name="GetIssueState" connection="Common">
+    <sql>
+      SELECT LookupCode, DisplayValue
+      FROM LU_PFM_IssueState  order by LookupCode asc
+    </sql>
+  </statement>
+</statements>

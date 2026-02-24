@@ -1,0 +1,3583 @@
+/*Telerik RadCalendar Common CSS*/
+
+table.RadCalendar
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	width:220px;
+}
+
+/*titlebar*/
+
+.RadCalendar .rcTitlebar
+{
+	width:100%;
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+}
+
+.RadCalendar .rcTitlebar table
+{
+	table-layout:auto;
+	width:100%;
+	border-collapse:separate;
+	border:0;
+}
+
+.RadCalendar .rcTitlebar td
+{
+	border:0;
+	padding:0;
+	text-align:center;
+	vertical-align:middle;
+}
+
+.RadCalendar .rcTitlebar .rcTitle
+{
+	width:100%;
+	cursor:pointer;
+}
+.RadCalendar .rcNoNav .rcTitle
+{
+	cursor:default;
+}
+
+.RadCalendar .rcTitlebar .rcPrev,
+.RadCalendar .rcTitlebar .rcNext,
+.RadCalendar .rcTitlebar .rcFastPrev,
+.RadCalendar .rcTitlebar .rcFastNext
+{
+	display:block;
+	width:15px;
+	height:15px;
+	overflow:hidden;
+	margin:0 4px;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-decoration:none;
+}
+
+.RadCalendar .rcMain
+{
+	width:100%;
+	border-style:solid;
+	border-width:0 1px 1px;
+	padding:0;
+}
+
+.RadCalendar .rcMainTable
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	width:100%;
+}
+
+.RadCalendar .rcHeader,
+.RadCalendar .rcFooter
+{
+	border-style:solid;
+	border-width:0 1px 1px;
+	padding:0;
+}
+
+/*week numbers and days*/
+
+.RadCalendar .rcRow th,
+.RadCalendar .rcWeek th
+{
+	border:0;
+	padding:0;
+	font-weight:normal;
+	vertical-align:middle;
+	cursor:default;
+}
+
+.RadCalendar .rcWeek th
+{
+	text-align:right;
+}
+
+.RadCalendar .rcWeek .rcViewSel,
+.RadCalendar .rcRow th
+{
+	text-align:center;
+}
+
+/*date cells*/
+
+.RadCalendar .rcRow td
+{
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+	text-align:right;
+	vertical-align:middle;
+}
+
+.RadCalendar .rcMain .rcRow a,
+.RadCalendar .rcMain .rcRow span
+{
+	display:block;
+	padding:1px 5px 1px 0;
+	text-decoration:none;
+}
+
+.RadCalendar .rcPreview .rcRow a
+{
+	outline:none;
+}
+
+.RadCalendar .rcMain .rcOutOfRange span
+{
+	cursor:default;
+}
+
+/*multimonth view*/
+
+table.RadCalendarMultiView
+{
+	width:auto;
+}
+
+.RadCalendarMultiView .rcCalendar
+{
+	width:220px;
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+}
+
+.RadCalendarMultiView .rcMainTable .rcTitle
+{
+	border-style:solid;
+	border-width:0 0 1px;
+	padding:0;
+	text-align:center;
+}
+
+/*month view*/
+
+table.RadCalendarMonthView
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border-style:solid;
+	border-width:1px;
+}
+
+table.RadCalendarMonthView td
+{
+	border:0;
+	padding:5px 2px 0;
+}
+
+.RadCalendarMonthView a
+{
+	display:block;
+	padding:2px 4px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarMonthView .rcHover a,
+.RadCalendarMonthView .rcSelected a
+{
+    border-style:solid;
+    border-width:1px;
+	padding:1px 3px;
+}
+
+.RadCalendarMonthView #rcMView_PrevY a,
+.RadCalendarMonthView #rcMView_NextY a
+{
+	display:block;
+	overflow:hidden;
+	margin:0 auto;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarMonthView .rcButtons
+{
+	border:0;
+	text-align:center;
+}
+
+.RadCalendarMonthView input
+{
+	border-style:solid;
+	border-width:1px;
+	padding:0;
+	cursor:pointer;
+}
+
+.RadCalendarMonthView #rcMView_Today
+{
+	margin:0 0.4em 0 0;
+}
+
+.RadCalendarMonthView #rcMView_OK
+{
+	padding:0 0.2em;
+}
+
+/*time view*/
+
+table.RadCalendarTimeView
+{
+	border-collapse:separate;
+	border-style:solid;
+	border-width:1px;
+}
+
+.RadCalendarTimeView th
+{
+	border:0;
+	text-align:center;
+	cursor:default;
+	font-weight:normal;
+}
+
+table.RadCalendarTimeView td
+{
+	border-style:solid;
+	border-width:0 0 0 1px;
+	padding:2px 2px 3px;
+}
+
+table.RadCalendarTimeView td:first-child
+{
+	border-left:0;
+}
+
+.RadCalendarTimeView a
+{
+	display:block;
+	padding:2px 6px;
+	text-align:center;
+	text-decoration:none;
+}
+
+.RadCalendarTimeView td.rcSelected a,
+.RadCalendarTimeView td.rcHover a
+{
+    border-style:solid;
+    border-width:1px;
+    padding:1px 5px;
+}
+
+.RadCalendarTimeView .rcFooter
+{
+	border-style:solid;
+	border-width:1px 0 0;
+	padding:0;
+}
+
+/*pickers*/
+
+.RadPicker,
+.RadPicker td
+{
+	vertical-align:middle;
+}
+
+.RadPicker .RadInput
+{
+	vertical-align:baseline;
+}
+
+.RadPicker .rcTable
+{
+	table-layout:auto;
+}
+
+.RadPicker table.rcTable,
+.RadPicker table.rcTable td
+{
+	border:0;
+	margin:0;
+	padding:0;
+}
+
+.RadPicker table.rcTable .rcInputCell
+{
+	padding:0 4px 0 0;
+}
+
+.RadPicker td a
+{
+	position:relative;/*FF*/
+	outline:none;/*FF*/
+	z-index:2;/*Opera*/
+	margin:0 2px;
+	text-decoration:none;
+}
+* html .RadPicker td a{position:static}/*IE6*/
+*+html .RadPicker td a{position:static}/*IE7*/
+
+.RadPicker .rcCalPopup,
+.RadPicker .rcTimePopup
+{
+	display:block;
+	overflow:hidden;
+	width:22px;
+	height:22px;
+	background-color:transparent;
+	background-repeat:no-repeat;
+	text-indent:-2222px;
+	text-align:center;
+}
+
+.RadPicker .rcDisabled,
+.RadCalendarMonthView .rcDisabled
+{
+	opacity:0.5;
+	filter:alpha(opacity=50);
+}
+
+/*Telerik RadCalendar Windows7 skin*/
+
+table.RadCalendar_PAMS
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	background:#fff;
+	color:#000;
+	font:1.00em "segoe ui",arial,sans-serif;
+}
+
+/*titlebar*/
+
+.RadCalendar_PAMS .rcTitlebar
+{
+	width:100%;
+	border:1px solid #cddaea;
+	border-bottom-color:#d4dbe5;
+	padding:0;
+	background:#f1f5fb;
+	color:#1e395b;
+}
+
+.RadCalendar_PAMS .rcTitlebar table
+{
+	table-layout:auto;
+	width:100%;
+	border-collapse:separate;
+	border:0;
+	font:1.00em/18px "segoe ui",arial,sans-serif;
+}
+
+.RadCalendar_PAMS .rcTitlebar td
+{
+	border:0;
+	padding:3px 0 2px;
+	text-align:center;
+	vertical-align:middle;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcTitle
+{
+	width:100%;
+	cursor:pointer;
+}
+.RadCalendar_PAMS .rcNoNav .rcTitle
+{
+	cursor:default;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcPrev,
+.RadCalendar_PAMS .rcTitlebar .rcNext,
+.RadCalendar_PAMS .rcTitlebar .rcFastPrev,
+.RadCalendar_PAMS .rcTitlebar .rcFastNext
+{
+	display:block;
+	width:17px;
+	height:16px;
+	overflow:hidden;
+	margin:0 3px;
+	background:transparent no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	text-indent:-1111px;
+	text-decoration:none;
+	color:#ccc;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcFastPrev
+{
+	margin-left:5px;
+	background-position:0 -200px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcFastPrev:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcPrev
+{
+	background-position:0 -300px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcPrev:hover
+{
+	background-position:0 -350px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcNext
+{
+	background-position:0 -400px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcNext:hover
+{
+	background-position:0 -450px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcFastNext
+{
+	margin-right:5px;
+	background-position:0 -500px;
+}
+
+.RadCalendar_PAMS .rcTitlebar .rcFastNext:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendar_PAMS .rcMain
+{
+	width:100%;
+	border:1px solid #cddaea;
+	border-top:0;
+	padding:0;
+}
+
+.RadCalendar_PAMS .rcMainTable
+{
+	table-layout:auto;
+	border-collapse:separate;
+	border:0;
+	width:100%;
+	font:1.00em/20px "segoe ui",arial,sans-serif;
+}
+
+/*header, footer*/
+
+.RadCalendar_PAMS .rcHeader,
+.RadCalendar_PAMS .rcFooter
+{
+	border:1px solid #cddaea;
+	border-top:0;
+	padding:0;
+}
+
+/*week numbers and days*/
+
+.RadCalendar_PAMS .rcRow th,
+.RadCalendar_PAMS .rcWeek th
+{
+	border:0;
+	font-weight:normal;
+	text-align:center;
+	cursor:default;
+}
+
+.RadCalendar_PAMS .rcWeek th
+{
+	padding:2px 0 1px 0;
+	border-bottom:1px solid #d4dbe5;
+}
+
+.RadCalendar_PAMS .rcRow th
+{
+	width:28px;
+	padding:0;
+	color:#4c607a;
+}
+
+.RadCalendar_PAMS .rcWeek .rcViewSel
+{
+	border-bottom-color:#fff;
+}
+
+.RadCalendar_PAMS .rcViewSel,
+.RadCalendar_PAMS .rcRow th
+{
+	background:#e7ebf6;
+}
+
+.RadCalendar_PAMS .rcRow th,
+.RadCalendar_PAMS .rcRow td
+{
+	vertical-align:middle;
+}
+
+/*shadows*/
+
+body>.RadCalendarPopupShadows
+{
+	padding: 0 5px 5px 0;
+}
+
+.RadCalendarPopupShadows>.rcShadTR,
+.RadCalendarPopupShadows>.rcShadBL,
+.RadCalendarPopupShadows>.rcShadBR
+{
+	position:absolute;
+	background-repeat:no-repeat;
+	background-color:transparent;
+}
+
+.RadCalendarPopupShadows>.rcShadBL,
+.RadCalendarPopupShadows>.rcShadBR
+{
+	height:5px;
+	bottom:0;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Common/Menu/ShadowBottom.png');
+}
+
+.RadCalendarPopupShadows>.rcShadBL
+{
+	left:0;
+	width:100%;
+	background-position:0 -3px;
+}
+
+.RadCalendarPopupShadows>.rcShadBR
+{
+	width:5px;
+	right:0;
+	background-position:100% 100%;
+}
+
+.RadCalendarPopupShadows>.rcShadTR
+{
+	width:5px;
+	height:100% !important;
+	top:-5px;
+	right:0;
+	background-image:url('./Platform/Include/Skins/PAMS/Images/Telerik/Common/Menu/ShadowRight.png');
+	background-position:100% 0;
+}
+
+.rcIE>.rcShadBL,
+.rcIE>.rcShadBR,
+.rcIE>.rcShadTR
+{
+	background-image:none;
+}
+
+/*date cells*/
+
+.RadCalendar_PAMS .rcRow td
+{
+	width:26px;
+	border:0;
+	padding:0 0 1px 1px;
+	text-align:right;
+}
+
+.RadCalendar_PAMS .rcMain .rcRow a,
+.RadCalendar_PAMS .rcMain .rcRow span
+{
+	display:block;
+	width:20px;
+	padding:0 6px 0 0;
+	text-decoration:none;
+	color:#000;
+}
+
+.RadCalendar_PAMS .rcPreview .rcRow a
+{
+	outline:none;
+}
+
+.RadCalendar_PAMS .rcMain .rcWeekend a
+{
+	color:#444;
+}
+
+.RadCalendar_PAMS .rcMain .rcRow .rcToday a
+{
+	background:100% -1800px no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendar_PAMS .rcMain .rcOtherMonth a
+{
+	color:#a7a7a7;
+}
+
+.RadCalendar_PAMS .rcMain .rcOutOfRange span
+{
+	color:#ccc;
+	cursor:default;
+}
+
+.RadCalendar_PAMS .rcMain .rcRow .rcHover a
+{
+	background:100% -1600px no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendar_PAMS .rcMain .rcRow .rcSelected a
+{
+	background:100% -1700px no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+/*multimonth view*/
+
+table.RadCalendarMultiView_PAMS
+{
+	width:auto;
+	border:0;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar
+{
+	border:1px solid #cddaea;
+	padding:0;
+	background:#e4edf8 0 -1199px repeat-x url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#1e395b;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar table
+{
+	border:1px solid;
+	border-color:#fbfdfe #f1f7fc #ebf3fb;
+	line-height:22px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar td
+{
+	border:0;
+	padding:4px 0 1px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcFastPrev
+{
+	width:20px;
+	height:19px;
+	background-position:0 -600px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcFastPrev:hover
+{
+	background-position:0 -650px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcPrev
+{
+	width:20px;
+	height:19px;
+	background-position:0 -700px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcPrev:hover
+{
+	background-position:0 -750px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcNext
+{
+	width:20px;
+	height:19px;
+	background-position:0 -800px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcNext:hover
+{
+	background-position:0 -850px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcFastNext
+{
+	width:20px;
+	height:19px;
+	background-position:0 -900px;
+}
+
+.RadCalendarMultiView_PAMS .rcTitlebar .rcFastNext:hover
+{
+	background-position:0 -950px;
+}
+
+.RadCalendarMultiView_PAMS .rcMain
+{
+	border-color:#cddaea;
+}
+
+.RadCalendarMultiView_PAMS .rcCalendar
+{
+	border:1px solid #cddaea;
+	padding:0;
+}
+
+.RadCalendarMultiView_PAMS .rcMain .rcTitle
+{
+	border:0;
+	border-bottom:1px solid #d4dbe5;
+	padding:3px 0 4px;
+	background:#f1f5fb;
+	color:#1e395b;
+	text-align:center;
+}
+
+/*month view*/
+
+table.RadCalendarMonthView_PAMS
+{
+	border-collapse:separate;
+	border:1px solid #a5b3c5;
+	background:#fcfcfc;
+	font:1.00em "segoe ui",arial,sans-serif;
+	color:#000;
+}
+
+table.RadCalendarMonthView_PAMS td
+{
+	border:0;
+	padding:5px 3px 0;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_Feb,
+.RadCalendarMonthView_PAMS #rcMView_Apr,
+.RadCalendarMonthView_PAMS #rcMView_Jun,
+.RadCalendarMonthView_PAMS #rcMView_Aug,
+.RadCalendarMonthView_PAMS #rcMView_Oct,
+.RadCalendarMonthView_PAMS #rcMView_Dec
+{
+	border-right:1px solid #e0e0e0;
+}
+
+.RadCalendarMonthView_PAMS a
+{
+	display:block;
+	padding:2px 4px;
+	text-align:center;
+	text-decoration:none;
+	color:#000;
+}
+
+.RadCalendarMonthView_PAMS .rcHover a
+{
+	border:1px solid #a8d8eb;
+	padding:1px 3px;
+	background:#f1f4f6;
+	color:#4c607a;
+}
+
+.RadCalendarMonthView_PAMS .rcSelected a
+{
+	border:1px solid #8fb0d6;
+	padding:1px 3px;
+	background:#cfe3fc;
+	color:#4c607a;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_PrevY a,
+.RadCalendarMonthView_PAMS #rcMView_NextY a
+{
+	display:block;
+	width:12px;
+	height:15px;
+	overflow:hidden;
+	margin:0 auto;
+	background:transparent no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	text-indent:-1111px;
+	text-align:center;
+	text-decoration:none;
+	color:#ccc;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_PrevY a
+{
+	background-position:0 -200px;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_PrevY a:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_NextY a
+{
+	background-position:0 -500px;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_NextY a:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendarMonthView_PAMS .rcButtons
+{
+	border:0;
+	padding:4px 7px 6px;
+	text-align:center;
+}
+
+.RadCalendarMonthView_PAMS input
+{
+	border:0;
+	margin:0 3px;
+	padding:1px 0 0;
+	background:0 100% repeat-x url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#005bc6;
+	font:1.00em "segoe ui",arial,sans-serif;
+	cursor:pointer;
+}
+
+.RadCalendarMonthView_PAMS #rcMView_Today
+{
+	margin-right:20px;
+}
+
+/*time view*/
+
+table.RadCalendarTimeView_PAMS
+{
+	border-collapse:separate;
+	border:1px solid #a5b3c5;
+	background:#fcfcfc;
+	font:1.00em "segoe ui",arial,sans-serif;
+	color:#000;
+}
+
+.RadCalendarTimeView_PAMS th
+{
+	border:0;
+	border-bottom:1px solid #d4dbe5;
+	padding:3px 0;
+	background:#f1f5fb;
+	color:#1e395b;
+	line-height:18px;
+	font-weight:normal;
+	text-align:center;
+	cursor:default;
+}
+
+table.RadCalendarTimeView_PAMS td
+{
+	border:0;
+	border-left:1px solid #e0e0e0;
+	padding:2px 2px 3px;
+}
+
+table.RadCalendarTimeView_PAMS td:first-child
+{
+	border-left:0;
+}
+
+.RadCalendarTimeView_PAMS a
+{
+	display:block;
+	width:59px;
+	padding:1px 6px 1px 1px;
+	line-height:15px;
+	text-align:right;
+	color:#000;
+	text-decoration:none;
+}
+
+.RadCalendarTimeView_PAMS td.rcSelected a
+{
+	background:100% -2550px no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendarTimeView_PAMS td.rcHover a
+{
+	background:100% -2500px no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	color:#4c607a;
+}
+
+.RadCalendarTimeView_PAMS .rcFooter
+{
+	border-top:1px solid #e0e0e0;
+	padding:0;
+}
+
+/*pickers*/
+
+.RadPicker {
+    
+    /*added to match change in corresponding EHB stylesheet (the following explains why it was changed over there):
+        added the !important keyword because of an issue on IE11 with windows 7 where DateRangePicker was not displaying inline-block properly because this style 
+      was being overriden by an inline style
+   */
+  display: inline-block !important;
+}
+
+.RadPicker_PAMS,
+.RadPicker_PAMS td
+{
+	vertical-align:middle;
+}
+
+.RadPicker_PAMS .RadInput
+{
+	vertical-align:baseline;
+}
+
+.RadPicker_PAMS .rcTable
+{
+	table-layout:auto;
+}
+
+.RadPicker_PAMS table.rcTable,
+.RadPicker_PAMS table.rcTable td
+{
+	border:0;
+	margin:0;
+	padding:0;
+}
+
+.RadPicker_PAMS table.rcTable .rcInputCell
+{
+	padding:0 4px 0 0;
+}
+
+.RadPicker_PAMS td a
+{
+	position:relative;/*FF*/
+	outline:none;/*FF*/
+	z-index:2;/*Opera*/
+	margin:0 2px;
+	text-decoration:none;
+}
+* html .RadPicker_PAMS td a{position:static}/*IE6*/
+*+html .RadPicker_PAMS td a{position:static}/*IE7*/
+
+.RadPicker_PAMS .rcCalPopup,
+.RadPicker_PAMS .rcTimePopup
+{
+	display:block;
+	width:22px;
+	height:22px;
+	overflow:hidden;
+	background:no-repeat url('./Platform/Include/Skins/PAMS/Images/Telerik/Calendar/sprite.gif');
+	text-indent:-1111px;
+	text-align:center;
+}
+
+.RadPicker_PAMS .rcCalPopup,
+.RadPicker_PAMS .rcDisabled.rcCalPopup:hover
+{
+	background-position:0 0;
+}
+
+.RadPicker_PAMS .rcCalPopup:hover,
+.RadPicker_PAMS .rcCalPopup:focus,
+.RadPicker_PAMS .rcCalPopup:active
+{
+	background-position:0 -50px;
+}
+
+.RadPicker_PAMS .rcTimePopup,
+.RadPicker_PAMS .rcDisabled.rcTimePopup:hover
+{
+	background-position:0 -100px;
+}
+
+.RadPicker_PAMS .rcTimePopup:hover,
+.RadPicker_PAMS .rcTimePopup:focus,
+.RadPicker_PAMS .rcTimePopup:active
+{
+	background-position:0 -150px;
+}
+
+.RadPicker_PAMS .rcDisabled,
+.RadCalendarMonthView_PAMS .rcDisabled
+{
+	opacity:0.5;
+	filter:alpha(opacity=50);
+}
+
+/*rtl*/
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcFastPrev
+{
+	background-position:0 -500px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcFastPrev:hover
+{
+	background-position:0 -550px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcPrev
+{
+	background-position:0 -400px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcPrev:hover
+{
+	background-position:0 -450px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcNext
+{
+	background-position:0 -300px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcNext:hover
+{
+	background-position:0 -350px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcFastNext
+{
+	background-position:0 -200px;
+}
+
+.RadCalendarRTL_PAMS .rcTitlebar .rcFastNext:hover
+{
+	background-position:0 -250px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcFastPrev
+{
+	background-position:0 -900px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcFastPrev:hover
+{
+	background-position:0 -950px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcPrev
+{
+	background-position:0 -800px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcPrev:hover
+{
+	background-position:0 -850px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcNext
+{
+	background-position:0 -700px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcNext:hover
+{
+	background-position:0 -750px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcFastNext
+{
+	background-position:0 -600px;
+}
+
+.RadCalendarMultiViewRTL_PAMS .rcTitlebar .rcFastNext:hover
+{
+	background-position:0 -650px;
+}
+
+
+ TABLE.RadCalendar_PAMS .rcTitlebar {
+
+	BACKGROUND-COLOR: #FFCC33;
+
+}
+.RadInput_PAMS, .RadInputMgr_PAMS {width:80px;}
+.RadPicker_PAMS .rcInputCell {width:80px !important;}
+
+
+/* RadScheduler base stylesheet */
+
+/* <common> */
+
+.RadScheduler,
+.RadScheduler a,
+.RadScheduler input,
+.RadScheduler select,
+.RadScheduler textarea
+{
+	outline: 0;
+}
+
+.RadScheduler
+{
+	cursor: default;
+	overflow: hidden;
+	text-align: left;
+	zoom: 1;
+}
+
+.RadScheduler .rsTopWrap
+{
+	position: relative;
+	border: 0;
+	width: 100%; /*Fix for IE6/7 0px width in a table when refreshed*/
+	overflow: hidden;
+}
+
+.RadScheduler .rsAdvFormWrap
+{
+	position: relative;
+}
+
+* html div.RadScheduler .rsAdvFormWrap { position: static; }
+
+.RadScheduler,
+.RadScheduler *
+{
+	margin: 0;
+	padding: 0;
+}
+
+* html .RadScheduler .rsContent .rsInnerFix,
+* html .RadScheduler .rsContent td
+{
+    zoom: 1;
+}
+
+.RadScheduler .rsContentTable,
+.RadScheduler .rsAllDayTable
+{
+	overflow: hidden;
+}
+
+/* </common> */
+
+/* <header> */
+
+.RadScheduler .rsHeader
+{
+	height: 30px;
+	line-height: 30px;
+	z-index: 1000;
+	position: relative;
+	background-color: transparent;
+	background-position: 0 0;
+	background-repeat: repeat-x;
+}
+
+.RadScheduler .rsHeader p
+{
+	padding-left: 5px;
+	float: left;
+}
+
+.RadScheduler .rsHeader .rsDatePickerWrapper
+{
+	float: left;
+	position: relative;
+	top: 23px;
+	left: -7px;
+	overflow: hidden;
+}
+
+.RadScheduler .rsHeader .rsPrevDay,
+.RadScheduler .rsHeader .rsNextDay
+{
+	width: 17px;
+	height: 17px;
+	line-height: 17px;
+	
+	display: block;
+	text-indent: -9999px;
+	font-size: 0;
+	float: left;
+}
+
+.RadScheduler .rsHeader .rsPrevDay
+{
+	margin: 6px 0 0 6px;
+	background-position: 0 -48px;
+}
+
+.RadScheduler .rsHeader .rsNextDay
+{
+	margin: 6px 6px 0 0;
+	background-position: -18px -48px;
+}
+
+.RadScheduler .rsHeader a.rsPrevDay:hover
+{
+	background-position: -70px -48px;
+}
+
+.RadScheduler .rsHeader a.rsNextDay:hover
+{
+	background-position: -88px -48px;
+}
+
+.RadScheduler .rsHeader .rsToday
+{
+	line-height: 30px;
+}
+
+.RadScheduler .rsHeader .rsDatePickerActivator
+{
+	margin: 3px 0 0 5px;
+	width: 21px;
+	height: 24px;
+	line-height: 21px;
+	float: left;
+	font-size: 0;
+	overflow: hidden;
+	text-indent: -9999px;
+	background-position: -228px -31px;
+}
+
+.RadScheduler .rsHeader a.rsDatePickerActivator:hover
+{
+	background-position: -270px -31px;
+}
+
+.RadScheduler .rsHeader .rsDatePickerActivatorDown,
+.RadScheduler .rsHeader a.rsDatePickerActivatorDown:hover
+{
+	background-position: -249px -31px;
+}
+
+.RadScheduler .rsHeader .rsDatePickerCalendar
+{
+	position: absolute;
+}
+
+.RadScheduler .rsHeader h2
+{
+	font-size: 1.25em;
+	font-weight: normal;
+	text-indent: 43px;
+	height: 30px;
+	display: block;
+	overflow: hidden;
+}
+
+.RadScheduler .rsHeader ul
+{
+	float: right;
+	padding-right: 10px;
+}
+
+.RadScheduler .rsHeader li
+{
+	line-height: 30px;
+	margin-top: 0;
+	list-style-type: none;
+	float: left;
+}
+
+.RadScheduler .rsTopWrap .rsHeader ul a
+{
+	text-decoration: none;
+	display: block;
+	padding-left: 9px;
+	line-height: 30px;
+}
+
+.RadScheduler .rsHeader ul span,
+.RadScheduler .rsHeader ul em
+{
+	text-decoration: none;
+	display: block;
+	padding: 0 9px 0 0;
+	font-style: normal;
+}
+
+.RadScheduler .rsHeader .rsSelected { padding-left: 9px; background-position: 0 -69px; }
+.RadScheduler .rsHeader .rsSelected em { padding-top: 0; background-position: 100% -69px; }
+	
+.RadScheduler .rsHeader ul a:hover,
+.RadScheduler .rsLast a:hover { background-position: 0 -69px; }
+.RadScheduler .rsHeader ul a:hover span { background-position: 100% -69px; }
+
+/* </header> */
+
+/* <content> */
+
+/*     <headers> */
+
+.RadScheduler tr
+{
+	font-size: 1.00em;
+	empty-cells: show;
+}
+
+.RadScheduler th,
+.RadScheduler td
+{
+	font-weight: normal;
+	vertical-align: top;
+	height: auto;
+}
+
+.RadScheduler .rsVerticalHeaderWrapper
+{
+	height: 100%;
+	overflow: hidden;
+	vertical-align: top;
+}
+
+.RadScheduler .rsVerticalHeaderWrapper div
+{
+	margin-left: 1px;
+}
+
+.RadScheduler .rsVerticalHeaderWrapper div div
+{
+	margin-left: 0;
+}
+
+.RadScheduler .rsVerticalHeaderTable div *
+{
+	padding-right: 4px;
+}
+
+.RadScheduler .rsVerticalHeaderTable
+
+{
+	height: 100%;
+	width: 100%;
+}
+
+.RadScheduler .rsVerticalHeaderTable th
+{
+	border-style: solid;
+	border-width: 0 1px 1px 0;
+}
+* html .RadScheduler .rsVerticalHeaderTable th { border-bottom: 0; text-align: right; }
+* html .RadScheduler .rsVerticalHeaderTable .rsMainHeader th,
+* html .RadScheduler .rsVerticalHeaderTable .rsAlt th { border-bottom: 1px solid; }
+
+.RadScheduler .rsVerticalHeaderTable .rsAlt th
+{
+	vertical-align: bottom;
+}
+
+.RadScheduler .rsTopWrap .rsHidden
+{
+	display: none;
+}
+
+.RadScheduler .rsTopWrap .rsHidden,
+.RadScheduler .rsTopWrap .rsHidden th
+{
+	overflow: hidden;
+	border-style: none;
+	line-height: 0;
+	font-size: 0;
+	height: 0;
+}
+
+.RadScheduler .rsVerticalHeaderTable div
+{
+	white-space: nowrap; /* think about removing the nowrap!!! */
+	overflow: hidden;	
+	height: 100%;
+	font-weight: bold;
+	text-align: right;
+}
+
+.RadScheduler .rsSpacerCell,
+.RadScheduler .rsHorizontalHeaderTable th,
+.RadScheduler .rsVerticalHeaderTable div,
+.RadScheduler .rsAllDayHeader,
+.RadScheduler .rsAllDayTable
+{
+	line-height: 13px;
+}
+
+*|html .RadScheduler .rsSpacerCell,
+.RadScheduler .rsHorizontalHeaderTable th,
+.RadScheduler .rsVerticalHeaderTable div,
+.RadScheduler .rsAllDayHeader,
+.RadScheduler .rsAllDayTable
+{
+	line-height: 14px;
+}
+
+.RadScheduler .rsHorizontalHeaderWrapper
+{
+	overflow: hidden;
+}
+
+.RadScheduler .rsHorizontalHeaderTable,
+.RadScheduler .rsAllDayTable
+{
+	table-layout: fixed;
+}
+
+.RadScheduler .rsSpacerCell,
+.RadScheduler .rsHorizontalHeaderTable th
+{
+	vertical-align: middle;
+}
+
+.RadScheduler .rsHorizontalHeaderTable th
+{
+	background-repeat:  repeat-x;
+	background-position: 0 -144px;
+	text-align: center;
+}
+
+.RadScheduler .rsVerticalHeaderTable .rsMainHeader th
+{
+	display: block;
+}
+
+* html .RadScheduler .rsVerticalHeaderTable .rsMainHeader th
+{
+	text-align: right;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.RadScheduler .rsSpacerCell,
+.RadScheduler .rsVerticalHeaderTable th,
+.RadScheduler .rsHorizontalHeaderTable th
+{
+	border-width: 0 1px 1px 0;
+	border-style: solid;
+	overflow: hidden;
+}
+
+.RadScheduler .rsAllDayRow td,
+.RadScheduler .rsContentTable td
+{
+	border-width: 0 1px 1px 0;
+	border-style: solid;
+}
+
+.RadScheduler .rsSpacerCell,
+.RadScheduler .rsContent .rsAllDayHeader
+{
+	text-align: center;
+}
+
+.RadScheduler .rsVerticalHeaderTable th
+{
+	text-align: right;
+}
+
+.RadScheduler .rsTopWrap .rsLastCell
+{
+	border-right-width: 0;
+}
+
+.RadScheduler .rsAmPm
+{
+	font-size: 0.83em;
+	font-weight: normal;
+	line-height: 10px;
+	text-transform: lowercase;
+	position: relative;
+	top: -4px;
+	padding: 0 1px;
+}
+
+* html .RadScheduler .rsAmPm
+{
+	position: static;
+	padding-bottom: 4px;
+	display: inline-block;
+}
+
+*+html .RadScheduler .rsAmPm
+{
+	position: static;
+	padding-bottom: 4px;
+	display: inline-block;
+}
+
+.RadScheduler .rsAllDayHeader
+{
+	border-width: 0 1px 1px 0;
+	border-style: solid;
+}
+
+.RadScheduler .rsDateHeader
+{
+	padding: 1px 4px 3px;
+	text-decoration: none;
+	font-size: 1.08em;
+}
+
+.RadScheduler a.rsDateHeader:hover
+{
+	text-decoration: underline;
+}
+
+.RadScheduler .rsMonthView .rsDateBox
+{
+	display: block;
+	height: 16px;
+	white-space: nowrap;
+	background-repeat: repeat-x;
+	background-position: 0 -299px;
+}
+
+.RadScheduler .rsMonthView .rsAptCreate .rsDateBox
+{
+	background-position: 0 -318px;
+}
+
+/*
+	IE quirks mode - the height of the headers is incorrect.
+	This must be set explicitly to (RowHeight - 1px).
+*/
+* html .RadScheduler .rsVerticalHeaderTable
+{
+	table-layout: fixed;
+	text-align: right;
+}
+
+* html .RadScheduler .rsVerticalHeaderTable tbody div
+{
+	height: auto;
+}
+
+/*     </headers> */
+
+.RadScheduler .rsContentWrapper
+{
+    vertical-align: top;
+	height: 100%;
+}
+
+/* nasty ie6-quirks-only-hack */
+* html .RadScheduler .rsContent
+{
+	width /**/: 100%;
+}
+
+.RadScheduler .rsContentTable
+{
+	table-layout: fixed;
+}
+
+/*     <appointments> */
+
+.RadScheduler .rsWrap
+{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.RadScheduler .rsApt  /* main container */
+{
+    height:100%;
+	overflow: visible;
+    position:absolute;
+	line-height: 14px;
+	font-size: 0.92em;
+	margin-top: 1px;
+}
+
+.RadScheduler .rsAptOut /* empty container */
+{
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.RadScheduler .rsAptIn, 
+.RadScheduler .rsAptMid, 
+.RadScheduler .rsAptContent
+{
+    position: absolute;
+    border-style: solid;
+    border-width: 1px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.RadScheduler .rsAptOut > .rsAptMid, 
+.RadScheduler .rsAptMid > .rsAptIn, 
+.RadScheduler .rsAptIn > .rsAptContent
+{
+	height: auto;
+}
+
+* html .RadScheduler .rsAptMid, 
+* html .RadScheduler .rsAptIn, 
+* html .RadScheduler .rsAptContent
+{
+	height: 100%;
+}
+
+
+.RadScheduler .rsAptMid
+{
+	border-width: 1px 0;
+	background: none;
+    top: 0;
+    bottom: -2px;
+    left: 1px;
+    right: 1px;
+    margin: 1px;
+}
+* html .RadScheduler .rsAptMid  
+{
+	position: relative;
+	top: auto; 
+	bottom: auto; 
+	margin: 0; 
+	border-width: 0 1px;
+}
+
+.RadScheduler .rsAptIn
+{
+    border-width: 0 1px;
+    margin-left: -1px;
+    margin-top: 0;
+    margin-right: -1px;
+}
+* html .RadScheduler .rsAptIn
+{
+	position: absolute; 
+	margin: 0;
+	border: 0;
+	top: -1px; 
+}
+* html .RadScheduler .rsAptMid .rsAptIn { background /**/: none !important; }
+
+.RadScheduler .rsAptContent
+{
+    background-repeat: repeat-x;
+    border-width: 1px 0;
+    bottom: -2px;
+    left: 1px;
+    right: 1px;
+    top: -2px;
+	padding: 0 0 0 2px;
+	overflow: hidden;
+}
+* html .RadScheduler .rsAptContent  
+{
+	position: relative; 
+	left: 0; 
+	top: 0;
+	border-width: 1px 0; 
+	margin: 0; 
+	margin-bottom /**/: 2px;
+}
+
+.RadScheduler .rsWArrowLeft .rsAptContent { padding-left: 8px; }
+.RadScheduler .rsTimelineView .rsWArrowLeft .rsAptContent { padding-left: 14px; }
+.RadScheduler .rsWArrowRight .rsAptContent { padding-right: 12px; }
+.RadScheduler .rsTimelineView .rsWArrowRight .rsAptContent { padding-right: 18px; }
+
+.RadScheduler .rsAptContent:before
+{
+	content: " ";
+	clear: both;
+	visibility: hidden;
+	display: block;
+	font-size: 1px;
+	line-height: 1px;
+	height: 1px;
+}
+
+* html .RadScheduler .rsAptContent:first-line { line-height: 16px; } /* IE6 */
+*+html .RadScheduler .rsAptContent:first-line { line-height: 15px; } /* IE7 */
+
+* html .RadScheduler .rsAptContent { word-break: break-all; }
+
+.RadScheduler .rsAptSimple .rsAptContent,
+.RadScheduler .rsAptSimple .rsAptIn,
+.RadScheduler .rsAptSimple .rsAptMid,
+.RadScheduler .rsAptSimple .rsAptOut
+{
+	background-image: none;
+	width: auto;
+	margin: 0;
+}
+
+.RadScheduler .rsAptSimple .rsAptIn,
+.RadScheduler .rsAptSimple .rsAptMid,
+.RadScheduler .rsAptSimple .rsAptContent
+{
+	background-color: transparent;
+	border: 0;
+}
+
+.RadScheduler .rsAptSimple .rsAptContent
+{
+	margin-top: 4px;
+}
+
+.RadScheduler .rsAptSimple .rsAptDelete 
+{
+    right: 2px;
+    top: 2px;
+}    
+
+.RadScheduler .rsAptSimple .rsAptOut
+{
+	padding-bottom: 1px;
+}
+
+.RadScheduler .rsAptSimple .rsAptResize
+{
+	bottom: 4px;
+}
+* html .RadScheduler .rsAptSimple .rsAptResize
+{
+	bottom: 1px;
+}
+
+.RadScheduler .rsAptSimple .rsArrowBottom
+{
+	bottom: 4px;
+}
+
+.RadScheduler .rsAptDelete,
+.RadScheduler .rsArrowTop,
+.RadScheduler .rsArrowBottom,
+.RadScheduler .rsArrowLeft,
+.RadScheduler .rsArrowRight,
+.RadScheduler .rsAptResize
+{
+	position: absolute;
+	font-size: 0;
+	line-height: 0;
+	text-indent: -9999px;
+}
+
+.RadScheduler .rsAptRecurrence,
+.RadScheduler .rsAptRecurrenceException
+{
+	margin-top: 2px;
+	display: inline;
+	float: left;
+	width: 12px;
+	height: 10px;
+}
+.RadScheduler .rsAptRecurrence { background-position: -1px -348px }
+.RadScheduler .rsAptRecurrenceException { background-position: -16px -348px }
+* html .RadScheduler .rsAptRecurrence, 
+* html .RadScheduler .rsAptRecurrenceException { margin-top: 3px; } /* IE6 */
+*+html .RadScheduler .rsAptRecurrence, 
+*+html .RadScheduler .rsAptRecurrenceException { margin-top: 3px; } /* IE7 */
+
+@media all and(-webkit-max-device-pixel-ratio: 10000),
+   not all and(-webkit-min-device-pixel-ratio: 0) 
+{
+		.RadScheduler .rsAptRecurrence,
+		.RadScheduler .rsAptRecurrenceException { margin-top: 5px; }
+		
+		.RadScheduler .rsAptContent:first-line { line-height: 18px; }
+} /* Opera */
+
+.RadScheduler .rsAptCreate,
+.RadScheduler .rsMonthView .rsAptCreate
+{
+	background-position: 0 -589px;
+}
+
+.RadScheduler .rsAptCreateRow2,
+.RadScheduler .rsMonthView .rsAptCreateRow2
+{
+	background-position: 0 -610px;
+}
+
+.RadScheduler .rsAptDelete
+{
+	width: 21px;
+	height: 18px;
+	outline: 0;
+	top: 1px;
+	right: 1px;
+	visibility: hidden;
+	background-position: -36px -343px;
+}
+
+.RadScheduler .rsWArrowRight .rsAptDelete
+{
+	right: 7px;
+}
+
+.RadScheduler .rsArrowTop,
+.RadScheduler .rsArrowBottom
+{
+	width: 100%;
+	height: 4px;
+}
+.RadScheduler .rsArrowTop { background-position: 50% -360px; top: 3px; }
+.RadScheduler .rsArrowBottom { background-position: 50% -392px; bottom: 0; }
+
+.RadScheduler .rsAptResize
+{
+	width: 100%;
+	height: 4px;
+	cursor: s-resize;
+	bottom: 0; 
+	margin-left: 0; 
+	-moz-user-select: none; 
+	-webkit-user-select: none; 
+	opacity: 0.6;
+	-moz-opacity: 0.6;
+	filter: alpha(opacity=60);
+	background-position: 50% -396px; 
+}
+        
+.RadScheduler .rsTimelineView .rsAptResize
+{
+	height: 100%;
+	width: 4px;
+	cursor: w-resize;
+	right: 3px;
+	margin-top: -2px;
+	background-position: -150px -400px;
+}
+
+.RadScheduler .rsArrowLeft,
+.RadScheduler .rsArrowRight
+{
+	height: 7px;
+	width: 4px;
+	top: 48%; 
+}
+.RadScheduler .rsArrowLeft { background-position: -132px -374px; left: 2px; }
+.RadScheduler .rsArrowRight { background-position: -164px -374px; right: 4px; }
+.RadScheduler .rsTimelineView .rsArrowRight { right: 8px; }
+
+/* Four additional appointment resource styles */
+
+.RadScheduler .rsCategoryBlue .rsAptContent,
+.RadScheduler .rsCategoryRed .rsAptContent,
+.RadScheduler .rsCategoryGreen .rsAptContent,
+.RadScheduler .rsCategoryOrange .rsAptContent,
+.RadScheduler .rsCategoryPink .rsAptContent,
+.RadScheduler .rsCategoryYellow .rsAptContent,
+.RadScheduler .rsCategoryViolet .rsAptContent,
+.RadScheduler .rsCategoryDarkRed .rsAptContent,
+.RadScheduler .rsCategoryDarkBlue .rsAptContent,
+.RadScheduler .rsCategoryDarkGreen .rsAptContent,
+.RadScheduler .rsAptColor .rsAptContent
+{
+	background-image: url('WebResource.axd?d=MwQJz-8zoA0raVEGCBTFCIVWx_G_chqmAVBzGniVdJcQXO42Jg57lVkT_ZiuZZEsqQDPi0iz4ygjY7o5wTtPVXYYnhDTNoTKK3mkBhWJ98ayJHfA-tzNnodtjrGFQwHi_PXrRsvZXV6X252kX66ZPN4cgMOb-0StzGRwIKQnXGGWcRW40&t=634217813566341626');
+	background-repeat: repeat-x;
+}
+
+.RadScheduler .rsCategoryBlue .rsAptContent,
+.RadScheduler .rsCategoryBlue .rsAptIn,
+.RadScheduler .rsCategoryBlue .rsAptMid
+{
+	border-color: #9BB0CC;
+	background-color: #BBD0EC;
+}
+* html .RadScheduler .rsCategoryBlue .rsAptContent { background-image: url('WebResource.axd?d=SZ_jOerxiLLanD4vTA-f0XI4QdI5TubhvICX-h9JhhlKV1Se7G3cm0yt9hp1fcQ05GPw0VNIqlUF2e7M57aNAuKrtwLddxfWcP8aWgEtA8ov2Ud1za4Dk9irygqFz0S5SkeU3jXW1UVNrhMyGilvYtIwK4JSaLHSgC70UJu38wHseka10&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryRed .rsAptContent,
+.RadScheduler .rsCategoryRed .rsAptIn,
+.RadScheduler .rsCategoryRed .rsAptMid
+{
+	border-color: #CC9B9B;
+	background-color: #ECBBBB;
+}
+* html .RadScheduler .rsCategoryRed .rsAptContent { background-image: url('WebResource.axd?d=hgoK7DNHCDK4JScXkAyMOKJyk266UlJ6iTIyrm4i5eXyzedGwvav-bxOCNamSZ3rSn_gKsQmryfAZ5GEbIr5-Dx9YwaDlKprm62FUWEI5157psBaSJPXwzDb1KYbd3WuUqh53KUA-4R-MlweTBkZYKGMdv5WLlKKsXhJgqG_K8qPrIYD0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryGreen .rsAptContent,
+.RadScheduler .rsCategoryGreen .rsAptIn,
+.RadScheduler .rsCategoryGreen .rsAptMid
+{
+	border-color: #B0CC9B;
+	background-color: #D0ECBB;
+}
+* html .RadScheduler .rsCategoryGreen .rsAptContent { background-image: url('WebResource.axd?d=u3GCh1LqMPJmQwLJ7WoW7LT0-vw200PE-s7CuReK5oIs0mn5V8ppwA5-fcbCU23P4d4QDc5LrlIkCalf6LlTZq84-NU7KKNySm-zuyo_XNpvlgiFSlHChEm8yqbnjDrz6uQks6DGetDrpEGcE9aRQ3Iu4TXjs9zQuUwQIXOlxN6-3JLT0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryOrange .rsAptContent,
+.RadScheduler .rsCategoryOrange .rsAptIn,
+.RadScheduler .rsCategoryOrange .rsAptMid
+{
+	border-color: #CDB597;
+	background-color: #EDD5B7;
+}
+* html .RadScheduler .rsCategoryOrange .rsAptContent { background-image: url('WebResource.axd?d=a51hFUCLbbjEH3vthRHDSHrli8sh5KkigNiI5R2kQmrP4vdSKDWHB8tKYgGjojfOYHn2CkkRoDfvEUiQMLx_cpaPFFx5utpsgP3ywxJB0tI2pxejqbk28NLJjRMGIszzJN2iAEf5CbFCNQlO5ksLO48b9LhhhKooyfOhQ8I8v6ixwugk0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryPink .rsAptContent,
+.RadScheduler .rsCategoryPink .rsAptIn,
+.RadScheduler .rsCategoryPink .rsAptMid
+{
+	border-color: #d1bcdf;
+	background-color: #f1dcff;
+}
+* html .RadScheduler .rsCategoryPink .rsAptContent { background-image: url('WebResource.axd?d=x7RDUJ26CPcF0ZXlyMP6-uAEaXb9eGSh97A86kI-EWK2TfHm_WdfgWW4R8r-YSQNdO0M8RoUpePXIv4D35zSKDUpEwYxbYD39qcgbnEInGdSbvF8_hp_23hacPLYEs9weo8PT6ct7mwwFREKfjxiXOXqhPmwDwnTAZgHBTihU5nHKa0g0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryYellow .rsAptContent,
+.RadScheduler .rsCategoryYellow .rsAptIn,
+.RadScheduler .rsCategoryYellow .rsAptMid
+{
+	border-color: #dfdba7;
+	background-color: #fffbc7;
+}
+* html .RadScheduler .rsCategoryYellow .rsAptContent { background-image: url('WebResource.axd?d=RPm7uUYrI4RsDh3MhyM4LSs-viG_OPqCMH9BTMtneL-3FNE4VrX1pcCFWnZAxffGp_Xcndr41I6nUCFqRkQcUvpsM4EhMHcO1F7Y7-AU6IBfApIh9kC2YsjvZIrllLWVh_KEFJqcHD_88GS0DxWE_pbqSWd1wet4gl5Om_D_jP8UAwXx0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryViolet .rsAptContent,
+.RadScheduler .rsCategoryViolet .rsAptIn,
+.RadScheduler .rsCategoryViolet .rsAptMid
+{
+	border-color: #742062;
+	background: #540042 url('WebResource.axd?d=MwQJz-8zoA0raVEGCBTFCIVWx_G_chqmAVBzGniVdJcQXO42Jg57lVkT_ZiuZZEsqQDPi0iz4ygjY7o5wTtPVXYYnhDTNoTKK3mkBhWJ98ayJHfA-tzNnodtjrGFQwHi_PXrRsvZXV6X252kX66ZPN4cgMOb-0StzGRwIKQnXGGWcRW40&t=634217813566341626') repeat-x 0 -1px;
+}
+* html .RadScheduler .rsCategoryViolet .rsAptContent { background-image: url('WebResource.axd?d=fkBWTlHshQIqZxTmuG7nhrAwRFsgwTIs8YAB3slxH7BXTYQSiBAkDygcc6llZFtTSyVBR9YdPycolxzgMQgFxoEAebEjTTl84_46c9FVmABBSPaXOlXzXehdT_0XeNwJXVrN9GllMcas-wz2LazmqPvPIhvAMN8hbtq-txiZnjljJoWd0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryDarkRed .rsAptContent,
+.RadScheduler .rsCategoryDarkRed .rsAptIn,
+.RadScheduler .rsCategoryDarkRed .rsAptMid
+{
+	border-color: #370505;
+	background: #572525 url('WebResource.axd?d=MwQJz-8zoA0raVEGCBTFCIVWx_G_chqmAVBzGniVdJcQXO42Jg57lVkT_ZiuZZEsqQDPi0iz4ygjY7o5wTtPVXYYnhDTNoTKK3mkBhWJ98ayJHfA-tzNnodtjrGFQwHi_PXrRsvZXV6X252kX66ZPN4cgMOb-0StzGRwIKQnXGGWcRW40&t=634217813566341626') repeat-x 0 -1px;
+}
+* html .RadScheduler .rsCategoryDarkRed .rsAptContent { background-image: url('WebResource.axd?d=kkd25dQfB92mStEtUUXxjDyF-AuPCgDqMKbfWE1vv_fGHanw_TPOKNXX-hGzlJKV94WTF0Y_R3kS0N1tJYoAf1egNOCaJIlZz49PV-TkhaJ_Q_Qus_4xPYe_ays29qPQ40hgdhuT0azrQcy9l7lmiSK7SQcNKC0DSWVWDWZo2ocbvJ1J0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryDarkGreen .rsAptContent,
+.RadScheduler .rsCategoryDarkGreen .rsAptIn,
+.RadScheduler .rsCategoryDarkGreen .rsAptMid
+{
+	border-color: #053705;
+	background: #255725 url('WebResource.axd?d=MwQJz-8zoA0raVEGCBTFCIVWx_G_chqmAVBzGniVdJcQXO42Jg57lVkT_ZiuZZEsqQDPi0iz4ygjY7o5wTtPVXYYnhDTNoTKK3mkBhWJ98ayJHfA-tzNnodtjrGFQwHi_PXrRsvZXV6X252kX66ZPN4cgMOb-0StzGRwIKQnXGGWcRW40&t=634217813566341626') repeat-x 0 -1px;
+}
+* html .RadScheduler .rsCategoryDarkGreen .rsAptContent { background-image: url('WebResource.axd?d=A8okNsjhnKCYYfW505yi-cK8-Jg5IySxgyv_Y4zPjXrkhrW1SdLUDRs2FUyqUvXcEatmTT--zPXfq8RGzGnxfrORd_lfnQDFBjjvE6Wqnx2wXKp5l017yfJ73nSjnpOEOWfr9eXvzySHCN_mxIpqb3oGDQSKMq-u_TzAtK1jgUBJOK2RfCULN_YfW5qb1Eyp3D0zIw2&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryDarkBlue .rsAptContent,
+.RadScheduler .rsCategoryDarkBlue .rsAptIn,
+.RadScheduler .rsCategoryDarkBlue .rsAptMid
+{
+	border-color: #304364;
+	background: #304364 url('WebResource.axd?d=MwQJz-8zoA0raVEGCBTFCIVWx_G_chqmAVBzGniVdJcQXO42Jg57lVkT_ZiuZZEsqQDPi0iz4ygjY7o5wTtPVXYYnhDTNoTKK3mkBhWJ98ayJHfA-tzNnodtjrGFQwHi_PXrRsvZXV6X252kX66ZPN4cgMOb-0StzGRwIKQnXGGWcRW40&t=634217813566341626') repeat-x 0 -1px;
+}
+* html .RadScheduler .rsCategoryDarkBlue .rsAptContent { background-image: url('WebResource.axd?d=vs9wCspgbs-_2_TaWjiY841BkerOIg1LCdfbmhfkO6RHBn47t_p6kMlHwsoypQGlQuqfHzNi2FdApqfyMtUIDRMmfQ-yIDoUGeqgCyPfyJcGaeAYLAR0ThDSuvy8yM5paeiFsCFKqiNAHtHTrrR9qQA4xnwrNBHf6J56hBDlpd6wDnEt0&t=634217813566341626'); }
+
+.RadScheduler .rsCategoryDarkRed .rsAptContent,
+.RadScheduler .rsCategoryDarkGreen .rsAptContent,
+.RadScheduler .rsCategoryDarkBlue .rsAptContent,
+.RadScheduler .rsCategoryViolet .rsAptContent
+{
+	color: #fff;
+}
+
+/*     </appointments> */
+
+/* <month view :: temporary> */
+
+.RadScheduler .rsMonthView .rsWrap
+{
+	height: 25px;
+}
+
+.RadScheduler .rsMonthView .rsApt 
+{
+    width:100%;
+}
+
+.RadScheduler .rsMonthView .rsAptWrap
+{
+	overflow: hidden;
+}
+
+.RadScheduler .rsMonthView .rsAptBottom
+{
+	margin-top: 25px;
+}
+
+.RadScheduler .rsMonthView .rsShowMore
+{
+	color: #000;
+	text-decoration: underline;
+	text-align: center;
+	cursor: pointer;
+}
+
+/* </month view> */
+
+/* <timeline view :: temporary> */
+
+.RadScheduler .rsTimelineView
+{
+	background: #fff;
+}
+
+/* </timeline view> */
+
+/* </content> */
+
+/* <footer> */
+
+.RadScheduler .rsFooter
+{
+	background-position: 0 -559px;
+	border-top-width: 1px;
+	border-top-style: solid;
+	min-height: 30px;
+	height: 30px;
+	vertical-align: middle;
+}
+
+.RadScheduler .rsFooter .rsFullTime
+{
+	text-decoration: none;
+	padding: 0 0 0 13px;
+	margin-left: 5px;
+	font-size: 0.92em;
+	line-height: 30px;
+	background-position:  0 -252px;
+}
+
+.RadScheduler .rsFooter a.rsFullTime:hover
+{
+	text-decoration: underline;
+}
+
+/* </footer> */
+
+/* <inline edit form> */
+
+.RadScheduler .rsAptEditFormWrapper,
+.RadScheduler .rsAptEditFormOuter
+{
+	position: relative;
+}
+
+.RadScheduler .rsAptEditFormWrapper,
+.RadScheduler .rsAptEditFormOuter,
+.RadScheduler .rsAptEditFormInner,
+.RadScheduler .rsAptEditFormMiddle,
+.RadScheduler .rsAptEditFormMiddle2,
+.RadScheduler .rsAptEditResizeHandle
+{
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsAptEditTextareaWrapper
+{
+	position: relative;
+	padding: 3px;
+	border-width: 1px;
+	border-style: solid;
+	margin: -6px -4px 0 -6px;
+}
+
+.RadScheduler .rsAptEditFormWrapper textarea
+{
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	outline: 0;
+	resize: none;
+	overflow: auto;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions
+{
+	margin: 0 -4px 0 -1px;
+	padding: 7px 0 4px;
+	overflow: hidden;
+	zoom: 1;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions a
+{
+	width: 73px;
+	height: 21px;
+	line-height: 21px;
+	text-decoration: none;
+	display: block;
+	margin: 0 5px 0 0;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+	bottom: 0;
+	cursor: pointer;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	font-size: 0.92em;
+	position: static;
+	background-position: 0 -474px;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions a:hover
+{
+	background-position: -73px -474px;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions .rsAptEditConfirm
+{
+	background-position: -146px -474px;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions a.rsAptEditConfirm:hover
+{
+	background-position: -219px -474px;
+}
+
+.RadScheduler .rsAptEditFormWrapper .rsEditOptions .rsAptEditMore
+{
+	margin: 0;
+}
+
+.RadScheduler .rsAptEditSizingWrapper
+{
+	position: absolute;
+	width: 100%;
+	visibility: hidden;
+}
+
+.RadScheduler .rsAptEditSizingWrapper *
+{
+    zoom: normal;
+}
+
+.RadScheduler .rsAptEditFormOuter { padding: 10px 0 0 0; background-position: 100% 0; }
+.RadScheduler .rsAptEditFormInner { padding: 0 0 4px 0; background-position: 0 100%; }
+.RadScheduler .rsAptEditFormMiddle { padding: 0 0 0 10px; margin-left: -10px; background-position: 0 100%; }
+.RadScheduler .rsAptEditFormMiddle2 { padding:0 8px 0 0; background-position: 100% 100%; }
+.RadScheduler .rsAptEditFormWrapper { padding: 0 0 0 10px; background-position: -265px -226px; }
+
+.RadScheduler .rsAptEditResizeHandle
+{
+	width: 10px;
+	height: 10px;
+	font-size: 0;
+	line-height: 10px;
+	position: relative;
+	bottom: 6px;
+	right: -8px;
+	float: right;
+	cursor: se-resize;
+	background-position: -265px -216px;
+}
+/*/ html .RadScheduler .rsAptEditResizeHandle { font-family: Arial; font-size: 0.67em; line-height: 0;  } /* IE6/7 */
+
+/* </inline edit form> */
+
+/* <advanced edit form> */
+
+/*     <common>     */
+
+/* <advanced edit title> */
+.RadScheduler .rsAdvancedEdit .rsAdvTitle
+{
+	height: 30px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvInnerTitle
+{
+	height: 22px;
+	font-size: 1.17em;
+	font-weight: normal;
+}
+* html .RadScheduler .rsAdvancedEdit .rsAdvInnerTitle
+{
+	height: 30px;
+}
+
+
+.RadScheduler .rsAdvancedEdit .rsAdvTitle
+{
+	padding: 0 0 0 4px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvInnerTitle
+{
+	background-color: transparent;
+	background-position: 100% 0;
+	background-repeat: no-repeat;
+	padding: 8px 0 0 5px;
+}
+/* </advanced edit title> */
+		
+		
+.RadScheduler .rsAdvDragCue
+{
+	border: 2px dashed #444;
+	background-color: #aaa;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvContentWrapper
+{
+	padding: 10px 10px 0 22px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvOptionsScroll
+{
+	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 0 10px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvOptions
+{
+	overflow: hidden;
+	zoom: 1;
+}
+
+.RadScheduler .rsAdvancedEdit ul
+{
+	zoom: 1;
+	list-style: none outside;
+}
+
+.RadScheduler .rsAdvancedEdit label 
+{
+	vertical-align: middle;
+	line-height: 23px;
+	width: 75px;
+	padding: 0 6px 0 0;
+	margin: 0;
+	display: -moz-inline-block;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	text-align: right;
+}
+
+.RadScheduler .rsAdvancedEdit table.riTable td
+{
+	vertical-align: top;
+} 
+
+.RadScheduler .rsAdvancedEdit .textareaWrapper,
+.RadScheduler .rsAdvancedEdit .rsAdvInput,
+.RadScheduler .rsAdvancedEdit select
+{
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: middle;
+}
+
+.RadScheduler .rsAdvancedEdit .textareaWrapper
+{
+	padding: 5px;
+	resize: none;
+	margin: 0 0 11px 81px;
+	border-width: 1px;
+	border-style: solid;
+	zoom: 1;
+}
+
+.RadScheduler .rsAdvancedEdit textarea
+{
+	display: block;
+	width: 100%;
+	border: 0;
+	outline: 0;
+	resize: none;
+	overflow: auto;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvInput
+{
+	padding: 3px 0 2px 1px;
+	outline: 0;
+	vertical-align: middle;
+}
+
+.RadScheduler .rsAdvancedEdit .rfdSelect 
+{
+	vertical-align: top;
+	overflow: visible;
+}
+
+.RadScheduler .rsAdvancedEdit .rfdSelect .rfdSelectOuter
+{
+	float: none;
+	height: 18px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvResetExceptions
+{
+	position: relative;
+	float: right;
+	right: 10px;
+	text-decoration: underline;
+}
+
+.RadScheduler .rsValidatorTooltip
+{
+	position:absolute;
+	border: 1px solid #f32800;
+	background: #fffdbb;
+	color: #f32800;
+	white-space: nowrap;
+	padding: 2px 4px;
+	margin-top: 1px;
+}
+
+.RadScheduler .rsAdvancedEdit input.rsInvalid
+{
+	border-width: 1px;
+	border-style: solid;
+	background: #fff;
+}
+
+.RadScheduler .rsAdvancedEdit .rsInvalid textarea,
+.RadScheduler .rsAdvancedEdit .rsInvalid input
+{
+	background-repeat: no-repeat;
+	background-position: 100% -298px;
+}
+
+/*     </common>     */
+
+/*     <basic controls>     */
+
+.RadScheduler .rsAdvancedEdit .rsAdvBasicControls li
+{
+	float: left;
+	white-space: nowrap;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvChkWrap 
+{
+	float: left;
+	padding-right: 8px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvChkWrap label,
+.RadScheduler .rsAdvancedEdit .rsResourceControls .rsCheckBoxList label
+{
+	width: auto;
+	display: inline;
+	text-align: left;
+	float: none;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvChkWrap label.rfdCheckboxChecked,
+.RadScheduler .rsAdvancedEdit .rsAdvChkWrap label.rfdCheckboxUnchecked
+{
+	padding-left: 20px; /* override for form-decorated checkboxes */
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvRadio
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvRadio label
+{
+	vertical-align: baseline;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvChkWrap input,
+.RadScheduler .rsAdvancedEdit .rsAdvRadio input
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	vertical-align: middle;
+	margin-right: 3px;
+}
+
+* html .RadScheduler .rsAdvancedEdit .rsAdvChkWrap input,
+* html .RadScheduler .rsAdvancedEdit .rsAdvRadio input
+{
+	margin: 0;
+}
+
+*+html .RadScheduler .rsAdvancedEdit .rsAdvChkWrap input,
+*+html .RadScheduler .rsAdvancedEdit .rsAdvRadio input
+{
+	margin: 0;
+}
+
+* html .RadScheduler .rsAdvancedEdit .rsAdvDatePicker { margin-right: 5px; }
+* html .RadScheduler .rsAdvancedEdit .rsAdvDatePicker .rdfd_ { display: none !important; }
+
+*+html .RadScheduler .rsAdvancedEdit .rsAdvDatePicker { margin-right: 8px; }
+*+html .RadScheduler .rsAdvancedEdit .rsAdvDatePicker .rdfd_ { display: none !important; }
+
+.RadScheduler .rsAdvancedEdit .rsAdvDatePicker
+{
+	zoom: 1;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvTimePicker
+{
+	display: inline;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvBasicControls .rsAdvTimePicker .riTextBox,
+.RadScheduler .rsAdvancedEdit .rsAdvDatePicker input
+{
+	vertical-align: top;
+}
+
+/*     </basic controls>     */
+
+/*     <resources>     */
+
+.RadScheduler .rsAdvancedEdit .rsAdvResourceLabel,
+.RadScheduler .rsAdvancedEdit .rsAdvResourceValue,
+.RadScheduler .rsAdvancedEdit .rsCheckBoxList
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	*display: inline;
+	zoom: 1;
+	vertical-align: top;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvResourceLabel
+{
+	padding-right: 6px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsResourceControls li
+{
+	clear: left;
+}
+
+.RadScheduler .rsAdvancedEdit .rsResourceControls select,
+.RadScheduler .rsAdvancedEdit .rsResourceControls input 
+{
+	width: 140px;
+}
+
+/* Override for checkboxes */
+.RadScheduler .rsAdvancedEdit .rsResourceControls .rsCheckBoxList input
+{
+	width: auto;
+	margin: 0 4px 0 0;
+	vertical-align: middle;
+}
+
+/*     </resources>     */
+
+/*     <submit area>     */
+
+.RadScheduler .rsAdvancedEdit .rsAdvancedSubmitArea
+{
+	text-align: right;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvButtonWrapper
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+	padding: 10px 0;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvancedSubmitArea a
+{
+	text-decoration: none;
+	width: 73px;
+	height: 21px;
+	line-height: 21px;
+	display: block;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+	margin-left: 5px;
+	background-color: transparent;
+	background-repeat: no-repeat; 
+	background-position: 0 -474px;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvancedSubmitArea a,
+.RadScheduler .rsAdvancedEdit .rsAdvancedSubmitArea span
+{
+	display: block;
+	float: left;
+	cursor: pointer;
+}
+
+.RadScheduler .rsAdvancedEdit .rsAdvancedSubmitArea span
+{
+	float: none;
+}
+
+.RadScheduler .rsAdvancedEdit div.rsAdvancedSubmitArea a:hover
+{
+	background-position: -73px -474px;
+}
+
+.RadScheduler .rsAdvancedEdit div.rsAdvancedSubmitArea a.rsAdvEditSave
+{
+	background-position: -146px -474px;
+}
+
+.RadScheduler .rsAdvancedEdit div.rsAdvancedSubmitArea a.rsAdvEditSave:hover
+{
+	background-position: -219px -474px;
+}
+
+/* </submit area> */
+
+/* <date/time picker> */
+
+.RadScheduler .rsDatePickerCalendar .rcRow a
+{
+	line-height: inherit;
+}
+
+.RadScheduler .rsTimePickers
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	zoom: 1;
+	*display: inline;
+	margin: 5px 0;
+}
+
+.RadScheduler .rsTimePick
+{
+	width: 244px;
+}
+
+.RadScheduler .rsTimePick .RadPicker
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	*display: inline;
+}
+
+* html .RadScheduler .rsTimePick .RadPicker { zoom: 1; }
+
+.RadScheduler .rsAttributeControls li,
+.RadScheduler .rsResourceControls li,
+.RadScheduler .rsReminderWrapper
+{
+	padding-bottom: 5px;
+
+}
+.RadScheduler .rsAttributeControls li li,
+.RadScheduler .rsResourceControls li li
+{
+	padding-bottom: 0;
+}
+
+.RadScheduler .rsAllDayWrapper
+{
+	float: right;
+	margin-left: 25px;
+}
+
+.RadScheduler .rsTimePick input.riEnabled,
+.RadScheduler .rsTimePick input.riHover,
+.RadScheduler .rsTimePick input.riFocused
+{
+	background-repeat: no-repeat;
+	background-position: 100% -254px;
+}
+
+/* </date/time picker> */
+
+* html .RadScheduler .rsAdvRecurrenceDropDown { margin-right: 5px; }
+*+html .RadScheduler .rsAdvRecurrenceDropDown { margin-right: 5px; }
+
+/* </advanced edit form> */
+
+/* <modal dialogs> */
+
+.RadScheduler .rsModalWrapper,
+.RadScheduler .rsOverlay
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.RadScheduler .rsModalWrapper
+{
+	z-index: 5000;
+}
+
+.RadScheduler .rsModalWrapper .rsOverlay
+{
+	background: #000;
+}
+
+.RadScheduler .rsModalWrapper .rsModalDialog
+{
+	position: absolute;
+	overflow: hidden;
+	border: 0;
+	background: transparent;
+}
+
+.RadScheduler .rsModalWrapper .rsModalOuter
+{
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	padding: 4px 4px 0 4px;
+	background-color: transparent;
+	background-repeat: no-repeat;
+}
+
+.RadScheduler .rsModalWrapper .rsModalOuterTitle
+{
+	background-color: transparent;
+	background-position: 100% 0;
+	background-repeat: no-repeat;
+	padding: 28px 4px 4px 0;
+	margin: -4px -4px 0 0;
+}
+
+.RadScheduler .rsModalWrapper .rsModalInner
+{
+	border-width: 1px;
+	border-style: solid;
+}
+
+.RadScheduler .rsModalWrapper .rsModalWindowClose,
+.RadScheduler .rsAdvEditClose
+{
+	background-color: transparent;
+	background-position: -38px -526px;
+	background-repeat: no-repeat;
+	display: block;
+	width: 28px;
+	height: 16px;
+	float: right;
+	margin-top: -22px;
+	padding: 1px;
+	text-indent: 9999px;
+}
+* html .RadScheduler .rsModalWrapper .rsModalWindowClose,
+* html .RadScheduler .rsAdvEditClose { text-indent: -9999px; }
+
+.RadScheduler .rsAdvancedEdit .rsAdvEditClose
+{
+	margin-right: 6px;
+}
+
+.RadScheduler .rsModalWrapper .rsModalTitle,
+.RadScheduler .rsModalWrapper .rsModalContent,
+.RadScheduler .rsModalWrapper .rsModalButtons
+{
+	padding: 0 44px 0 96px;
+}
+
+.RadScheduler .rsModalWrapper .rsModalContent
+{
+	margin-top: 26px;
+	padding-left: 105px;
+}
+
+.RadScheduler .rsModalWrapper .rsModalTitle
+{
+	position: absolute;
+	top: 1px; 
+	left: 6px;
+	padding: 0 0 0 20px;
+	font-size: 1.08em;
+	font-weight: normal;
+	line-height: 26px;
+	background-color: transparent;
+	background-position: -284px -520px;
+	background-repeat: no-repeat;
+}
+
+.RadScheduler .rsModalWrapper .rsModalContent label
+{
+	display: block;
+}
+
+.RadScheduler .rsModalWrapper .rsModalContent input
+{
+	vertical-align: middle;
+}
+
+.RadScheduler .rsModalWrapper .rsModalButtons
+{
+	clear: both;
+	padding: 26px 44px 26px 105px;
+	overflow: hidden;
+	zoom: 1;
+}
+
+.RadScheduler .rsModalWrapper .rsModalButtons a
+{
+	text-decoration: none;
+	width: 73px;
+	height: 21px;
+	cursor: pointer;
+	font-size: 0.92em;
+	font-weight: normal;
+	line-height: 21px;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	border: 0;
+	float: left;
+	text-align: center;
+	background-position: 0 -474px;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+.RadScheduler .rsModalWrapper .rsModalButtons a:hover
+{
+	background-position: -73px -474px;
+}
+
+.RadScheduler .rsModalWrapper .rsModalButtons .rsModalConfirm
+{
+	margin-right: 9px;
+}
+
+.RadScheduler .rsModalWrapper .rsModalIcon
+{
+	position: absolute;
+	
+	top: 55px;
+	left: 45px;
+
+	width: 32px;
+	height: 32px;
+	
+	overflow: hidden;
+	background-position: 0 -526px;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+
+/* </modal dialogs> */
+
+/* RadGlitch Fix */
+
+.RadScheduler .rsInnerFix
+{
+	margin-right: 17px;
+}
+
+.RadScheduler .rsOverflowExpand .rsInnerFix
+{
+	margin-right: 0;
+}
+
+/* Vertical Header default width */
+
+.RadScheduler .rsContent .rsSpacerCell div,
+.RadScheduler .rsContent .rsAllDayHeader div,
+.RadScheduler .rsContent .rsVerticalHeaderTable th,
+.RadScheduler .rsContent .rsVerticalHeaderTable th div
+{
+	min-width: 52px;
+}
+
+* html .RadScheduler .rsContent .rsSpacerCell div, 
+* html .RadScheduler .rsContent .rsAllDayHeader div,
+* html .RadScheduler .rsContent .rsVerticalHeaderTable th,
+* html .RadScheduler .rsContent .rsVerticalHeaderTable th div { width: 52px; } /*IE6 and IE7 quirks*/
+* html .RadScheduler .rsContent .rsVerticalHeaderSized th,
+* html .RadScheduler .rsContent .rsVerticalHeaderSized th div { width: auto; } /* Fix for sized headers */
+
+*+html .RadScheduler .rsContent .rsSpacerCell div,
+*+html .RadScheduler .rsContent .rsAllDayHeader div,
+*+html .RadScheduler .rsContent .rsVerticalHeaderTable th div { width: 52px; } /*IE7*/
+*+html .RadScheduler .rsContent .rsVerticalHeaderSized th div { width: 100%; } /* Fix for sized headers */
+
+/* /Vertical Header default width */
+
+/* Fix for client rendering wrappers in IE6 */
+
+.RadScheduler .rsAdvancedInsertWrapper,
+.RadScheduler .rsAdvancedEditWrapper
+{
+	position: relative;
+}
+
+/* /Fix for client rendering wrappers in IE6 */
+
+table.RadCalendarTimeView td a
+{
+	text-transform: lowercase;
+	text-align: right;
+}
+
+table.RadCalendarTimeView tr td
+{
+	padding-top: 1px; padding-bottom: 1px;
+}
+
+/* Printing styles */
+@media print 
+{
+    div.RadScheduler, 
+    div.RadScheduler .rsContentScrollArea, 
+    div.RadScheduler .rsContentWrapper, 
+    div.RadScheduler .rsVerticalHeaderWrapper,
+    div.RadScheduler .rsVerticalHeaderWrapper div
+    { 
+        height: auto !important;
+    }
+
+    div.RadScheduler, 
+    div.RadScheduler .rsTopWrap
+    {
+        overflow: visible !important;
+    }
+
+    div.RadScheduler .rsContentScrollArea
+    {
+        overflow: hidden !important;
+    }
+    
+    div.RadScheduler .rsInnerFix
+    {
+    	margin-right: 0px !important;
+    }
+}
+
+/* <hidden appointment indicators> */
+
+.RadScheduler .rsTopIndicator
+{
+    position: absolute;
+    top: 0;            
+}
+
+.RadScheduler .rsBottomIndicator
+{
+    position: relative;
+    top: -14px;            
+}      
+
+.RadScheduler .rsArrowContainer
+{            
+    left: 0;
+    table-layout: fixed;
+    background: transparent;
+    z-index: 100;
+}
+
+.RadScheduler .rsArrowContainer tr
+{
+	vertical-align: top;
+}
+
+.RadScheduler .rsArrowContainer tr td
+{
+	background: none;
+	border: 0;
+    font-size: 0;
+    line-height: 0;
+	position: relative;
+    vertical-align: bottom;
+}
+
+.RadScheduler .rsArrowWrap
+{
+	position: relative;
+}
+
+.RadScheduler .rsOvertimeArrow
+{        	
+	display: block;
+	width: 45px;
+	height: 8px;
+	font-size: 0;
+	position: absolute;
+	top: 3px;
+	margin-left:-23px;
+	left: 50%;
+    text-decoration: none;
+}
+	
+.RadScheduler .rsBottomIndicator a.rsOvertimeArrow:hover
+{
+	background-position: -180px -40px;
+}
+
+.RadScheduler .rsTopIndicator a.rsOvertimeArrow:hover
+{
+	background-position: -134px -40px;
+}
+
+/* </hidden appointment indicators> */
+
+/* RadScheduler Vista skin */
+
+/* common */
+.RadScheduler_PAMS,
+.RadScheduler_PAMS a,
+.RadScheduler_PAMS input,
+.RadScheduler_PAMS select,
+.RadScheduler_PAMS textarea
+{
+	color: #000;
+	font: normal 1.00em/14px "Segoe UI", Arial, sans-serif;
+}
+
+.RadScheduler_PAMS textarea
+{
+	background: #fff;
+}
+
+/* header */
+
+/* header sprites */
+.RadScheduler_PAMS .rsHeader,
+.RadScheduler_PAMS .rsHeader ul a:hover,
+.RadScheduler_PAMS .rsHeader ul a:hover span,
+.RadScheduler_PAMS .rsHeader .rsSelected,
+.RadScheduler_PAMS .rsHeader .rsSelected em,
+.RadScheduler_PAMS .rsHeader .rsDatePickerActivator,
+.RadScheduler_PAMS .rsHeader .rsPrevDay,
+.RadScheduler_PAMS .rsHeader .rsNextDay,
+.RadScheduler_PAMS .rsHorizontalHeaderTable th
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+* html .RadScheduler_PAMS .rsHeader,
+* html .RadScheduler_PAMS .rsHeader ul a:hover,
+* html .RadScheduler_PAMS .rsHeader ul a:hover span,
+* html .RadScheduler_PAMS .rsHeader .rsSelected,
+* html .RadScheduler_PAMS .rsHeader .rsSelected em,
+* html .RadScheduler_PAMS .rsHeader .rsDatePickerActivator,
+* html .RadScheduler_PAMS .rsHeader .rsPrevDay,
+* html .RadScheduler_PAMS .rsHeader .rsNextDay,
+* html .RadScheduler_PAMS .rsHorizontalHeaderTable th
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+.RadScheduler_PAMS .rsHeader
+{
+	border: 1px solid #cddaea;
+}
+
+.RadScheduler_PAMS .rsHeader,
+.RadScheduler_PAMS .rsHeader a,
+.RadScheduler_PAMS .rsHeader ul span,
+.RadScheduler_PAMS .rsHeader ul em
+{
+	color: #1e395b;
+}
+
+*+html .RadScheduler_PAMS .rsHeader .RadCalendar_PAMS a { line-height: 20px; }
+* html .RadScheduler_PAMS .rsHeader .RadCalendar_PAMS a { line-height: 20px; }
+
+div.RadScheduler_PAMS .rsHeader ul
+{
+	padding-top: 1px;
+}
+
+div.RadScheduler_PAMS .rsHeader li,
+div.RadScheduler_PAMS .rsTopWrap .rsHeader ul a
+{
+	line-height: 28px;
+}
+
+div.RadScheduler_PAMS .rsHeader ul a:hover,
+div.RadScheduler_PAMS .rsHeader .rsSelected 
+{
+	background-position: 0 -70px;
+}
+
+div.RadScheduler_PAMS .rsHeader ul a:hover span,
+div.RadScheduler_PAMS .rsHeader .rsSelected em
+{
+	background-position: 100% -70px;
+}
+
+div.RadScheduler_PAMS .rsHeader .rsPrevDay, 
+div.RadScheduler_PAMS .rsHeader .rsNextDay
+{
+	height: 22px;
+	line-height: 22px;
+	width: 22px;
+}
+
+div.RadScheduler_PAMS .rsHeader .rsPrevDay 
+{
+	margin: 4px 0 0 3px;
+}
+
+div.RadScheduler_PAMS .rsHeader .rsNextDay
+{
+	background-position: -23px -48px;
+	margin: 4px 6px 0 0;
+}
+
+div.RadScheduler_PAMS .rsHeader .rsNextDay:hover {
+	background-position: -93px -48px;
+}
+
+/* content */
+
+.RadScheduler_PAMS .rsContent
+{
+	background: #fff;
+}
+
+/* <headers> */
+
+.RadScheduler_PAMS .rsHorizontalHeaderTable
+{
+	background: #eff6fc;
+}
+
+.RadScheduler_PAMS .rsHorizontalHeaderWrapper {
+	border-color: #d4dbe5;
+	background: #dfeaf7;
+}
+
+.RadScheduler_PAMS .rsSpacerCell,
+.RadScheduler_PAMS .rsAllDayHeader,
+.RadScheduler_PAMS .rsVerticalHeaderWrapper,
+.RadScheduler_PAMS .rsVerticalHeaderTable
+{
+	background: #f1f5fb;
+}
+
+.RadScheduler_PAMS .rsHorizontalHeaderTable th
+{
+	border-color: #d4dbe5;
+	background-color: #dfeaf7;
+}
+
+.RadScheduler_PAMS .rsVerticalHeaderTable th
+{
+	border-color: #eff7fc #e7edf7;
+}
+
+.RadScheduler_PAMS .rsVerticalHeaderTable .rsAlt th
+{
+	border-color: #d4dbe5 #e7edf7;
+}
+
+/* </headers> */
+
+/* <all-day-row> */
+
+.RadScheduler_PAMS .rsAllDayRow
+{
+	background: #dfeaf7;
+}
+
+.RadScheduler_PAMS .rsSpacerCell,
+.RadScheduler_PAMS .rsAllDayHeader,
+.RadScheduler_PAMS .rsVerticalHeaderTable .rsAllDayHeader
+{
+	border-color: #a7bac5 #cfe4f0;
+}
+
+.RadScheduler_PAMS .rsAllDayRow td,
+.RadScheduler_PAMS .rsContentTable .rsAllDayRow td
+{
+	border-color: #d4dbe5;
+	border-style: solid;
+}
+
+.RadScheduler_PAMS .rsVerticalHeaderTable .rsMainHeader th
+{
+	border-bottom-color: #A7BAC5;
+}
+
+.RadScheduler_PAMS .rsSpacerCell,
+.RadScheduler_PAMS .rsContent .rsAllDayHeader
+{
+	border-bottom-color: #d4dbe5;
+}
+
+/* </all-day-row> */
+
+.RadScheduler_PAMS .rsContent,
+.RadScheduler_PAMS .rsTopWrap .rsFooter
+{
+	border: 1px solid #a5b3c5;
+	border-top: 0;
+}
+
+.RadScheduler_PAMS .rsContentTable td
+{
+	border-color: #e8eaec #e8eaec;
+	border-bottom-style: dotted;
+}
+
+.RadScheduler_PAMS .rsContentTable .rsAlt td
+{
+	border-color: #d4dbe5 #e8eaec;
+	border-bottom-style: solid;
+}
+
+.RadScheduler_PAMS .rsMonthView .rsOtherMonth
+{
+	background-color: #F9F9F9;
+}
+
+/* <appointments> */
+.RadScheduler_PAMS .rsApt .rsArrowTop,
+.RadScheduler_PAMS .rsApt .rsArrowBottom,
+.RadScheduler_PAMS .rsApt .rsArrowLeft,
+.RadScheduler_PAMS .rsApt .rsArrowRight,
+.RadScheduler_PAMS .rsApt .rsAptDelete,
+.RadScheduler_PAMS .rsApt .rsAptDelete:hover,
+.RadScheduler_PAMS .rsApt .rsAptResize,
+.RadScheduler_PAMS .rsApt .rsAptRecurrence,
+.RadScheduler_PAMS .rsApt .rsAptRecurrenceException
+{
+	background-color: transparent;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+	background-repeat: no-repeat;
+}
+
+* html .RadScheduler_PAMS .rsApt .rsArrowTop,
+* html .RadScheduler_PAMS .rsApt .rsArrowBottom,
+* html .RadScheduler_PAMS .rsApt .rsArrowLeft,
+* html .RadScheduler_PAMS .rsApt .rsArrowRight,
+* html .RadScheduler_PAMS .rsApt .rsAptDelete,
+* html .RadScheduler_PAMS .rsApt .rsAptDelete:hover,
+* html .RadScheduler_PAMS .rsApt .rsAptResize,
+* html .RadScheduler_PAMS .rsApt .rsAptRecurrence,
+* html .RadScheduler_PAMS .rsApt .rsAptRecurrenceException
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+.RadScheduler_PAMS .rsApt .rsAptDelete
+{
+	width: 16px;
+	height: 16px;
+	background-position: -40px -343px;
+}
+
+.RadScheduler_PAMS .rsAptDelete:hover
+{
+	background-position: -65px -343px;
+}
+
+.RadScheduler_PAMS .rsAptCreate,
+.RadScheduler_PAMS .rsMonthView .rsAptCreate,
+.RadScheduler_PAMS .rsAptCreateRow2,
+.RadScheduler_PAMS .rsMonthView .rsAptCreateRow2
+{
+	background-color: #e6eff7;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+	background-repeat: repeat-x;
+}
+
+* hmtl .RadScheduler_PAMS .rsAptCreate,
+* hmtl .RadScheduler_PAMS .rsMonthView .rsAptCreate,
+* hmtl .RadScheduler_PAMS .rsAptCreateRow2,
+* hmtl .RadScheduler_PAMS .rsMonthView .rsAptCreateRow2
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+.RadScheduler_PAMS .rsNonWorkHour,
+.RadScheduler_PAMS .rsSunCol,
+.RadScheduler_PAMS .rsSatCol
+{
+	background-color: #f5fcff;
+}
+
+.RadScheduler_PAMS .rsAptCreateRow3,
+.RadScheduler_PAMS .rsMonthView .rsAptCreateRow3,
+.RadScheduler_PAMS .rsAptCreateRow4,
+.RadScheduler_PAMS .rsMonthView .rsAptCreateRow4,
+.RadScheduler_PAMS .rsAptCreateRow5,
+.RadScheduler_PAMS .rsMonthView .rsAptCreateRow5
+{
+	background: #e6eff7;
+}
+
+.RadScheduler_PAMS .rsFullTime 
+{
+	color: #000;
+}
+
+.RadScheduler_PAMS .rsAptContent,
+.RadScheduler_PAMS .rsAptIn,
+.RadScheduler_PAMS .rsAptMid,
+.RadScheduler_PAMS .rsAptOut
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsAppointmentBg.png');
+}
+
+.RadScheduler_PAMS .rsAptSimple
+{
+	background-color: #d5effc;
+	border-color: #99defd;
+}
+
+/* </appointments> */
+
+/* <footer> */
+
+.RadScheduler_PAMS div.rsFooter
+{
+	background-color: #f0fafd;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+	background-repeat: repeat-x;
+	border-color: #a2a2a2;
+}
+
+.RadScheduler_PAMS div.rsFooter a
+{
+	color: #1e395b;
+	background-color: transparent;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+	background-repeat: no-repeat;
+}
+
+* html .RadScheduler_PAMS div.rsFooter,
+* html .RadScheduler_PAMS div.rsFooter a
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+.RadScheduler_PAMS div.rsFooter a:hover
+{
+	color: #3e597b;
+}
+
+/* </footer> */
+
+/* <inline edit form> */
+
+.RadScheduler_PAMS .rsEditOptions a,
+.RadScheduler_PAMS .rsAptEditResizeHandle,
+.RadScheduler_PAMS .rsAptEditFormWrapper
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+* html .RadScheduler_PAMS .rsEditOptions a,
+* html .RadScheduler_PAMS .rsAptEditResizeHandle,
+* html .RadScheduler_PAMS .rsAptEditFormWrapper
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+.RadScheduler_PAMS .rsAptEditFormOuter, /* top */
+.RadScheduler_PAMS .rsAptEditFormInner  /* bottom */
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsInlineEditHSprite.png');
+}
+
+.RadScheduler_PAMS .rsAptEditFormMiddle, /* left */
+.RadScheduler_PAMS .rsAptEditFormMiddle2 /* right */
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsInlineEditVSprite.png');
+}
+
+.RadScheduler_PAMS .rsAptEditFormWrapper .rsAptEditTextareaWrapper
+{
+	border-color: #9cb6c5;
+	background: #fff;
+}
+
+.RadScheduler_PAMS .rsAptEditFormWrapper .rsAptEditTextareaWrapper textarea
+{
+	background: #fff;
+}
+
+.RadScheduler_PAMS .rsAptEditFormWrapper .rsEditOptions 
+{
+	background: #dfe4f5;
+}
+
+/* <inline edit form template> */
+
+.RadScheduler_PAMS .rsAptEditFormWrapper .rsTemplateWrapper 
+{
+	background: #DFE4F5;
+}
+
+/* </inline edit form template> */
+
+/* </inline edit form> */
+
+/* <advanced edit form> */
+
+.RadScheduler_PAMS  div.rsAdvancedEdit div.rsAdvContentWrapper
+{
+	background: #fff;
+	border: 1px solid #9cb6c5;
+	border-top-color: #a5b3c5;
+}
+
+/* <xref input skins> */
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvInput,
+.RadScheduler_PAMS .rsAdvancedEdit select,
+.RadScheduler_PAMS .rsAdvancedEdit .textareaWrapper
+{
+	border-color: #ABADB3 #DBDFE6 #DBDFE6 #ABADB3;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsInvalid textarea,
+.RadScheduler_PAMS .rsAdvancedEdit .rsInvalid input,
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvTimePicker .riEmpty
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Input/sprite.gif');
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit .textareaWrapper
+{
+	background: #fff;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsInvalid
+{
+	border-color: #F32800;
+	color: #F32800;
+}
+/* </xref input skins> */
+
+.RadScheduler_PAMS .rsAdvancedEdit h2,
+.RadScheduler_PAMS .rsAdvancedEdit h3
+{
+	color: #567db0;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit h2
+{
+	border-bottom: 1px solid #CCC;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit h2 span
+{
+	background: #f0f0f0;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvRecurrenceFreq
+{
+	border-right: 1px solid #fff;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit ul.rsRecurrenceOptionList   /* ??? */
+{
+	border-right: 1px solid #CCC;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit div.rsAdvPatternPanel
+{
+	border-left: 0;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvancedSubmitArea
+{
+	border-color: #CCC;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit div.rsAdvancedSubmitArea a 
+{
+	color: #000;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+/* </advanced edit form> */
+
+/* <date/time picker> */
+
+.RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riEnabled,
+.RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riHover,
+.RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riFocused
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+* html .RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riEnabled,
+* html .RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riHover,
+* html .RadScheduler_PAMS .rsTimePick .RadInput_PAMS input.riFocused,
+* html .RadScheduler_PAMS .rsAdvancedEdit div.rsAdvancedSubmitArea a 
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+/* </date/time picker> */
+
+/* <modal dialogs> */
+
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvTitle,
+.RadScheduler_PAMS .rsModalWrapper .rsModalOuter,
+.RadScheduler_PAMS .rsAdvancedEdit .rsAdvInnerTitle,
+.RadScheduler_PAMS .rsModalWrapper .rsModalOuterTitle
+{
+	border-color: #a5b3c5;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsModalOuterBg.png');
+}
+div.RadScheduler_PAMS .rsAdvancedEdit .rsAdvTitle
+{
+    padding-left:0px !important;
+}
+
+div.RadScheduler_PAMS .rsAdvancedEdit .rsAdvInnerTitle,
+div.RadScheduler_PAMS div.rsAdvancedModal .rsAdvInnerTitle,
+div.RadScheduler_PAMS .rsModalWrapper .rsModalOuterTitle
+{
+	color: #194260;
+	background-position: 100% 0;
+	background-color: #DFE9F5;
+	font-weight:bold;
+    border-top:1px solid #9CB6C5;
+    border-right:1px solid #9CB6C5;
+    border-left:1px solid #9CB6C5;
+}
+.RadScheduler_PAMS div.rsAdvancedModal .rsAdvTitle,
+.RadScheduler_PAMS div.rsAdvancedModal .rsAdvInnerTitle
+{
+    background-color: #DFE9F5;
+    
+}
+/*.RadScheduler td {font-weight: none}*/
+* html .RadScheduler_PAMS .rsAdvancedEdit .rsAdvTitle,
+* html .RadScheduler_PAMS .rsModalWrapper .rsModalOuter,
+* html .RadScheduler_PAMS .rsAdvancedEdit .rsAdvInnerTitle,
+* html .RadScheduler_PAMS .rsModalWrapper .rsModalOuterTitle
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsModalOuterBgIE6.png');
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit a.rsAdvEditClose,
+.RadScheduler_PAMS .rsModalWrapper a.rsModalWindowClose
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+	opacity: 0.8;
+	-moz-opacity: 0.8;
+	filter: alpha(opacity=80);
+	height:18px;
+	margin-top:-24px;
+	width:27px;
+}
+
+.RadScheduler_PAMS .rsAdvancedEdit a.rsAdvEditClose:hover,
+.RadScheduler_PAMS .rsModalWrapper .rsModalWindowClose:hover
+{
+	opacity: 1;
+	-moz-opacity: 1;
+	filter: alpha(opacity=100);
+}
+
+.RadScheduler_PAMS .rsModalWrapper .rsModalTitle
+{
+	color: #000;
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+.RadScheduler_PAMS .rsModalWrapper .rsModalInner
+{
+	border-color: #a5b3c5;
+	background: #fff;
+}
+
+.RadScheduler_PAMS .rsModalWrapper .rsModalIcon,
+.RadScheduler_PAMS .rsModalWrapper .rsModalButtons a
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+* html .RadScheduler_PAMS .rsAdvancedEdit a.rsAdvEditClose,
+* html .RadScheduler_PAMS .rsModalWrapper a.rsModalWindowClose,
+* html .RadScheduler_PAMS .rsModalWrapper .rsModalTitle,
+* html .RadScheduler_PAMS .rsModalWrapper .rsModalIcon,
+* html .RadScheduler_PAMS .rsModalWrapper .rsModalButtons a
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+/* Inline Edit buttons + ModalDialog buttons */
+.RadScheduler_PAMS .rsModalWrapper .rsModalButtons a,
+.RadScheduler_PAMS .rsTopWrap .rsAptEditFormWrapper .rsEditOptions a
+{
+	color: #000;
+}
+
+/* </modal dialogs> */
+
+.RadScheduler_PAMS .rsBottomIndicator .rsOvertimeArrow
+{
+	background: transparent url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png') no-repeat -180px -31px;
+}        	
+
+.RadScheduler_PAMS .rsTopIndicator .rsOvertimeArrow
+{
+	background: transparent url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png') no-repeat -134px -31px;
+}      
+
+.RadScheduler_PAMS .rsHorizontalHeaderTable {background: #eff6fc;width:100%;}
+
+.RadScheduler_PAMS .rsContentTable {width:100%;}
+
+/********** RadSchedulerReminderDialog *********/
+/* <advanced edit title> */
+
+.ReminderDialog_PAMS .rsModalBgTopLeft,
+.ReminderDialog_PAMS .rsModalBgTopRight,
+.ReminderDialog_PAMS .rsModalBgBottomLeft,
+.ReminderDialog_PAMS .rsModalBgBottomRight
+{
+    background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsModalBg.png');
+}
+* html .ReminderDialog_PAMS .rsModalBgTopLeft,
+* html .ReminderDialog_PAMS .rsModalBgTopRight,
+* html .ReminderDialog_PAMS .rsModalBgBottomLeft,
+* html .ReminderDialog_PAMS .rsModalBgBottomRight
+{
+    background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsModalBgIE6.png');
+}
+
+.ReminderDialog_PAMS .rsRemTitleIcon,
+.ReminderDialog_PAMS .rsRemTitleBarIcon,
+.ReminderDialog_PAMS a.rsRemTitleBarCloseBtn,
+.ReminderDialog_PAMS .rsRemActions a.rsRemDismissAllBtn,
+.ReminderDialog_PAMS .rsRemActions a.rsRemOpenItemBtn,
+.ReminderDialog_PAMS .rsRemActions a.rsRemDismissBtn,
+.ReminderDialog_PAMS .rsRemSnoozePanel a.rsRemSnoozeBtn
+{
+    background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+* html .ReminderDialog_PAMS .rsRemTitleIcon,
+* html .ReminderDialog_PAMS .rsRemTitleBarIcon,
+* html .ReminderDialog_PAMS a.rsRemTitleBarCloseBtn,
+* html .ReminderDialog_PAMS .rsRemActions a.rsRemDismissAllBtn,
+* html .ReminderDialog_PAMS .rsRemActions a.rsRemOpenItemBtn,
+* html .ReminderDialog_PAMS .rsRemActions a.rsRemDismissBtn,
+* html .ReminderDialog_PAMS .rsRemSnoozePanel a.rsRemSnoozeBtn
+{
+    background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}
+
+
+/********** RadSchedulerRecurrenceEditor *************/
+
+.RecurrenceEditor_PAMS .rsInvalid input,
+.RecurrenceEditor_PAMS .rsAdvTimePicker .riEmpty
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Input/sprite.gif');
+}
+
+/* <date/time picker> */
+
+.RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riEnabled,
+.RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riHover,
+.RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riFocused
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSprites.png');
+}
+
+* html .RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riEnabled,
+* html .RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riHover,
+* html .RecurrenceEditor_PAMS .rsTimePick .RadInput_PAMS input.riFocused,
+* html .RecurrenceEditor_PAMS .rsAdvancedEdit div.rsAdvancedSubmitArea a 
+{
+	background-image: url('./Platform/Include/Skins/PAMS/Images/Telerik/Scheduler/rsSpritesIE6.png');
+}

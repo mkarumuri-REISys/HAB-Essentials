@@ -1,0 +1,1275 @@
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+
+  <statement name="CreateTaskProcess" connection="Common">
+    <param id="processxml" type="String" size="12000" />
+    <param id="UserId" type="String" size="36" />
+    <sp name="uspPN_InsertTaskProcess"/>
+  </statement>
+
+  <statement name="UpdateTaskProcessDimension" connection="Common">
+    <param id="TaskProcessId" type="String" size="36" />
+    <param id="UserId" type="String" size="36" />
+    <sp name="uspPN_updateDimensionForTaskProcess"/>
+  </statement>
+
+  <statement name="UpdateTaskProcessRelatedValues" connection="Common">
+    <param id="processxml" type="String" size="12000" />
+    <sp name="uspPN_UpdateRelatedValues"/>
+  </statement>
+
+  <statement name="CreateTask" connection="Common">
+    <param id="processxml" type="String" size="12000" />
+    <param id="TaskProcessId" type="String" size="36" />
+    <param id="UserId" type="String" size="36" />
+    <sp name="uspPN_InsertTasks"/>
+  </statement>
+
+  <statement name="DeleteTask" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" required="true"/>
+    <param id="TaskTypeCode" type="Int32"  required="true"/>
+    <param id="UserId" type="String" size="36" />
+    <sp name="uspPN_deleteTasks"/>
+  </statement>
+
+  <statement name="DeleteTaskByAssignee" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" required="true"/>
+    <param id="TaskTypeCode" type="Int32"  required="true"/>
+    <param id="AssigneeId" type="String" size="36"   required="true"/>
+    <sql>
+      Declare @taskId uniqueidentifier
+      Declare @taskProcessId uniqueidentifier
+      Declare @count int
+
+      set @count = 0
+
+      select @taskId = a.taskid, @taskProcessId  = b.taskprocessid
+      from tasks a inner join RelTaskProcessTask b on a.taskid = b.taskid
+      where a.clienttaskid = @ClientTaskId
+      and TaskTypeCode = @taskTypeCode
+      and AssigneeId = @AssigneeId
+
+      select @count = count(*) from RelTaskProcessTask where taskprocessid = @taskProcessId
+      update tasks
+      <columns mode="update">
+        <column dbField="LastUpdateId" paramId="AssigneeId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+        </exp>
+      </where>
+      and AssigneeId = @AssigneeId
+      and TaskId = @taskId
+      delete from taskrelatedvalue where SourceProviderId = @taskId and SourceProviderCode = 2
+      delete from RelTaskProcessTask where taskid = @taskId
+      delete from tasks where taskid = @taskId
+
+
+      if (@count  = 1 )
+      begin
+      delete from taskrelatedvalue where SourceProviderId = @taskProcessId and SourceProviderCode = 1
+      delete from TaskProcessOtherRelatedObjects where taskprocessid = @taskProcessId
+      delete from taskprocess where taskprocessid = @taskProcessId
+      end
+
+    </sql>
+  </statement>
+
+  <statement name="CompleteTaskByAssignee" connection="Common">
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="AssigneeId" type="String" size="36" />
+    <sql>
+      Declare @taskId uniqueidentifier
+      Declare @taskProcessId uniqueidentifier
+      Declare @count int
+
+      set @count = 0
+
+      select @taskId = a.taskid, @taskProcessId  = b.taskprocessid
+      from tasks a inner join RelTaskProcessTask b on a.taskid = b.taskid
+      where a.clienttaskid = @ClientTaskId
+      and TaskTypeCode = @taskTypeCode
+      and AssigneeId = @AssigneeId
+
+      update tasks
+      <columns mode="update">
+        <column dbField="TaskStatusCode">3</column>
+        <column dbField="CompletedOnDate">current_timestamp</column>
+        <column dbField="LastUpdateId" paramId="AssigneeId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+        </exp>
+      </where>
+      and AssigneeId = @AssigneeId
+      and TaskId = @taskId
+    </sql>
+  </statement>
+
+
+  <statement name="DeleteTaskProcess" connection="Common">
+    <param id="TaskProcessId" type="String" size="36" required="true"/>
+    <param id="UserId" type="String" size="36" />
+    <sp name="uspPN_deleteTaskProcess"/>
+  </statement>
+
+  <statement name="GetTaskProcessID" connection="Common">
+    <param id="suppliedResourceTypeCode" type="Int32"  required="true"/>
+    <param id="suppliedResourceValue" type="String" size="36" required="true"/>
+    <param id="taskProcessTypeCode" type="Int32"  required="true"/>
+    <sql>
+      Select TaskProcessId from TaskProcess
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="SuppliedResourceTypeCode" paramId="suppliedResourceTypeCode"/>
+          <exp op="=" dbField="SuppliedResourceValue" paramId="suppliedResourceValue"/>
+          <exp op="=" dbField="TaskProcessTypeCode" paramId="taskProcessTypeCode"/>
+
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetAssignees" connection="Common">
+    <param id="ResourceValue" required="true"/>
+    <param id="ResourceTypeCode" type="Int32" required="true"/>
+    <sql>
+      Select T.AssigneeId, LTP.RoleId
+      from TaskProcess TP
+      JOIN RelTaskProcessTask RTP ON RTP.TaskProcessId = TP.TaskProcessId
+      JOIN Tasks T ON T.TaskId = RTP.TaskId
+      JOIN LookupTaskType LTP ON LTP.LookupCode = T.TaskTypeCode
+      WHERE TaskStatusCode IN (1,2)
+      AND TP.SuppliedResourceValue = <exp paramId="ResourceValue"/>
+      AND SuppliedResourceTypeCode = <exp paramId="ResourceTypeCode"/>
+    </sql>
+  </statement>
+
+  <statement name="reAssignTask" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="ReassignedUser" type="String" size="36"/>
+    <param id="TaskStatusCode" type="Int32"  />
+    <param id="StartedOnDate" type="String" size="80" />
+    <param id="CompletedOnDate" type="String" size="80" />
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="TaskId" type="String" size="36" />
+    <param id="TeamId" type="String" size="36" />
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="AssigneeId" paramId="ReassignedUser" />
+        <column dbField="TeamId" paramId="TeamId" />
+        <column dbField="AssignedOnDate">current_timestamp</column>
+        <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+        <column dbField="StartedOnDate" paramId="StartedOnDate" />
+        <column dbField="CompletedOnDate" paramId="CompletedOnDate" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="ReassignTaskByTeam" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="ReassignedUser" type="String" size="36" required="true"/>
+    <param id="TaskStatusCode" type="Int32"  />
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="FromTeamId" type="String" size="36" />
+    <param id="ToTeamId" type="String" size="36" />
+    <sql>
+
+      DECLARE @TaskIds TABLE
+      (
+      TaskId uniqueidentifier
+      )
+
+      INSERT INTO @TaskIds (TaskId)
+      SELECT TaskId
+      FROM Tasks T
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="T.TeamId" paramId="FromTeamId"/>
+          <exp op="IN" dbField="T.TaskStatusCode">(1,2)</exp>
+        </exp>
+      </where>
+
+      update tasks
+      <columns mode="update">
+        <column dbField="AssigneeId" paramId="ReassignedUser" />
+        <column dbField="TeamId" paramId="ToTeamId" />
+        <column dbField="AssignedOnDate">current_timestamp</column>
+        <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      Where TaskId IN (SELECT TaskId FROM @TaskIds)
+
+      --Select Impacted TaskIds
+      SELECT TaskId FROM @TaskIds
+    </sql>
+  </statement>
+
+  <statement name="ReassignTaskByTaskId" connection="Common">
+    <param id="TaskId" type="String" />
+    <param id="ReassignedUser" type="String" size="36" required="true"/>
+    <param id="UserId" type="String" size="36" required="true"/>
+    <sql>
+      UPDATE tasks
+      <columns mode="update">
+        <column dbField="AssigneeId" paramId="ReassignedUser" />
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="AssignedOnDate">current_timestamp</column>
+        <column dbField="LastUpdateDate">current_timestamp</column>
+        <column dbField="TeamId">null</column>
+      </columns>
+      <where>
+        <exp op="IN" dbField="TaskId" paramId="TaskId"/>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="unassignTask" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="CurrentAssignee" type="String" size="36" />
+    <param id="UserId" type="String" size="36" required="true"/>
+    <param id="TaskId" type="String" size="36" />
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="AssigneeId">NULL</column>
+        <column dbField="AssignedOnDate">NULL</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbfield="AssigneeId" paramId="CurrentAssignee" />
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="StartTask" connection="Common">
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36"/>
+    <param id="TaskId" type="String" size="36"/>
+    <param id="Completed" type="Int32" default="3" />
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="TaskStatusCode">2</column>
+        <column dbField="StartedOnDate">current_timestamp</column>
+        <column dbField="CompletedOnDate">NULL</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+          <exp op="!=" dbField="TaskStatusCode" paramId="Completed" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="GetAssignedTaskCount" connection="Common">
+    <param id="RoleID" type="Int32"/>
+    <param id="UserID" type="String" required="true"/>
+    <param id="BureauId" type="Int32" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="IncludeSubRoles" type="Boolean" />
+    <sql>
+      Select
+      count(T.TaskID) AssignedTaskCount
+      FROM tasks t
+      join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      left join AC_Role R on LTT.RoleId = R.RoleId
+      left outer join AC_Role R1 on R1.RoleID = R.ParentRoleID
+      join LookupTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+      join RelTaskProcessTask rtpt on  t.TaskId = rtpt.TaskId
+      join TaskProcess tp on tp.TaskProcessId = rtpt.TaskProcessId
+      join LookupTaskProcessType LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      Join TaskProcessOtherRelatedObjects tporo on tporo.TaskProcessId = tp.TaskProcessId
+      <where>
+        <exp op="AND" >
+          t.TaskStatusCode in (1,2)
+          <exp op="!=" dbField="LTPT.ProcessStatusFlag">0</exp>
+          <optional depends="BureauId" >
+            <exp op="=" dbField="tporo.BureauId" paramId="BureauId" />
+          </optional>
+          <optional depends="TaskTypeCode" >
+            <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+          </optional>
+          <optional depends="RoleID" >
+            <exp op="IN" dbField="LTT.RoleId">
+              <sql>
+                select RoleId
+                from AC_role
+                <where>
+                  <exp op="or">
+                    <exp op="=" dbField="RoleId" paramId="RoleID" />
+                    <optional depends="IncludeSubRoles" >
+                      <exp op="=" dbField="ParentRoleId" paramId="RoleID" />
+                    </optional>
+                  </exp>
+                </where>
+              </sql>
+            </exp>
+          </optional>
+          <!--<exp op="AND">-->
+          <!--<optional depends="RoleID == null">
+                            LTT.RoleId is null
+                        </optional>-->
+          <exp op="=" dbField="T.AssigneeId" paramId="UserID" />
+          <!--</exp>-->
+
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetUnssignedTaskCount" connection="Common">
+    <param id="RoleIds"/>
+    <param id="BureauId"/>
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="UserId" type="String" />
+    <sql>
+      select count(*) from Tasks t
+      inner join LookupTaskType ltt on ltt.LookupCode = t.TaskTypeCode
+      Join RelTaskProcessTask rtpt on rtpt.TaskId = t.TaskId
+      Join TaskProcess tp on tp.TaskProcessId = rtpt.TaskProcessId
+      Join LookupTaskProcessType LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      Join TaskProcessOtherRelatedObjects tporo on tporo.TaskProcessId = tp.TaskProcessId
+      <where>
+        <exp op="and">
+          t.AssigneeId is null and
+          t.TaskStatusCode in (1,2)
+          <exp op="IN" dbField="LTT.RoleId">
+            <sql>
+              select RoleId
+              from AC_reluserrole
+              <where>
+                <exp op="=" dbField="userid" paramId="UserId" />
+              </where>
+            </sql>
+          </exp>
+          <exp op="or">
+            taskdefaultFilterTypeCode is null
+            <exp op="and">
+              taskdefaultFilterTypeCode = 1
+              <exp op="=" dbField="tporo.bureauId" paramId="BureauId" ></exp>
+            </exp>
+          </exp>
+          <exp op="!=" dbField="LTPT.ProcessStatusFlag">0</exp>
+          <optional depends="TaskTypeCode" >
+            <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode" />
+          </optional>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetUnassignedTaskCountByTeam" connection="Common">
+    <param id="RoleIds" type="String"/>
+    <param id="TeamId" type="String" size="36" required="true"/>
+    <sql>
+      Select
+      count(T.TaskID) UnAssignedTaskCount
+      FROM tasks t
+      join LookupTaskType TT on TT.LookupCode = T.TaskTypeCode
+      <where>
+        <exp op="AND" >
+          t.AssigneeId is null and
+          t.TaskStatusCode in (1,2)
+          <exp op="=" dbField="t.TeamId" paramId="TeamId" />
+          <exp op="IN" dbField="TT.RoleID" paramId="RoleIds" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetAssignedTaskCountByTeam" connection="Common">
+    <param id="RoleIds" type="String"/>
+    <param id="TeamId" type="String" size="36" required="true"/>
+    <param id="UserId" type="String" size="36" required="true"/>
+    <sql>
+      Select
+      count(T.TaskID) UnAssignedTaskCount
+      FROM tasks t
+      join LookupTaskType TT on TT.LookupCode = T.TaskTypeCode
+      <where>
+        <exp op="AND" >
+          t.TaskStatusCode in (1,2)
+          <exp op="=" dbField="t.TeamId" paramId="TeamId" />
+          <exp op="=" dbField="t.AssigneeId" paramId="UserId" />
+          <exp op="IN" dbField="TT.RoleID" paramId="RoleIds" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="CompleteTaskProcess" connection="Common">
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="TaskProcessId" type="String" size="36" />
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="TaskStatusCode">3</column>
+        <column dbField="CompletedOnDate">current_timestamp</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        TaskId in (Select Taskid from RelTaskProcessTask where TaskProcessId = <exp paramId="TaskProcessId"/>) AND TaskStatusCode != 3
+        <optional depends="TaskTypeCode">
+          and
+          <exp op="AND">
+            <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          </exp>
+        </optional>
+      </where>
+
+    </sql>
+  </statement>
+
+  <statement name="CompleteTask" connection="Common">
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="TaskId" type="String" size="36"/>
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="TaskStatusCode">3</column>
+        <column dbField="CompletedOnDate">current_timestamp</column>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="LoadTaskProcess" connection="Common" >
+    <param id="ClientTaskId" type="String" size="36" parameterize="false"/>
+    <param id="TaskTypeCode" type="Int32" parameterize="false"/>
+    <param id="SuppliedResourceValue" type="String" size="36" parameterize="false"/>
+    <param id="SuppliedResourceTypeCode" type="Int32" parameterize="false"/>
+    <param id="TaskProcessId" type="String" size="36" parameterize="false"/>
+    <shape>
+      SHAPE
+      {
+      select  tp.TaskProcessId ,
+      tp.Description ,
+      tp.TaskProcessTypeCode ,
+      tp.SuppliedResourceValue ,
+      tp.SuppliedResourceTypeCode ,
+      tp.CreatorId ,
+      tp.CreatedDate ,
+      tp.LastUpdateId ,
+      tp.LastUpdateDate
+      from taskprocess tp
+      <optional depends="ClientTaskId">
+        inner join RelTaskProcessTask rtpt on tp.taskprocessid = rtpt.taskprocessid
+        inner join tasks t on t.taskid = rtpt.taskid
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <exp op="=" dbField="rtpt.TaskProcessId" paramId="TaskProcessId"/>
+        </exp>
+      </where>
+      }
+      APPEND({
+      select  trv.FieldCode,
+      trv.SourceProviderId,
+      trv.SourceProviderCode,
+      trv.FieldValue
+      from taskrelatedvalue trv
+      inner join taskprocess tp on trv.sourceProviderId = tp.taskprocessid and trv.sourceProviderCode = 1
+      <optional depends="ClientTaskId">
+        inner join RelTaskProcessTask rtpt on tp.taskprocessid = rtpt.taskprocessid
+        inner join tasks t on t.taskid = rtpt.taskid
+      </optional>
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <exp op="=" dbField="rtpt.TaskProcessId" paramId="TaskProcessId"/>
+        </exp>
+      </where>
+      }RELATE TaskProcessId to SourceProviderId ) as RelatedValue
+    </shape>
+  </statement>
+
+  <statement name="LoadTask" dbName="REPORTS" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" parameterize="false"/>
+    <param id="TaskTypeCode" type="Int32" parameterize="false"/>
+    <param id="SuppliedResourceValue" type="String" size="36" parameterize="false"/>
+    <param id="SuppliedResourceTypeCode" type="Int32" parameterize="false"/>
+    <param id="TaskProcessId" type="String" size="36" parameterize="false"/>
+    <shape>
+      SHAPE
+      {
+      select  t.TaskId,
+      t.TaskTypeCode,
+      t.PrimaryFieldCode,
+      t.AssignedOnDate,
+      t.StartedOnDate,
+      t.CompletedOnDate,
+      t.TaskStatusCode,
+      t.AssigneeId,
+      t.ClientTaskId,
+      t.ClientTaskDescription,
+      t.CreatorId,
+      t.CreatedDate,
+      t.LastUpdateDate,
+      t.LastUpdateId
+      from taskprocess tp
+      inner join RelTaskProcessTask rtpt on tp.taskprocessid = rtpt.taskprocessid
+      inner join tasks t on t.taskid = rtpt.taskid
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <exp op="=" dbField="rtpt.TaskProcessId" paramId="TaskProcessId"/>
+        </exp>
+      </where>
+      }
+      APPEND({
+      select  trv.FieldCode,
+      trv.SourceProviderId,
+      trv.SourceProviderCode,
+      trv.FieldValue
+      from taskrelatedvalue trv
+      inner join tasks t on trv.sourceProviderId = t.taskid and trv.sourceProviderCode = 2
+      inner join RelTaskProcessTask rtpt on t.taskid = rtpt.taskid
+      inner join taskprocess tp on tp.taskprocessid = rtpt.taskprocessid
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="t.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="t.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <exp op="=" dbField="rtpt.SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <exp op="=" dbField="rtpt.TaskProcessId" paramId="TaskProcessId"/>
+        </exp>
+      </where>
+      }RELATE TaskId to SourceProviderId ) as RelatedValue
+    </shape>
+  </statement>
+
+  <statement name="GetPendingTaskByProgram" connection="Common">
+
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="ClientTaskId" type="String" size="36" />
+
+    <sql>
+
+      Select max(P.ActivityCode) as ActivityCode, max(P.ProgramName) as ProgramName, max(LTPT.DisplayValue) as DisplaySection,
+      max(LTT.[Description]) as Task, max(LTS.DisplayValue) as TaskStatus, TPORO.ProgramId, P.ActivityCode,
+      count(*) as TaskNotstartedCount, 0 as TaskInProgressCount, max(T.TaskTypeCode) as TaskTypeCode, max(cast(T.ClientTaskId as varchar(36))) as ClientTaskId
+      From Tasks T
+      Inner Join RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      Inner Join TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      Inner Join TaskProcessOtherRelatedObjects TPORO on TPORO.TaskProcessId = TP.TaskProcessID
+      Inner Join lookuptaskprocesstype LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      Join (
+      Select PMAX.ProgramId, max(PMAX.ProgramInstance) as ProgramInstance, max(PMAX.ActivityCode) as ActivityCode, max(PMAX.ProgramShortName) as ProgramName
+      From Programs PMAX group by ProgramId
+      ) P on P.ProgramId = TPORO.ProgramId
+      Join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      Join LookUpTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+
+      <where>
+        <exp op="and">
+          T.TaskStatusCode = 1
+          <exp op="=" dbField="T.assigneeid" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+
+        </exp>
+      </where>
+      group by TPORO.ProgramId,  P.ActivityCode, TP.TaskProcessTypeCode, T.TaskTypeCode
+
+      Union
+
+      Select max(P.ActivityCode) as ActivityCode, max(P.ProgramName) as ProgramName, max(LTPT.DisplayValue) as DisplaySection,
+      max(LTT.[Description]) as Task, max(LTS.DisplayValue) as TaskStatus, TPORO.ProgramId, P.ActivityCode,
+      0 as TaskNotstartedCount, count(*) as TaskInProgressCount, max(T.TaskTypeCode) as TaskTypeCode, max(cast(T.ClientTaskId as varchar(36))) as ClientTaskId
+      From Tasks T
+      Inner Join RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      Inner Join TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      Inner Join TaskProcessOtherRelatedObjects TPORO on TPORO.TaskProcessId = TP.TaskProcessID
+      Inner Join lookuptaskprocesstype LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      Join (
+      Select PMAX.ProgramId, max(PMAX.ProgramInstance) as ProgramInstance, max(PMAX.ActivityCode) as ActivityCode, max(PMAX.ProgramShortName) as ProgramName
+      From Programs PMAX group by ProgramId
+      ) P on P.ProgramId = TPORO.ProgramId
+      Join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      Join LookUpTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+
+      <where>
+        <exp op="and">
+          T.TaskStatusCode = 2
+          <exp op="=" dbField="T.assigneeid" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+        </exp>
+      </where>
+
+      group by TPORO.ProgramId,  P.ActivityCode, TP.TaskProcessTypeCode, T.TaskTypeCode
+
+      Order by P.ActivityCode
+
+    </sql>
+
+  </statement>
+
+  <statement name="GetPendingTaskInfoByProgram" connection="Common">
+
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="ClientTaskId" type="String" size="36" />
+
+    <sql>
+
+      Select P.ActivityCode as ActivityCode, P.ProgramName as ProgramName, LTPT.DisplayValue as DisplaySection,
+      LTT.[Description] as Task, LTS.DisplayValue as TaskStatus, TPORO.ProgramId, P.ActivityCode,
+      T.TaskTypeCode as TaskTypeCode, cast(T.ClientTaskId as varchar(36)) as ClientTaskId
+      From Tasks T
+      Inner Join RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      Inner Join TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      Inner Join TaskProcessOtherRelatedObjects TPORO on TPORO.TaskProcessId = TP.TaskProcessID
+      Inner Join lookuptaskprocesstype LTPT on LTPT.LookupCode = TP.TaskProcessTypeCode
+      Join (
+      Select PMAX.ProgramId, max(PMAX.ProgramInstance) as ProgramInstance, max(PMAX.ActivityCode) as ActivityCode, max(PMAX.ProgramShortName) as ProgramName
+      From Programs PMAX group by ProgramId
+      ) P on P.ProgramId = TPORO.ProgramId
+      Join LookupTaskType LTT on LTT.LookupCode = T.TaskTypeCode
+      Join LookUpTaskStatus LTS on LTS.LookupCode = T.TaskStatusCode
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="T.assigneeid" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+        </exp>
+      </where>
+      Order by P.ActivityCode
+
+    </sql>
+  </statement>
+
+  <statement name="GetTaskInformation" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="TaskStatusCode" type="Int32" />
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="TaskProcess" type="String" size="10" />
+    <sql>
+      Select T.TaskTypeCode, cast(T.ClientTaskId as varchar(36)) as ClientTaskId, T.PrimaryFieldCode, T.TaskStatusCode as TaskStatusCode,
+      T.AssignedOnDate, T.StartedOnDate, T.CompletedOnDate, T.AssigneeId,
+      T.AvailableDate,
+      T.TaskId, T.ClientTaskDescription,
+      T.TeamId,
+      ISNULL(TM.TeamName, 'No Team') as TeamName
+      ,TM.TeamHierarchyPrefix as TeamPrefix
+      ,TP.SuppliedResourceValue as ResourceValue,
+      TP.SuppliedResourceTypeCode as ResourceTypeCode
+      ,TP.ProcessDetailCode as ProcessDetailCode
+      ,Convert(varchar(10),TP.MileStoneStartDate,101) as MilestoneStartDate
+      From dbo.Tasks T
+      Inner Join dbo.RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      Inner Join dbo.TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      LEFT JOIN DAS_Team_P  TM ON TM.TeamId = T.TeamId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="T.AssigneeId" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.TaskStatusCode" paramId="TaskStatusCode"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetTasks" connection="Common">
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TeamId" type="String" size="36" />
+    <param id="TaskProcessTypeCode" type="Int32" />
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="TaskStatusCodes" type="String" />
+    <sql>
+      SELECT
+      T.TaskTypeCode,
+      cast(T.ClientTaskId as varchar(36)) as ClientTaskId,
+      T.PrimaryFieldCode,
+      T.TaskStatusCode,
+      T.AssignedOnDate,
+      T.StartedOnDate,
+      T.CompletedOnDate,
+      T.AvailableDate,
+      T.AssigneeId,
+      T.TaskId,
+      T.ClientTaskDescription,
+      T.TeamId,
+      ISNULL(TM.TeamName, 'No Team') as TeamName
+      ,TM.TeamHierarchyPrefix as TeamPrefix
+      ,TP.SuppliedResourceValue as ResourceValue,
+      TP.SuppliedResourceTypeCode as ResourceTypeCode
+      ,TP.ProcessDetailCode as ProcessDetailCode
+      ,Convert(varchar(10),TP.MileStoneStartDate,101) as MilestoneStartDate
+      FROM
+      Tasks T
+      JOIN RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      JOIN TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      LEFT JOIN DAS_Team_P  TM ON TM.TeamId = T.TeamId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="T.ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="T.TeamId" paramId="TeamId"/>
+          <exp op="=" dbField="tp.TaskProcessTypeCode" paramId="TaskProcessTypeCode"/>
+          <exp op="=" dbField="T.AssigneeId" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="IN" dbField="T.TaskStatusCode" paramId="TaskStatusCodes"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetTasksByResourceValue" connection="Common">
+    <param id="SuppliedResourceValue" type="String" required="true" />
+    <param id="SuppliedResourceTypeCode" type="Int16" required="true" />
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32" />
+    <param id="TaskStatusCodes" type="String" />
+    <sql>
+      SELECT
+      T.TaskTypeCode,
+      cast(T.ClientTaskId as varchar(36)) as ClientTaskId,
+      T.PrimaryFieldCode,
+      T.TaskStatusCode,
+      T.AssignedOnDate,
+      T.StartedOnDate,
+      T.CompletedOnDate,
+      T.AvailableDate,
+      T.AssigneeId,
+      T.TaskId,
+      T.ClientTaskDescription,
+      T.TeamId,
+      ISNULL(TM.TeamName, 'No Team') as TeamName
+      ,TM.TeamHierarchyPrefix as TeamPrefix
+      ,TP.SuppliedResourceValue as ResourceValue,
+      TP.SuppliedResourceTypeCode as ResourceTypeCode
+      ,TP.ProcessDetailCode as ProcessDetailCode
+      ,Convert(varchar(10),TP.MileStoneStartDate,101) as MilestoneStartDate
+      FROM
+      Tasks T
+      JOIN RelTaskProcessTask RTPT on RTPT.TaskId = T.TaskId
+      JOIN TaskProcess TP on TP.TaskProcessId = RTPT.TaskProcessId
+      LEFT JOIN DAS_Team_P  TM ON TM.TeamId = T.TeamId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="tp.SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <exp op="=" dbField="tp.SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <exp op="=" dbField="T.AssigneeId" paramId="AssigneeId"/>
+          <exp op="=" dbField="T.TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="IN" dbField="T.TaskStatusCode" paramId="TaskStatusCodes"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="UpdateTaskAvailableDate" connection="Common">
+    <param id="ClientTaskId" type="String" size="36"/>
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="AssigneeId" type="String" size="36" />
+    <param id="UserId" type="String" size="36" />
+    <param id="AvailableDate" type="String"  />
+    <sql>
+      update tasks
+      <columns mode="update">
+        <column dbField="AvailableDate" paramId="AvailableDate"/>
+        <column dbField="LastUpdateId" paramId="UserId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="AssigneeId" paramId="AssigneeId"/>
+          <exp op="!=" dbField="TaskStatusCode">3</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="UpdateTaskProcessOtherRelatedObjects" connection="Common">
+    <param id="TaskProcessId" type="Guid" required="true" />
+    <param id="GrantId" type="Guid" />
+    <param id="OrgId" type="Guid" />
+    <param id="InternalOrgId" type="Int32" />
+    <param id="FundingCycleId" type="Guid" />
+    <param id="DGMOId" type="Int32" />
+    <param id="RelatedFieldCode" type="Int32" />
+    <param id="RelatedFieldValue" type="String" />
+    <param id="LastUpdateId" type="Guid" />
+    <sql>
+      Update TaskProcessOtherRelatedObjects
+      <columns mode="update">
+        <column dbField="GrantId" paramId="GrantId" />
+        <column dbField="OrgId" paramId="OrgId" />
+        <column dbField="InternalOrgId" paramId="InternalOrgId" />
+        <column dbField="FundingCycleId" paramId="FundingCycleId" />
+        <column dbField="DGMOId" paramId="DGMOId" />
+        <column dbField="RelatedFieldCode" paramId="RelatedFieldCode" />
+        <column dbField="RelatedFieldValue" paramId="RelatedFieldValue" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+        <column dbField="LastUpdateId" paramId="LastUpdateId" />
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="TaskProcessId" paramId="TaskProcessId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="UpdateTaskAssignmentForTeamOrUser" connection="Common">
+    <param id="AssignmentXml" type="String" size="12000"/>
+    <param id="CurrentUser" type="Guid" required="true" />
+    <sql>
+      declare @TaskAssignmentXml xml;
+      set @TaskAssignmentXml= <exp paramId="AssignmentXml"/>;
+      UPDATE Tasks
+      SET TeamId =   (
+      CASE WHEN (x.TeamId='') THEN T.TeamId
+      ELSE  x.TeamId
+      END
+      ),
+      AssigneeId =    (
+      CASE  WHEN (x.UserId='') THEN  NULL
+      ELSE  x.UserId
+      END
+      ),
+      LastUpdateId = <exp paramId="CurrentUser" />,
+      AssignedOnDate = getdate(), LastUpdateDate = getdate()
+      FROM Tasks T
+      JOIN (
+      SELECT Items.r.value('TaskId[1]','nvarchar(36)') AS TaskId,
+      Items.r.value('TeamId[1]','nvarchar(36)') AS TeamId,
+      Items.r.value('UserId[1]','nvarchar(36)') AS UserId
+      FROM @TaskAssignmentXml.nodes('ArrayOfTaskAssignmentData/TaskAssignmentData') as Items(r)
+      ) as x ON T.TaskId = x.TaskId
+    </sql>
+  </statement>
+
+  <statement name="GetTaskAndExternalSystemCode" connection="Common">
+    <param id="TaskId" type="String" size="36" required="true"/>
+    <param id="IsGetExternalCodes" type="Boolean"/>
+    <param id="ExternalSystemDimensionCode" type="Int16"/>
+    <sql>
+      <optional depends="IsGetExternalCodes==true">
+
+        select
+        distinct LTT.ExternalSystemCode
+        from
+        Tasks Task
+        inner join LookupTaskType LTT on Ltt.LookupCode=Task.TaskTypeCode
+        inner join ExternalSystemDimensionValue Ex
+        on Ltt.ExternalSystemCode=Ex.ExternalSystemCode
+        where Task.TaskId=<exp paramId="TaskId"/> and Ex.ExternalSystemDimensionCode=<exp paramId="ExternalSystemDimensionCode"/>
+        
+      </optional>
+      select
+      [RelTask].[TaskId]
+      ,[SuppliedResourceTypeCode]
+      ,[SuppliedResourceValue]
+      ,[AssignedOnDate]
+      ,[AssigneeId]
+      ,T.[TeamId]
+      ,[TeamName]
+      ,[TeamHierarchyPrefix]
+      ,[ClientTaskId]
+      ,[TaskTypeCode]
+      ,[TaskStatusCode]
+      ,[FlagStatusCode]
+      ,[FlagLastAdminComment]
+      ,[StartedOnDate]
+      ,[CompletedOnDate]
+      ,T.[CreatorId]
+      ,T.[CreatedDate]
+      ,T.[LastUpdateDate]
+      ,T.[LastUpdateId]
+      ,[AvailableDate]
+      ,RelTask.[TaskProcessId]
+      from
+      dbo.Tasks T
+      inner join dbo.RelTaskProcessTask RelTask on T.TaskId=RelTask.TaskId
+      left join dbo.TaskProcess TP on RelTask.TaskProcessId=TP.TaskProcessId
+      left join dbo.TaskExtensionAttributes_P TEXTN on T.TaskId=TEXTN.TaskId
+      left join dbo.DAS_Team_P Team on T.TeamId=Team.TeamId
+      where T.TaskId=<exp paramId="TaskId"/>
+
+    </sql>
+  </statement>
+  
+  <statement name="GetExternalCodeAndTeamData" connection="Common">
+    <param id="TeamId" type="String" size="36" required="true"/>
+    <param id="ExternalSystemDimensionCode" type="Int16" required="true"/>
+    <sql>
+      select TeamName,TeamHierarchyPrefix from DAS_Team_P
+      where TeamId=<exp paramId="TeamId"/>
+      
+      select
+      distinct LTT.ExternalSystemCode
+      from
+      Tasks Task
+      inner join DAS_Team_P Team
+      on Task.TeamId=Team.TeamId
+      inner join LookupTaskType LTT on Ltt.LookupCode=Task.TaskTypeCode
+      inner join ExternalSystemDimensionValue Ex
+      on Ltt.ExternalSystemCode=Ex.ExternalSystemCode
+      where Team.TeamId=<exp paramId="TeamId"/> and Ex.ExternalSystemDimensionCode=<exp paramId="ExternalSystemDimensionCode"/>
+      
+    </sql>
+
+  </statement>
+
+  <statement name="UpdateDistributedTasks">
+    <param id="TaskId" type="String" required="true"/>
+    <param id="SuppliedResourceTypeCode" type="Int16" />
+    <param id="SuppliedResourceValue" type="String" />
+    <param id="AssignedOnDate" type="DateTime" />
+    <param id="AssigneeId" type="String" />
+    <param id="TeamId" type="String" />
+    <param id="TeamName" type="String" />
+    <param id="TeamHierarchyPrefix" type="String" />
+    <param id="ClientTaskId" type="String"/>
+    <param id="TaskTypeCode" type="Int16"/>
+    <param id="TaskStatusCode" type="Int16"/>
+    <param id="FlagStatusCode" type="Int16"/>
+    <param id="FlagLastAdminComment" type="String"/>
+    <param id="CreatorId" type="String"/>
+    <param id="LastUpdateId" type="String"/>
+    <param id="AvailableDate" type="DateTime"/>
+    <param id="StartedOnDate" type="DateTime"/>
+    <param id="CompletedOnDate" type="DateTime"/>
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime = "true" />
+    <param id="TaskProcessId" type="String"/>
+    <sql>      
+      <!--IF OBJECT_ID (N'dbo.DistributedTasks', N'U') IS NOT NULL
+      BEGIN
+        DECLARE @taskIdParam VARCHAR(36)
+        SET @taskIdParam = <exp paramId="TaskId"/>
+      
+        IF  NOT EXISTS (SELECT TaskId FROM DistributedTasks WHERE TaskId = @taskIdParam)
+        BEGIN
+        Insert into  DistributedTasks
+        <columns mode="insert" >
+          <column dbField="TaskId">@taskIdParam</column>
+          <column dbField="SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <column dbField="SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <column dbField="AssignedOnDate" paramId="AssignedOnDate" />
+          <column dbField="AssigneeId" paramId="AssigneeId" />
+          <column dbField="TeamId" paramId="TeamId" />
+          <column dbField="TeamName" paramId="TeamName" />
+          <column dbField="TeamHierarchyPrefix" paramId="TeamHierarchyPrefix"/>
+          <column dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <column dbField="TaskTypeCode" paramId="TaskTypeCode" />
+          <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+          <column dbField="FlagStatusCode" paramId="FlagStatusCode" />
+          <column dbField="FlagLastAdminComment" paramId="FlagLastAdminComment" />
+          <column dbField="StartedOnDate" paramId="StartedOnDate"/>
+          <column dbField="CompletedOnDate" paramId="CompletedOnDate"/>[
+          <column dbField="TaskProcessId" paramId="TaskProcessId"/>
+          <column dbField="CreatorId" paramId="CreatorId" />
+          <column dbField="CreatedDate" paramId="CurrTimeStamp" />
+          <column dbField="LastUpdateDate" paramId="CurrTimeStamp" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="AvailableDate" paramId="AvailableDate" />
+        </columns>
+        END
+        ELSE
+        BEGIN
+        update DistributedTasks
+        <columns mode="update" >
+          <column dbField="SuppliedResourceTypeCode" paramId="SuppliedResourceTypeCode"/>
+          <column dbField="SuppliedResourceValue" paramId="SuppliedResourceValue"/>
+          <column dbField="AssignedOnDate" paramId="AssignedOnDate" />
+          <column dbField="AssigneeId" paramId="AssigneeId" />
+          <column dbField="TeamId" paramId="TeamId" />
+          <column dbField="TeamName" paramId="TeamName" />
+          <column dbField="TeamHierarchyPrefix" paramId="TeamHierarchyPrefix"/>
+          <column dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <column dbField="TaskTypeCode" paramId="TaskTypeCode" />
+          <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+          <column dbField="FlagStatusCode" paramId="FlagStatusCode" />
+          <column dbField="FlagLastAdminComment" paramId="FlagLastAdminComment" />
+          <column dbField="StartedOnDate" paramId="StartedOnDate"/>
+          <column dbField="CompletedOnDate" paramId="CompletedOnDate"/>
+          <column dbField="CreatorId" paramId="CreatorId" />
+          <column dbField="CreatedDate" paramId="CurrTimeStamp" />
+          <column dbField="LastUpdateDate" paramId="CurrTimeStamp" />
+          <column dbField="LastUpdateId" paramId="LastUpdateId" />
+          <column dbField="AvailableDate" paramId="AvailableDate" />
+          <column dbField="TaskProcessId" paramId="TaskProcessId"/>
+        </columns>
+        <where>
+          <exp op="=" dbField="TaskId">@taskIdParam</exp>
+        </where>      
+        END
+      END-->
+    </sql>
+  </statement>
+
+  <statement name="UpdateDistributedTasksForTeamHierearchyPreifxAndTeamName">
+    <param id="TeamName" type="String" size="36" required="true"/>
+    <param id="TeamHierarchyPrefix" type="String" size="36" required="true"/>
+    <param id="TeamId" type="String" size="36" required="true"/>
+    <sql>
+      
+      <!--UPDATE DistributedTasks
+      <columns mode="update" >
+        <column dbField="TeamName" paramId="TeamName"/>
+        <column dbField="TeamHierarchyPrefix" paramId="TeamHierarchyPrefix"/>
+      </columns>
+      <where>
+        <exp op="=" dbField="TeamId" paramId="TeamId"></exp>
+      </where>;-->
+
+    </sql>
+
+  </statement>
+  
+  <statement name="CompleteAllTasksForAProcessInDistributedTasks">
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="CurrentUser" type="Guid" required="true" />
+    <param id="TaskProcessId" type="String" size="36" required="true" />
+    <sql>
+      
+      <!--UPDATE DistributedTasks
+      <columns mode="update" >
+        <column dbField="TaskStatusCode">3</column>
+        <column dbField="CompletedOnDate">current_timestamp</column>
+        <column dbField="LastUpdateId" paramId="CurrentUser" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        TaskId IN (Select Taskid from RelTaskProcessTask where TaskProcessId = <exp paramId="TaskProcessId"/>) AND TaskStatusCode != 3
+        <optional depends="TaskTypeCode">
+          and TaskTypeCode = <exp paramId="TaskTypeCode"/>         
+        </optional>
+        <optional depends="UserId">
+          and AssigneeId = <exp paramId="UserId"/>
+        </optional>
+      </where>-->
+    </sql>
+  </statement>
+  
+  <statement name="UpdateTaskInDistributedTasks" >
+    <param id="ClientTaskId" type="String" size="36" />
+    <param id="TaskTypeCode" type="Int32"/>
+    <param id="UserId" type="String" size="36" />
+    <param id="TaskId" type="String" size="36" />
+    <param id="LastUpdateId" type="Guid" required="true"/>
+    <param id="TaskStatusCode" type="Int16" />
+    <param id="AvailableDate" type="String"  />
+    <param id="StartedOnDate" type="String"  />
+    <param id="CompletedOnDate" type="String"  />
+    <sql>
+      <!--IF OBJECT_ID (N'dbo.DistributedTasks', N'U') IS NOT NULL
+      BEGIN
+      update DistributedTasks
+      <columns mode="update">
+        <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+        <column dbField="AvailableDate" paramId="AvailableDate"/>
+        <column dbField="StartedOnDate" paramId="StartedOnDate"/>
+        <column dbField="CompletedOnDate" paramId="CompletedOnDate"/>
+        <column dbField="LastUpdateId" paramId="LastUpdateId" />
+        <column dbField="LastUpdateDate">current_timestamp</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+          <exp op="=" dbField="AssigneeId" paramId="UserId"/>
+          <exp op="=" dbField="TaskId" paramId="TaskId"/>
+        </exp>
+      </where>
+    END-->
+    </sql>
+  </statement>
+  
+  <statement name="InsertIntoDistributedTasks">
+    <param id="TaskXML" type="String"/>
+    <sql>      
+      <!--IF OBJECT_ID (N'dbo.DistributedTasks', N'U') IS NOT NULL
+      BEGIN
+        DECLARE @XmlTempVar xml  
+        SET @XmlTempVar= CAST(<exp paramId="TaskXML"/> as xml)
+        
+        Insert DistributedTasks
+        (
+          TaskId,
+          ClientTaskId,
+          TaskTypeCode,
+          TaskStatusCode,
+          CreatorId,
+          CreatedDate,
+          LastUpdateDate,
+          LastUpdateId,
+          AssignedOnDate,
+          AssigneeId,
+          StartedOnDate,
+          CompletedOnDate,
+          AvailableDate,
+          TaskProcessId,
+          SuppliedResourceTypeCode,
+          SuppliedResourceValue,
+          FlagStatusCode,
+          FlagLastAdminComment,
+          TeamId,
+          TeamName,
+          TeamHierarchyPrefix
+        )        
+        SELECT         
+        tbl.col.value('TaskId[1]','uniqueidentifier') TaskId,
+        tbl.col.value('ClientTaskId[1]','uniqueidentifier') ClientTaskId,  
+        tbl.col.value('TaskTypeCode[1]','int') TaskTypeCode,  
+        tbl.col.value('TaskStatusCode[1]','int') TaskStatusCode,
+        tbl.col.value('CreatorId[1]','uniqueidentifier') CreatorId, 
+        tbl.col.value('CreatedDate[1]','varchar(100)') CreatedDate,  
+        tbl.col.value('LastUpdateDate[1]','varchar(100)') LastUpdateDate,
+        tbl.col.value('LastUpdateId[1]','uniqueidentifier') LastUpdateId, 
+        tbl.col.value('AssignedOnDate[1]','varchar(100)') AssignedOnDate,  
+        tbl.col.value('AssigneeId[1]','uniqueidentifier') AssigneeId,  
+        tbl.col.value('StartedOnDate[1]','varchar(100)') StartedOnDate,  
+        tbl.col.value('CompletedOnDate[1]','varchar(100)') CompletedOnDate,
+        tbl.col.value('AvailableDate[1]','varchar(100)') AvailableDate,
+        tbl.col.value('TaskProcessId[1]','uniqueidentifier') TaskProcessId,
+        tbl.col.value('SuppliedResourceTypeCode[1]','int') SuppliedResourceTypeCode,
+        tbl.col.value('SuppliedResourceValue[1]','varchar(60)') SuppliedResourceValue,    
+        tbl.col.value('FlagStatusCode[1]','int') FlagStatusCode,   
+        tbl.col.value('FlagLastAdminComment[1]','varchar(300)') FlagLastAdminComment,
+        tbl.col.value('TeamId[1]','uniqueidentifier') TeamId,
+        tbl.col.value('TeamName[1]','varchar(100)') TeamName,
+        tbl.col.value('TeamHierarchyPrefix[1]','varchar(100)') TeamHierarchyPrefix
+        FROM @XmlTempVar.nodes('/Tasks/Task') tbl(col)              
+      END-->
+    </sql>
+  </statement>
+
+  <statement name="GetTaskDetailsForDistributedTasks" connection="Common">
+    <param id="TaskIds" type="String" required="true"/>
+    <sql>
+      SELECT
+      T.TaskId      
+      ,T.AssignedOnDate
+      ,T.AssigneeId
+      ,T.TeamId
+      ,T.ClientTaskId
+      ,T.TaskTypeCode
+      ,T.TaskStatusCode
+      ,T.StartedOnDate
+      ,T.CompletedOnDate
+      ,T.CreatorId
+      ,T.CreatedDate
+      ,T.LastUpdateDate
+      ,T.LastUpdateId
+      ,T.AvailableDate
+	    ,TP.SuppliedResourceTypeCode
+      ,TP.SuppliedResourceValue
+	    ,TEXTN.FlagStatusCode
+      ,TEXTN.FlagLastAdminComment
+	    ,Team.TeamName
+      ,Team.TeamHierarchyPrefix
+      ,RelTask.TaskProcessId
+      from
+      dbo.Tasks T
+      inner join dbo.RelTaskProcessTask RelTask on T.TaskId=RelTask.TaskId
+      left join dbo.TaskProcess TP on RelTask.TaskProcessId=TP.TaskProcessId
+      left join dbo.TaskExtensionAttributes_P TEXTN on T.TaskId=TEXTN.TaskId
+      left join dbo.DAS_Team_P Team on T.TeamId=Team.TeamId
+      <where>
+        <exp op="IN" dbField="T.TaskId" paramId="TaskIds"></exp>
+      </where>
+    </sql>
+  </statement>
+  
+  <statement name="DeleteTasksFromDistributedTasksByProcess">
+    <param id="TaskProcessId" type="String" size="36" required="true" />
+    <sql>      
+      <!--delete from DistributedTasks
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="TaskProcessId" paramId="TaskProcessId" />
+        </exp>
+      </where>-->
+    </sql>
+  </statement>
+
+  <statement name="UpdateTaskAssignmentForTeamOrUserByClientTaskId" connection="Common">
+    <param id="ClientTaskId" type="Guid" required="true" />
+    <param id="TaskTypeCode" required="true" />
+    <param id="Teamid" type="Guid" required="true" />
+    <param id="AssigneeId"  type="Guid" required="true" />
+    <param id="TaskStatusCode"/>
+    <param id="CurrentUser" type="Guid" required="true" />
+    <sql>
+      update Tasks
+      <columns mode="update">
+        <column dbField="Teamid" paramId="Teamid" />
+        <column dbField="AssigneeId" paramId="AssigneeId" />
+        <column dbField="TaskStatusCode" paramId="TaskStatusCode" />
+        <column dbField="LastUpdateId" paramId="CurrentUser" />
+        <column dbField="LastUpdateDate">getdate()</column>
+      </columns>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ClientTaskId" paramId="ClientTaskId"/>
+          <exp op="=" dbField="TaskTypeCode" paramId="TaskTypeCode"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+</statements>

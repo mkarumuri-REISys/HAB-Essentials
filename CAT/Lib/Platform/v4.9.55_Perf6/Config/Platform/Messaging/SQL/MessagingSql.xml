@@ -1,0 +1,530 @@
+<statements>
+
+  <statement name="GetUser" >
+    <param id="UserId" type="String" size="36" />
+    <param id="TablePrefix" type="String" />
+
+    <sql>
+      select FirstName, LastName, UserName, PreferredEmail as email from <dynamic paramId="TablePrefix"/>Lu_Users
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="userid" paramId="UserId" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="PutMessage" >
+    <param id="SenderId" type="String" size="100" />
+    <param id="MessageId" type="Guid" />
+    <param id="ThreadId" type="Guid" />
+    <param id="ThreadLevel" type="Int32" />
+    <param id="ParentMessageId" type="Guid" />
+    <param id="Subject" type="String" size="200" />
+    <param id="SendAlertFlag" type="Int16" />
+    <param id="SendContentFlag" type="Int16" />
+    <param id="Attachments" type="Int16" />
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime = "true" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>Mail_Message
+      <columns mode="insert">
+        <column dbField="SenderId" paramId="SenderId" />
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="ThreadId" paramId="ThreadId" />
+        <column dbField="ThreadLevel" paramId="ThreadLevel" />
+        <column dbField="ParentMessageId" paramId="ParentMessageId" />
+        <column dbField="Subject" paramId="Subject" />
+        <column dbField="SendAlertFlag" paramId="SendAlertFlag" />
+        <column dbField="SendContentFlag" paramId="SendContentFlag" />
+        <column dbField="Attachments" paramId="Attachments" />
+        <column dbField="MessageDate" paramId="CurrTimeStamp" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="PutMessageQueue" >
+    <param id="MessageId" type="Guid" />
+    <param id="CurrTimeStamp" type="DateTime" useCurrTime = "true" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>mail_dispatchermessagequeue
+      <columns mode="insert">
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="CreatedDate" paramId="CurrTimeStamp" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="PutMessageLog" >
+    <param id="UserId" type="Guid" />
+    <param id="MessageId" type="Guid" />
+    <param id="RecipientToList" type="String" />
+    <param id="RecipientCCList" type="String" />
+    <param id="RecipientBCCList" type="String" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>Mail_MessageLog
+      <columns mode="insert">
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="ReceiptToList" paramId="RecipientToList" />
+        <column dbField="ReceiptCCList" paramId="RecipientCCList" />
+        <column dbField="ReceiptBCCList" paramId="RecipientBCCList" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="PutSender" >
+    <param id="UserId" type="Guid" />
+    <param id="MessageId" type="Guid" />
+    <param id="TypeOfUser" type="String" size="5"/>
+    <param id="FolderName" type="String" size="100"/>
+    <param id="SystemBased" type="Int16"/>
+    <param id="TablePrefix" type="String" />
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>Mail_UserLog
+      <columns mode="insert">
+        <column dbField="UserId" paramId="UserId" />
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="TypeOfUser" paramId="TypeOfUser" />
+        <column dbField="FolderName" paramId="FolderName" />
+        <column dbField="SystemBased" paramId="SystemBased" />
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="PutRecipient" >
+    <param id="UserId" type="Guid" />
+    <param id="UserList" type="Int64" required="true"/>
+    <param id="TypeOfUser" type="String" size="5" />
+    <param id="MessageId" type="Guid" />
+    <param id="FolderName" type="String" size="100" />
+    <param id="TablePrefix" type="String" />
+
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>Mail_UserLog (UserId,TypeOfUser,SystemBased,MessageId,FolderName)
+      select distinct UserId,
+      <exp paramId="TypeOfUser"/>,1,
+      <exp paramId="MessageId"/> ,
+      <exp paramId="FolderName"/>
+      from <dynamic paramId="TablePrefix"/>AC_User WITH (NOLOCK)
+      <where>
+        <exp op="or">
+          <exp op="in" dbField="UserName" paramId="UserList" />
+          <exp op="in" dbField="Convert(varchar(36),UserId)" paramId="UserList" />
+        </exp>
+      </where>
+      union
+      select distinct ExternalUserId,
+      <exp paramId="TypeOfUser"/>,0,
+      <exp paramId="MessageId"/>,
+      <exp paramId="FolderName"/>
+      from <dynamic paramId="TablePrefix"/>mail_externalUsers WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="or">
+            <exp op="=" dbField="userid" paramId="UserId" />
+            userid = 'E1D9D2FF-FF88-418E-A2E6-34B6DFB01EFB'
+          </exp>
+          <exp op="in" dbField="ExternalUserName" paramId="UserList" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+
+  <statement name="PutBody" >
+    <param id="MessageId" type="Guid" />
+    <param id="BodyType" type="Int16" />
+    <param id="Body" type="String" size="1000000" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      insert into <dynamic paramId="TablePrefix"/>Mail_body
+      <columns mode="insert">
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="BodyType" paramId="BodyType" />
+        <column dbField="Body">
+          N'<dynamic paramId="Body"/>'
+        </column>
+      </columns>
+    </sql>
+  </statement>
+  <!--EHBSD-907/EHBSD-1069: reducing the number of parameters, SQL fails when more than 2100 params. Temp table is used now-->
+  <statement name="AreValidUsers">
+    <param id="UserId" type="String" />
+    <param id="RecipientUser" type="string"/>
+    <param id="RecipientUserGuids" type="String" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+
+      declare @TempRecipentUsers table
+      (
+      RecipientUserEmail varchar(100)
+      )
+
+      Insert into @TempRecipentUsers (RecipientUserEmail)
+
+      select split.tolist.value('.','varchar(max)') as tolist
+      from
+      (select cast('&lt;X&gt;'+(replace(CAST(<exp paramId="RecipientUser"/> as varchar(max)),',','&lt;/X&gt;&lt;X&gt;')+'&lt;/X&gt;') as xml) as tolist
+      ) A
+      outer apply A.tolist.nodes('/X') as split(tolist)
+
+      select isnull(p.FirstName,'') as FirstName, isnull(p.LastName,'') as LastName, isnull(au.UserId,'') UserId, isnull(au.username,'') as UserName, isnull(ContactAddress,'') as Email
+      from <dynamic paramId="TablePrefix"/>ContactAddresses ca
+      JOIN <dynamic paramId="TablePrefix"/>People p on ca.EntityId = p.PersonId
+      JOIN <dynamic paramId="TablePrefix"/>AC_User au on au.UserId = p.UserId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="ca.ContactAddressTypeCode">1</exp>
+          <exp op="IN" dbField="ca.ContactAddressPurposeCode">(1,2,3)</exp>
+          <exp> ca.ContactAddress in (select RecipientUserEmail from @TempRecipentUsers)</exp>
+          <!--<exp op="IN" dbField="ca.ContactAddress" paramId="RecipientUser" />-->
+        </exp>
+      </where>
+      UNION ALL
+      select isnull(p.FirstName,'') as FirstName, isnull(p.LastName,'') as LastName, isnull(au.UserId,'') UserId, isnull(au.username,'') as UserName, isnull(ContactAddress,'') as Email
+      FROM <dynamic paramId="TablePrefix"/>AC_User au
+      join <dynamic paramId="TablePrefix"/>People p on p.UserId = au.UserId
+      join <dynamic paramId="TablePrefix"/>ContactAddresses ca WITH (NOLOCK) on ca.EntityId = p.PersonId and ca.ContactAddressTypeCode=1 and ca.ContactAddressPurposeCode in (1,2,3)
+      <where>
+        <exp op="or">
+          <exp> username in (select RecipientUserEmail from @TempRecipentUsers)</exp>
+          <!--<exp op="IN" dbField="username" paramId="RecipientUser" />-->
+          <exp op="IN" dbField="au.userid" paramId="RecipientUserGuids" />
+        </exp>
+      </where>
+      UNION ALL
+      select isnull(FirstName,'') as FirstName, isnull(LastName,'') as LastName, isnull(ExternalUserId,'') as UserId, isnull(ExternalUserName,'') as UserName, isnull(email,'') as Email
+      from <dynamic paramId="TablePrefix"/>mail_externalUsers WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="or">
+            <exp op="=" dbField="userid" paramId="UserId" />
+            <exp> userid = 'E1D9D2FF-FF88-418E-A2E6-34B6DFB01EFB'</exp>
+          </exp>
+          <exp op="or">
+            <exp> ExternalUserName in (select RecipientUserEmail from @TempRecipentUsers)</exp>
+            <!--<exp op="IN" dbField="ExternalUserName" paramId="RecipientUser" />-->
+            <exp> email in (select RecipientUserEmail from @TempRecipentUsers)</exp>
+            <!--<exp op="IN" dbField="email" paramId="RecipientUser" />-->
+          </exp>
+        </exp>
+      </where>
+
+    </sql>
+  </statement>
+  <statement name="CheckUserExistence" >
+    <param id="UserId" type="Guid" />
+    <param id="RecipientUser" type="String" size="100" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      select isnull(FirstName,'') as FirstName, isnull(LastName,'') as LastName, isnull(username,'') as UserName ,isnull(PreferredEmail,'') as email
+      from <dynamic paramId="TablePrefix"/>Lu_Users WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="username" paramId="RecipientUser" />
+        </exp>
+      </where>
+      or convert(varchar(36),userid)=<exp paramId="RecipientUser"/>
+      union
+      select isnull(FirstName,'') as FirstName, isnull(LastName,'') as LastName, isnull(ExternalUserName,'') as ExternalUserName, isnull(email,'') as email
+      from <dynamic paramId="TablePrefix"/>mail_externalUsers WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="or">
+            <exp op="=" dbField="userid" paramId="UserId" />
+            userid = 'E1D9D2FF-FF88-418E-A2E6-34B6DFB01EFB'
+          </exp>
+          <exp op="=" dbField="ExternalUserName" paramId="RecipientUser" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="CheckEmailExistence">
+    <param id="UserId" type="Guid" />
+    <param id="RecipientUser" type="String" size="100" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      select FirstName,LastName,userName, PreferredEmail AS email
+      from <dynamic paramId="TablePrefix"/>lu_users WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="email" paramId="RecipientUser" />
+        </exp>
+      </where>
+
+      UNION
+
+      select FirstName, LastName, ExternalUserName, email
+      from <dynamic paramId="TablePrefix"/>mail_externalUsers WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="or">
+            <exp op="=" dbField="userid" paramId="UserId" />
+            userid = 'E1D9D2FF-FF88-418E-A2E6-34B6DFB01EFB'
+          </exp>
+          <exp op="=" dbField="email" paramId="RecipientUser" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="AddAddressToExternal">
+    <param id="UserId" type="Guid" />
+    <param id="AddBkUserName" type="String" size="100" />
+    <param id="FirstName" type="String" size="50" />
+    <param id="LastName" type="String" size="50" />
+    <param id="phone" type="String" size="13" />
+    <param id="Email" type="String" size="100" />
+    <param id="TablePrefix" type="String" />
+    insert into <dynamic paramId="TablePrefix"/>Mail_ExternalUsers
+    <columns mode="insert">
+      <column dbField="UserId" paramId="UserId" />
+      <column dbField="ExternalUserId">newid()</column>
+      <column dbField="ExternalUserName" paramId="AddBkUserName" />
+      <column dbField="FirstName" paramId="FirstName" />
+      <column dbField="LastName" paramId="LastName" />
+      <column dbField="Phone" paramId="phone" />
+      <column dbField="Email" paramId="Email" />
+    </columns>
+  </statement>
+
+  <statement name="GetStandardMessagesByContext">
+
+    <param id="ExternalResourceId" type="Int64" />
+    <param id="AttachmentPurposeCode" type="Int32" />
+    <param id="TablePrefix" type="String" />
+
+    <sql>
+      select cast(a.StandardMessageId as varchar(36)) StandardMessageId, Subject, Body, BodyType,statementName,componentName, DefinitionFile, RelationshipLocation
+      from mail_StandardContext as a
+      inner join mail_standardMessage as b on a.StandardMessageId=b.StandardMessageId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MessageContextCode" paramId="ExternalResourceId" />
+        </exp>
+      </where>
+      ;
+      select FileName as FileName, cast(MSMA.AttachmentId as varchar(36)) as AttachmentId,
+      cast(MSC.StandardMessageId as varchar(36)) UniqueStandardMessageId
+      From mail_StandardContext as MSC
+      inner join mail_standardMessage as MSM on MSC.StandardMessageId=MSM.StandardMessageId
+      inner join Mail_StandardMessageAttachments MSMA on MSMA.StandardMessageId=MSM.StandardMessageId
+      inner join <dynamic paramId="TablePrefix"/>dm_attachment DMA on DMA.Attachmentid = MSMA.AttachmentId
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="MSC.MessageContextCode" paramId="ExternalResourceId" />
+          <exp op="=" dbField="MSMA.AttachmentPurposeCode" paramId="AttachmentPurposeCode" />
+        </exp>
+      </where>
+    </sql>
+
+  </statement>
+
+  <statement name="PutMailMessageContext">
+
+    <param id="MessageId" type="String" size="36" required="true" />
+    <param id="ObjectId" type="String" size="50" required="true"/>
+    <param id="ObjectType" type="Int32" required="true"/>
+    <param id="ObjectContext" type="Int32" required="true"/>
+    <param id="ResourceInstance" type="Int32" required="true"/>
+    <param id="TablePrefix" type="String" />
+
+    <sql>
+      Insert into  <dynamic paramId="TablePrefix"/>Mail_Message_Context
+      <columns mode="insert">
+        <column dbField="MessageId" paramId="MessageId" />
+        <column dbField="StandardMessageContextCode" paramId="ObjectContext" />
+        <column dbField="ResourceTypeCode" paramId="ObjectType" />
+        <column dbField="ResourceValue" paramId="ObjectId" />
+        <column dbField="ResourceInstance" paramId="ResourceInstance" />
+
+      </columns>
+    </sql>
+  </statement>
+
+  <statement name="GetMail">
+    <param id="ResourceValue" type="string" />
+    <param id="ResourceInstance" type="string" />
+    <param id="ResourceTypeCode" type="string" />
+    <param id="StandardMessageContextCode" type="string" />
+    <param id="TablePrefix" type="String" />
+
+    <sql>
+      select MMC.MessageId AS MessageId, ResourceTypeCode, ResourceInstance, SenderId, ReceiptToList,
+      ReceiptCCList, ReceiptBCCList, Subject, Body, MessageDate,
+      (select AttachmentId from <dynamic paramId="TablePrefix"/>mail_attachment AS Mail_Attachment
+      where messageid = MMC.MessageId
+      for xml auto) as AttachmentId
+      FROM  mail_message_context MMC
+      join <dynamic paramId="TablePrefix"/>mail_message MM on MM.MessageId = MMC.MessageId
+      join <dynamic paramId="TablePrefix"/>Mail_Body MB on MB.MessageId = MM.MessageId
+      join <dynamic paramId="TablePrefix"/>mail_messagelog MML on MML.MessageId = MM.MessageId
+      <where>
+        <exp op="and">
+          <exp op="IN" dbField="MMC.ResourceValue" paramId="ResourceValue" />
+          <exp op="IN" dbField="MMC.ResourceInstance" paramId="ResourceInstance" />
+          <exp op="IN" dbField="MMC.ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="IN" dbField="MMC.StandardMessageContextCode" paramId="StandardMessageContextCode" />
+        </exp>
+      </where>
+      ORDER BY MM.MessageDate desc
+    </sql>
+  </statement>
+
+  <statement name="GetMails">
+    <param id="ResourceValue" type="string" required="true" />
+    <param id="StandardMessageContextCode" type="string" />
+
+    <param id="FilterExpression" type="String"/>
+    <param id="SortExpression" type="String" default="MM.MessageDate desc" />
+
+    <param id ="SentTo" type="String"/>
+    <param id ="SentTo_OPERATION" type="String" />
+
+    <param id ="SentFrom" type="String"/>
+    <param id ="SentFrom_OPERATION" type="String" />
+
+    <param id ="Subject" type="String"/>
+    <param id ="Subject_OPERATION" type="String" />
+
+    <param id ="Purpose" type="String"/>
+    <param id ="Purpose_OPERATION" type="String" />
+
+    <param id ="SystemGenerated" type="String"/>
+    <param id ="SystemGenerated_OPERATION" type="String" />
+
+    <param id ="HavingAttachments" type="String"/>
+    <param id ="HavingAttachments_OPERATION" type="String" />
+
+    <param id ="SentDateFrom" type="DateTime"/>
+    <param id ="SentDateTo" type="DateTime"/>
+
+    <sql>
+      DECLARE @ResourcesXml as XML,@StandardMessageContextCodeXml as XML
+      SELECT @ResourcesXml = '<dynamic paramId="ResourceValue"/>'
+      SELECT @StandardMessageContextCodeXml = '<dynamic paramId="StandardMessageContextCode"/>'
+      <select>
+        MMC.MessageId AS MessageId, MMC.ResourceTypeCode, ResourceInstance, SenderId, ReceiptToList,
+        ReceiptCCList, ReceiptBCCList, Subject, Body, MessageDate,
+        IsNull(MM.Attachments, 0) as AttachmentsCount,
+        LSMC.LongDisplayValue as StandardMessageContextCodeText,
+        MMC.ResourceValue,
+        MMC.StandardMessageContextCode,
+        (select AttachmentId from mail_attachment AS Mail_Attachment
+        where messageid = MMC.MessageId
+        for xml auto) as AttachmentId
+      </select>
+      FROM  ( SELECT Items.r.value('@ResourceValue[1]','varchar(75)') AS ResourceValue
+      FROM @ResourcesXml.nodes('Resource') as Items(r)
+      )  HR
+      join mail_message_context MMC on HR.ResourceValue =  MMC.ResourceValue
+
+      JOIN ( SELECT Items.r.value('@StandardMessageContextCodeValue[1]','int') AS StandardMessageContextCode
+      FROM @StandardMessageContextCodeXml.nodes('StandardMessageContextCode') as Items(r)
+      )  SC on MMC.StandardMessageContextCode = SC.StandardMessageContextCode
+
+      join mail_message MM on MM.MessageId = MMC.MessageId
+      join Mail_Body MB on MB.MessageId = MM.MessageId
+      join mail_messagelog MML on MML.MessageId = MM.MessageId
+      Left Join LookupStandardMessageContext LSMC On MMC.StandardMessageContextCode = LSMC.LookupCode
+      <where>
+        <exp op="and">
+          <optional depends="SentTo">
+            MML.ReceiptToList <dynamic paramId="SentTo_OPERATION"/> <exp paramId="SentTo"/>
+          </optional>
+          <optional depends="SentFrom">
+            MM.SenderId <dynamic paramId="SentFrom_OPERATION"/> <exp paramId="SentFrom"/>
+          </optional>
+          <optional depends="Subject">
+            MM.Subject <dynamic paramId="Subject_OPERATION"/> <exp paramId="Subject"/>
+          </optional>
+          <optional depends="Purpose">
+            MMC.StandardMessageContextCode <dynamic paramId="Purpose_OPERATION"/> <exp paramId="Purpose"/>
+          </optional>
+          <optional depends="SentDateFrom" >
+            CAST(FLOOR(CAST(MM.MessageDate AS float)) AS datetime) &gt;= '<dynamic paramId="SentDateFrom" />'
+          </optional>
+          <optional depends="SentDateTo" >
+            CAST(FLOOR(CAST(MM.MessageDate AS float)) AS datetime) &lt;='<dynamic paramId="SentDateTo" />'
+          </optional>
+
+          <optional depends="SystemGenerated">
+            MM.SenderId <dynamic paramId="SystemGenerated_OPERATION"/> <exp paramId="SystemGenerated"/>
+          </optional>
+          <optional depends="HavingAttachments">
+            MM.Attachments <dynamic paramId="HavingAttachments_OPERATION"/> <exp paramId="HavingAttachments"/>
+          </optional>
+
+          <dynamic paramId="FilterExpression" />
+        </exp>
+      </where>
+      <sort paramId ="SortExpression" />
+    </sql>
+  </statement>
+
+  <statement name="GetMailByMessageId">
+    <param id="MessageId" type="string" />
+    <param id="TablePrefix" type="String" />
+    <sql>
+      SELECT  MM.MessageId AS MessageId,  SenderId, ReceiptToList,
+      ReceiptCCList, ReceiptBCCList, [Subject], Body, MessageDate,
+      (SELECT AttachmentId FROM <dynamic paramId="TablePrefix"/>mail_attachment AS Mail_Attachment
+      WHERE messageid = MM.MessageId
+      FOR XML AUTO) AS AttachmentId
+      FROM  <dynamic paramId="TablePrefix"/>mail_message MM
+      JOIN <dynamic paramId="TablePrefix"/>Mail_Body MB ON MB.MessageId = MM.MessageId
+      JOIN <dynamic paramId="TablePrefix"/>mail_messagelog MML ON MML.MessageId = MM.MessageId
+
+      <where>
+
+        <exp op="=" dbField="MM.MessageId" paramId="MessageId" />
+
+      </where>
+      ORDER BY MM.MessageDate desc
+    </sql>
+  </statement>
+
+
+  <statement name="GetArchivedMessageDetails" connection="GEMS">
+    <param id="MessageId" type="Guid" size="36" />
+    <sql>
+      SELECT MessageId, UserId,
+      ReceiptToList, receiptCCList, SenderId,
+      Subject, SenderEmailAddress, SenderLastName,
+      SenderFirstName, UserFirstName, UserLastName,
+      SentDate
+      FROM hist_mail_dispatchermessagedetails
+      <where>
+        <exp op="=" dbField="MessageId" paramId="MessageId" />
+      </where>
+    </sql>
+  </statement>
+
+
+
+  <statement name="GetUnreadMessageCount">
+    <param id="UserId" type="Guid" required="true" />
+    <sql>
+      select count(*) from Mail_UserLog with(NOLOCK)
+      where
+      UserId = '<dynamic paramId="UserId"/>' and
+      TypeOfUser = 'To' and
+      MessageRead is null and
+      MessageDeleted is null
+    </sql>
+  </statement>
+
+  <statement name="UpdatePurposeCodeTempAttachments" connection="GEMS">
+    <param id="MessageId"/>
+    <param id="PurposeCode" type="String"/>
+
+    <sql>
+      Update tempAttachments
+      set AttachmentPurposecode = <dynamic paramId="PurposeCode"/>
+      where ResourceValue = '<dynamic paramId="MessageId"/>'
+
+    </sql>
+  </statement>
+</statements>

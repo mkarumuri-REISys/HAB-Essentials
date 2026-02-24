@@ -1,0 +1,34 @@
+<webConfig>
+  <errorLog>E:\Projects\CATProject\PlatformLiteLogs</errorLog>
+  <sessionTimeOut>30</sessionTimeOut>
+  <sessionTimeOutWarning>1</sessionTimeOutWarning>
+  <userType>2</userType>
+  <!-- 1: External; 2: Internal-->
+  <!-- IMPORTANT -->
+  <websiteURL>https://hsa-is-utl7.amer.reisystems.com/2010/WebEPSInternal/Interface/Common/AccessControl/Login.aspx</websiteURL>
+  <internalWebsiteURL>https://hsa-is-utl7.amer.reisystems.com/2010/WebEPSInternal/Interface/common/accesscontrol/login.aspx?/</internalWebsiteURL>
+  <externalWebsiteURL>https://hsa-is-utl7.amer.reisystems.com/2010/WebEPSExternal/Interface/common/accesscontrol/login.aspx?/</externalWebsiteURL>
+
+  <feedbackLink>https://ehbtst2.hrsa.gov/2010/WebEPSExternal/Tracker.asp</feedbackLink>
+  <callCenter>
+    <phone>877-Go4-HRSA/877-464-4772;301-998-7373</phone>
+    <email>CallCenter@HRSA.GOV</email>
+    <hours>8:00 a.m. to 8:00 p.m. Eastern Time (E.T.), Monday through Friday</hours>
+  </callCenter>
+  <CookieName>internal_cookie</CookieName>
+  <accountLockoutEffectiveMins>30</accountLockoutEffectiveMins>
+  <programSpecificSystemId>16</programSpecificSystemId>
+  <repository>
+    <layout>DB</layout>
+  </repository>
+  <client>
+    <baseEndpointAddress>https://hsa-is-utl7.amer.reisystems.com/2010/WebEpsInternal/Platform/WebServices/</baseEndpointAddress>
+    <!-- <baseEndpointAddress>https://hrsa.reisys.com/EHBEPS_PFMLite/Platform/WebServices/</baseEndpointAddress> -->
+        
+    <!--<baseEndpointAddress>https://ehbps.hrsa.gov/2010/WebEpsExternal/Platform/WebServices/</baseEndpointAddress>-->
+  </client>
+  <environment>Development</environment>
+  <helpSystemId>9</helpSystemId>
+</webConfig>
+
+

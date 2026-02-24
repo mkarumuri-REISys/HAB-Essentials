@@ -1,0 +1,9 @@
+﻿<config>
+  <!---  private string cn = "Endpoint=sb://hrsautl23-is4.reisys.com/namespace1;StsEndpoint=https://hrsautl23-is4.reisys.com:9355/namespace1;RuntimePort=9354;ManagementPort=9355;WindowsUsername=gemsapp;WindowsDomain=hrsautl23-is4;WindowsPassword=#GemsUser1"; -->
+  <connection serviceBusInstanceName="DefaultServiceBus"/>
+  <service sysadminEmailAddress="lpfister@reisys.com" smtpSenderAddress="dispatcher@mydevbox.reisys.com">
+    <batchSize>5</batchSize>
+    <serverWaitTimeSeconds>10</serverWaitTimeSeconds>
+    <degreeOfParallelism>4</degreeOfParallelism>
+  </service>
+</config>

@@ -1,0 +1,128 @@
+<statements>
+   <statement name="GetNotificationTaskByName" tableName="NotificationTasks">
+      <param id="TaskName" type="String" size="50"/>
+      <sql>
+		  SELECT NT.TaskId AS TaskId, NT.TaskName AS TaskName, NT.StatusCode AS StatusCode, NTS.ShortDisplayValue AS Status, NT.ComponentStrategyType AS ComponentStrategyType,
+		  NTD.TaskDetailId AS TaskDetailId, NTD.TaskSequence AS TaskSequence, NTD.DeliveryTypeCode AS DeliveryTypeCode, NTT.ShortDisplayValue AS DeliveryType,
+		  NTD.ComponentType AS ComponentType, NTD.StatementName AS StatementName, NTD.StatementLocation AS StatementLocation,
+		  NTD.MessageContextCode AS StandardMessageId, NTD.ComponentTransformationType AS ComponentTransformationType
+		  FROM NotificationTasks NT
+		  JOIN NotificationTaskDetails NTD ON NTD.TaskId = NT.TaskId
+		  JOIN LookupNotificationTaskStatus NTS ON NTS.LookupCode = NT.StatusCode
+		  JOIN LookupNotificationDeliveryType NTT ON NTT.LookupCode = NTD.DeliveryTypeCode
+		  WHERE NT.TaskName = <exp paramId="TaskName"/>
+		ORDER BY NTD.TaskSequence				
+      </sql>
+   </statement>
+   <statement name="GetNotificationSubscribers" tableName="NotificationSubscribers">
+      <param id="TaskDetailId" type="String" size="36"/>
+      <param id="SubscriberType" type="Int32"/>
+      <sql>
+      IF OBJECT_ID ('AC_RelUserRole','U') IS NOT NULL
+      BEGIN
+	    IF <exp paramId="SubscriberType"/> = 0
+	    BEGIN
+		SELECT PP.PersonId AS PersonId, PP.FirstName AS FirstName,PP.MiddleName AS MiddleName , PP.LastName AS LastName, CA.ContactAddress AS EmailAddress
+		FROM AC_RelUserRole ACR 
+		  JOIN People PP ON PP.UserId = ACR.UserId
+	  	  JOIN ContactAddresses CA ON CA.EntityId = PP.PersonId AND CA.ContactAddressTypeCode = 1 /* Email address */
+		WHERE ACR.RoleId =
+		(SELECT SubscriberValue
+		  FROM NotificationSubscribers NSB  
+		  WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+		  AND SubscriberType = 1) /* Role based subscriber */
+		UNION
+		SELECT PP.PersonId AS PersonId, PP.FirstName AS FirstName,PP.MiddleName AS MiddleName , PP.LastName AS LastName, CA.ContactAddress AS EmailAddress
+		FROM People PP
+		  JOIN ContactAddresses CA ON CA.EntityId = PP.PersonId AND CA.ContactAddressTypeCode = 1 /* Email address */
+		WHERE PP.PersonId =
+		(SELECT SubscriberValue
+		  FROM NotificationSubscribers NSB  
+		  WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+		  AND SubscriberType = 2) /* Person based subscriber */		
+	    END
+      END
+      IF OBJECT_ID ('AC_RelUserRole','U') IS NOT NULL
+      BEGIN
+	    IF <exp paramId="SubscriberType"/> = 1
+	    BEGIN
+		SELECT PP.PersonId AS PersonId, PP.FirstName AS FirstName,PP.MiddleName AS MiddleName , PP.LastName AS LastName, CA.ContactAddress AS EmailAddress
+		FROM AC_RelUserRole ACR 
+		  JOIN People PP ON PP.UserId = ACR.UserId
+	  	  JOIN ContactAddresses CA ON CA.EntityId = PP.PersonId AND CA.ContactAddressTypeCode = 1 /* Email address */
+		WHERE ACR.RoleId =
+		(SELECT SubscriberValue
+		  FROM NotificationSubscribers NSB  
+		  WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+		  AND SubscriberType = 1) /* Role based subscriber */
+	    END
+      END
+      IF OBJECT_ID ('AC_RelUserRole','U') IS NOT NULL
+      BEGIN
+	    IF <exp paramId="SubscriberType"/> = 2
+	    BEGIN
+		SELECT PP.PersonId AS PersonId, PP.FirstName AS FirstName,PP.MiddleName AS MiddleName , PP.LastName AS LastName, CA.ContactAddress AS EmailAddress
+		FROM People PP
+		  JOIN ContactAddresses CA ON CA.EntityId = PP.PersonId AND CA.ContactAddressTypeCode = 1 /* Email address */
+		WHERE PP.PersonId =
+		(SELECT SubscriberValue
+		  FROM NotificationSubscribers NSB  
+		  WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+		  AND SubscriberType = 2) /* Person based subscriber */	
+	    END
+	END
+	    IF <exp paramId="SubscriberType"/> = 3 OR <exp paramId="SubscriberType"/> = 4 OR <exp paramId="SubscriberType"/> = 5
+		  BEGIN
+		  SELECT SubscriberLocator AS SubscriberLocator, SubscriberLocatorType AS SubscriberLocatorType
+		  FROM NotificationSubscribers NSB
+		  JOIN NotificationCustomSubscriber NCS ON NCS.CustomId = NSB.SubscriberValue
+		  WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+		  AND SubscriberType = <exp paramId="SubscriberType"/> /* Custom based subscriber, Carbon copy subscriber, Blind carbon copy subscriber */	
+	    END
+
+      </sql>
+   </statement>
+
+   <statement name="GetNotificationResourceLocator" tableName="NotificationResourceLocator">
+      <param id="TaskDetailId" type="String" size="36"/>
+      <param id="ResourceType" type="Int32"/>
+      <sql>
+        SELECT ResourceType AS ResourceType, ResourceValueLocator AS ResourceValueLocator,
+        ResourceValueLocatorType AS ResourceValueLocatorType, ResourceInstanceLocator
+        FROM NotificationResourceLocator
+        WHERE CONVERT(VARCHAR(36), TaskDetailId) = <exp paramId="TaskDetailId"/> 
+	    AND (ResourceType = <exp paramId="ResourceType"/> OR 0 = <exp paramId="ResourceType"/>)
+      </sql>
+   </statement>
+
+   <statement name="InsertNotificationAudit" tableName="NotificationAudit">
+      <param id="TaskId" type="String" size="36"/>
+      <param id="AuditId" type="Guid" size="36" newGuid="true" direction="inputoutput"/>
+      <sql>
+			set nocount on;
+			insert into NotificationTaskAudit
+			<columns mode="insert">
+				<column dbField="AuditId" paramId="AuditId" />
+				<column dbField="TaskId" paramId="TaskId" />
+				<column dbField="StartDateTime">GETDATE()</column>
+			</columns>
+			set nocount off;  
+      </sql>
+   </statement>
+
+   <statement name="UpdateNotificationAudit" tableName="NotificationAudit">
+      <param id="AuditId" type="String" size="36"/>
+      <sql>
+	    set nocount on;
+		update NotificationTaskAudit
+		<columns mode="update">				
+			<column dbField="EndDateTime">GETDATE()</column>
+		</columns>	
+		<where>				   
+				<exp op="=" dbField="AuditId" paramId="AuditId" />								
+		</where>
+		set nocount off;
+      </sql>
+   </statement>
+
+</statements>

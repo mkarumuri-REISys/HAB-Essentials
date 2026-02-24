@@ -1,0 +1,7 @@
+<config>
+  <conversionTimeout>90</conversionTimeout>
+  <useEncryption>false</useEncryption>
+  <!--The value for the below node can be "gems.dbo." or "gems.dbo" that makes the table name in the query fully qualifiable. If left blank, platform config entry would be used.-->
+  <tablePrefix></tablePrefix>
+  <useAttachmentPermissions>false</useAttachmentPermissions>
+</config>

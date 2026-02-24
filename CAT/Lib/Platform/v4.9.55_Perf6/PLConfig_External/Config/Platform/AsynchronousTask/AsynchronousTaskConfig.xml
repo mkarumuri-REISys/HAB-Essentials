@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+	<maxItemsToFetch>100</maxItemsToFetch>
+	<defaultItemRepository 
+		assembly="REISys.Platform.Legacy.BusinessLogic" 
+		type="REISys.Platform.AsynchronousTask.Repositories.DefaultItemRepository" 
+		pollInterval="2000"
+		itemTable="AsynchronousTaskItem"
+		itemProcessedTable="AsynchronousTaskCompletedItem"
+		errorTable="AsynchronousTaskError"
+	/>
+	<processes>
+		<continuousProcess interval="00:00:30" processType="105" userId="15D6996D-1FA4-4345-980E-68BBA850E25F">
+			<task assembly="REISys.Platform.Services" type="REISys.Platform.Services.Workflow.WorkflowEngineTask"/>
+		</continuousProcess>
+	</processes>
+</root>

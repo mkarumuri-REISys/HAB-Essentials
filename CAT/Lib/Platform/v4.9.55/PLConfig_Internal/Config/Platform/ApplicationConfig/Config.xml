@@ -1,0 +1,27 @@
+<root>
+  <lookupConfig>
+    <config>
+      <ExternalSystem>
+        <EHB2010>42</EHB2010>
+        <EPSSystem>46</EPSSystem>
+        <NTDP>12</NTDP>
+        <ERSSystem>55</ERSSystem>
+      </ExternalSystem>
+      <ExternalSystemDimension>
+        <BaseSeverUrl>4</BaseSeverUrl>
+        <InternalWebsiteUrl>23</InternalWebsiteUrl>
+        <ExternalWebsiteUrl>27</ExternalWebsiteUrl>
+        <ConsultantWebsiteUrl>105</ConsultantWebsiteUrl>
+        <VendorWebsiteUrl>106</VendorWebsiteUrl>
+        <TechnicalAnalystWebsiteUrl>420</TechnicalAnalystWebsiteUrl>
+        <ServiceProviderWebsiteUrl>438</ServiceProviderWebsiteUrl>
+        <PSAdministratorWebsiteUrl>440</PSAdministratorWebsiteUrl>
+        <ProgramSpecificFormUrl>1</ProgramSpecificFormUrl>
+        <ProgramSpecificFormExternalUrl>28</ProgramSpecificFormExternalUrl>
+        <ReviewerWebsite>100</ReviewerWebsite>
+        <FIReviewWebsiteUrl>112</FIReviewWebsiteUrl>
+        <SystemSpecificReportsUrl>10</SystemSpecificReportsUrl>
+      </ExternalSystemDimension>
+    </config>
+  </lookupConfig>
+</root>

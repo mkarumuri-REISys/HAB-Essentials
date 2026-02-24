@@ -1,0 +1,6 @@
+<root>
+	<!-- 0 = Client browser, 1 = Cache -->
+	<viewStateStorage>1</viewStateStorage>
+	<!-- Cache timeout in mins-->
+	<cacheStorageTimeout>15</cacheStorageTimeout>
+</root>

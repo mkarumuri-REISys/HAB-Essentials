@@ -1,0 +1,12 @@
+<root>
+  <!--use smtp4dev as the local dev SMTP server-->
+  <!--use smtpHost == 127.0.0.1 for locahost on a dev box-->
+  <!--use smtpPort == 25 on a dev box-->
+  <smtpHost>127.0.0.1</smtpHost>
+  <smtpPort>25</smtpPort>
+  <fromAddress>no-reply@reisys.com</fromAddress>
+  <!--if both of these are not supplied then DefaultCredentials will be used-->
+  <usercredential></usercredential>
+  <passwordcredential></passwordcredential>
+  <fetchSize>1</fetchSize>
+</root>

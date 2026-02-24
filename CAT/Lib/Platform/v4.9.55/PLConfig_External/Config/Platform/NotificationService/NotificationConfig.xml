@@ -1,0 +1,7 @@
+<Notification>
+	<messageSender>49F8AC75-5D25-4F81-86D9-48E895824257</messageSender>
+	<subscriberSchema>{0}Platform\NotificationService\XSD\Subscribers.xsd</subscriberSchema>
+	<ccSubscriberSchema>{0}Platform\NotificationService\XSD\CCSubscribers.xsd</ccSubscriberSchema>
+	<bccSubscriberSchema>{0}Platform\NotificationService\XSD\BCCSubscribers.xsd</bccSubscriberSchema>
+	<attachmentSchema>{0}Platform\NotificationService\XSD\Attachments.xsd</attachmentSchema>
+</Notification>

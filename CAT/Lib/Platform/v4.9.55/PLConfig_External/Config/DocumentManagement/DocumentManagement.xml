@@ -1,0 +1,24 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/DocumentManagement.xsd">
+  <wrapperTables>
+  
+    <resourceType value="44" >
+      <table name="dbo.TempAttachments">
+        <column name="TempAttachmentId" type="newId"/>
+        <column name="AttachmentId" type="attachmentId"/>
+        <column name="AttachmentInstance" type="attachmentInstance"/>
+        <column name="ResourceValue" type="resourceValue"/>
+        <column name="AttachmentPurposeCode" type="attachmentPurposeCode"/>
+        <column name="CreatorId" type="creatorId" />
+        <column name="CreatedDate" type="createdDate" />
+        <column name="LastUpdateId" type="lastUpdateId" />
+        <column name="LastUpdateDate" type="lastUpdateDate" />
+      </table>
+    </resourceType>
+   
+  </wrapperTables>
+  <metadata>
+    <purpose code="2" control="../../../Interface/UserControls/DocumentManager/DocumentFlavorMetadataCapture.ascx"/>
+    <purpose code="1" control="../../../Interface/UserControls/DocumentManager/ContractMetadataCapture.ascx"/>
+  </metadata>
+  <useEncryption>true</useEncryption>
+</config>

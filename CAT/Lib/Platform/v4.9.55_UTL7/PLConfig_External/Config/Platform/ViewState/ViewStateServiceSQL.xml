@@ -1,0 +1,27 @@
+﻿<statements>
+  <statement name="LoadPageState" connection="Common">
+    <param id="vwKey" required="true" type="String" size="500" />    
+    <sql>
+      select Value from [dbo].PFM_CORE_ViewState vw
+      <where>
+        <exp op="=" dbField="vw.ViewStateKey" paramId="vwKey" />
+      </where>
+    </sql>
+  </statement>
+  <statement name="SavePageState" connection="Common">
+    <param id="vwKey" required="true" type="String" size="500" />
+    <param id="vwValue" required="false" type="String" />    
+    <sql>      
+      Insert into [dbo].PFM_CORE_ViewState
+      <columns mode="insert">
+          <column dbField="ViewStateId">NEWID()</column>
+          <column dbField="ViewStateKey" paramId="vwKey" />
+          <column dbField="Value" paramId="vwValue" />
+          <column dbField="CreatorId">'15D6996D-1FA4-4345-980E-68BBA850E25F'</column>       
+          <column dbField="CreatedDate">GETDATE()</column>
+          <column dbField="LastUpdateId">'15D6996D-1FA4-4345-980E-68BBA850E25F'</column>
+          <column dbField="LastUpdateDate">GETDATE()</column>
+        </columns>
+    </sql>  
+  </statement>
+</statements>

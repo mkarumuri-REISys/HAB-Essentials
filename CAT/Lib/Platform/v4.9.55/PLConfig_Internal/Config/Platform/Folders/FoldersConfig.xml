@@ -1,0 +1,304 @@
+<FoldersConfig>
+  <Folders>
+    <Folder id="1" name="Application Folder" url="/EHBFolders/Search_ViewApplicationsFolder.asp">
+      <Roles>
+        <Role name="ADA_ROLE"/>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="ADMINPLANNER_ROLE"/>
+        <Role name="BUREAUSTAFF_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="CORE_ROLE"/>
+        <Role name="DGMOPLANNER_ROLE"/>
+        <Role name="DGPPLANNER_ROLE"/>
+        <Role name="DIRPLANNER_ROLE"/>
+        <Role name="DIRSTAFF_ROLE"/>
+        <Role name="FMO_ROLE"/>
+        <Role name="GACADMINPLANNER_ROLE"/>
+        <Role name="GMO_ROLE"/>
+        <Role name="GMS_ROLE"/>
+        <Role name="GTA_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+        <Role name="PGA_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="QR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+        <Role name="VALIDATIONCONTRACTOR_ROLE"/>
+        <Role name="LAS_ROLE"/>
+        <Role name="LAO_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="2" name="Grant Folder" url="/EHBFolders/Search_ViewGrantsFolder.asp">
+      <Roles>
+        <Role name="ADA_ROLE"/>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="ADMINPLANNER_ROLE"/>
+        <Role name="APO_ROLE"/>
+        <Role name="BHPR_MRV_ROLE"/>
+        <Role name="BUREAUSTAFF_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="CORE_ROLE"/>
+        <Role name="DGMOPLANNER_ROLE"/>
+        <Role name="DGPPLANNER_ROLE"/>
+        <Role name="DIRPLANNER_ROLE"/>
+        <Role name="DIRSTAFF_ROLE"/>
+        <Role name="FDE_ROLE"/>
+        <Role name="FMO_ROLE"/>
+        <Role name="GA_ROLE"/>
+        <Role name="GAC_ROLE"/>
+        <Role name="GACADMINPLANNER_ROLE"/>
+        <Role name="GMO_ROLE"/>
+        <Role name="GMS_ROLE"/>
+        <Role name="GTA_ROLE"/>
+        <Role name="HCOFANL_ROLE"/>
+        <Role name="NTDPSTAFF_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="PDR_ANALYST"/>
+        <Role name="PGA_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="PQC_ROLE"/>
+        <Role name="QR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+        <Role name="REVIEWER_ROLE"/>
+        <Role name="UDSMNG_ROLE"/>
+        <Role name="UDSQC_ROLE"/>
+        <Role name="UDSREV_ROLE"/>
+        <Role name="VALIDATIONCONTRACTOR_ROLE"/>
+        <Role name="LAS_ROLE"/>
+        <Role name="LAO_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="3" name="Institution Folder" url="/EHBFolders/Search_InstitutionsFolder.asp?btnSearch=true">
+      <Roles>
+        <Role name="ADA_ROLE"/>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="ADMINPLANNER_ROLE"/>
+        <Role name="APO_ROLE"/>
+        <Role name="BUREAUSTAFF_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="CORE_ROLE"/>
+        <Role name="DGMOPLANNER_ROLE"/>
+        <Role name="DGPPLANNER_ROLE"/>
+        <Role name="DIRPLANNER_ROLE"/>
+        <Role name="DIRSTAFF_ROLE"/>
+        <Role name="FDE_ROLE"/>
+        <Role name="FMO_ROLE"/>
+        <Role name="GA_ROLE"/>
+        <Role name="GAC_ROLE"/>
+        <Role name="GACADMINPLANNER_ROLE"/>
+        <Role name="GMO_ROLE"/>
+        <Role name="GMS_ROLE"/>
+        <Role name="GTA_ROLE"/>
+        <Role name="HCOFANL_ROLE"/>
+        <Role name="NTDPSTAFF_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="PGA_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="PQC_ROLE"/>
+        <Role name="QR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+        <Role name="LAS_ROLE"/>
+        <Role name="LAO_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="4" name="Program Folder" url="/EHBFolders/Search_ProgramsFolder.asp?btnSearch=true">
+      <Roles>
+        <Role name="ADA_ROLE"/>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="ADMINPLANNER_ROLE"/>
+        <Role name="APO_ROLE"/>
+        <Role name="BUREAUSTAFF_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="CORE_ROLE"/>
+        <Role name="DGMOPLANNER_ROLE"/>
+        <Role name="DGPPLANNER_ROLE"/>
+        <Role name="DIRPLANNER_ROLE"/>
+        <Role name="DIRSTAFF_ROLE"/>
+        <Role name="FDE_ROLE"/>
+        <Role name="FMO_ROLE"/>
+        <Role name="GA_ROLE"/>
+        <Role name="GAC_ROLE"/>
+        <Role name="GACADMINPLANNER_ROLE"/>
+        <Role name="GMO_ROLE"/>
+        <Role name="GMS_ROLE"/>
+        <Role name="GTA_ROLE"/>
+        <Role name="HCOFANL_ROLE"/>
+        <Role name="NTDPSTAFF_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="PGA_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="PQC_ROLE"/>
+        <Role name="QR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+        <Role name="LAS_ROLE"/>
+        <Role name="LAO_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="5" name="ORO Institution Folder" url="/EHBFolders/Search_OPRFolder.asp?btnSearch=true">
+      <Roles>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="6" name="Section 330 Site Folder" url="/ExternalSystemRedirect.asp?esys=31&amp;pur=6">
+      <Roles>
+        <Role name="LALPAO_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="LALPQC_ROLE"/>
+        <Role name="PQC_ROLE"/>
+        <Role name="LALPO_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="LALSCPADMIN_ROLE"/>
+        <Role name="SCOPE_ADMINISTRATOR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+      </Roles>
+    </Folder>
+    <Folder id="10" name="Property Folder" url="/Interface/FoldersGateway.aspx?fromFolders=true&amp;Folders=PropertyFolder" externalSystemCode="42" externalSystemDimensionCode="23">
+      <Roles>
+        <Role name="ADA_ROLE"/>
+        <Role name="ADMIN_ROLE"/>
+        <Role name="ADMINPLANNER_ROLE"/>
+        <Role name="APO_ROLE"/>
+        <Role name="BHPR_MRV_ROLE"/>
+        <Role name="BUREAUSTAFF_ROLE"/>
+        <Role name="CALLCENTER_ROLE"/>
+        <Role name="CORE_ROLE"/>
+        <Role name="DGMOPLANNER_ROLE"/>
+        <Role name="DGPPLANNER_ROLE"/>
+        <Role name="DIRPLANNER_ROLE"/>
+        <Role name="DIRSTAFF_ROLE"/>
+        <Role name="FDE_ROLE"/>
+        <Role name="FMO_ROLE"/>
+        <Role name="GA_ROLE"/>
+        <Role name="GAC_ROLE"/>
+        <Role name="GACADMINPLANNER_ROLE"/>
+        <Role name="GMO_ROLE"/>
+        <Role name="GMS_ROLE"/>
+        <Role name="GTA_ROLE"/>
+        <Role name="HCOFANL_ROLE"/>
+        <Role name="NTDPSTAFF_ROLE"/>
+        <Role name="OPRSTAFF_ROLE"/>
+        <Role name="PAO_ROLE"/>
+        <Role name="PDR_ANALYST"/>
+        <Role name="PGA_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGADMINISTRATOR_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PLANNINGSTAFF_ROLE"/>
+        <Role name="PO_ROLE"/>
+        <Role name="PQC_ROLE"/>
+        <Role name="QR_ROLE"/>
+        <Role name="READONLY_ROLE"/>
+        <Role name="REVIEWER_ROLE"/>
+        <Role name="UDSMNG_ROLE"/>
+        <Role name="UDSQC_ROLE"/>
+        <Role name="UDSREV_ROLE"/>
+        <Role name="VALIDATIONCONTRACTOR_ROLE"/>
+        <Role name="LAS_ROLE"/>
+        <Role name="LAO_ROLE"/>
+      </Roles>
+    </Folder>
+  </Folders>
+  <Roles>
+    <Role id="1" name="ADMIN_ROLE" hierarchy="10"/>
+    <Role id="2" name="HDESK_ROLE"/>
+    <Role id="5" name="GMO_ROLE" hierarchy="20"/>
+    <Role id="6" name="GMS_ROLE" hierarchy="40"/>
+    <Role id="7" name="FMO_ROLE"/>
+    <Role id="8" name="AA_ROLE"/>
+    <Role id="9" name="PO_ROLE" hierarchy="70"/>
+    <Role id="10" name="QR_ROLE" hierarchy="30"/>
+    <Role id="12" name="GAC_ROLE"/>
+    <Role id="14" name="SYS_USER"/>
+    <Role id="17" name="CORE_ROLE"/>
+    <Role id="18" name="EXTERNAL_ORG_USER"/>
+    <Role id="19" name="BASIC_USER"/>
+    <Role id="20" name="REVIEWER_ROLE"/>
+    <Role id="21" name="PGA_ROLE"/>
+    <Role id="22" name="GTA_ROLE"/>
+    <Role id="23" name="GA_ROLE" hierarchy="80"/>
+    <Role id="24" name="READONLY_ROLE" hierarchy="77"/>
+    <Role id="25" name="CALLCENTER_ROLE"/>
+    <Role id="26" name="PLANNINGADMINISTRATOR_ROLE" hierarchy="90"/>
+    <Role id="27" name="PLANNINGSTAFF_ROLE"/>
+    <Role id="29" name="DIRSTAFF_ROLE"/>
+    <Role id="30" name="BUREAUSTAFF_ROLE"/>
+    <Role id="31" name="REVIEWER_CANDIDATE_ROLE"/>
+    <Role id="32" name="REVIEW_REVIEWER_ROLE"/>
+    <Role id="33" name="ADMINPLANNER_ROLE"/>
+    <Role id="34" name="DGMOPLANNER_ROLE"/>
+    <Role id="35" name="GACADMINPLANNER_ROLE" hierarchy="100"/>
+    <Role id="36" name="DGPPLANNER_ROLE"/>
+    <Role id="37" name="DIRPLANNER_ROLE"/>
+    <Role id="38" name="VALIDATIONCONTRACTOR_ROLE"/>
+    <Role id="39" name="ADA_ROLE"/>
+    <Role id="40" name="OPRSTAFF_ROLE"/>
+    <Role id="41" name="PAO_ROLE" hierarchy="50"/>
+    <Role id="42" name="POCIS_ROLE"/>
+    <Role id="44" name="PQC_ROLE" hierarchy="60"/>
+    <Role id="46" name="NTDPSTAFF_ROLE"/>
+    <Role id="47" name="APO_ROLE"/>
+    <Role id="48" name="PQCFM_ROLE"/>
+    <Role id="49" name="PAOFM_ROLE"/>
+    <Role id="50" name="POCR_ROLE"/>
+    <Role id="51" name="POPR_ROLE"/>
+    <Role id="52" name="PQCCR_ROLE"/>
+    <Role id="53" name="PQCPR_ROLE"/>
+    <Role id="54" name="PAOCR_ROLE"/>
+    <Role id="55" name="PAOPR_ROLE"/>
+    <Role id="56" name="PQC_CIS_ROLE"/>
+    <Role id="57" name="PAO_CIS_ROLE"/>
+    <Role id="88" name="AAO_ROLE"/>
+    <Role id="95" name="GMS_CE_ROLE"/>
+    <Role id="96" name="FDE_ROLE"/>
+    <Role id="97" name="GMSFSR_ROLE"/>
+    <Role id="98" name="HCOFANL_ROLE"/>
+    <Role id="99" name="POHCOF_ROLE"/>
+    <Role id="100" name="UDSMNG_ROLE"/>
+    <Role id="101" name="UDSREV_ROLE"/>
+    <Role id="102" name="UDSQC_ROLE"/>
+    <Role id="103" name="EXT_MGR_ROLE"/>
+    <Role id="104" name="AUDIT_REVIEWER_ROLE"/>
+    <Role id="105" name="BPMS_ADMIN_ROLE"/>
+    <Role id="106" name="BPMS_DO_ROLE"/>
+    <Role id="107" name="BPMS_AN_ROLE"/>
+    <Role id="108" name="BHPR_MRV_ROLE"/>
+    <Role id="114" name="FTCA_CA_REVIEWER_ROLE"/>
+    <Role id="117" name="FTCA_REVIEWER_ROLE"/>
+    <Role id="118" name="PQC_FTCA_ROLE"/>
+    <Role id="119" name="PO_PERFORMANCE_REPORT_REVIEWER_ROLE"/>
+    <Role id="120" name="PQC_PERFORMANCE_REPORT_REVIEWER_ROLE"/>
+    <Role id="126" name="FTCA_PQC_DEEMING_ROLE"/>
+    <Role id="127" name="FTCA_PAO_DEEMING_ROLE"/>
+    <Role id="128" name="FTCA_APO_DEEMING_ROLE"/>
+    <Role id="129" name="SCOPE_ADMINISTRATOR_ROLE" hierarchy="76"/>
+    <Role id="130" name="ORHP_AN_ROLE"/>
+    <Role id="131" name="OHIT_AN_ROLE"/>
+    <Role id="134" name="BHCMIS_DASHBOARDS_ROLE"/>
+    <Role id="135" name="FTCA_PSA_ROLE"/>
+    <Role id="138" name="LALPO_ROLE" hierarchy="65"/>
+    <Role id="139" name="LALPQC_ROLE" hierarchy="55"/>
+    <Role id="143" name="PDR_ANALYST"/>
+    <Role id="142" name="PO_GRM_ROLE"/>
+    <Role id="153" name="GMS_GDR_ROLE"/>
+    <Role id="140" name="LALPAO_ROLE" hierarchy="45"/>
+    <Role id="141" name="LALSCPADMIN_ROLE" hierarchy="75"/>
+    <Role id="150" name="LAS_ROLE" hierarchy="40"/>
+    <Role id="151" name="LAO_ROLE" hierarchy="20"/>
+    <Role id="163" name="CSS_ROLE"/>
+  </Roles>
+</FoldersConfig>

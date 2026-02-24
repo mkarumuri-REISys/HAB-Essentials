@@ -1,0 +1,20 @@
+<root>
+	<ConfigurationPath>Platform/Telerik/Dictionary/</ConfigurationPath>
+	<FilesPath>Platform/Telerik/Tools/Tools.xml</FilesPath>
+	<EditorSize>
+		<ViewMode>
+			<Height>200</Height>
+			<Width>700</Width>
+		</ViewMode>
+		<EditMode>
+			<Height>300</Height>
+			<Width>700</Width>
+		</EditMode>
+	</EditorSize>
+	<EditorMaxHTMLLength>40000</EditorMaxHTMLLength>
+	<EditorMaxTextLength>2000</EditorMaxTextLength>
+	<CharactersPerPage>4000</CharactersPerPage>
+  <ReplaceCarriageReturns>true</ReplaceCarriageReturns>
+  <CharacterCountWithSpaces>false</CharacterCountWithSpaces>
+  <ReplaceCarriageReturnsToSpace>false</ReplaceCarriageReturnsToSpace>
+</root>

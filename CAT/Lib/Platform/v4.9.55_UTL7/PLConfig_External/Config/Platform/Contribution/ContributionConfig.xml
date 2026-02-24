@@ -1,0 +1,14 @@
+﻿<config>
+  <attachmentResourceTypeCode>1010</attachmentResourceTypeCode>
+  <!--Invitation Attachment Details : PLSUP-5088-->
+  <invitationAttachmentPurposeCode>584</invitationAttachmentPurposeCode>
+  <invitationAttachmentPurposeDescription>Invitation Attachments</invitationAttachmentPurposeDescription>
+  <invitationAttachmentMaximumCount>5</invitationAttachmentMaximumCount>
+  <invitationAttachmentMinimumCount>0</invitationAttachmentMinimumCount>
+  <!--Contribution Attachment Details-->
+  <attachmentPurposeCode>510</attachmentPurposeCode>
+  <attachmentPurposeDescription>Contribution Attachments</attachmentPurposeDescription>
+  <attachmentMaximumCount>5</attachmentMaximumCount>
+  <attachmentMinimumCount>0</attachmentMinimumCount>
+  <notificationEHBUrl>0BEBDD06-94A4-4A0B-AF39-50086EE4EECC</notificationEHBUrl>
+</config>

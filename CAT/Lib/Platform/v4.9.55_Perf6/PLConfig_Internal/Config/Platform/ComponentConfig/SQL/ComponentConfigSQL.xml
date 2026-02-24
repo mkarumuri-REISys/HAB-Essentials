@@ -1,0 +1,76 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="GetComponentConfigItems" connection="Common">
+    <sql>
+      SELECT cc.lookupcode as componentconfigtypecode
+      , componenttypecode
+      , componentname
+      , cc.resourcetypecode
+      , configxml
+      FROM
+      lu_pfm_componentconfig cc
+      JOIN LU_PFM_ComponentType ct
+      ON ct.lookupcode = cc.componenttypecode;
+    </sql>
+  </statement>
+  <statement name="GetComponentConfigItemsFiltered" connection="Common">
+    <param id="ResourceTypeCode"  type="Int32"/>
+    <param id="ComponentConfigTypeCode"  type="Int32"/>
+    <sql>
+      SELECT cc.lookupcode as componentconfigtypecode
+      , componenttypecode
+      , componentname
+      , cc.resourcetypecode
+      , configxml
+      FROM
+      lu_pfm_componentconfig cc
+      JOIN LU_PFM_ComponentType ct
+      ON ct.lookupcode = cc.componenttypecode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="cc.ResourceTypeCode" paramId="ResourceTypeCode" />
+          <exp op="=" dbField="cc.ComponentTypeCode" paramId="ComponentConfigTypeCode" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetComponentConfigItem" connection="Common">
+    <param id="InvitationId" required="true" />
+    <sql>
+      SELECT cc.lookupcode as componentconfigtypecode
+      , componenttypecode
+      , componentname
+      , cc.resourcetypecode
+      , configxml
+      FROM LU_PFM_ComponentConfig CC
+      INNER JOIN LU_PFM_ComponentType CT ON CC.ComponentTypeCode=CT.LookupCode
+      INNER JOIN dbo.PFM_CONT_Resources Res On Res.ResourceTypeCode = CC.ResourceTypeCode
+      INNER JOIN dbo.PFM_CONT_Invitation Inv ON Res.ResourceID=Inv.ResourceId
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="InvitationId" paramId="InvitationId" />
+          <exp op="=" dbField="CT.LookupCode">1</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetComponentConfigNoteItem" connection="Common">
+    <param id="NoteId" required="true" />
+    <sql>
+      SELECT cc.lookupcode as componentconfigtypecode
+      , componenttypecode
+      , componentname
+      , cc.resourcetypecode
+      , configxml
+      FROM LU_PFM_ComponentConfig CC
+      INNER JOIN LU_PFM_ComponentType CT ON CC.ComponentTypeCode=CT.LookupCode
+      INNER JOIN dbo.PFM_Note_P note on note.ResourceTypeCode = cc.ResourceTypeCode
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="note.NoteId" paramId="NoteId" />
+          <exp op="=" dbField="CT.LookupCode">2</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>

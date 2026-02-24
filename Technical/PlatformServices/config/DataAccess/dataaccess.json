@@ -1,0 +1,14 @@
+{
+  "dataAccess": {
+    "defaultConnection": "GEMS",
+    "ConnectionStrings": {
+      "GEMS": "hGPuBs/X2CGVbhoboJhNT0FFuXlJk3ALxqsFJy7ppC5wTWsZbEWwIq9RZKiXq0bg3xd2Idmv0n9PsCeBA9nspyJ4BMU1QaTQ8nPGeIp751g=",
+      "Common": "hGPuBs/X2CGVbhoboJhNT0FFuXlJk3ALxqsFJy7ppC5wTWsZbEWwIq9RZKiXq0bg3xd2Idmv0n9PsCeBA9nspyJ4BMU1QaTQ8nPGeIp751g=",
+      "FLAG": "hGPuBs/X2CGVbhoboJhNT0FFuXlJk3ALxqsFJy7ppC4VeC3TX1R0Msy0CEkXRSoeC1D20NH5II7PJTaZiZ0R21B92oKsmJF/StBHYm2aiwE=",
+	  "MAIL": "hGPuBs/X2CGVbhoboJhNT0FFuXlJk3ALxqsFJy7ppC5wTWsZbEWwIq9RZKiXq0bg3xd2Idmv0n9PsCeBA9nspyJ4BMU1QaTQ8nPGeIp751g="
+    },
+    "StatementDelimiter": ";",
+    "Provider": "SqlClient"
+  }
+}
+

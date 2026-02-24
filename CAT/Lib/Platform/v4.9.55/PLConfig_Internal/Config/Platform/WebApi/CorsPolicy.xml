@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<webConfig>
+  <webApi>
+    <!--System.Web.Cors.CorsPolicy-->
+    <CorsPolicy>
+      <!--Comma separated list of strings-->
+      <Origins><![CDATA[https://hrsa.gov,https://reisys.com]]></Origins>
+      
+      <!--Comma separated list of strings-->
+      <Methods>GET,POST</Methods>
+      
+      <!--Comma separated list of strings-->
+      <Headers>*</Headers>
+      
+      <!--true or false-->
+      <SupportsCredentials>false</SupportsCredentials>
+
+      <!--Comma separated list of strings-->
+      <ExposedHeaders></ExposedHeaders>
+
+      <!--Gets or sets the number of seconds the results of a preflight request can be cached.-->
+      <PreflightMaxAge></PreflightMaxAge>
+      
+      <!--Set to true otherwise false-->      
+      <AllowAnyHeader>false</AllowAnyHeader>
+      <AllowAnyMethod>false</AllowAnyMethod>
+      <AllowAnyOrigin>false</AllowAnyOrigin>
+    </CorsPolicy>
+  </webApi>
+</webConfig>

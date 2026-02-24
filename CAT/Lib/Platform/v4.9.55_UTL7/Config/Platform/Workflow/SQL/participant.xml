@@ -1,0 +1,50 @@
+<statements>
+	<statement name="get">
+		<param id="id" type="String" size="36" />
+		<param id="typeId" type="adSmallInt" />
+		<sql>
+			select cast(lp.participant_id as varchar(36)) as id, 
+					lp.participant_name as name,
+					lp.notification_preference_id as notifyPreferenceID,
+					lp.participant_type_id as typeID
+			from LU_PARTICIPANT lp
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="lp.participant_id" paramId="id" />
+					<exp op="=" dbField="lp.participant_type_id" paramId="typeId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="getMembers">
+		<param id="id" type="String" size="36" required="true"/>
+		<sql>
+			select cast(lp.participant_id as varchar(36)) as id, 
+					lp.participant_name as name,
+					lp.notification_preference_id as notifyPreferenceID,
+					lp.participant_type_id as typeID
+			from rel_participant_hierarchy rph inner join
+				lu_participant lp on rph.participant_id = lp.participant_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="rph.participant_parent_id" paramId="id" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="login" connection="Workflow">
+		<param id="userName" type="String" size="36"  required="true"/>
+		<param id="pwd" type="String" size="100"  required="true"/>
+		<sql>
+			select cast(lpa.participant_id as varchar(36)) as participantId 					
+			from lu_participant_auth lpa <!--inner join
+				lu_participant lp on lpa.participant_id = lp.participant_id-->
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="lpa.user_name" paramId="userName" />
+					<exp op="=" dbField="lpa.user_pwd" paramId="pwd" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+</statements>

@@ -1,0 +1,35 @@
+﻿<statements>
+  <statement name="GetPorfolios" connection="Common">
+    <param id="GroupName" type="string" />
+    <param id="PortfolioId" type="string" />
+    <sql>
+      SELECT P.PORFItemId as PortfolioId
+      ,P.GroupName
+      ,P.Description
+      ,P.DisplayText
+      ,P.AdditionalParams
+      ,U.RelativeURL as URL
+      ,U.ExternalSystemCode
+      ,U.ExternalSystemDimensionCode
+      ,E.DimensionValue as ExternalSystemDimensionValue
+      ,CG.LookupCode as PortfolioCategoryCode
+      ,CG.DisplayValue as CategoryDescription
+      ,P.CreatedDate
+      ,CG.DisplayOrder
+      ,P.WindowType
+      FROM LU_PFM_PORF_Item P
+      Join PFM_CORE_PredefinedPage U on U.COREPredefinedPageID = P.COREPredefinedPageID
+      Join dbo.ExternalSystemDimensionValue E
+      on U.ExternalSystemCode = E.ExternalSystemCode and
+      U.ExternalSystemDimensionCode = E.ExternalSystemDimensionCode
+      join LU_PFM_PORF_Category CG on CG.LookupCode = P.CategoryCode
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="P.GroupName" paramId="GroupName" />
+          <exp op="=" dbField="P.PORFItemId" paramId="PortfolioId" />
+        </exp>
+      </where>
+        order by DisplayOrder Desc, Description asc
+    </sql>
+  </statement>
+</statements>

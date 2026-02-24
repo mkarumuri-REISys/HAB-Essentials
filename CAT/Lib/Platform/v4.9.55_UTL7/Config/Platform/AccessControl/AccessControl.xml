@@ -1,0 +1,49 @@
+<Config>
+	<AuditQueueName>gis async</AuditQueueName>
+	<AuditDirectoryName>Y:\Logs\audit</AuditDirectoryName>
+  <logoutURLs>
+    <CorePredefinedPageId userType="1">EFA83629-602D-4A45-B6E4-8F614C1D02DE</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2">D54695F1-3265-41BB-8E2A-217B682C69B2</CorePredefinedPageId>
+    <CorePredefinedPageId userType="4">7E8724BF-9CC3-4A96-832A-BA5CA4E5BBBB</CorePredefinedPageId>
+    <!-- Following GUID is for Login-as-Different user. PFM-7059
+    <CorePredefinedPageId userType="5">E7ABAC8F-77F1-4E37-97B2-D7111D3CDD0E</CorePredefinedPageId>
+    -->
+    <CorePredefinedPageId userType="5">7E8724BF-9CC3-4A96-832A-CB06369B5F30</CorePredefinedPageId>    
+    <CorePredefinedPageId userType="6">D1C6774D-BCCD-4A47-A018-9DE82F317F8C</CorePredefinedPageId>
+    <CorePredefinedPageId userType="7">5F447076-862D-41A5-B4F4-6FB834FDF4AD</CorePredefinedPageId>
+    <CorePredefinedPageId userType="8">61C13573-3FD7-499A-BBB5-1505E9154671</CorePredefinedPageId>
+    <CorePredefinedPageId userType="9">EA49630C-1B41-47EB-9E2A-029338F5B24B</CorePredefinedPageId>
+  </logoutURLs>
+  <loginURLs>
+    <CorePredefinedPageId userType="1">C13B4E5E-24F6-4E58-B995-9157A1A5D69F</CorePredefinedPageId>
+    <CorePredefinedPageId userType="2">B7B07B64-6E38-487C-8C5D-37D1319C36FE</CorePredefinedPageId> 
+    <CorePredefinedPageId userType="4">28BBEF59-FE3E-4FD8-BD41-AC50DFDD88B2</CorePredefinedPageId>
+    <CorePredefinedPageId userType="5">530671FB-0ABB-475F-9AB9-51EE4ECC3778</CorePredefinedPageId>
+    <CorePredefinedPageId userType="6">F6E5709C-5E3B-4C00-B1D2-8C8D9ED27455</CorePredefinedPageId>
+    <CorePredefinedPageId userType="7">3D3EAECD-BBE0-4D1B-AA22-B4D1A6D856E9</CorePredefinedPageId>
+    <CorePredefinedPageId userType="8">9E85A349-2A94-473B-A1E2-90181E2D281C</CorePredefinedPageId>
+    <CorePredefinedPageId userType="9">6645E3CE-B09E-45D9-BE4E-B1E2308803CF</CorePredefinedPageId>
+  </loginURLs>
+  
+  <AuditMetaData>
+		<Element name="EventTypeCode" xPath="/auditEvent/type" />
+		<Element name="SuccessFlag" xPath="/auditEvent/successFlag" />
+		<Element name="Server" xPath="/auditEvent/server" />
+		<Element name="ClientIpAddress" xPath="/auditEvent/clientIp" />
+		<Element name="UserId" xPath="/auditEvent/userId" />
+		<Element name="Description" xPath="/auditEvent/description" />
+		<Element name="AccessedURL" xPath="/auditEvent/source/@url" />
+		<Element name="ClassName" xPath="/auditEvent/source/@className" />
+		<Element name="MethodName" xPath="/auditEvent/source/@method" />
+		<Element name="ResourceTypeCode" xPath="/auditEvent/resource/@type" />
+		<Element name="ResourceValue" xPath="/auditEvent/resource" />
+		<Element name="ExtendedInfoXML" xPath="/auditEvent/extendedInfo" />
+		<Element name="EventDatetime" xPath="/auditEvent/timestamp" />
+	</AuditMetaData>
+	<sessionVariableName>UserSessionData</sessionVariableName>	
+  <loginPage>Interface/common/accesscontrol/login.aspx</loginPage>
+	<timeoutPage>Platform/Interface/Timeout.aspx</timeoutPage>
+  <sessionOverlayEnabled>true</sessionOverlayEnabled>
+  <warningCheckInterval>1</warningCheckInterval>
+  <countdownTimerTextEnabled>false</countdownTimerTextEnabled>
+</Config>

@@ -1,0 +1,34 @@
+<statements>
+	<statement name="get">
+		<param id="ChecklistDefinitionId" 	type="String" size="36" />
+		<param id="Version" 				type="Int32" />
+		<param id="Description" 			type="String" size="255" />
+		<sql>
+			set nocount on;
+			SELECT 
+      <optional depends="!Version">
+        Top 1
+      </optional> 
+      ChecklistDefinitionId
+			,Version
+			,XsltPath
+			,ReadOnlyXSLTPath
+			,CreatorId
+			,CreatedDate
+			,LastUpdateId
+			,LastUpdateDate
+			,ChecklistXML
+			,Description
+			from
+			ChecklistDefinition
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ChecklistDefinitionId" paramId="ChecklistDefinitionId" />
+					<exp op="=" dbField="Version" paramId="Version" />
+					<exp op="LIKE" dbField="Description" paramId="Description" />
+				</exp>
+			</where>
+      Order by Version desc
+    </sql>
+	</statement>
+</statements>

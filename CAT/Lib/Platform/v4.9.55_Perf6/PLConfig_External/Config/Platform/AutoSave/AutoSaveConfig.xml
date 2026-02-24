@@ -1,0 +1,10 @@
+﻿<root>
+  <!-- autosave is not active by default to maintain backward compatibility -->
+  <activated>false</activated>
+  <!-- in seconds -->
+  <timerInterval>10</timerInterval>
+  <intervalType>Continuous</intervalType>
+  <reloadMode>AutoReload</reloadMode>
+  <multiUser>false</multiUser>
+  <toolbarMessageTimeout>10</toolbarMessageTimeout>
+</root>

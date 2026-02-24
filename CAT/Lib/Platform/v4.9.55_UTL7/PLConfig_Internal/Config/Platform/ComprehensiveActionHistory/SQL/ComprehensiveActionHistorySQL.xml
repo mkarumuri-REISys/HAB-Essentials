@@ -1,0 +1,361 @@
+﻿<statements>
+  <statement name="GetComprehensiveActionHistory">
+    <param id="SortExpression" type="String" required="true" />
+    <param id="Action_Filter" type="String" />
+    <param id="User_Filter" type="String" />
+    <param id="ActionTakenOn_Filter" type="string" />
+    <param id="Role_Filter" required="string" />
+    <param id="Role_Search_sa" type="String" />
+    <param id="Action_Search_sa" type="String" />
+    <param id="Comments_Search" type="String" />
+    <param id="UserLike_Search" type="String" />
+    <param id="ActionTakenOnFrom_Search" type="String" />
+    <param id="ActionTakenOnTo_Search" type="String" />
+    <param id="Dynamic_TableInsert" type="string" required="true" />
+    <param id="RoleId" type="Int32"/>
+    <sql>
+
+      DECLARE @ResourceIds TABLE(ResourceTypeCode INT, ResourceValue UNIQUEIDENTIFIER);
+      <dynamic paramId="Dynamic_TableInsert"></dynamic>
+
+      <select>
+        <!--UserActionID,-->
+        <!--ActionID,
+        ActionTypeLookUpCode,-->
+        OnResourceLookupCode,
+        ActionTakenOn,
+        ActionTakenOnString,
+        <!--CreatorId,
+        CreatedDate,-->
+        Comments,
+        ProcessType,
+        Action,
+        Role,
+        ActionTakenBy,
+        <!--ByUserId,-->
+        OnResourceID,
+        <!--ProcessTypeLookUpCode,
+        ActionTypeDisplay,-->
+        LookupCode,
+        RoleId,
+        ActionTakenOnDateTime
+        
+      </select>
+      FROM
+      (
+      SELECT
+      <!--CONVERT(VARCHAR(36),lkppfmUAT.LookUpCode) AS UserActionID,-->
+      <!--pfmUA.ActionID,
+      pfmUA.ActionTypeLookUpCode,-->
+      pfmUA.OnResourceLookUpCode,
+      <!--CONVERT(VARCHAR,pfmUA.OnDateTime,101) + ' ' + CONVERT(varchar(15),  CAST(pfmUA.OnDateTime AS TIME), 100) AS 'ActionTakenOn',-->
+      FORMAT(pfmUA.OnDateTime,'MM/dd/yyyy hh:mm tt') AS 'ActionTakenOnString',
+      CONVERT(DateTime, OnDateTime,101) AS 'ActionTakenOn',
+      CAST(CAST(OnDateTime AS DATE) AS DATETIME) AS 'ActionTakenOnFilter',
+      pfmUA.OnDateTime as ActionTakenOnDateTime,
+      <!--pfmUA.CreatorId,
+      pfmUA.CreatedDate,-->
+      ISNULL(pfmUA.Comments, ' ') AS Comments,
+      cc.ResourceName AS 'ProcessType',
+      dbo.ufnPFM_StripHTML(lkppfmUAT.LongDisplayValue) AS Action,
+      acRol.DisplayValue AS 'Role',
+      ISNULL(ppl.LastName + '', '') +', '+ ISNULL(ppl.FirstName, '') AS 'ActionTakenBy',
+      <!--pfmUA.ByUserID,-->
+      pfmUA.OnResourceID,
+      <!--lkppfmUAT.ProcessTypeLookUpCode,
+      lkppfmUAT.ShortDisplayValue AS ActionTypeDisplay,-->
+      lkppfmUAT.LookupCode,
+      ppl.FirstName,
+      ppl.LastName,
+      pfmUA.roleid
+      FROM
+      @ResourceIds ids
+      INNER JOIN dbo.ConsolidatedPLatformUserAction pfmUA ON ids.ResourceTypeCode = pfmUA.OnResourceLookUpCode AND ids.ResourceValue = pfmUA.OnResourceID
+      INNER JOIN dbo.LookupPlatformUserActionType  lkppfmUAT ON pfmUA.ActionTypeLookUpCode = lkppfmUAT.LookupCode
+      INNER JOIN dbo.People ppl ON pfmUA.ByUserID = ppl.UserId
+      INNER JOIN dbo.LookupPlatformUserActionProcess  lkppfmUAP ON lkppfmUAT.ProcessTypeLookUpCode = lkppfmUAP.LookupCode
+      INNER JOIN dbo.LookupresourceType lkpRT ON OnResourceLookUpCode=lkpRT.LookupCode
+      INNER JOIN LU_PFM_CAH_ResourceTypeConfiguration cc ON cc.ResourceTypeCode= OnResourceLookUpCode
+      LEFT JOIN AC_Role  acRol ON acRol.RoleId = pfmUA.RoleId
+      ) AS Results
+      <where>
+        <exp op="and">
+          <optional depends="RoleId">
+            <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          </optional>
+          <optional depends="Action_Filter">
+            LookupCode <dynamic paramId="Action_Filter"></dynamic>
+          </optional>
+          <optional depends="User_Filter">
+            ActionTakenBy  <dynamic paramId="User_Filter"></dynamic>
+          </optional>
+          <optional depends="ActionTakenOn_Filter">
+            ActionTakenOnFilter <dynamic paramId="ActionTakenOn_Filter"></dynamic>
+          </optional>
+          <optional depends="Role_Filter">
+            RoleId <dynamic paramId="Role_Filter"></dynamic>
+          </optional>
+          <optional depends="Role_Search_sa">
+            <exp op="in" dbField="Role" paramId="Role_Search_sa"/>
+          </optional>
+          <optional depends="Action_Search_sa">
+            <exp op="in" dbField="Action" paramId="Action_Search_sa"/>
+          </optional>
+          <optional depends="ActionTakenOnFrom_Search">
+            <exp op="&gt;=" dbField="ActionTakenOnFilter" paramId="ActionTakenOnFrom_Search"/>
+          </optional>
+          <optional depends="ActionTakenOnTo_Search">
+            <exp op="&lt;=" dbField="ActionTakenOnFilter" paramId="ActionTakenOnTo_Search"/>
+          </optional>
+          <optional depends="Comments_Search">
+            <exp op="like" dbField="Comments" paramId="Comments_Search"/>
+          </optional>
+          <optional depends="UserLike_Search">
+            <exp op="like" dbField="ActionTakenBy" paramId="UserLike_Search"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+
+  <statement name="GetProcessBasedCAH">
+    <param id="SortExpression" type="String" required="true" />
+    <param id="Action_Filter" type="String" />
+    <param id="User_Filter" type="String" />
+    <param id="ActionTakenOn_Filter" type="string" />
+    <param id="Role_Filter" required="string" />
+    <param id="Role_Search_sa" type="String" />
+    <param id="Action_Search_sa" type="String" />
+    <param id="Comments_Search" type="String" />
+    <param id="UserLike_Search" type="String" />
+    <param id="ActionTakenOnFrom_Search" type="String" />
+    <param id="ActionTakenOnTo_Search" type="String" />
+    <param id="Dynamic_TableInsert" type="string" required="true" />
+    <param id="RoleId" type="Int32"/>
+    <param id="ProcessId" type="Int32" required="true"/>
+    <sql>
+
+      DECLARE @ResourceIds TABLE(ResourceTypeCode INT, ResourceValue UNIQUEIDENTIFIER);
+      <dynamic paramId="Dynamic_TableInsert"></dynamic>
+
+      <select>
+        <!--UserActionID,-->
+        <!--ActionID,
+        ActionTypeLookUpCode,-->
+        OnResourceLookupCode,
+        ActionTakenOn,
+        ActionTakenOnString,
+        <!--CreatorId,
+        CreatedDate,-->
+        Comments,
+        ProcessType,
+        Action,
+        Role,
+        ActionTakenBy,
+        <!--ByUserId,-->
+        OnResourceID,
+        <!--ProcessTypeLookUpCode,
+        ActionTypeDisplay,-->
+        LookupCode,
+        RoleId,
+        ActionTakenOnDateTime
+        
+      </select>
+      FROM
+      (
+      SELECT
+      <!--CONVERT(VARCHAR(36),lkppfmUAT.LookUpCode) AS UserActionID,-->
+      <!--pfmUA.ActionID,
+      pfmUA.ActionTypeLookUpCode,-->
+      pfmUA.OnResourceLookUpCode,
+      <!--CONVERT(VARCHAR,pfmUA.OnDateTime,101) + ' ' + CONVERT(varchar(15),  CAST(pfmUA.OnDateTime AS TIME), 100) AS 'ActionTakenOn',-->
+      FORMAT(pfmUA.OnDateTime,'MM/dd/yyyy hh:mm tt') AS 'ActionTakenOnString',
+      CONVERT(DateTime, OnDateTime,101) AS 'ActionTakenOn',
+      CAST(CAST(OnDateTime AS DATE) AS DATETIME) AS 'ActionTakenOnFilter',
+      pfmUA.OnDateTime as ActionTakenOnDateTime,
+      <!--pfmUA.CreatorId,
+      pfmUA.CreatedDate,-->
+      ISNULL(pfmUA.Comments, ' ') AS Comments,
+      cc.ResourceName AS 'ProcessType',
+      dbo.ufnPFM_StripHTML(lkppfmUAT.LongDisplayValue) AS Action,
+      acRol.DisplayValue AS 'Role',
+      ISNULL(ppl.LastName + '', '') +', '+ ISNULL(ppl.FirstName, '') AS 'ActionTakenBy',
+      <!--pfmUA.ByUserID,-->
+      pfmUA.OnResourceID,
+      <!--lkppfmUAT.ProcessTypeLookUpCode,
+      lkppfmUAT.ShortDisplayValue AS ActionTypeDisplay,-->
+      lkppfmUAT.LookupCode,
+      ppl.FirstName,
+      ppl.LastName,
+      pfmUA.roleid
+      FROM
+      @ResourceIds ids
+      INNER JOIN dbo.ConsolidatedPLatformUserAction pfmUA ON ids.ResourceTypeCode = pfmUA.OnResourceLookUpCode AND ids.ResourceValue = pfmUA.OnResourceID
+      INNER JOIN dbo.LookupPlatformUserActionType  lkppfmUAT ON pfmUA.ActionTypeLookUpCode = lkppfmUAT.LookupCode
+      INNER JOIN dbo.People ppl ON pfmUA.ByUserID = ppl.UserId
+      INNER JOIN dbo.LookupPlatformUserActionProcess  lkppfmUAP ON lkppfmUAT.ProcessTypeLookUpCode = lkppfmUAP.LookupCode
+      INNER JOIN dbo.LookupresourceType lkpRT ON OnResourceLookUpCode=lkpRT.LookupCode
+      INNER JOIN LU_PFM_CAH_ProcessResourceTypeConfiguration cc ON cc.ResourceTypeCode= OnResourceLookUpCode AND  cc.ProcessId= <exp paramId="ProcessId"/>
+      LEFT JOIN AC_Role  acRol ON acRol.RoleId = pfmUA.RoleId
+      ) AS Results
+      <where>
+        <exp op="and">
+          <optional depends="RoleId">
+            <exp op="=" dbField="RoleId" paramId="RoleId"/>
+          </optional>
+          <optional depends="Action_Filter">
+            LookupCode <dynamic paramId="Action_Filter"></dynamic>
+          </optional>
+          <optional depends="User_Filter">
+            ActionTakenBy  <dynamic paramId="User_Filter"></dynamic>
+          </optional>
+          <optional depends="ActionTakenOn_Filter">
+            ActionTakenOnFilter <dynamic paramId="ActionTakenOn_Filter"></dynamic>
+          </optional>
+          <optional depends="Role_Filter">
+            RoleId <dynamic paramId="Role_Filter"></dynamic>
+          </optional>
+          <optional depends="Role_Search_sa">
+            <exp op="in" dbField="Role" paramId="Role_Search_sa"/>
+          </optional>
+          <optional depends="Action_Search_sa">
+            <exp op="in" dbField="Action" paramId="Action_Search_sa"/>
+          </optional>
+          <optional depends="ActionTakenOnFrom_Search">
+            <exp op="&gt;=" dbField="ActionTakenOnFilter" paramId="ActionTakenOnFrom_Search"/>
+          </optional>
+          <optional depends="ActionTakenOnTo_Search">
+            <exp op="&lt;=" dbField="ActionTakenOnFilter" paramId="ActionTakenOnTo_Search"/>
+          </optional>
+          <optional depends="Comments_Search">
+            <exp op="like" dbField="Comments" paramId="Comments_Search"/>
+          </optional>
+          <optional depends="UserLike_Search">
+            <exp op="like" dbField="ActionTakenBy" paramId="UserLike_Search"/>
+          </optional>
+        </exp>
+      </where>
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+
+  <statement name="GetCAHProcessConfiguration">
+    <param id="LookupCode" type="Int32" required="true" />
+    <sql>
+      <select>
+        ProcessName,ProcessCofigurationXML,CreatedDate,CreatorId,LastUpdateId,LastUpdateDate
+      </select>
+      From LU_PFM_CAH_ProcessConfiguration
+      <where>
+        <exp op="=" dbField="Lookupcode" paramId="LookupCode">
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  
+  <statement name="GetComprehensiveActionHistoryDetail">
+    <param id="ActionID" type="String" required="true" />
+    <sql>
+      SELECT Comments
+      FROM  dbo.PlatformUserAction PUA
+      <where>
+        <exp op="=" dbField="ActionID" paramId="ActionID">
+        </exp>
+      </where>
+    </sql>
+  </statement>
+    
+  <statement name="GetResourceTypeConfiguration" connection="GEMS">
+    <param id="ResourceTypeCodes" type="String"/>
+    <sql>
+      SELECT LookupCode,
+      ResourceName,
+      ResourceTypeCode,
+      ResourceCofigurationXML
+      FROM LU_PFM_CAH_ResourceTypeConfiguration CAHResConfig
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="CAHResConfig.ResourceTypeCode" paramId="ResourceTypeCodes" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+      
+  <statement name="GetProcessResourceTypeConfiguration" connection="GEMS">
+    <param id="ResourceTypeCodes" type="String"/>
+    <param id="ProcessId" type="Int32" required="true"/>
+    <sql>
+      SELECT LookupCode,
+      ResourceName,
+      ResourceTypeCode,
+      ResourceCofigurationXML
+      FROM LU_PFM_CAH_ProcessResourceTypeConfiguration CAHResConfig
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField="CAHResConfig.ResourceTypeCode" paramId="ResourceTypeCodes" />
+          <exp op="=" dbField="CAHResConfig.ProcessId" paramId="ProcessId"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  
+  <statement name="GetCAHProcessTypes">
+    <param id="ResourceTypeCodes"  />
+    <sql>
+      Select   ResourceTypeCode as 'LookupCode',ResourceName as 'DisplayValue'
+      FROM LU_PFM_CAH_ResourceTypeConfiguration
+      <where>
+        <exp   op="in" dbField="ResourceTypeCode" paramId="ResourceTypeCodes"/>
+      </where>
+      order by ResourceName asc
+    </sql>
+  </statement>
+
+  <statement name="GetCAHResourceTypes">
+    <param id="ResourceTypeCodes"  />
+    <param id="ProcessId" type="Int32" required="true"/>
+    <sql>
+      Select   ResourceTypeCode as 'LookupCode',ResourceName as 'DisplayValue'
+      FROM LU_PFM_CAH_ProcessResourceTypeConfiguration
+      <where>
+        <exp op="AND">
+          <exp   op="in" dbField="ResourceTypeCode" paramId="ResourceTypeCodes"/>
+          <exp op="=" dbField="ProcessId" paramId="ProcessId"/>
+        </exp>
+      </where>
+      order by ResourceName asc
+    </sql>
+  </statement>
+  
+  <statement name="GetCAHRoles">
+    <param id="RoleIds"  />
+    <sql>
+      Select RoleId as 'LookupCode',DisplayValue,RoleId
+      FROM AC_Role
+      <where>
+        <exp   op="in" dbField="RoleId" paramId="RoleIds"/>
+      </where>
+      order by DisplayValue asc
+    </sql>
+  </statement>
+    
+  <statement name="GetCAHAction">
+    <param id="ResourceTypeCodes" type="String" />
+    <sql>
+      Select  LookupCode,dbo.ufnPFM_StripHTML(LongDisplayValue) as 'DisplayValue'
+      FROM LookupPlatformUserActionType
+      <where>
+        lookupcode in
+        (
+        select  Distinct ActionTypeLookUpCode from  dbo.PlatformUserAction
+        <where>
+          <exp   op="in" dbField="OnResourceLookUpCode" paramId="ResourceTypeCodes"/>
+        </where>
+        )
+      </where>
+      order by dbo.ufnPFM_StripHTML(LongDisplayValue) asc
+    </sql>
+  </statement>
+
+</statements>

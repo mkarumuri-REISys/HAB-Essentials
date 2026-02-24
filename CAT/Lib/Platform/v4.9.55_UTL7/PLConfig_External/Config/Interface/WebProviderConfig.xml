@@ -1,0 +1,58 @@
+<webConfig>
+  <errorLog>Y:\Logs\Projects\CATProject\PlatformLiteLogs</errorLog>
+  <sessionTimeOut>30</sessionTimeOut>
+  <sessionTimeOutWarning>1</sessionTimeOutWarning>
+  <userType>9</userType>
+  <!-- 1: External; 2: Internal; 9: Service Provider; 8: Program SysAdmin-->
+  <!-- IMPORTANT -->
+  <feedbackLink>https://hsa-is-utl8.amer.reisystems.com/2010/WebEPSExternal/Tracker.asp</feedbackLink>
+  <callCenter>
+    <phone>877-Go4-HRSA/877-464-4772;301-998-7373</phone>
+    <email>CallCenter@HRSA.GOV</email>
+    <hours>8:00 a.m. to 8:00 p.m. Eastern Time (E.T.), Monday through Friday</hours>
+  </callCenter>
+  <!-- <CookieName>serviceProvider_cookie</CookieName> -->
+  <CookieName>serviceProvider_cookie</CookieName>
+  <accountLockoutEffectiveMins>30</accountLockoutEffectiveMins>
+  <programSpecificSystemId>16</programSpecificSystemId>
+  <repository>
+    <layout>DB</layout>
+  </repository>
+  <client>
+    <baseEndpointAddress>https://hsa-is-utl8.amer.reisystems.comEHBEPS_PFMLiteExternal_V6/Platform/WebServices/</baseEndpointAddress>
+  </client>
+  <environment>Dev</environment>
+  <mockup enabled="false" />
+  <helpSystemId>9</helpSystemId>
+  <impersonation>
+    <userId>EHB_GemsAppTest_svc</userId>
+    <password>6AH6Zp6HdL+QApNHKkb8Rg==</password>
+    <domain>amer.reisystems.com</domain>
+  </impersonation>
+  <activeDirectoryInfo>
+    <adInstances>
+      <adDetails domain="amer.reisystems.com/DC=amer.reisystems,DC=com" username="" password="O8OrSLPi59qiCLjJNH48Dg==" name="hrsa" defaultdomain="true" />
+      <adDetails domain=" " username=" " password="" name=" Testing LDAP " />
+      <adDetails domain=" " username=" " password="" name=" HRSA EHB LDAP Path " />
+    </adInstances>
+  </activeDirectoryInfo>
+  <urlService>
+    <eps>
+      <externalSystemCode>16</externalSystemCode>
+      <externalSystemDimension>438</externalSystemDimension>
+    </eps>
+  </urlService>
+  <RecommendedSettings>
+    <Browsers>
+      <Minimum>
+        <Browser Name="InternetExplorer" Version="11.0" Type="InternetExplorer" DisplayText="Internet Explorer 11.0" />
+      </Minimum>
+      <Recommended>
+        <Browser Name="InternetExplorer" Version="11.0" Type="InternetExplorer" DisplayText="Internet Explorer 11.0" />
+      </Recommended>
+      <NotAllowed>
+        <Browser Name="Internet Explorer" Version="10.0" Type="IE" />
+      </NotAllowed>
+    </Browsers>
+  </RecommendedSettings>
+</webConfig>

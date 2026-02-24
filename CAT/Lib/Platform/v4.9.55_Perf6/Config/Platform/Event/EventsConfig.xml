@@ -1,0 +1,6 @@
+﻿<root>
+  <itemMax>20</itemMax>
+  <dueTime>60000</dueTime>
+  <nowThreshold>5</nowThreshold>
+  <pollingInterval>60000</pollingInterval>
+</root>

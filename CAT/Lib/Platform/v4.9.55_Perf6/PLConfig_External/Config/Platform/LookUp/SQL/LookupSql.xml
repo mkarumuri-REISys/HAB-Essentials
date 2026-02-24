@@ -1,0 +1,56 @@
+<statements>
+  <statement name="GetAttachmentPurposeLookupGems" connection="Common">
+    <param id="LookupCode" type="Int32" />
+    <sql>
+      select * from LookupAttachmentPurpose (NOLOCK)
+      <where>
+        <exp op="=" dbField="LookupCode" paramId="LookupCode"/>
+      </where>
+    </sql>
+  </statement>
+  <statement name="GetExternalSystemDimensionValues" connection="Common">
+    <sql>
+      SELECT
+      CAST( (CAST(ExternalSystemCode AS VARCHAR(3)) + '000' + CAST(ExternalSystemDimensionCode AS VARCHAR(3))) AS INT) AS LookupCode,
+      ExternalSystemCode as LongDisplayValue,
+      ExternalSystemDimensionCode as ShortDisplayValue,
+      DimensionValue as DisplayValue
+      FROM
+      ExternalSystemDimensionValue (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetDB_Configuration" connection="Common">
+    <sql>
+      SELECT ID as LookupCode, [Key] as Description, Value as Displayvalue FROM PFM_CORE_CONFIG_P (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetLookupResourceType" connection="Common">
+    <sql>
+      select LookupCode, Description, ShortDisplayValue as DisplayValue from LookupResourceType (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetNoteType">
+    <sql>
+      SELECT * FROM Gems.dbo.LU_PFM_NoteType (NOLOCK)
+    </sql>
+  </statement>
+  <statement name="GetLookupRoles" connection="Common">
+    <sql>
+      SELECT
+      RoleId AS LookupCode
+      ,RoleAbbr AS DisplayValue
+      ,RoleName As LongDisplayValue
+      FROM AC_Role
+      ORDER BY RoleId
+    </sql>
+  </statement>
+  <statement name="GetLookupUserType" connection="Common">
+    <sql>
+      select LookupCode
+      , LongDisplayValue
+      , ShortDisplayValue
+      , Description as DisplayValue
+      from LookupUserType
+    </sql>
+  </statement>
+</statements>

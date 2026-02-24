@@ -1,0 +1,130 @@
+<statements>
+	<statement name="GetNamesFromUserIDs" connection="Common">
+		<param id="UserIDCommaDelimStringElemsQuoted" type="String" required="true"></param>
+		<sql>
+			SELECT DISTINCT
+				UserId,
+				FirstName + ' ' + LastName AS DisplayName
+			FROM
+				People
+			WHERE
+				UserId IN (<dynamic paramId="UserIDCommaDelimStringElemsQuoted"/>)
+		</sql>	
+	</statement>
+	<statement name="LoadComment">
+		<param id="ResourceValue" type="String" size="36" required="false" />
+		<param id="ResourceTypeCode" type="Int32" required="false" />
+		<param id="CommentQuestionCode" type="Int32" required="false" />
+		<param id="SortBy" type="String" />
+
+		<sql>
+			SELECT
+				Q.LookupCode AS LookupCode,
+				Q.DetailedQuestion AS DetailedQuestion,
+				Q.SummaryQuestion AS SummaryQuestion,
+				Q.Title AS Title,
+				A.CommentAnswerId AS CommentAnswerId,
+				A.ResourceValue AS ResourceValue,
+				A.ResourceTypeCode AS ResourceTypeCode,
+				A.Comment AS Comment,
+				A.LastUpdateId AS PersonID,
+				A.LastUpdateDate AS SortDate
+			FROM
+				UCM_CommentAnswer A (NOLOCK)
+			LEFT JOIN
+				UCM_CommentQuestion Q (NOLOCK)
+			ON
+				A.CommentQuestionCode = Q.LookupCode
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="A.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="A.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+				</exp>
+			</where>
+			<sort paramId="SortBy"/>
+		</sql>
+	</statement>
+	<statement name="SmellComment">
+		<param id="ResourceValue" type="String" size="36" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="CommentQuestionCode" type="Int32" required="true" />
+
+		<sql>
+			SELECT Q.LookupCode AS LookupCode, Q.DetailedQuestion AS DetailedQuestion,
+			Q.SummaryQuestion AS SummaryQuestion, Q.Title AS Title,
+			A.CommentAnswerId AS CommentAnswerId, A.ResourceValue AS ResourceValue,
+			A.ResourceTypeCode AS ResourceTypeCode, A.Comment AS Comment
+			FROM UCM_CommentAnswer A (NOLOCK) LEFT JOIN UCM_CommentQuestion Q (NOLOCK)
+			ON A.CommentQuestionCode = Q.LookupCode
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="A.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="A.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="UpdateComment">
+		<param id="ResourceValue" type="String" size="36" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="CommentQuestionCode" type="Int32" required="true" />
+		<param id="Comment" type="String" default="" />
+		<param id="UserId" type="String" size="36" />
+
+		<sql>
+			UPDATE UCM_CommentAnswer
+			<columns mode="update">
+				<column dbField="Comment" paramId="Comment" />
+				<column dbField="LastUpdateId" paramId="UserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="AddComment">
+		<param id="ResourceValue" type="String" size="36" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="CommentQuestionCode" type="Int32" required="true" />
+		<param id="Comment" type="String" default="" />
+		<param id="UserId" type="String" size="36" />
+
+		<sql>
+			INSERT UCM_CommentAnswer
+			<columns mode="insert">
+				<column dbField="CommentAnswerId">newid()</column>
+				<column dbField="Comment" paramId="Comment"/>
+				<column dbField="ResourceValue" paramId="ResourceValue" />
+				<column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+				<column dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+				<column dbField="CreatedDate">GETDATE()</column>
+				<column dbField="CreatorId" paramId="UserId" />
+			</columns>
+
+		</sql>
+	</statement>
+	<statement name="RemoveComment">
+		<param id="ResourceValue" type="String" size="36" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="CommentQuestionCode" type="Int32" required="true" />
+
+		<sql>
+			DELETE FROM UCM_CommentAnswer
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="CommentQuestionCode" paramId="CommentQuestionCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+</statements>

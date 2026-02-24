@@ -1,0 +1,158 @@
+﻿<statements>
+  <!-- thereis no AC_UserToken,Hist_AC_UserToken table in GEMS or EDBD... Why where this queries written?-->
+  <statement name="GetToken" connection="Common">
+    <param id="UserId" type="String" required="true" />
+    SELECT Token FROM AC_UserToken
+    <where>
+      <exp op="=" dbField="UserId" paramId="UserId" />
+    </where>
+  </statement>
+
+  <statement name="Login" connection="Common">
+    <param id="UserName" type="String" required="true" />
+    <param id="Password" type="String" required="true" />
+    <param id="MachineId" type="String"/>
+    <param id="ExpireDate"  />
+    <param id="CreatedDate"  />
+    <param id="TokenOutput" type="String"  size="1000" direction="output"/>
+
+
+    DECLARE @UserId UNIQUEIDENTIFIER
+    DECLARE @Token UNIQUEIDENTIFIER
+    SELECT @UserId = UserId FROM AC_User
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="UserName" paramId="UserName" />
+        <exp op="=" dbField="Password" paramId="Password" />
+      </exp>
+    </where>
+
+    IF @UserId IS NOT NULL
+    BEGIN
+
+    
+
+    INSERT INTO Hist_AC_UserToken (Token, UserId, ExpireDate, CreatorId, CreatedDate, HistoryCreatedDate)
+    SELECT Token, UserId, ExpireDate, CreatorId, CreatedDate, getdate() FROM AC_UserToken
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="UserId" >@UserId</exp>
+        <exp op="&lt;=" dbField="ExpireDate" >getdate()</exp>
+      </exp>
+    </where>
+
+    delete FROM AC_UserToken
+    <where>
+      <exp op="AND">
+        <exp op="=" dbField="UserId" >@UserId</exp>
+        <exp op="&lt;=" dbField="ExpireDate" >getdate()</exp>
+      </exp>
+    </where>
+    Select @Token = token from AC_UserToken where Userid = @UserId
+       IF @Token is null
+       Begin
+          SET @Token = newId()
+          INSERT INTO AC_UserToken
+          <columns mode ="insert">
+                      <column dbField="Token" >@Token</column>
+                      <column dbField="UserId" >@UserId</column>
+                      <column dbField="ExpireDate" paramId="ExpireDate" />
+                      <column dbField="CreatorId" >@UserId</column>
+                      <column dbField="CreatedDate" paramId="CreatedDate"></column>
+                    </columns>
+        END
+    END
+
+    SET <exp paramId="TokenOutput" /> = @Token
+  </statement>
+
+  <statement name="AuthenticateToken" connection="Common">
+    <param id="Token"  required="true" />
+    SELECT count(*) FROM AC_UserToken
+    <where>
+      <exp op="=" dbField="Token" paramId="Token" />
+    </where>
+  </statement>
+
+  <statement name="AuthenticateSession" connection="Common">
+    <param id="SessionId"  required="true" />
+    SELECT count(*) FROM AC_Session
+    <where>
+      <exp op="=" dbField="SessionId" paramId="SessionId" />
+    </where>
+  </statement>
+
+  <statement name="LogOut" connection="Common">
+    <param id="Token" required="true" />
+
+    INSERT INTO Hist_AC_UserToken (Token, UserId, ExpireDate, CreatorId, CreatedDate, HistoryCreatedDate)
+    SELECT Token, UserId, ExpireDate, CreatorId, CreatedDate, getdate() FROM AC_UserToken
+    <where>
+      <exp op="=" dbField="Token" paramId="Token"></exp>
+    </where>
+
+    delete FROM AC_UserToken
+    <where>
+      <exp op="=" dbField="Token" paramId="Token"></exp>
+    </where>
+
+  </statement>
+
+
+  <statement name="AuthenticateRequest" connection="Common">
+    <param id="UserId" type="String" required="true" />
+    SELECT UserId FROM AC_User
+    <where>
+      <exp op="=" dbField="UserId" paramId="UserId" />
+    </where>
+  </statement>
+  <statement name="AuthenticateUser" connection="Common">
+    <param id="UserName" type="String" required="true" />
+    <param id="Password" type="String" required="true" />
+    <param id="UserType" type="Int32" required="true" />
+    IF EXISTS
+    (
+      SELECT UserId FROM AC_User
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserName" paramId="UserName" />
+          <exp op="=" dbField="UserTypeCode" paramId="UserType" />
+        </exp>
+      </where>
+    )
+    BEGIN
+      DECLARE @UserId UNIQUEIDENTIFIER
+      SELECT @UserId = UserId FROM AC_User
+		  <where>
+        <exp op="AND">
+          <exp op="=" dbField="UserName" paramId="UserName" />
+          <exp op="=" dbField="Password" paramId="Password" />
+        </exp>
+      </where>
+    
+      IF @UserId IS NULL
+      BEGIN
+        /* This is a valid user but their password did not match. We'll count this as an invalid login attempt. */
+        UPDATE AC_User SET LoginFailedCount = ISNULL(LoginFailedCount + 1, 1), LastLoginFailedDateTime = GETDATE()
+      END
+      ELSE
+      BEGIN
+        UPDATE AC_User SET LastLoginDateTime = GETDATE()
+        WHERE UserId = @UserId
+        
+        /* The user name and password combo is correct. Return the user id to the application layer. */
+        SELECT @UserId
+      END
+    END
+  </statement>
+  <!-- This is a separate query because we don't know if the user is actually logged in until we're sure all the other phases passed.
+      Only then can we infer that the user is logged in. For now the AuthenticateUser statement above will proceed to update the lastlogin
+      time, but that may change in the future. -->
+  <statement name="UpdateLastLoginTime" connection="Common">
+    <param id="UserId" required="true" />
+    UPDATE AC_User SET LastLoginDateTime = GETDATE()
+    <where>
+      <exp op="=" dbField="UserId" paramId="UserId" />
+    </where>
+  </statement>
+</statements>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="HideContactsLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href=""javascript:OnClickDisplayDetails('HIDE','ContactAddress')""&gt;Hide Contact Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to hide contact information.</comment>
+  </data>
+  <data name="HideMailingAddressLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href=""javascript:OnClickDisplayDetails('HIDE','MailingAddress')""&gt;Hide Mailing Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to hide mailing address.</comment>
+  </data>
+  <data name="HidePhysicalAddressLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href=""javascript:OnClickDisplayDetails('HIDE','PhysicalAddress')""&gt;Hide Physical Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to hide physical address.</comment>
+  </data>
+  <data name="MailingAddressCaptionConfirm" xml:space="preserve">
+    <value>Mailing Address</value>
+  </data>
+  <data name="MailingAddressCaptionNotReq" xml:space="preserve">
+    <value>Mailing Address &lt;strong&gt;(Optional)&lt;/strong&gt;</value>
+    <comment>The caption of the mailing address table when the mailing address is not required.</comment>
+  </data>
+  <data name="MailingAddressCaptionReq" xml:space="preserve">
+    <value>&lt;SPAN class=requiredField&gt;*&lt;/SPAN&gt;Mailing Address &lt;strong&gt;(Required)&lt;/strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</value>
+    <comment>The caption of the mailing address table when the mailing address is required.</comment>
+  </data>
+  <data name="MailingAddressInstructions" xml:space="preserve">
+    <value>Providing the address information below is optional. If you decide to provide the address then all fields marked with an &amp;quot;&lt;span class=requiredField&gt;*&lt;/span&gt;&amp;quot; are required. Please provide the mailing address if it is different from physical location address.</value>
+    <comment>The instructions to display if the mailing address is optional and the physical address is available.</comment>
+  </data>
+  <data name="MailingAddressInstructions2" xml:space="preserve">
+    <value>Please fill out the address information below, if you want to save/update mailing address. You may leave it blank, if you do not want to save the mailing address.</value>
+    <comment>The instructions to display if the mailing address is optional and the physical address is not available.</comment>
+  </data>
+  <data name="NoSaveRetrieveFunctionality" xml:space="preserve">
+    <value>The Address control does not possess Save and Retrieve functionality. Please use the 'public AddressManager.GiveSaveRetrieveFuntionality()' function to give the Address control the proper functionality</value>
+    <comment>This is exception message that should be thrown to the user when the AddressManager control doesn't have Save or Retrieve functionality.</comment>
+  </data>
+  <data name="PhysicalAddressCaptionConfirm" xml:space="preserve">
+    <value>Physical Location Address</value>
+  </data>
+  <data name="PhysicalAddressCaptionNotReq" xml:space="preserve">
+    <value>Physical Location Address &lt;strong&gt;(Optional)&lt;/strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</value>
+    <comment>The caption of the physical address table when the physical address is not required.</comment>
+  </data>
+  <data name="PhysicalAddressCaptionReq" xml:space="preserve">
+    <value>&lt;SPAN class=requiredField&gt;*&lt;/SPAN&gt;Physical Location Address &lt;strong&gt;(Required)&lt;/strong&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</value>
+    <comment>The caption of the physical address table when the physical address is required.</comment>
+  </data>
+  <data name="PhysicalAddressInstructions" xml:space="preserve">
+    <value>Providing the address information below is optional. If you decide to provide the address then all fields marked with an &amp;quot;&lt;span class="requiredField"&gt;*&lt;/span&gt;&amp;quot; are required.</value>
+    <comment>The instructions to display if the physical address is optional.</comment>
+  </data>
+  <data name="PopulateAddressExceptionMessage" xml:space="preserve">
+    <value>The 'REISys.WebControls.AddressManager.PopulateAddress()' function has failed</value>
+    <comment>This is the exception message that should be thrown to the user when the PopulateAddress function fails.</comment>
+  </data>
+  <data name="PopulateContactsExceptionMessage" xml:space="preserve">
+    <value>The 'REISys.WebControls.AddressManager.PopulateContacts()' function has failed</value>
+    <comment>This is the exception message that should be thrown to the user when the PopulateContacts function fails.</comment>
+  </data>
+  <data name="RequiredFieldTag" xml:space="preserve">
+    <value>&lt;span class="requiredField"&gt;*&lt;/span&gt;</value>
+    <comment>This tag will display an astrick to signify a "required" field.</comment>
+  </data>
+  <data name="SaveAddressFailed" xml:space="preserve">
+    <value>ERROR: Unable to save address</value>
+    <comment>Message for saving address data.</comment>
+  </data>
+  <data name="SaveContactFailed" xml:space="preserve">
+    <value>ERROR: Unable to save contact address</value>
+    <comment>Message for saving contact data.</comment>
+  </data>
+  <data name="ShowContactsLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href="" javascript:OnClickDisplayDetails("SHOW","ContactAddress")""&gt;Show Contact Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to show contact information.</comment>
+  </data>
+  <data name="ShowMailingAddressLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href=""javascript:OnClickDisplayDetails('SHOW','MailingAddress')""&gt;Show Mailing Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to show mailing address.</comment>
+  </data>
+  <data name="ShowPhysicalAddressLink" xml:space="preserve">
+    <value>&lt;b&gt;&lt;a href=""javascript:OnClickDisplayDetails('SHOW','PhysicalAddress')""&gt;Show Physical Address Information&lt;/a&gt;&lt;/b&gt;&lt;br/&gt;</value>
+    <comment>Link to show physical address.</comment>
+  </data>
+  <data name="uspsLink" xml:space="preserve">
+    <value>http://zip4.usps.com/zip4/welcome.jsp </value>
+    <comment>The link to the United States Postal service zipcode lookup page.</comment>
+  </data>
+  <data name="ValidationCityForm" xml:space="preserve">
+    <value>City may include only letters and space characters</value>
+    <comment>Validation message for City Form</comment>
+  </data>
+  <data name="ValidationEitherDomesticOrInternational" xml:space="preserve">
+    <value>Domestic and international addresses cannot be entered at the same time</value>
+    <comment>Validation message for required domestic or international.</comment>
+  </data>
+  <data name="ValidationEmailExist" xml:space="preserve">
+    <value>Email already exists</value>
+    <comment>Validation message for checking exising email rule.</comment>
+  </data>
+  <data name="ValidationInvalidCell" xml:space="preserve">
+    <value>Invalid cell number</value>
+    <comment>Validation message for invalid cell number.</comment>
+  </data>
+  <data name="ValidationInvalidEmail" xml:space="preserve">
+    <value>Invalid email address</value>
+    <comment>Validation message for invalid email address rule.</comment>
+  </data>
+  <data name="ValidationInvalidFax" xml:space="preserve">
+    <value>Invalid fax number</value>
+    <comment>Validation message for invalid fax number.</comment>
+  </data>
+  <data name="ValidationInvalidPhone" xml:space="preserve">
+    <value>Invalid phone number</value>
+    <comment>Validation message for invalid phone number.</comment>
+  </data>
+  <data name="ValidationInvalidZipCode" xml:space="preserve">
+    <value>Invalid zip code</value>
+    <comment>Validation message for invalid zip code.</comment>
+  </data>
+  <data name="ValidationPOBox" xml:space="preserve">
+    <value>P.O. Box is required</value>
+    <comment>Validation message for required P.O. Box.</comment>
+  </data>
+  <data name="ValidationPostalCode" xml:space="preserve">
+    <value>Postal code is required</value>
+    <comment>Validation message for required postal code.</comment>
+  </data>
+  <data name="ValidationProvince" xml:space="preserve">
+    <value>Province is required</value>
+    <comment>Validation message for required province name.</comment>
+  </data>
+  <data name="ValidationRequireCell" xml:space="preserve">
+    <value>Cell number is required</value>
+    <comment>Validation message for require cell number.</comment>
+  </data>
+  <data name="ValidationRequiredCity" xml:space="preserve">
+    <value>City is required if Zip code is not specified</value>
+    <comment>Validation message for required city.</comment>
+  </data>
+  <data name="ValidationRequiredState" xml:space="preserve">
+    <value>State is required if city is specified</value>
+    <comment>Validation message for required state.</comment>
+  </data>
+  <data name="ValidationRequiredUrban" xml:space="preserve">
+    <value>Urbanization is used only for Puerto Rico(PR)</value>
+    <comment>Validation message for required urbanization.</comment>
+  </data>
+  <data name="ValidationRequiredZipCode" xml:space="preserve">
+    <value>Zip code is required if city is not specified</value>
+    <comment>Validation message for required zip code.</comment>
+  </data>
+  <data name="ValidationRequireEmail" xml:space="preserve">
+    <value>Email Address is required</value>
+    <comment>Validation message for require email address rule.</comment>
+  </data>
+  <data name="ValidationRequireFax" xml:space="preserve">
+    <value>Fax Number is required</value>
+    <comment>Validation message for require fax number.</comment>
+  </data>
+  <data name="ValidationRequirePhone" xml:space="preserve">
+    <value>Phone Number is required</value>
+    <comment>Validation message for require phone number.</comment>
+  </data>
+  <data name="ValidationRuralRoute" xml:space="preserve">
+    <value>Rural route type, number and box are required</value>
+    <comment>Validation message for required rural route.</comment>
+  </data>
+  <data name="ValidationStreetName" xml:space="preserve">
+    <value>Street name is required</value>
+    <comment>Validation message for required street name.</comment>
+  </data>
+  <data name="AllDomesticAddressChoices" xml:space="preserve">
+    <value> &lt;span class="textSmall"&gt;(Street Address or PO Box Only or Rural Route)&lt;/span&gt;</value>
+    <comment>Formatted caption with all Domestic address types, with a prepended space</comment>
+  </data>
+  <data name="DomesticAddressCaption" xml:space="preserve">
+    <value>Domestic Address</value>
+    <comment>Domestic Address Caption</comment>
+  </data>
+  <data name="InternationalAddressCaption" xml:space="preserve">
+    <value>International Address</value>
+    <comment>International Address Caption</comment>
+  </data>
+  <data name="ValidationStreetNameNotNumeric" xml:space="preserve">
+    <value>Street Name may not consist of all numbers</value>
+    <comment>Validation message for Street Name Not Numeric</comment>
+  </data>
+  <data name="ValidationZip4Invalid" xml:space="preserve">
+    <value>Invalid +4 code</value>
+    <comment>Validation message for Invalid +4 code</comment>
+  </data>
+</root>

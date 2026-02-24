@@ -1,0 +1,416 @@
+<statements>
+	<statement name="get" connection="Workflow">
+		<param id="id" type="String" size="36" />
+		<param id="workItemList" />
+		<param id="actInstId" type="String" size="36" />
+		<param id="actDefId" type="String" size="36" />
+		<param id="actDefList" />
+		<param id="procInstId" type="String" size="36" />
+		<param id="procInstList" />
+		<param id="rootProcInstList" />
+		<param id="procDefId" type="String" size="36" />
+		<param id="procDefList"  />
+		<param id="participantId" type="String" size="36" />
+    <param id="team_id" type="String" size="36" />
+		<param id="roleId" type="String" size="36" />
+		<param id="roleList" />
+		<param id="procRelObjType" type="Int16" />
+		<param id="procRelObjIdList" />
+		<param id="state" type="Int16" />
+		<param id="stateList" />
+		<param id="statusList"/>
+		<param id="latest" type="Boolean" />
+		<param id="orderBy" default="''"/>
+		<param id="getLatestForActivity" />
+		<param id="getClientInfo"/>
+		<param id="getStatus" type="Boolean" />
+    <param id="getRootProcessStatus" type="Boolean" />
+		<param id="taskStatusLookupCode" type="Int16" />
+		<param id="taskStatusLookupCodeList" type="Int16" />
+		<param id="NoFilterOnCompletedHistory" type="Boolean" />
+		<param id="Status"/>
+		<param id="tcdFrom"/>
+		<param id="tcdTo"/>
+		<param id="includeTerminatedProcess"/>
+    <param id="disablePrimaryClause" type="Boolean" default="false"/>
+		<sql>
+			set nocount on;
+			<optional depends="NoFilterOnCompletedHistory == false">
+				Declare @FiscalYearStartDate dateTime;
+				Select @FiscalYearStartDate = dbo.ufnWF_GetFiscalYearStartDate(getdate());
+			</optional>
+
+			<optional depends="getClientInfo == 'true'" >
+				declare @T_WorkItems table (
+
+        <optional depends="disablePrimaryClause == false" >
+				ObjectId		uniqueidentifier PRIMARY KEY,
+				ObjectTypeId		smallint,
+				id 			varchar(36),
+		</optional>
+
+        <optional depends="disablePrimaryClause == true" >
+			ObjectId		uniqueidentifier ,
+			ObjectTypeId		smallint,
+			id 			varchar(36) PRIMARY KEY,
+		</optional>
+
+				processInstanceID	varchar(36),
+				activityInstanceID	varchar(36),
+				activityDefinitionID	varchar(36),
+				participantID		varchar(36),
+        teamId		varchar(36),
+				roleid			int,
+				state			smallint,
+				containerXML		varChar(2000),
+				comments		varChar(8000),
+				userAction		varchar(100),
+				lastUpdateDate		varchar(25),
+				createDate		datetime
+				<optional depends=" (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0)" >
+					,status			varchar(30)
+				</optional>
+				<optional depends="getStatus == true">
+					,taskStatusLookupCode smallint
+					,taskStatusDisplayValue varchar(50)
+				</optional>
+				);
+				Insert into @T_WorkItems
+			</optional>
+			select distinct
+			<optional depends="procDefId != null || procDefList != null || procRelObjType != null || procRelObjIdList != null || rootProcInstList != null || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) || Status != null || getClientInfo == 'true'" >
+				<optional depends="procRelObjType != null || procRelObjIdList != null || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) || Status != null || getClientInfo == 'true'">
+					pic.object_id, pic.object_type_id,
+				</optional>
+			</optional>
+      cast(fwi.work_item_id as varchar(36))as id,
+      cast(fwi.process_instance_id as varchar(36)) as processInstanceID,
+      cast(fwi.activity_instance_id as varchar(36)) as activityInstanceID,
+      cast(lua.activity_definition_id as varchar(36)) as activityDefinitionID,
+      cast(fwi.assignee_id as varchar(36)) as participantID,
+      cast(fwi.team_id as varchar(36)) as teamId,
+      fwi.ROLE_ID as roleid,
+      <optional depends="getRootProcessStatus == true">
+      case PFPI.CURRENT_STATE_ID 
+	    when '5'
+	      then 5
+	    else
+	        fwi.current_state_id 
+	    end as state,
+      </optional>
+      <optional depends="getRootProcessStatus != true"  >
+        fwi.current_state_id as state,
+      </optional>
+      
+      fwi.container_xml as containerXML,
+      fwi.comment as comments,
+      fwi.user_action_desc as userAction,
+      cast(fwi.update_datetime as varchar(25)) as lastUpdateDate,
+      fwi.create_datetime as createdDate
+      <optional depends=" (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0)" >
+				,(select
+				case
+				when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed'
+				when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+				else min(faiAll.activity_desc)
+				end
+				from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK)
+				left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+				where fpiAll.root_process_instance_id = fpi.process_instance_id
+				or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+				or fpiAll.process_instance_id = fpi.process_instance_id) status
+			</optional>
+			<optional depends="getStatus == true">
+				,isnull(lts.lookupcode,0) taskStatusLookupCode , isnull(lts.displayvalue,'N/A') taskStatusDisplayValue
+			</optional>
+			from FACT_WORK_ITEM fwi WITH (NOLOCK)
+			inner join FACT_ACTIVITY_INSTANCE fai WITH (NOLOCK) on fwi.activity_instance_id = fai.activity_instance_id
+			inner join lu_activity_definition lua WITH (NOLOCK) on lua.activity_definition_id = fai.activity_definition_id
+			<optional depends="procDefId != null || procDefList != null || procRelObjType != null || procRelObjIdList != null || rootProcInstList != null || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) || Status != null || getClientInfo == 'true'" >
+				inner join FACT_PROCESS_INSTANCE fpi WITH (NOLOCK) on fwi.process_instance_id = fpi.process_instance_id
+				inner join LU_PROCESS_DEFINITION lpd WITH (NOLOCK) ON lpd.process_Definition_id = fpi.process_definition_id
+				<optional depends="procRelObjType != null || procRelObjIdList != null || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) || Status != null || getClientInfo == 'true'">
+					inner join PROCESS_INSTANCE_CONTEXT pic WITH (NOLOCK) on pic.process_instance_id = IsNull(fpi.root_process_instance_id, fpi.process_instance_id)
+				</optional>
+        <optional depends="getRootProcessStatus == true">
+          inner join FACT_PROCESS_INSTANCE PFPI WITH (NOLOCK) on PFPI.process_instance_id = pic.process_instance_id
+        </optional>
+			</optional>
+			<optional depends="getStatus == true">
+				left outer join gems.dbo.tasks t WITH (NOLOCK) on fwi.WORK_ITEM_ID = t.ClientTaskId
+				left outer join gems.dbo.lookuptaskstatus lts WITH (NOLOCK) on t.taskstatuscode = lts.lookupcode
+			</optional>
+			<where>
+				<exp op="and">
+					<optional depends="NoFilterOnCompletedHistory == false">
+						<exp op="and">
+							<exp op="&gt;=" dbField="IsNull(fwi.update_datetime, '1/1/1900')">
+								case when fwi.current_state_id  = 4 then  '1/1/1900' else @FiscalYearStartDate 	end
+							</exp>
+						</exp>
+					</optional>
+
+					<exp op="=" dbField="fwi.work_item_id" paramId="id" />
+					<exp op="IN" dbField="fwi.work_item_id" paramId="workItemList" />
+					<exp op="=" dbField="fwi.activity_instance_id" paramId="actInstId" />
+					<exp op="=" dbField="fai.activity_definition_id" paramId="actDefId" />
+					<exp op="IN" dbField="fai.activity_definition_id" paramId="actDefList" />
+					<exp op="=" dbField="fwi.process_instance_id" paramId="procInstId" />
+					<exp op="IN" dbField="fwi.process_instance_id" paramId="procInstList" />
+					<exp op="IN" dbField="isnull(fpi.root_process_instance_id,fpi.process_instance_id)" paramId="rootProcInstList" />
+					<exp op="=" dbField="isnull(lpd.root_process_definition_id,lpd.process_definition_id)" paramId="procDefId" />
+					<exp op="IN" dbField="isnull(lpd.root_process_definition_id,lpd.process_definition_id)" paramId="procDefList" />
+					<exp op="=" dbField="fwi.assignee_id" paramId="participantId" />
+          <exp op="=" dbField="fwi.team_id" paramId="team_id" />
+					<exp op="=" dbField="fwi.role_id" paramId="roleId" />
+					<exp op="IN" dbField="fwi.role_id" paramId="roleList" />
+					<exp op="=" dbField="fwi.current_state_id" paramId="state" />
+					<exp op="IN" dbField="fwi.current_state_id" paramId="stateList" />
+					<exp op="=" dbField="latest_flag" paramId="latest" />
+					<exp op="=" dbField="pic.object_type_id" paramId="procRelObjType" />
+					<exp op="IN" dbField="pic.object_id" paramId="procRelObjIdList" />
+					<exp op="&gt;=" dbField="fwi.create_datetime" paramId="tcdFrom" />
+					<exp op="&lt;=" dbField="fwi.create_datetime" paramId="tcdTo" />
+					<optional depends="getStatus == true">
+						<exp op="=" dbField="t.TaskStatusCode" paramId="taskStatusLookupCode" />
+						<exp op="IN" dbField="t.TaskStatusCode" paramId="taskStatusLookupCodeList" />
+					</optional>
+
+					<optional depends=" (getLatestForActivity != null)" >
+						<optional depends="(getLatestForActivity == 'true')">
+							<exp op="="  dbField="fwi.latest_flag">1</exp>
+						</optional>
+					</optional>
+					<optional depends="procDefId != null || procDefList != null || procRelObjType != null || procRelObjIdList != null || rootProcInstList != null || (orderBy != '' &amp;&amp; orderBy.indexOf('status') &gt;= 0) || Status != null || getClientInfo == 'true'" >
+						<optional depends="includeTerminatedProcess" exist="false">
+							<exp op="IN" dbField="fpi.current_state_id">(4,5,6)</exp>
+						</optional>
+					</optional>
+					<exp op="IN" dbField="(select 
+											case 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (6, 7, 8)) or (fpir.process_instance_id is not null and fpir.current_state_id in (6, 7, 8))) then 'Closed' 
+												when min(faiAll.activity_desc) is null and ((fpir.process_instance_id is null and fpi.current_state_id in (4, 5)) or (fpir.process_instance_id is not null and fpir.current_state_id in (4, 5))) then 'Stand By'
+												else min(faiAll.activity_desc)
+											end
+										from FACT_PROCESS_INSTANCE fpiAll WITH (NOLOCK) 
+											left outer join FACT_ACTIVITY_INSTANCE faiAll WITH (NOLOCK) on faiAll.process_instance_id = fpiAll.process_instance_id and faiAll.current_state_id = 4 and faiAll.activity_implementation_id in (2, 3)
+										where fpiAll.root_process_instance_id = fpi.process_instance_id 
+											or fpiAll.root_process_instance_id = fpi.root_process_instance_id
+											or fpiAll.process_instance_id = fpi.process_instance_id)" paramId="statusList" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<statement name="InsertIntoQueue" connection="Workflow">
+		<param id="wf_Processing_Queue_Id" type="Guid" size="36" newGuid="true" />
+		<param id="root_process_instance_id" type="String" size="36" />
+		<param id="process_instance_id" type="String" size="36" />
+		<param id="activity_instance_id" type="String" size="36" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into  wfEngine_Processing_Queue
+			<columns mode="insert">				
+				<column dbField="wf_Processing_Queue_Id" paramId="wf_Processing_Queue_Id" />
+				<column dbField="root_process_instance_id" paramId="root_process_instance_id" />
+				<column dbField="process_instance_id" paramId="process_instance_id" />
+				<column dbField="activity_instance_id" paramId="activity_instance_id" />
+				<column dbField="Start_Processing_time" paramId="currDatetime" />
+				<column dbField="create_Datetime" paramId="currDatetime" />
+			</columns>
+		</sql>
+	</statement>	
+		
+	<statement name="update" connection="Workflow">
+		<param id="id" 					type="String" size="36" />
+		<param id="idList"   			type="String"/>
+		<param id="procInstId"  		type="String" size="36" />
+		<param id="actInstId"  		type="String" size="36" />		
+		<param id="participantId"  	type="String" size="36" />
+    <param id="teamid"  	type="String" size="36" />
+		<param id="roleId"  			type="String" size="36" />
+		<param id="stateList" 		type="String" />
+		<param id="newState" 		type="Int32" />		
+		<param id="containerXML"  type="String" size="2000" />
+		<param id="comments"  	type="String" size="4000"  default="-1"/>
+		<param id="oldLatestFlag" type="String" />
+		<param id="newLatestFlag" 			type="String" />
+		<param id="userActionDesc" 			type="String" size="100" />
+		<param id="userId"  						type="String" size="36" required="true" />
+		<param id="lastUpdateDate"  			type="String" size="25" />
+		<param id="lastUpdateDateNull"  	type="String" />
+		<param id="currDatetime"  			type="String" size="25" useCurrTime="true" />
+		<param id="RecordUserActionAtProcessLevel"  			type="String" />
+
+		<sql>
+			<!--<optional depends="RecordUserActionAtProcessLevel">
+				insert into workflow.dbo.FACT_USER_ACTIONS
+				(	USER_ACTION_ID,
+					PROCESS_INSTANCE_ID,
+					USER_ID,
+					ROLE_ID,
+					USER_ACTION_DESC,
+					COMMENT,
+					CREATE_DATETIME)				
+					SELECT 	newid(),
+						isnull(b.root_process_instance_id,b.PROCESS_INSTANCE_ID),
+						a.Assignee_ID,
+						a.ROLE_ID,
+						IsNull(<exp paramId="userActionDesc" />, ''),
+						case <exp paramId="comments" /> when '-1' then '' else <exp paramId="comments" /> end,
+						current_timestamp
+					from	workflow.dbo.fact_work_item a 
+					inner join workflow.dbo.fact_process_instance b on a.process_instance_id = b.process_instance_id
+					<where>
+						<exp op="and">
+							latest_flag = 1
+							<exp op="=" dbField="a.work_item_id" paramId="id" />
+							<exp op="=" dbField="a.process_instance_id" paramId="procInstId" />
+							<exp op="=" dbField="a.activity_instance_id" paramId="actInstId" />
+						</exp>
+					</where>
+				;
+			</optional>-->
+
+			update workflow.dbo.FACT_WORK_ITEM
+			<columns mode="update">				
+				<column dbField="work_item_id" paramId="id" />
+				<column dbField="assignee_id" paramId="participantId" />
+        <column dbField="team_id" paramId="teamid" />
+				<column dbField="role_id" paramId="roleId" />
+				<column dbField="current_state_id" paramId="newState" />
+				<column dbField="container_xml" paramId="containerXML" />
+				<column dbField="comment" paramId="comments" />
+				<column dbField="latest_flag" paramId="newLatestFlag" />
+				<column dbField="user_action_desc" paramId="userActionDesc" />
+				<column dbField="updated_by" paramId="userId" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="work_item_id" paramId="id" />
+					<exp op="IN" dbField="work_item_id" paramId="idList" />
+					<exp op="=" dbField="process_instance_id" paramId="procInstId" />
+					<exp op="=" dbField="activity_instance_id" paramId="actInstId" />
+					<exp op="=" dbField="latest_flag" paramId="oldLatestFlag" />
+					<exp op="IN" dbField="current_state_id" paramId="stateList" />
+					<exp op="=" dbField="convert(varchar,update_datetime,101)" paramId="lastUpdateDate" />
+					<optional depends="lastUpdateDateNull">
+						<exp op="IS" dbField="update_datetime">NULL</exp>
+					</optional>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	<statement name="CreateAndComplete" connection="Workflow">
+		<param id="ActivityInstanceId"  type="String"  size ="36"/> 
+		<param id="UserId"  type="String"  size ="36"/> 
+		<param id="RoleId"  type="Int32" />
+		<param id="ContainerXML"  type="String"  size ="2000"/> 
+		<param id="Comments"  type="String"  size ="1000"/> 
+		<param id="UserAction"  type="String"  size ="100"/> 
+		<param id="RecordUserActionAtProcessLevel"  type="String"  size ="10"/> 
+		
+ 		<sp name="uspWf_CreateAndComplete"/> 
+	</statement>
+	
+	<statement name="getProcessRelatedObjects" connection="Workflow">
+		<param id="workItemList" type="Int32" required="true"/>
+		<param id="objectTypeList" />
+		<sql>
+			select cast(fwi.work_item_id as varchar(36)) as workItemId, 
+					pic.object_type_id as objectTypeId, 
+					pic.object_id as objectId
+			from fact_work_item fwi inner join
+				fact_process_instance fpi on fpi.process_instance_id = fwi.process_instance_id left outer join
+				fact_process_instance fpir on fpi.root_process_instance_id = fpir.process_instance_id inner join
+				process_instance_context pic on (fpi.process_instance_id = pic.process_instance_id or fpir.process_instance_id = pic.process_instance_id)
+			<where>
+				<exp op="and">
+					<exp op="IN" dbField="fwi.work_item_id" paramId="workItemList" />
+					<exp op="IN" dbField="pic.object_type_id" paramId="objectTypeList" />
+				</exp>
+			</where>			
+			order by fwi.work_item_id, pic.object_type_id
+		</sql>
+	</statement>
+	
+	<statement name="getOutgoingTransitions" connection="Workflow">
+		<param id="workItemList" type="Int32" required="true"/>
+		<sql>
+			select cast(fwiFrom.work_item_id as varchar(36)) as workItemId, 
+					cast(ftr.transition_runtime_id as varchar(36)) as transitionId,
+					ftr.transition_desc as description,
+					ftr.transition_type_id as typeId,
+					cast(ftr.from_activity_instance_id as varchar(36)) as fromId,
+					cast(ftr.to_activity_instance_id as varchar(36)) as toId,
+					ftr.condition as condition
+			from FACT_TRANSITION_RUNTIME ftr inner join 				
+				FACT_WORK_ITEM fwiFrom on ftr.from_activity_instance_id = fwiFrom.activity_instance_id
+			<where>
+				<exp op="IN" dbField="fwiFrom.work_item_id" paramId="workItemList" />
+			</where>
+			order by fwiFrom.work_item_id, ftr.transition_desc
+		</sql>
+	</statement>
+	
+	<statement name="getRunningActivities" connection="Workflow">
+		<param id="workItemList" type="Int32" required="true"/>
+		<sql>
+			select cast(fwi.work_item_id as varchar(36)) as workItemId,
+			cast(fai.activity_instance_id as varchar(36)) as runActivityId,
+			cast(fai.activity_definition_id as varchar(36)) as activityDefinitionID,
+			cast(fai.process_instance_id as varchar(36)) as processInstanceID,
+			fai.current_state_id as state,
+			fai.container_xml as containerXML,
+			fai.client_status_msg as clientStatusMsg,
+			fai.priority as priority,
+			fai.automated_class_name as automatedClass,
+			fai.activity_desc as description,
+			fai.finish_mode_id as finishModeID,
+			fai.activity_implementation_id as implementationID,
+			fai.loop_condition as loopCondition,
+			fai.client_status_msg_xml as clientStatusMsgXml,
+			fai.required_work_item_count as requiredWorkItemCount,
+			fai.start_mode_id as startModeID,
+			cast(fai.sub_process_definition_id as varchar(36)) as subProcessDefID,
+			cast(fai.sub_process_instance_id as varchar(36)) as subProcessInstID,
+			fai.transition_restriction_id as transitionRestrictionID,
+			fai.work_item_limit as workItemLimit,
+			fai.update_datetime as lastUpdateDate,
+			fai.create_datetime as createdDate
+			from FACT_WORK_ITEM fwi
+			inner join FACT_PROCESS_INSTANCE fpi on fwi.process_instance_id = fpi.process_instance_id
+			left outer join FACT_PROCESS_INSTANCE fpir on fpi.root_process_instance_id = fpir.process_instance_id
+			left outer join FACT_PROCESS_INSTANCE fpisub on fpisub.root_process_instance_id = fpir.process_instance_id or fpisub.root_process_instance_id = fpi.process_instance_id
+			inner join FACT_ACTIVITY_INSTANCE fai on fai.process_instance_id = fpi.process_instance_id or fai.process_instance_id = fpir.process_instance_id or fai.process_instance_id = fpisub.process_instance_id
+			<where>
+				<exp op="and">
+					<exp op="IN" dbField="fwi.work_item_id" paramId="workItemList" />
+					<exp op="=" dbField="fai.current_state_id">4</exp>
+					<exp op="IN" dbField="fai.activity_implementation_id">(2, 3)</exp>
+				</exp>
+			</where>
+			order by fwi.work_item_id, fai.activity_desc
+		</sql>
+	</statement>
+
+<statement name="getCount" connection="Workflow">
+		<param id="actInstId" type="String" size="36" />
+		<param id="state" type="Int32" />
+		<param id="latest" type="Boolean" />
+		<sql>
+			select count(cast(fwi.work_item_id as varchar(36))) as workItemCount
+			from FACT_WORK_ITEM fwi WITH (NOLOCK) inner join fact_activity_instance b WITH (NOLOCK) on fwi.activity_instance_id = b.activity_instance_id and b.current_State_id = 4
+			<where>
+				<exp op="and">					
+					<exp op="=" dbField="fwi.activity_instance_id" paramId="actInstId" />
+					<exp op="=" dbField="fwi.current_state_id" paramId="state" />
+					<exp op="=" dbField="fwi.latest_flag" paramId="latest" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+</statements>

@@ -1,0 +1,77 @@
+﻿<statements>
+  <!-- clients would never know the id of the group the first time they retrieve it. they have to use the composite in this case. -->
+  <statement name="GetGroup" connection ="Common">
+    <param id="GroupUrl" type="String" required="true" />
+    <param id="CreatorId" type="String" required="true" />
+    <param id="GroupName" type="String" required="true" />
+    <sql>
+      SELECT GroupId, SelectedKeysAndValues FROM PFM_GRUP_Items
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="GroupUrl" paramId="GroupUrl" />
+          <exp op="=" dbField="CreatorId" paramId="CreatorId" />
+          <exp op="=" dbField="GroupName" paramId="GroupName" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+  <statement name="AddGroup" connection ="Common" >
+    <param id="GroupUrl" type="String" required="true" />
+    <param id="CreatorId" type="String" required="true" />
+    <param id="GroupName" type="String" required="true" />
+    <param id="SelectedKeysAndValues" type="String" required="true" />
+    INSERT INTO PFM_GRUP_Items
+    <columns mode="INSERT">
+      <column dbField="GroupId">NEWID()</column>
+      <column dbField="GroupUrl" paramId="GroupUrl"/>
+      <column dbField="GroupName" paramId="GroupName"/>
+      <column dbField="SelectedKeysAndValues" paramId="SelectedKeysAndValues" />
+      <column dbField="CreatedDate">GETDATE()</column>
+      <column dbField="CreatorId" paramId="CreatorId" />
+      <column dbField="LastUpdateDate">GETDATE()</column>
+      <column dbField="LastUpdateId" paramId="CreatorId" />
+    </columns>
+  </statement>
+  <!-- If you're going to update the group, ensure it exists by fetching it ahead of time (GetGroup). else you don't know whether to insert or update it. -->
+  <statement name="UpdateGroup" connection ="Common">
+    <param id="GroupId" type="String" required="true" />
+    <param id="SelectedKeysAndValues" type="String" required="true" />
+    <sql>
+      UPDATE PFM_GRUP_Items
+      <columns mode="UPDATE">
+          <column dbField="SelectedKeysAndValues" paramId="SelectedKeysAndValues" />
+          <column dbField="LastUpdateDate">GETDATE()</column>
+        </columns>
+        <where>
+          <!-- we should never have to update using the composite key -->
+          <exp op="=" dbField="GroupId" paramId="GroupId" />
+        </where>
+    </sql>
+  </statement>
+  <!-- the client may have already retrieved the group to read values from it. if so, then they should have the group's id. -->
+  <statement name="RemoveGroupById" connection ="Common">
+    <param id="GroupId" type="String" required="true" />
+    <sql>
+      DELETE FROM PFM_GRUP_Items
+      <where>
+        <exp op="=" dbField="GroupId" paramId="GroupId" />
+      </where>
+    </sql>
+  </statement>
+  <!-- we're allowing clients to blindly delete a group. regardless of whether it exists or not. they'll either be 1 row affected, or 0 rows. -->
+  <statement name="RemoveGroupByComposite" connection ="Common">
+    <param id="GroupUrl" type="String" required="true" />
+    <param id="CreatorId" type="String" required="true" />
+    <param id="GroupName" type="String" required="true" />
+    <sql>
+      DELETE FROM PFM_GRUP_Items
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="GroupUrl" paramId="GroupUrl" />
+          <exp op="=" dbField="CreatorId" paramId="CreatorId" />
+          <exp op="=" dbField="GroupName" paramId="GroupName" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+</statements>

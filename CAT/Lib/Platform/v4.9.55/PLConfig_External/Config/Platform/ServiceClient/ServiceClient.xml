@@ -1,0 +1,4 @@
+<services mode="DB">
+  <service name="Themes" mode="WebAPI"></service>
+  <service name="Script" mode="WebAPI"></service>
+</services>

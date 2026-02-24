@@ -1,0 +1,47 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+  <!-- You can get a copy of the schema at https://recovery-svn.reisys.com:10007/HRSA/Tools/Trunk/REISchemas/REIData.xsd -->
+  <statement name="AllGroups" connection = "Common">
+    <sql>
+      <select>
+        ID, 
+        Name
+      </select>
+      
+      FROM PFM_ENSR_IndexGroups
+    </sql>
+  </statement>
+
+  <statement name="AllIndexes" connection = "Common">
+    <sql>
+      <select>
+        i.Name  AS 'DisplayText', 
+        i.[Key] AS 'Key', 
+        i.URL   AS 'Url', 
+        g.ID,
+        g.Name
+      </select>
+      FROM PFM_ENSR_Indexes AS i
+      JOIN PFM_ENSR_IndexGroups AS g ON i.GroupId = g.ID
+    </sql>
+  </statement>
+
+  <statement name="GetIndexFacets" connection = "Common">
+    <param id="indexKey" type="String" required="true" />
+
+    <sql>
+      <select>
+        r.DisplayText, 
+        r.Field,
+        f.Name -- FacetType
+      </select>
+
+      FROM PFM_ENSR_RefinedByFacets AS r
+      JOIN PFM_ENSR_Indexes AS i ON r.[Index] = i.ID
+      JOIN PFM_ENSR_FacetTypes AS f ON f.ID = r.FacetType
+
+      <where>
+        <exp op="=" dbField="i.[Key]" paramId="indexKey" />
+      </where>
+    </sql>
+  </statement>
+</statements>

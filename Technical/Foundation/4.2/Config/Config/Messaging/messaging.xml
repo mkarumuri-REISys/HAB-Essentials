@@ -1,0 +1,6 @@
+﻿<config>
+  <tablePrefix>gems.dbo.</tablePrefix>
+  <resourceTypeCode value="" />
+  <tempResourceTypeCode value=""/>
+  <emailAttachmentPurposeCode value=""/>
+</config>

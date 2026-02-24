@@ -1,0 +1,268 @@
+<statements>
+  <statement name="SavePhysicalMailingAddress">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="EntityTypeCode" type="Int32" />
+    <param id="EntityId" type="String" size="42" />
+    <param id="AddressPurposeCode" type="Int32" />
+    <param id="AddressTypeCode" type="Int32" />
+    <param id="DeliveryModeTypeCode" type="Int32" default="" />
+    <param id="MailStopCode" type="String" size="25" default="" />
+    <param id="DivisionLine" type="String" size="500" default="" />
+    <param id="InternalRoutingInformation" type="String" size="25" default="" />
+    <param id="StreetNumber" type="String" size="10" default="" />
+    <param id="StreetAddress" type="String" size="255" default="" />
+    <param id="SecondaryIdentifierTypeCode" type="Int32" default="" />
+    <param id="SecondaryIdentifierRange" type="String" size="9" default="" />
+    <param id="Urbanization" type="String" size="20" default="" />
+    <param id="RuralRouteTypeCode" type="Int32" default=""/>
+    <param id="RuralRouteNumber" type="String" size="9" default="" />
+    <param id="RuralRouteBoxNumber" type="String" size="9" default="" />
+    <param id="PostOfficeBoxNumber" type="String" size="9" default="" />
+    <param id="City" type="String" size="50" default="" />
+    <param id="StateCode" type="Int32" default="" />
+    <param id="ZipCode" type="String" size="5" default="" />
+    <param id="Zip4Code" type="String" size="4" default="" />
+    <param id="CountryCode" type="Int32" default="" />
+    <param id="CongressionalDistrict" type="String" size="50" default="" />
+    <param id="County" type="String" size="50" default="" />
+    <param id="StateCountyFIPSCode" type="String" size="3" default="" />
+    <param id="ValidationStatusCode" type="Int32" default="" />
+    <param id="UserId" type="String" size="36" default="" />
+    <param id="InternationalStreetAddress" type="String" size="255" default="" />
+    <param id="Province" type="String" size="50" default="" />
+    <param id="PostalCode" type="String" size="15" default="" />
+    <param id="Company" type="String" size="200" default="" />
+    <sp name="uspA_SavePhysicalMailingAddress" />
+  </statement>
+  <statement name="SaveContactAddress">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="ContactAddressTypeCode" type="Int32"  />
+    <param id="ContactAddress" type="String" />
+    <param id="ContactAddressPurposeCode" type="Int32"  />
+    <param id="EntityId" type="String" size="36" default="" />
+    <param id="EntityTypeCode" type="Int32" default="" />
+    <param id="intAwardNumber" type="Int32" default="" />
+    <param id="strGrantId" type="String" size="36" default="" />
+    <param id="UserId" type="String" size="36" default="" />
+    <param id="ContactAddressId" type="String" size="36" default="" />
+    <param id="HandleMultipleContactAddressPurposes" type="Int32" default="0" />
+    <param id="IsPreferred" type="Int32" default="0"/>
+    <param id="CountryCode" type="Int32" default="0"/>
+    <sp name="uspA_SaveContactAddress" />
+  </statement>
+  <statement name="DeleteContactAddress">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="ContactAddressTypeCode" type="Int32"  />
+    <param id="ContactAddressPurposeCode" type="Int32"  />
+    <param id="EntityId" type="String" size="36" default="" />
+    <param id="EntityTypeCode" type="Int32" default="" />
+    <param id="intAwardNumber" type="Int32" default="" />
+    <param id="strGrantId" type="String" size="36" default="" />
+    <sp name="uspA_DeleteContactAddress" />
+  </statement>
+  <statement name="GetContactAddresses">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="EntityId" type="String" default="" />
+    <param id="EntityTypeCode" type="Int32" default="" />
+    <param id="intAwardNumber" type="Int32" default="" />
+    <param id="strGrantId" type="String" size="36" default="" />
+    <param id="intAddressPurposeCode" type="Int32" default="" />
+    <param id="intRetrieveAllAddressPurposes" type="Int32" default="" />
+    <sql>
+      <sp name="uspA_GetContactAddresses" />
+    </sql>
+  </statement>
+  <statement name="GetPhysicalMailingAddress">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="EntityId" type="String" size="42"  />
+    <param id="EntityTypeCode" type="Int32"  />
+    <param id="AddressPurposeCode" type="Int32" />
+    <param id="AddressTypeCode" type="Int32" />
+    <sp name="uspA_GetPhysicalMailingAddress" />
+  </statement>
+
+  <statement name="DeletePhysicalMailingAddress">
+    <param id="SubjectAreaCode" type="Int32" />
+    <param id="EntityTypeCode" type="Int32" />
+    <param id="EntityId" type="String" size="42" />
+    <param id="AddressPurposeCode" type="Int32" />
+    <param id="AddressTypeCode" type="Int32" />
+    <sp name="uspA_DeletePhysicalMailingAddress" />
+  </statement>
+
+  <statement name="VerifyContactAddress">
+    <param id="EntityTypeCode" type="Int32" />
+    <param id="EntityId" type="String" size="36" />
+    <param id="ContactAddressId" type="String" size="36" />
+    <param id="ContactAddress" type="String" size="100" />
+    <param id="ReturnCode" type="Int32" direction="output" />
+    <sp name="uspA_VerifyContactAddress" />
+  </statement>
+
+  <statement name="GetSecondaryIdentifierTypes">
+    <sql>
+      SELECT LookupCode, ShortDisplayValue
+      FROM LookupSecondaryIdentifierType
+    </sql>
+  </statement>
+
+  <statement name="GetStates">
+    <sql>
+      SELECT LookupCode, ShortDisplayValue
+      , ShortDisplayValue as DisplayValue
+      FROM LookupState
+    </sql>
+  </statement>
+  <statement name="GetCountries" connection="Common">
+    Select LongDisplayValue, LookupCode, IsdCode from LookupCountry
+    order by LongDisplayValue asc
+  </statement>
+  <statement name="GetStatesOrdered" connection="Common">
+    <sql>
+      SELECT
+      LookupCode,
+      ShortDisplayValue
+      ,ShortDisplayValue as DisplayValue
+      FROM
+      LookupState
+      ORDER BY
+      CASE
+      WHEN 'NA' = ShortDisplayValue THEN 1
+      ELSE 0
+      END,
+      ShortDisplayValue
+    </sql>
+  </statement>
+
+  <statement name="GetRuralRouteTypes" connection="Common">
+    <sql>
+      SELECT LookupCode, LongDisplayValue
+      FROM LookupRuralRouteType
+    </sql>
+  </statement>
+
+  <statement name="LookupSecondaryIdentifierCode" connection="Common">
+    <param id="lookupVal" type="string" size="50" />
+    <sql>
+      SELECT LookupCode
+      FROM LookupSecondaryIdentifierType
+      <where>
+        <exp op="=" dbField="ShortDisplayValue" paramId="lookupVal">
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="LookupStateCode">
+    <param id="lookupVal" type="string" size="50" />
+    <sql>
+      SELECT LookupCode
+      FROM LookupState
+      <where>
+        <exp op="=" dbField="ShortDisplayValue" paramId="lookupVal">
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="LookupRuralRouteTypeCode">
+    <param id="lookupVal" type="string" size="50" />
+    <sql>
+      SELECT LookupCode
+      FROM LookupRuralRouteType
+      <where>
+        <exp op="=" dbField="ShortDisplayValue" paramId="lookupVal">
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="IsExistingEmail">
+    <param id="emailAddressField" type="String" />
+    <sql>
+      select top 1 contactaddress as result
+      from ContactAddresses WITH (NOLOCK)
+      <where>
+        <exp op="and">
+          <exp op="=" dbField="ContactAddressTypeCode">1</exp>
+          <exp op="=" dbField="ContactAddress" paramId="emailAddressField" />
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <!-- TEST HARNESS STATEMENTS BELOW -->
+
+  <statement name="GetPersonIDs">
+    <sql>
+      SELECT PersonId FROM People
+    </sql>
+  </statement>
+
+  <statement name="GetPersonIDsForExternalOrgs">
+    <sql>
+      select personid from Applicationpeople
+    </sql>
+  </statement>
+
+  <statement name="GetZ5Data" connection="Common">
+    <param id="Zipcodes" type="String" />
+    <sql>
+      SELECT *
+      FROM Z5
+      <where>
+        <exp op="IN" dbField="ZIP" paramId="Zipcodes" />
+      </where>
+      ORDER BY ZIP
+    </sql>
+  </statement>
+
+  <statement name="GetZ5DataNew" connection="Common">
+    <param id="Zipcodes" type="String" />
+    <sql>
+
+      Declare @Z5XmlDataInput as XML
+      SET @Z5XmlDataInput = <exp paramId="Zipcodes"/> ;
+      WITH InputTbl
+      AS
+      (
+      SELECT
+      Items.r.value('(Zip/node())[1]', 'varchar(5000)') AS Zip
+      FROM @Z5XmlDataInput.nodes('Z5InputData/ZipCodes/Z5') AS Items (r)
+      )
+
+      SELECT DISTINCT A.ZIP, A.Preferred, A.County, A.St  FROM Z5 A
+      JOIN InputTbl XmlTable ON A.ZIP = XmlTable.Zip
+      ORDER BY A.ZIP, A.Preferred, A.County, A.St
+    </sql>
+  </statement>
+
+  <statement name="GetAddressPurpose">
+    Select LookupCode, ShortDisplayValue as DisplayValue from LookupAddressPurpose
+    where IsNull(IsExcluded, 0) = 0
+    order by Sequence asc
+  </statement>
+  <statement name="UpdatePreferredLocationCode">
+    <param id="PreferredLocationCode" type="Int32" required="true" />
+    <param id="UserId" type="String" size="36" default="" />
+    UPDATE PEOPLE
+    <columns mode="update">
+      <column dbField="PreferredLocationCode" paramId="PreferredLocationCode" />
+    </columns>
+    <where>
+      <exp op="=" dbField="UserId" paramId="UserId">
+      </exp>
+    </where>
+    <where>
+    </where>
+  </statement>
+  <statement name="GetPreferredLocationCode">
+    <param id="UserId" type="String" size="36" default="" />
+    Select PreferredLocationCode
+    FROM PEOPLE
+    <where>
+      <exp op="=" dbField="UserId" paramId="UserId">
+      </exp>
+    </where>
+  </statement>
+</statements>

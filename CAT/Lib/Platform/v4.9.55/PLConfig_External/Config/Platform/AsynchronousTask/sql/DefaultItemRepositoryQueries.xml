@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/REISchemas/REIData.xsd">
+
+  <statement name="GetNewItems">
+    <param id="TableName" required="true"/>
+    <param id="ErrorTable" required="true" />
+    <param id="ItemStatusCode" type="Int32"/>
+    <param id="ConfiguredProcessCodes"  required="true"/>
+    <param id="ProcessingStartDate" required="false" type="DateTime" default=""/>
+    <sql>
+      INSERT INTO <dynamic paramId="ErrorTable"/>
+      (
+        ItemId,
+        ResourceTypeCode,
+        ResourceValue,
+        CustomXml,
+        CreatorId,
+        CreatedDate,
+        LastUpdateId,
+        LastUpdateDate,
+        ProcessTypeCode,
+        Priority,
+        TaskStatusCode,
+        ItemStatusCode,
+        [Time],
+        TaskTypeName,
+        [Message]
+      )
+      SELECT
+        ItemId,
+        ResourceTypeCode,
+        ResourceValue,
+        CustomXml,
+        CreatorId,
+        CreatedDate,
+        LastUpdateId,
+        LastUpdateDate,
+        ProcessTypeCode,
+        Priority,
+        TaskStatusCode,
+        ItemStatusCode,
+        getdate() AS 'Time',
+        'Error' AS 'TaskTypeName',
+        'This is a bad record.' AS 'Message'
+      FROM <dynamic paramId="TableName"/> WITH(NOLOCK)
+     <where>
+       <exp op="AND">
+         <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+         <exp op="OR">
+           <exp dbField="CreatorId" op="IS">NULL</exp>
+           <exp dbField="LastUpdateId" op="IS">NULL</exp>
+           <exp dbField="LastUpdateDate" op="IS">NULL</exp>
+           <exp dbField="ResourceValue" op="IS">NULL</exp>
+         </exp>
+       </exp>
+    </where>
+
+      DELETE
+      FROM <dynamic paramId="TableName"/>
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+          <exp op="OR">
+            <exp dbField="CreatorId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateDate" op="IS">NULL</exp>
+            <exp dbField="ResourceValue" op="IS">NULL</exp>
+          </exp>
+        </exp>
+      </where>
+
+      select top 10 * from <dynamic paramId="TableName"/> WITH(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+          <exp dbField="ItemStatusCode" op="=" paramId="ItemStatusCode"/>
+          <exp op="OR">
+            <exp dbField="ProcessingStartDate" op="IS">NULL</exp>
+            <exp dbField="ProcessingStartDate" op="&lt;="> GetDate()</exp>
+          </exp>
+          <exp dbField="CreatorId" op="IS">NOT NULL</exp>
+          <exp dbField="CreatorId" op="NOT LIKE">''</exp>
+          <exp dbField="ResourceValue" op="IS">NOT NULL</exp>
+          <exp dbField="ItemStatusCode" op="IS">NOT NULL</exp>
+          <exp dbField="TaskStatusCode" op="IS">NOT NULL</exp>
+          <exp dbField="Priority" op="IS">NOT NULL</exp>
+          <exp dbField="ResourceTypeCode" op="IS">NOT NULL</exp>
+          <exp dbField="ProcessTypeCode" op="IS">NOT NULL</exp>
+          <exp dbField="ItemId" op="IS">NOT NULL</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetScheduledItems">
+    <param id="TableName" required="true"/>
+    <param id="ErrorTable" required="true" />
+    <param id="ItemStatusCode" type="Int32"/>
+    <param id="ConfiguredProcessCodes" required="true" type="String"/>
+    <sql>
+      INSERT INTO <dynamic paramId="ErrorTable"/>
+      (
+        ItemId,
+        ResourceTypeCode,
+        ResourceValue,
+        CustomXml,
+        CreatorId,
+        CreatedDate,
+        LastUpdateId,
+        LastUpdateDate,
+        ProcessTypeCode,
+        Priority,
+        TaskStatusCode,
+        ItemStatusCode,
+        [Time],
+        TaskTypeName,
+        [Message]
+      )
+      SELECT
+        ItemId,
+        ResourceTypeCode,
+        ResourceValue,
+        CustomXml,
+        CreatorId,
+        CreatedDate,
+        LastUpdateId,
+        LastUpdateDate,
+        ProcessTypeCode,
+        Priority,
+        TaskStatusCode,
+        ItemStatusCode,
+        getdate() AS 'Time',
+        'Error' AS 'TaskTypeName',
+        'This is a bad record.' AS 'Message'
+      FROM <dynamic paramId="TableName"/> WITH(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+          <exp op="OR">
+            <exp dbField="CreatorId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateDate" op="IS">NULL</exp>
+            <exp dbField="ResourceValue" op="IS">NULL</exp>
+          </exp>
+        </exp>
+      </where>
+
+      DELETE
+      FROM <dynamic paramId="TableName"/>
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+          <exp op="OR">
+            <exp dbField="CreatorId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateId" op="IS">NULL</exp>
+            <exp dbField="LastUpdateDate" op="IS">NULL</exp>
+            <exp dbField="ResourceValue" op="IS">NULL</exp>
+          </exp>
+        </exp>
+      </where>
+
+      select * from <dynamic paramId="TableName"/> WITH(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ConfiguredProcessCodes"/>
+          <exp dbField="ItemStatusCode" op="=" paramId="ItemStatusCode"/>
+          <exp dbField="ProcessingStartDate" op="IS NOT">NULL</exp>
+          <exp dbField="ProcessingStartDate" op="&gt;"> GetDate()</exp>
+          <exp dbField="CreatorId" op="IS">NOT NULL</exp>
+          <exp dbField="CreatorId" op="NOT LIKE">''</exp>
+          <exp dbField="ResourceValue" op="IS">NOT NULL</exp>
+          <exp dbField="ItemStatusCode" op="IS">NOT NULL</exp>
+          <exp dbField="TaskStatusCode" op="IS">NOT NULL</exp>
+          <exp dbField="Priority" op="IS">NOT NULL</exp>
+          <exp dbField="ResourceTypeCode" op="IS">NOT NULL</exp>
+          <exp dbField="ProcessTypeCode" op="IS">NOT NULL</exp>
+          <exp dbField="ItemId" op="IS">NOT NULL</exp>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="AddItem">
+    <param id="ItemTable" required="true"/>
+    <param id="ItemId" required="true" type="Guid"/>
+    <param id="ProcessTypeCode" required="true" type="Int32"/>
+    <param id="ResourceTypeCode" type="Int32"/>
+    <param id="ResourceValue"/>
+    <param id="Priority" required="true" type="Int32"/>
+    <param id="ItemStatusCode" required="true" type="Int32"/>
+    <param id="TaskStatusCode" required="true" type="Int32"/>
+    <param id="CustomXml" type="String" default="&lt;root&gt;blah&lt;/root&gt;"/>
+    <param id="CreatorId" type="Guid"/>
+    <param id="ProcessingStartDate" required="false" type="DateTime" default=""/>
+    <sql>
+      insert into <dynamic paramId="ItemTable"/>
+      (ItemId, ProcessTypeCode, ResourceTypeCode, ResourceValue, Priority, ItemStatusCode, TaskStatusCode, CustomXml, CreatorId, CreatedDate, LastUpdateId, LastUpdateDate, ProcessingStartDate)
+      values
+      (
+      <exp paramId="ItemId"/>,
+      <exp paramId="ProcessTypeCode"/>,
+      <exp paramId="ResourceTypeCode"/>,
+      <exp paramId="ResourceValue"/>,
+      <exp paramId="Priority"/>,
+      <exp paramId="ItemStatusCode"/>,
+      <exp paramId="TaskStatusCode"/>,
+      <exp paramId="CustomXml"/>,
+      <exp paramId="CreatorId"/>,
+      getdate(),
+      <exp paramId="CreatorId"/>,
+      getdate(),
+      <exp paramId="ProcessingStartDate"/>
+      )
+    </sql>
+  </statement>
+
+  <statement name="GetById">
+    <param id="TableName" required="true"/>
+    <param id="ItemId" type="Guid" required="true"/>
+    <sql>
+      select * from <dynamic paramId="TableName"/> WITH(NOLOCK) where ItemId = <exp paramId="ItemId"/>
+    </sql>
+  </statement>
+
+  <statement name="UpdateItem">
+    <param id="TableName" required="true"/>
+    <param id="ItemId" required="true" type="Guid"/>
+    <param id="TaskStatusCode" required="true" type="Int32"/>
+    <param id="ItemStatusCode" required="true" type="Int32"/>
+    <param id="CustomXml" type="String" default=""/>
+    <sql>
+      update <dynamic paramId="TableName"/>
+      set
+      ItemStatusCode = <exp paramId="ItemStatusCode"/>,
+      TaskStatusCode = <exp paramId="TaskStatusCode"/>,
+      CustomXml = <exp paramId="CustomXml"/>
+      where ItemId = <exp paramId="ItemId"/>
+    </sql>
+  </statement>
+
+  <statement name="DeleteItem">
+    <param id="ItemId" required="true" type="Guid"/>
+    <param id="TableName" required="true"/>
+    <sql>
+      delete from <dynamic paramId="TableName"/>
+      where ItemId = <exp paramId="ItemId"/>
+    </sql>
+  </statement>
+
+  <statement name="GetCompletedItems">
+    <param id="TableName" required="true"/>
+    <param id="ProcessCodes" required="true" type="String"/>
+    <sql>
+      select * from <dynamic paramId="TableName"/> WITH(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ProcessCodes"/>
+        </exp>
+      </where>
+      order by createddate desc
+    </sql>
+  </statement>
+
+  <statement name="GetTaskErrors">
+    <param id="TableName" required="true"/>
+    <param id="ProcessCodes" required="true" type="String"/>
+    <sql>
+      select * from <dynamic paramId="TableName"/> WITH(NOLOCK)
+      <where>
+        <exp op="AND">
+          <exp dbField="ProcessTypeCode" op="IN" paramId="ProcessCodes"/>
+        </exp>
+      </where>
+      order by createddate desc
+    </sql>
+  </statement>
+
+</statements>

@@ -1,0 +1,281 @@
+﻿<statements>
+  <statement name="GetTeamsList" >
+    <param id="Bureau" type="Int32" required="true"/>
+    <param id="TeamStatusCode"  type="Int32" default="2" />
+    <param id="TeamName_Search" type="string" />
+    <param id="TeamDescription_Search" type="string" />
+    <param id="OrgLevel_Search_sa" />
+    <param id="OrganizationLevel_Filter" type="string" />
+    <param id="TeamName_Filter" type="string" />
+    <param id="TeamLead_Filter" type="string" />
+    <param id="SortExpression" type="String"  default="TeamName,Description"/>
+    <sql>
+      <select>
+        OrganizationLevel,
+        AssociatedOrgId,
+        TeamId,
+        TeamName,
+        Description,
+        TeamStatusCode,
+        TeamPosition,
+        TeamPositionCode,
+        ParentBureauId
+        , TeamLead
+      </select>
+      FROM
+      (SELECT
+      DISTINCT
+      IO.InternalOrgName as OrganizationLevel,
+      AssociatedOrgId,
+      T.TeamId as TeamId,
+      T.TeamName as TeamName,
+      T.Description,
+      T.TeamStatusCode,
+      IIF(TM.TeamPositionCode = 1,'Team Lead',IIF(TM.TeamPositionCode = 2,'Backup','')) as TeamPosition,
+      TM.TeamPositionCode ,
+      T.ParentBureauId
+      , lead.LastName + ', ' +lead.FirstName as TeamLead
+      FROM DAS_Team_P T
+      JOIN InternalOrganizations IO on IO.InternalOrgId = T.AssociatedOrgId
+      JOIN LU_DAS_TeamStatus LTS on T.TeamStatusCode = LTS.LookupCode
+      LEFT JOIN DAS_TeamManager_P TM on TM.TeamId = T.TeamId and TM.TeamPositionCode = 1
+      LEFT JOIN People lead on lead.UserId = TM.UserId
+      where t.TeamStatusCode = 2
+      ) as Results
+      <where>
+        <exp op="AND">
+         <optional depends="OrganizationLevel_Filter">
+            AssociatedOrgId <dynamic paramId="OrganizationLevel_Filter"></dynamic>
+          </optional>
+          <optional depends="TeamName_Filter">
+            TeamName <dynamic paramId="TeamName_Filter"></dynamic>
+          </optional>
+          <optional depends="TeamLead_Filter">
+            TeamLead <dynamic paramId="TeamLead_Filter"></dynamic>
+          </optional>
+          <exp op="LIKE" dbField ="TeamName " paramId="TeamName_Search"/>
+          <exp op="LIKE" dbField ="Description " paramId="TeamDescription_Search"/>
+          <exp op="IN" dbField ="AssociatedOrgId " paramId="OrgLevel_Search_sa"/>
+          <exp op="="  dbField="TeamStatusCode" paramId="TeamStatusCode"/>
+          <exp op="="  dbField="ParentBureauId" paramId="Bureau"/>
+        </exp>
+      </where>
+      <sort paramId="SortExpression"/>
+    </sql>
+  </statement>
+  
+  <statement name="GetUsersList" connection="GEMS">
+    <param id="Bureau" type="string" required ="true"/>
+    <param id="LastName_Search" type="string" />
+    <param id="FirstName_Search" type="string" />
+    <param id="Email_Search" type="string" />
+    <param id="Role_Search_sa"  />
+    <param id="OrgLevel_sa" type="string" />
+    <param id="FirstName_Filter" type="string" />
+    <param id="LastName_Filter" type="string" />
+    <param id="Email_Filter" type="string" />
+    <param id="OrganizationLevel_Filter" type="string" />
+    <param id="UserTypeCode" type="string" default="2" />
+    <param id="SortExpression" type="String"  default="LastName,FirstName"/>
+
+    <sql>
+      <select>
+        UserId,
+        LastName,
+        FirstName,
+        Bureau,
+        OrganizationLevel,
+        Email,
+        InternalOrgId
+        
+      </select>
+      FROM
+      (
+      SELECT
+      <optional depends="Role_Search_sa">
+        Distinct
+      </optional>
+      P.LastName as LastName,
+      P.FirstName as FirstName,
+      IORG1.OrgCode as Bureau,
+      (CASE WHEN (RP.InternalOrgLevel4&lt;&gt;0 AND RP.InternalOrgLevel4 IS NOT NULL) THEN IORG2.OrgCode + '/'+ IORG3.OrgCode + '/' + IORG4.OrgCode
+      WHEN (RP.InternalOrgLevel3&lt;&gt;0 AND RP.InternalOrgLevel3 IS NOT NULL) THEN  IORG2.OrgCode + '/'+ IORG3.OrgCode
+      WHEN (RP.InternalOrgLevel2&lt;&gt;0 AND RP.InternalOrgLevel2 IS NOT NULL) THEN IORG2.OrgCode
+      ELSE ''
+      end) as OrganizationLevel,
+      (select TOP 1 ContactAddress from ContactAddresses CA where CA.entityId=P.PersonId and  ContactAddressTypeCode =1 ) as Email,
+      U.UserId,
+      U.UserTypeCode,
+      RP.InternalOrgLevel1,
+      RP.InternalOrgLevel2,
+      RP.InternalOrgLevel3,
+      RP.InternalOrgLevel4,
+     (CASE WHEN (RP.InternalOrgLevel4&lt;&gt;0 AND RP.InternalOrgLevel4 IS NOT NULL) THEN IORG4.InternalOrgId
+      WHEN (RP.InternalOrgLevel3&lt;&gt;0 AND RP.InternalOrgLevel3 IS NOT NULL) THEN  IORG3.InternalOrgId
+      WHEN (RP.InternalOrgLevel2&lt;&gt;0 AND RP.InternalOrgLevel2 IS NOT NULL) THEN IORG2.InternalOrgId
+      ELSE IORG1.InternalOrgId
+      end) as InternalOrgId
+      from AC_USER U  JOIN People p ON U.USERID = P.USERID
+      JOIN RelPeopleInternalOrganizations RP on RP.PersonId = P.PersonId
+      LEFT OUTER JOIN InternalOrganizations IORG1 on IORG1.InternalOrgId = RP.InternalOrgLevel1
+      LEFT OUTER JOIN InternalOrganizations IORG2 on IORG2.InternalOrgId = RP.InternalOrgLevel2
+      LEFT OUTER JOIN InternalOrganizations IORG3 on IORG3.InternalOrgId = RP.InternalOrgLevel3
+      LEFT OUTER JOIN InternalOrganizations IORG4 on IORG4.InternalOrgId = RP.InternalOrgLevel4
+
+      <optional depends="Role_Search_sa">
+        JOIN AC_RELUSERROLE RUR on RUR.Userid = U.userId
+      </optional>
+      <where>
+        <exp op="AND">
+          <exp op="=" dbField="IORG1.InternalOrgId" paramId="Bureau"/>
+          <optional depends="Role_Search_sa">
+            <exp op="IN" dbField ="RUR.RoleId " paramId="Role_Search_sa"/>
+          </optional>
+        </exp>
+      </where>
+      ) as Results
+
+      <where>
+        <exp op="AND">
+          <optional depends="OrganizationLevel_Filter">
+            InternalOrgId <dynamic paramId="OrganizationLevel_Filter"></dynamic>
+          </optional>
+          <exp op="=" dbField ="UserTypeCode" paramId="UserTypeCode"/>
+          <exp op="LIKE" dbField ="LastName " paramId="LastName_Search"/>
+          <exp op="LIKE" dbField ="FirstName " paramId="FirstName_Search"/>
+          <optional depends="OrgLevel_sa">
+            <exp op="OR">
+              <exp op="AND">
+                <exp op="IN" dbField="InternalOrgLevel2" paramId="OrgLevel_sa" />
+                <exp op="OR">
+                  <exp op="IS" dbField="InternalOrgLevel3">NULL</exp>
+                  <exp op="=" dbField="InternalOrgLevel3">0</exp>
+                </exp>
+              </exp>
+              <exp op="AND">
+                <exp op="IN" dbField="InternalOrgLevel3" paramId="OrgLevel_sa" />
+                <exp op="OR">
+                  <exp op="IS" dbField="InternalOrgLevel4">NULL</exp>
+                  <exp op="=" dbField="InternalOrgLevel4">0</exp>
+                </exp>
+              </exp>
+              <exp op="IN" dbField="InternalOrgLevel4" paramId="OrgLevel_sa" />
+            </exp>
+          </optional>
+          <exp op="LIKE" dbField ="Email " paramId="Email_Search"/>
+          <optional depends="Email_Filter">
+            Email  <dynamic paramId="Email_Filter"></dynamic>
+          </optional>
+          <optional depends="FirstName_Filter">
+            FirstName <dynamic paramId="FirstName_Filter"></dynamic>
+          </optional>
+          <optional depends="LastName_Filter">
+            LastName   <dynamic paramId="LastName_Filter"></dynamic>
+          </optional>
+       </exp>
+      </where>
+      <sort paramId="SortExpression"></sort>
+    </sql>
+  </statement>
+
+  <statement name="GetBureauOrganizations">
+    <param id="OrgId" type="Int32" required="true"/>
+    <sql>
+      WITH Hierarchy(ChildId, ChildName, Generation, ParentId, Sort)
+      AS
+      (
+      select i.InternalOrgId, i.InternalOrgName, 0, rel.InternalOrg1Id, sort=cast(i.InternalOrgId as varchar(max))
+      from InternalOrganizations i
+      JOIN internalorganizationrelationships rel on rel.InternalOrg2Id = i.InternalOrgId
+      where rel.InternalOrg1Id = <exp paramId="OrgId"/> and i.InactiveDate is NULL
+      and i.InternalOrgName not like '%expired%'
+      UNION ALL
+      SELECT i.InternalOrgId, i.InternalOrgName, Parent.Generation + 1, Parent.ChildId, sort=Parent.sort+cast(i.InternalOrgId as varchar(30))
+      FROM InternalOrganizations i
+      JOIN internalorganizationrelationships rel on rel.InternalOrg2Id = i.InternalOrgId
+      JOIN Hierarchy AS Parent ON rel.InternalOrg1Id = Parent.ChildId
+      and i.InternalOrgName not like '%expired%'  and i.InternalOrgName not like '%disabled%'
+      )
+      SELECT
+      ChildId as OrgId
+      , ChildName as Name
+      , ParentId as ParentOrgId
+      FROM Hierarchy
+      order by Sort
+
+    </sql>
+  </statement>
+
+  
+  
+  <statement name="GetUsersRolesWorkAreas" connection="GEMS">
+    <param id="UserId_sa" type="string" required="true"/>
+    <sql>
+      ;WITH MainTable AS
+      (
+      SELECT U.UserId ,R.RoleAbbr ,STUFF((
+      SELECT ', ' + RoleAbbr
+      FROM AC_Role R2 JOIN AC_RelUserRole UR2 ON R2.RoleId = UR2.RoleId AND UR2.UserId = U.UserId
+      WHERE R2.ParentRoleId = R.RoleId
+      FOR XML PATH ('')
+      ), 1, 1, '')  AS WorkAreas
+      FROM AC_User U JOIN AC_RelUserRole UR ON U.UserId = UR.UserId JOIN AC_Role R ON UR.RoleId = R.RoleId
+      <where>
+        <exp op="AND">
+          <exp op="IS" dbField ="R.ParentRoleId">NULL</exp>
+          <exp op="IN" dbField ="U.UserId" paramId="UserId_sa"/>
+        </exp>
+      </where>
+      )
+      SELECT U.UserId, STUFF((
+      SELECT '|' + RoleAbbr + IIF(WorkAreas IS NULL, '',':' + WorkAreas)
+      FROM MainTable MT
+      WHERE MT.UserId = U.UserId
+      FOR XML PATH ('')
+      ), 1, 1, '') AS Role_WorkAreas
+      FROM AC_User U
+      <where>
+        <exp op="AND">
+          <exp op="IN" dbField ="UserId" paramId="UserId_sa"/>
+        </exp>
+      </where>
+    </sql>
+  </statement>
+
+  <statement name="GetRoleWorkAreas" connection="GEMS">
+    <sql>
+      ;WITH CTE (RoleId, DisplayValue, ParentRoleId, Sort) AS
+      (
+      SELECT
+      RoleId
+      ,CAST(RoleAbbr AS VARCHAR(MAX))
+      --,DisplayValue
+      ,ParentRoleId
+      ,CAST(RoleId AS VARCHAR(MAX))
+      FROM
+      AC_Role
+      WHERE
+      ParentRoleId IS NULL
+      AND RoleId IN (SELECT ParentRoleId FROM AC_Role WHERE ParentRoleId IS NOT NULL)
+      AND UACUIGroupCode IN (1, 2, 9)
+      UNION ALL
+      SELECT
+      R.RoleId
+      ,CAST(R.RoleName AS VARCHAR(MAX)) as DisplayValue
+      ,R.ParentRoleId
+      ,CTE.Sort+CAST(R.RoleId AS VARCHAR(30))
+      FROM
+      AC_Role R
+      INNER JOIN CTE ON R.ParentRoleId = CTE.RoleId
+      )
+      SELECT
+      RoleId
+      ,DisplayValue
+      ,ParentRoleId
+      FROM
+      CTE
+      ORDER BY
+      SORT;
+    </sql>
+  </statement>
+</statements>

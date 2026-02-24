@@ -1,0 +1,182 @@
+<statements>
+	<statement name="insertWithOutOptionalDummyTable">
+		<param id="Id" type="String" size="36" />
+		<param id="Value" type="String" size="50"  />
+		<param id="AnotherValue" type="String" size="50"  />
+		<sql>
+			INSERT INTO testuser.DummyTable
+			<columns mode="insert">
+				<column dbField="Id" paramId="Id" />
+				<column dbField="AnotherValue" paramId="AnotherValue" />
+				<column dbField="Value" paramId="Value" />
+			</columns>
+		</sql>
+	</statement>
+	<statement name="insertDummyTable">
+		<param id="Id" type="String" size="36" />
+		<param id="Value" type="String" size="50"  />
+		<param id="AnotherValue" type="String" size="50"  />
+		<sql>
+			INSERT INTO testuser.DummyTable
+			<columns mode="insert">
+				<column dbField="Id" paramId="Id" />
+				<column dbField="AnotherValue" paramId="AnotherValue" />
+				<optional depends="Value != null">
+					<column dbField="Value" paramId="Value" />
+				</optional>
+			</columns>
+		</sql>
+	</statement>
+
+	<statement name="updateDummyTable">
+		<param id="Id" type="String" size="36" />
+		<param id="Value" type="String" size="50"  />
+		<param id="AnotherValue" type="String" size="50"  />
+		<sql>
+			UPDATE testuser.DummyTable
+			<columns mode="update">
+				<column dbField="AnotherValue" paramId="AnotherValue" />
+				<optional depends="Value != null">
+					<column dbField="Value" paramId="Value" />
+				</optional>
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="Id" paramId="Id" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="GetUserRoles" connection="Gems">
+		<sql>
+			<param id="User_Name" type="String" size="20" required="true" />
+			<param id="Role_Id" type="Int32" default="0" />
+			<param id="tempDatetime" type="string" default="A.UserName desc" />
+			<select> A.UserName,A.AgreementId,A.DefaultRoleId,B.RoleId
+			</select>
+			FROM GEMS.dbo.AC_User A
+			JOIN GEMS.dbo.AC_RelUserRole B ON A.UserId = B.UserId
+			JOIN GEMS.dbo.AC_Role C ON B.RoleId = C.RoleId
+			<optional depends="Role_Id==0">
+				<where>
+					<exp op="=" dbField="A.UserName" paramId="User_Name" />
+				</where>
+			</optional>
+			<optional depends="Role_Id!=0">
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="A.UserName" paramId="User_Name" />
+						<exp op="=" dbField="B.RoleId" paramId="Role_Id" />
+					</exp>
+				</where>
+			</optional>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+	<statement name="GetUserRolesWithoutSelect" connection="Gems">
+		<sql>
+			<param id="User_Name" type="String" size="20" required="true" />
+			<param id="Role_Id" type="Int32" default="0" />
+			select A.UserName,A.AgreementId,A.DefaultRoleId,B.RoleId
+			FROM GEMS.dbo.AC_User A
+			JOIN GEMS.dbo.AC_RelUserRole B ON A.UserId = B.UserId
+			JOIN GEMS.dbo.AC_Role C ON B.RoleId = C.RoleId
+			<optional depends="Role_Id==0">
+				<where>
+					<exp op="=" dbField="A.UserName" paramId="User_Name" />
+				</where>
+			</optional>
+			<optional depends="Role_Id!=0">
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="A.UserName" paramId="User_Name" />
+						<exp op="=" dbField="B.RoleId" paramId="Role_Id" />
+					</exp>
+				</where>
+			</optional>
+			</sql>
+	</statement>
+	<statement name="GetUserRolesOptional" connection="Gems">
+		<sql>
+			<param id="User_Name" type="String" size="20" required="true" />
+			<param id="Role_Id" type="Int32" default="0" />
+			<param id="tempDatetime" type="string" default="A.UserName desc" />
+			<select> A.UserName,A.AgreementId,A.DefaultRoleId,B.RoleId
+			<optional depends="Role_Id==0">
+				,Cast(B.LastReviewedBy as varchar(50)) LastReviewedBy
+			</optional>
+			</select>
+			FROM GEMS.dbo.AC_User A
+			JOIN GEMS.dbo.AC_RelUserRole B ON A.UserId = B.UserId
+			JOIN GEMS.dbo.AC_Role C ON B.RoleId = C.RoleId
+			<optional depends="Role_Id==0">
+				<where>
+					<exp op="=" dbField="A.UserName" paramId="User_Name" />
+				</where>
+			</optional>
+			<optional depends="Role_Id!=0">
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="A.UserName" paramId="User_Name" />
+						<exp op="=" dbField="B.RoleId" paramId="Role_Id" />
+					</exp>
+				</where>
+			</optional>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+	<statement name="GetUserRolesDynamic" connection="Gems">
+		<sql>
+			<param id="User_Name" type="String" size="20" required="true" />
+			<param id="Role_Id" type="Int32" default="0" />
+			<param id="tempDatetime" type="string" default="A.UserName desc" />
+			<param id="ColumnToFetch" type="string" default=",Cast(B.LastReviewedBy as varchar(50)) LastReviewedBy" />
+			<select> A.UserName,A.AgreementId,A.DefaultRoleId,B.RoleId
+			<dynamic paramId="ColumnToFetch"/>
+			</select>
+			FROM GEMS.dbo.AC_User A
+			JOIN GEMS.dbo.AC_RelUserRole B ON A.UserId = B.UserId
+			JOIN GEMS.dbo.AC_Role C ON B.RoleId = C.RoleId
+			<optional depends="Role_Id==0">
+				<where>
+					<exp op="=" dbField="A.UserName" paramId="User_Name" />
+				</where>
+			</optional>
+			<optional depends="Role_Id!=0">
+				<where>
+					<exp op="and">
+						<exp op="=" dbField="A.UserName" paramId="User_Name" />
+						<exp op="=" dbField="B.RoleId" paramId="Role_Id" />
+					</exp>
+				</where>
+			</optional>
+			<sort paramId="tempDatetime" ></sort>
+		</sql>
+	</statement>
+	<statement name="GetTotalUsers">
+		<sql>
+			<param id="RoleId" type="Int32" />
+			<param id="UserTypeCode" type="Int32" />
+			
+			SELECT COUNT(*) AS Result FROM GEMS.dbo.AC_User (NOLOCK)
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="DefaultRoleId" paramId="RoleId" />
+					<exp op="=" dbField="UserTypeCode" paramId="UserTypeCode" />
+				</exp>
+			</where>
+
+		</sql>
+	</statement>
+	<statement name="GetUserActions">
+		<sql>
+			<param id="UserIds" type="String" />
+
+			SELECT COUNT(ByUserId) AS Result
+			FROM PlatformUserAction
+			<where>
+				<exp op="IN" dbField="ByUserId" paramId="UserIds" />
+			</where>
+		</sql>
+	</statement>
+</statements>

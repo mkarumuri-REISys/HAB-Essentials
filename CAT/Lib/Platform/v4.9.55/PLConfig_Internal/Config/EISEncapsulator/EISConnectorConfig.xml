@@ -1,0 +1,5 @@
+<eisConnectorConfig>
+  <system id="2" password="n50ALbNfmOE="/>
+  <EIS version="1" url="https://hsa-sbx-09.amer.reisystems.com/eis_v2/ehbeis/gisws.asmx"/>
+  <security keyProvider="REISys.Security.DevKeyProvider,REISys.Security.KeyProvider"/>
+</eisConnectorConfig>

@@ -1,0 +1,14 @@
+﻿<statements>
+  
+  <statement name="GetVirtualControls" connection="Common">
+    <sql>
+      SELECT  
+        ItemName
+        , ItemContent
+        , LastUpdateDate
+      FROM 
+        PFM_VirtualControl_P
+    </sql>
+  </statement>
+  
+</statements>

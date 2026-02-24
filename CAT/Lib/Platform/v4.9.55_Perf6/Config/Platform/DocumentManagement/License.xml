@@ -1,0 +1,8 @@
+<config>
+	<appSettings>
+    <add key="" value="YFRX66-P8MX-RX8H-3DRXPS" /><!--This key is not programmatically used and needs license manager to add-->
+		<add key="WinnovativeLicenseKey" value="62V2ZHVkcnVwdmR1cWp0ZHd1anV2an19fX1kdA==" />
+    <add key="Winnovative90LicenseKey" value="62V2ZHVkcnVwdmR1cWp0ZHd1anV2an19fX1kdA==" />
+		<add key="Aspose" value="Aspose.Total.lic" />
+	</appSettings>
+</config>

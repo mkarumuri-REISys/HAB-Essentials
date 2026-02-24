@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:\REISchemas\REIData.xsd">
+
+	<!-- Lookup Statements-->
+	<statement name="GetComponentLookup" connection="Common">
+		<sql>
+			SELECT
+			LookupCode
+			,DisplayValue
+			FROM LU_PFM_ADT_Component
+		</sql>
+	</statement>
+	<statement name="GetFieldLookup" connection="Common">
+		<sql>
+			SELECT
+			LookupCode
+			,DisplayValue
+			FROM LU_PFM_ADT_Field
+		</sql>
+	</statement>
+	<statement name="InsertOrGetComponentLookup" connection="Common">
+		<param id="DisplayValue" type="String" required="true"/>
+		<sql>
+			DECLARE @existingLookupCode int
+			SELECT 
+			@existingLookupCode = LookupCode
+			FROM LU_PFM_ADT_Component
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="DisplayValue" paramId="DisplayValue" />
+				</exp>
+			</where>
+
+			IF @existingLookupCode IS NULL
+			BEGIN
+			INSERT INTO LU_PFM_ADT_Component
+			<columns mode="insert">
+				<column dbField="DisplayValue" paramId="DisplayValue" />
+				<column dbField="Description">NULL</column>
+				<column dbField="CreatedDate">GETDATE()</column>
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+
+			SELECT CAST(@@Identity as int)
+			END
+			ELSE
+			BEGIN
+			SELECT @existingLookupCode
+			END
+		</sql>
+	</statement>
+	<statement name="InsertOrGetFieldLookup" connection="Common">
+		<param id="DisplayValue" type="String" required="true"/>
+		<sql>
+			DECLARE @existingLookupCode int
+			SELECT
+			@existingLookupCode = LookupCode
+			FROM LU_PFM_ADT_Field
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="DisplayValue" paramId="DisplayValue" />
+				</exp>
+			</where>
+
+			IF @existingLookupCode IS NULL
+			BEGIN
+			INSERT INTO LU_PFM_ADT_Field
+			<columns mode="insert">
+				<column dbField="DisplayValue" paramId="DisplayValue" />
+				<column dbField="Description">NULL</column>
+				<column dbField="CreatedDate">GETDATE()</column>
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+
+			SELECT CAST(@@Identity as int)
+			END
+			ELSE
+			BEGIN
+			SELECT @existingLookupCode
+			END
+		</sql>
+	</statement>
+
+	<!-- Field Statements-->
+	<statement name="GetField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="GetFieldHistory" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+				</exp>
+			</where>
+
+			UNION
+
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN HIST_PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="UpdateField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="IncrementVersion" type="Boolean" required="false" default="false" />
+		<param id="Value" type="String" required="true" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			UPDATE f
+			<columns mode="update">
+				<optional depends="IncrementVersion == true">
+					<column dbField="ComponentChangeVersionId">CASE WHEN c.StaticComponentFlag = 0 THEN c.VersionId + 1 ELSE c.VersionId END</column>
+					<column dbField="VersionId">f.VersionId + 1</column>
+				</optional>
+				<optional depends="IncrementVersion == false">
+					<column dbField="ComponentChangeVersionId">c.VersionId</column>
+				</optional>
+				<column dbField="FieldValue" paramId="Value" />
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="InsertField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="Value" type="String" required="true" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			INSERT INTO PFM_ADT_Field
+			(
+			FieldCode
+			,ADTComponentCode
+			,ComponentChangeVersionId
+			,VersionId
+			,FieldValue
+			,CreatedDate
+			,LastUpdateDate
+			,CreatorId
+			,LastUpdateId
+			)
+			SELECT
+			<exp paramId="FieldCode" />
+			,c.ADTComponentCode
+			,c.VersionId
+			,1
+			,<exp paramId="Value" />
+			,GETDATE()
+			,GETDATE()
+			,<exp paramId="CurrentUserId" />
+			,<exp paramId="CurrentUserId" />
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+
+		</sql>
+	</statement>
+	<statement name="InsertUpdateField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="IncrementVersion" type="Boolean" required="false" default="false" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="Value" type="String" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+
+			IF EXISTS(SELECT * FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where> )
+
+			BEGIN
+
+			UPDATE f
+			<columns mode="update">
+				<optional depends="IncrementVersion == true">
+					<column dbField="ComponentChangeVersionId">CASE WHEN c.StaticComponentFlag = 0 THEN c.VersionId + 1 ELSE c.VersionId END</column>
+					<column dbField="VersionId">f.VersionId + 1</column>
+				</optional>
+				<optional depends="IncrementVersion == false">
+					<column dbField="ComponentChangeVersionId">c.VersionId</column>
+				</optional>
+				<column dbField="FieldValue" paramId="Value" />
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+
+			END--end update
+
+			ELSE
+			BEGIN
+
+			INSERT INTO PFM_ADT_Field
+			(
+			FieldCode
+			,ADTComponentCode
+			,ComponentChangeVersionId
+			,VersionId
+			,FieldValue
+			,CreatedDate
+			,LastUpdateDate
+			,CreatorId
+			,LastUpdateId
+			)
+			SELECT
+			<exp paramId="FieldCode" />
+			,c.ADTComponentCode
+			,c.VersionId
+			,1
+			,<exp paramId="Value" />
+			,GETDATE()
+			,GETDATE()
+			,<exp paramId="CurrentUserId" />
+			,<exp paramId="CurrentUserId" />
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+
+			END--end insert
+
+		</sql>
+	</statement>
+	<statement name="SoftDeleteField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			UPDATE f
+			<columns mode="update">
+				<column dbField="SoftDeleteFlag">1</column>
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="ArchiveField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			INSERT INTO HIST_PFM_ADT_Field
+			SELECT f.* FROM PFM_ADT_Field f
+			JOIN PFM_ADT_Component c ON c.ADTComponentCode = f.ADTComponentCode
+			JOIN PFM_ADT_Resource r ON r.ResourceCode = c.ResourceCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="HardDeleteField" connection="Common">
+		<param id="FieldCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			DELETE f
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="f.FieldCode" paramId="FieldCode" />
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+	<!-- Resource Statements-->
+	<statement name="CheckResourceExists" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+			IF EXISTS(
+			SELECT *
+			FROM PFM_ADT_Resource r
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>)
+			SELECT CAST(1 AS BIT)
+			ELSE
+			SELECT CAST(0 AS BIT)
+		</sql>
+	</statement>
+	<statement name="ArchiveResource" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+			INSERT INTO HIST_PFM_ADT_AuditResource
+			SELECT r.* FROM PFM_ADT_Resource r
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="GetResourceFields" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="Version" type="Int32" required="true" />
+		<sql>
+			--THIS IS UNSTABLE. FIX LATER
+
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.VersionId" paramId="Version" />
+				</exp>
+			</where>
+
+			UNION
+
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN HIST_PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode AND f.ComponentChangeVersionId = c.VersionId
+			--JOIN HIST_PFM_ADT_Field f ON f.FieldResourceId = r.FieldResourceId AND f.FieldResourceChangeVersionId = r.VersionId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.VersionId" paramId="Version" />
+				</exp>
+			</where>
+
+			UNION
+
+			--also join to current table which will contain unchanged values
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode AND f.ComponentChangeVersionId = c.VersionId
+			--JOIN PFM_ADT_Field f ON f.FieldResourceId = r.FieldResourceId AND f.FieldResourceChangeVersionId = r.VersionId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.VersionId" paramId="Version" />
+				</exp>
+			</where>
+
+		</sql>
+	</statement>
+	<statement name="GetResourceFieldsCurrent" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+			SELECT
+			f.FieldCode AS FieldCode
+			,f.VersionId AS Version
+			,f.FieldValue AS Value
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			--JOIN [PFM_ADT_Field] f ON f.FieldResourceId = r.FieldResourceId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="InsertResource" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			INSERT INTO PFM_ADT_Resource
+			<columns mode="insert">
+				<column dbField="ResourceValue" paramId="ResourceValue" />
+				<column dbField="ResourceTypeCode" paramId="ResourceTypeCode" />
+				<column dbField="CreatedDate">GETDATE()</column>
+				<column dbField="LastUpdateDate">GETDATE()</column>
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="CreatorId" paramId="CurrentUserId" />
+			</columns>
+		</sql>
+	</statement>
+
+	<!-- Component Statements -->
+	<statement name="GetExistingComponentId" connection="Common">
+		<param id="ParentComponentId" type="Int32" required="false" default="-1" />
+		<param id="ComponentCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="PrivateIdentifier" type="String" size="50" required="false" default="_RESERVED" />
+		<sql>
+			DECLARE @existingId int
+			SELECT @existingId = ADTComponentCode FROM PFM_ADT_Component c
+			JOIN PFM_ADT_Resource r ON r.ResourceCode = c.ResourceCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.ComponentCode" paramId="ComponentCode" />
+					<exp op="=" dbField="ISNULL(c.PrivateIdentifier,'_RESERVED')" paramId="PrivateIdentifier" />
+					<exp op="=" dbField="ISNULL(c.ParentADTComponentCode,-1)" paramId="ParentComponentId" />
+				</exp>
+			</where>
+
+			SELECT ISNULL(@existingId,0)
+		</sql>
+	</statement>
+	<statement name="InsertComponent" connection="Common">
+		<param id="ParentComponentId" type="Int32" required="false" default="-1" />
+		<param id="ComponentCode" type="Int32" required="true" />
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="PrivateIdentifier" type="String" size="50" required="false" default="" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<param id="StaticFlag" type="Int16" required="false" default="0" />
+		<sql>
+			INSERT INTO dbo.PFM_ADT_Component
+			(
+			ResourceCode
+			,ComponentCode
+			,VersionId
+			,ParentADTComponentCode
+			,ParentComponentChangeVersionId
+			,CreatedDate
+			,LastUpdateDate
+			,PrivateIdentifier
+			,CreatorId
+			,LastUpdateId
+			,StaticComponentFlag
+			)
+			SELECT
+			r.ResourceCode
+			,<exp paramId="ComponentCode" />
+			,1
+			,CASE WHEN <exp paramId="ParentComponentId" /> = -1 THEN NULL ELSE <exp paramId="ParentComponentId" /> END
+			,NULL
+			,GETDATE()
+			,GETDATE()
+			,CASE WHEN <exp paramId="PrivateIdentifier" /> = '' THEN NULL ELSE <exp paramId="PrivateIdentifier" /> END
+			,<exp paramId="CurrentUserId" />
+			,<exp paramId="CurrentUserId" />
+			,<exp paramId="StaticFlag" />
+			FROM PFM_ADT_Resource r
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+				</exp>
+			</where>
+
+			SELECT CAST(@@Identity AS int)
+		</sql>
+	</statement>
+	<statement name="CheckComponentExists" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			IF EXISTS(
+			SELECT *
+			FROM PFM_ADT_Component c
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>)
+			SELECT CAST(1 AS BIT)
+			ELSE
+			SELECT CAST(0 AS BIT)
+		</sql>
+	</statement>
+	<statement name="DoesStaticComponentArchiveExist" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			IF EXISTS(SELECT * FROM HIST_PFM_ADT_Component WHERE ADTComponentCode = <exp paramId="ComponentId" /> AND StaticComponentFlag = 1)
+			SELECT CAST(1 as bit)
+			ELSE
+			SELECT CAST(0 as bit)
+		</sql>
+	</statement>
+	<statement name="ArchiveComponent" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			INSERT INTO HIST_PFM_ADT_Component
+			SELECT c.* FROM PFM_ADT_Component c
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="IncrementComponent" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			UPDATE c
+			<columns mode="update">
+				<column dbField="VersionId">c.VersionId + 1</column>
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			FROM PFM_ADT_Component c
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+					<exp op="=" dbField="c.StaticComponentFlag">0</exp>
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="IncrementComponentAndParent" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			WITH componentsToIncrement AS
+			(
+			SELECT
+			c.*
+			FROM PFM_ADT_Component c
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="c.ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+
+			UNION ALL
+
+			SELECT
+			parent.*
+			FROM PFM_ADT_Component parent
+			JOIN componentsToIncrement cin ON parent.ADTComponentCode = ISNULL(cin.ParentADTComponentCode,cin.ADTComponentCode) AND parent.ADTComponentCode &lt;&gt; cin.ADTComponentCode
+			)
+			UPDATE c
+			<columns mode="update">
+				<column dbField="VersionId">c.VersionId + 1</column>
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			FROM PFM_ADT_Component c
+			JOIN componentsToIncrement cin ON cin.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="c.StaticComponentFlag">0</exp>
+				</exp>
+			</where>
+
+		</sql>
+	</statement>
+	<statement name="GetResourceComponentsAndFieldsCurrent" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<sql>
+
+			SELECT
+			f.FieldCode AS F_FieldCode
+			,f.ADTComponentCode AS F_ComponentId
+			,f.VersionId AS F_Version
+			,f.FieldValue AS F_Value
+
+			,c.ResourceCode AS C_ResourceId
+			,c.PrivateIdentifier AS C_PrivateIdentifier
+			,c.ADTComponentCode AS C_ComponentId
+			,c.ComponentCode AS C_ComponentCode
+			,c.VersionId AS C_Version
+			,ISNULL(c.ParentADTComponentCode,0) AS C_ParentComponentId
+			,CASE WHEN c.ParentADTComponentCode IS NULL OR c.ParentADTComponentCode = c.ADTComponentCode THEN CAST(1 as bit) ELSE CAST(0 as bit) END AS C_IsPrimaryComponent
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			LEFT OUTER JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="=" dbField="c.SoftDeleteFlag">0</exp>
+				</exp>
+			</where>
+
+		</sql>
+	</statement>
+	<statement name="GetResourceComponentsAndFieldsAll" connection="Common">
+		<param id="ResourceValue" type="Guid" required="true" />
+		<param id="ResourceTypeCode" type="Int32" required="true" />
+		<param id="SortExpression" type="String" required="false" default="DisplayValue ASC, Id ASC, ModifiedDate DESC" />
+		<param id="ComponentCodes" type="Int32" required="false" />
+		<param id="FieldCodes" type="Int32" required="false" />
+		<param id="ActionsWhereClause" type="String" required="false" default="0000" />
+		<!--<param id="ModifiedByFirstName" type="String" required="false" size="200" />
+		<param id="ModifiedByLastName" type="String" required="false" size="200" />
+		<param id="ModifiedDateStart" type="DateTime" required="false" />
+		<param id="ModifiedDateEnd" type="DateTime" required="false" />-->
+		<sql>
+
+			--
+			-- Needs some mods for paging
+			-- Needs some mods for sorting
+			-- Id and ParentId are strictly for front-end wiring purposes
+			--
+
+			<select>
+				*
+			</select>
+			FROM
+			(
+
+			SELECT
+			c.ADTComponentCode AS Id
+			,ISNULL(c.ParentADTComponentCode, 0) as ParentId
+			,luc.DisplayValue AS DisplayValue
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE c.LastUpdateDate END AS ModifiedDate
+			,lu.FirstName AS ModifiedByFirstName
+			,lu.MiddleName AS ModifiedByMiddleName
+			,lu.LastName AS ModifiedByLastName
+			,CASE
+			WHEN c.StaticComponentFlag = 1 THEN 3
+			WHEN c.SoftDeleteFlag = 1 THEN 2
+			WHEN c.VersionId = 1 THEN 1
+			ELSE 3
+			END AS ActionTaken
+			,c.ParentComponentChangeVersionId as ParentVersion
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE c.VersionId END AS Version
+
+			,NULL AS F_FieldCode
+			,NULL AS F_ComponentId
+			,NULL AS F_Version
+			,NULL AS F_Value
+			,NULL AS F_ComponentVersion
+
+			,c.ResourceCode AS C_ResourceId
+			,c.ADTComponentCode AS C_ComponentId
+			,c.ComponentCode AS C_ComponentCode
+			,CASE WHEN c.StaticComponentFlag = 0 THEN c.VersionId ELSE 0 END AS C_Version
+			,ISNULL(c.ParentADTComponentCode, c.ADTComponentCode) AS C_ParentComponentId
+			,CASE WHEN c.ParentADTComponentCode IS NULL OR c.ParentADTComponentCode = c.ADTComponentCode THEN CAST(1 as bit) ELSE CAST(0 as bit) END AS C_IsPrimaryComponent
+			,c.StaticComponentFlag AS C_StaticComponentFlag
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN LU_PFM_ADT_Component luc ON luc.LookupCode = c.ComponentCode
+			JOIN LU_Users lu ON lu.UserId = c.LastUpdateId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="IN" dbField="c.ComponentCode" paramId="ComponentCodes" />
+				</exp>
+			</where>
+
+
+			UNION
+
+			SELECT
+			c.ADTComponentCode AS Id
+			,ISNULL(c.ParentADTComponentCode, 0) as ParentId
+			,luc.DisplayValue AS DisplayValue
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE c.LastUpdateDate END AS ModifiedDate
+			,lu.FirstName AS ModifiedByFirstName
+			,lu.MiddleName AS ModifiedByMiddleName
+			,lu.LastName AS ModifiedByLastName
+			,CASE
+			WHEN c.StaticComponentFlag = 1 THEN 3
+			WHEN c.SoftDeleteFlag = 1 THEN 2
+			WHEN c.VersionId = 1 THEN 1
+			ELSE 3
+			END AS ActionTaken
+			,c.ParentComponentChangeVersionId as ParentVersion
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE c.VersionId END AS Version
+
+			,NULL AS F_FieldCode
+			,NULL AS F_ComponentId
+			,NULL AS F_Version
+			,NULL AS F_Value
+			,NULL AS F_ComponentVersion
+
+			,c.ResourceCode AS C_ResourceId
+			,c.ADTComponentCode AS C_ComponentId
+			,c.ComponentCode AS C_ComponentCode
+			,CASE WHEN c.StaticComponentFlag = 0 THEN c.VersionId ELSE 0 END AS C_Version
+			,ISNULL(c.ParentADTComponentCode, c.ADTComponentCode) AS C_ParentComponentId
+			,CASE WHEN c.ParentADTComponentCode IS NULL OR c.ParentADTComponentCode = c.ADTComponentCode THEN CAST(1 as bit) ELSE CAST(0 as bit) END AS C_IsPrimaryComponent
+			,c.StaticComponentFlag as C_StaticComponentFlag
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN LU_PFM_ADT_Component luc ON luc.LookupCode = c.ComponentCode
+			JOIN LU_Users lu ON lu.UserId = c.LastUpdateId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="IN" dbField="c.ComponentCode" paramId="ComponentCodes" />
+				</exp>
+			</where>
+
+
+			UNION
+
+			--Get historic fields
+			SELECT
+			f.FieldCode * -1 AS Id		--will not be used. Fields do not have children
+			,f.ADTComponentCode AS ParentId
+			,luf.DisplayValue as DisplayValue
+			,f.LastUpdateDate AS ModifiedDate
+			,lu.FirstName AS ModifiedByFirstName
+			,lu.MiddleName AS ModifiedByMiddleName
+			,lu.LastName AS ModifiedByLastName
+			,CASE
+			WHEN f.SoftDeleteFlag = 1 THEN 2
+			WHEN f.VersionId = 1 THEN 1
+			ELSE 3
+			END AS ActionTaken
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE f.ComponentChangeVersionId END AS ParentVersion	--for static components, always hook to 1
+			,f.VersionId AS Version
+
+			,f.FieldCode AS F_FieldCode
+			,f.ADTComponentCode AS F_ComponentId
+			,f.VersionId AS F_Version
+			,f.FieldValue AS F_Value
+			,f.ComponentChangeVersionId AS F_ComponentVersion
+
+			,NULL AS C_ResourceId
+			,NULL AS C_ComponentId
+			,NULL AS C_ComponentCode
+			,NULL AS C_Version
+			,NULL AS C_ParentComponentId
+			,NULL AS C_IsPrimaryComponent
+			,NULL as C_StaticComponentFlag
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN HIST_PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode AND f.ComponentChangeVersionId = c.VersionId
+			JOIN LU_PFM_ADT_Field luf ON luf.LookupCode = f.FieldCode
+			JOIN LU_Users lu ON lu.UserId = f.LastUpdateId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="IN" dbField="c.ComponentCode" paramId="ComponentCodes" />
+					<exp op="IN" dbField="f.FieldCode" paramId="FieldCodes" />
+				</exp>
+			</where>
+
+			UNION
+
+			--get active fields
+			SELECT
+			f.FieldCode * -1 AS Id		--will not be used. Fields do not have children
+			,f.ADTComponentCode AS ParentId
+			,luf.DisplayValue as DisplayValue
+			,f.LastUpdateDate AS ModifiedDate
+			,lu.FirstName AS ModifiedByFirstName
+			,lu.MiddleName AS ModifiedByMiddleName
+			,lu.LastName AS ModifiedByLastName
+			,CASE
+			WHEN f.SoftDeleteFlag = 1 THEN 2
+			WHEN f.VersionId = 1 THEN 1
+			ELSE 3
+			END AS ActionTaken
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE f.ComponentChangeVersionId END AS ParentVersion	--for static components, always hook to 1
+			,f.VersionId AS Version
+
+			,f.FieldCode AS F_FieldCode
+			,f.ADTComponentCode AS F_ComponentId
+			,f.VersionId AS F_Version
+			,f.FieldValue AS F_Value
+			,f.ComponentChangeVersionId AS F_ComponentVersion
+
+			,NULL AS C_ResourceId
+			,NULL AS C_ComponentId
+			,NULL AS C_ComponentCode
+			,NULL AS C_Version
+			,NULL AS C_ParentComponentId
+			,NULL AS C_IsPrimaryComponent
+			,NULL as C_StaticComponentFlag
+
+			FROM PFM_ADT_Resource r
+			JOIN PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode AND f.ComponentChangeVersionId = c.VersionId
+			JOIN LU_PFM_ADT_Field luf ON luf.LookupCode = f.FieldCode
+			JOIN LU_Users lu ON lu.UserId = f.LastUpdateId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="IN" dbField="c.ComponentCode" paramId="ComponentCodes" />
+					<exp op="IN" dbField="f.FieldCode" paramId="FieldCodes" />
+				</exp>
+			</where>
+
+			UNION
+
+			--get active fields from historic components
+			SELECT
+			f.FieldCode * -1 AS Id		--will not be used. Fields do not have children
+			,f.ADTComponentCode AS ParentId
+			,luf.DisplayValue as DisplayValue
+			,f.LastUpdateDate AS ModifiedDate
+			,lu.FirstName AS ModifiedByFirstName
+			,lu.MiddleName AS ModifiedByMiddleName
+			,lu.LastName AS ModifiedByLastName
+			,CASE
+			WHEN f.SoftDeleteFlag = 1 THEN 2
+			WHEN f.VersionId = 1 THEN 1
+			ELSE 3
+			END AS ActionTaken
+			,CASE WHEN c.StaticComponentFlag = 1 THEN NULL ELSE f.ComponentChangeVersionId END AS ParentVersion	--for static components, always hook to 1
+			,f.VersionId AS Version
+
+			,f.FieldCode AS F_FieldCode
+			,f.ADTComponentCode AS F_ComponentId
+			,f.VersionId AS F_Version
+			,f.FieldValue AS F_Value
+			,f.ComponentChangeVersionId AS F_ComponentVersion
+
+			,NULL AS C_ResourceId
+			,NULL AS C_ComponentId
+			,NULL AS C_ComponentCode
+			,NULL AS C_Version
+			,NULL AS C_ParentComponentId
+			,NULL AS C_IsPrimaryComponent
+			,NULL as C_StaticComponentFlag
+
+			FROM PFM_ADT_Resource r
+			JOIN HIST_PFM_ADT_Component c ON c.ResourceCode = r.ResourceCode
+			JOIN PFM_ADT_Field f ON f.ADTComponentCode = c.ADTComponentCode AND f.ComponentChangeVersionId = c.VersionId
+			JOIN LU_PFM_ADT_Field luf ON luf.LookupCode = f.FieldCode
+			JOIN LU_Users lu ON lu.UserId = f.LastUpdateId
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="r.ResourceValue" paramId="ResourceValue" />
+					<exp op="=" dbField="r.ResourceTypeCode" paramId="ResourceTypeCode" />
+					<exp op="IN" dbField="c.ComponentCode" paramId="ComponentCodes" />
+					<exp op="IN" dbField="f.FieldCode" paramId="FieldCodes" />
+				</exp>
+			</where>
+
+			) t
+			<where>
+				<exp op="AND">
+					<!--<exp op="LIKE" dbField="ModifiedByFirstName" paramId="ModifiedByFirstName" />
+					<exp op="LIKE" dbField="ModifiedByLastName" paramId="ModifiedByLastName" />
+					<exp op="&gt;=" dbField="ISNULL(ModifiedDate,'1900-01-01')" paramId="ModifiedDateStart" />
+					<exp op="&lt;=" dbField="ISNULL(ModifiedDate,'1900-01-01')" paramId="ModifiedDateEnd" />-->
+					<exp op="=" dbField="1">
+						<optional depends="ActionsWhereClause != '0000'">
+							<dynamic paramId="ActionsWhereClause"/>
+						</optional>
+						<optional depends="ActionsWhereClause == '0000'">
+							1
+						</optional>
+					</exp>
+				</exp>
+			</where>
+			<sort paramId="SortExpression" />
+
+		</sql>
+	</statement>
+	<statement name="HardDeleteComponent" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<sql>
+			DELETE FROM PFM_ADT_Component
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	<statement name="SoftDeleteComponent" connection="Common">
+		<param id="ComponentId" type="Int32" required="true" />
+		<param id="CurrentUserId" type="Guid" required="true" />
+		<sql>
+			UPDATE PFM_ADT_Component
+			<columns mode="update">
+				<column dbField="SoftDeleteFlag">1</column>
+				<column dbField="LastUpdateId" paramId="CurrentUserId" />
+				<column dbField="LastUpdateDate">GETDATE()</column>
+			</columns>
+			<where>
+				<exp op="AND">
+					<exp op="=" dbField="ADTComponentCode" paramId="ComponentId" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+
+</statements>

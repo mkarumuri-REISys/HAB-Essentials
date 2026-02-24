@@ -1,0 +1,27 @@
+﻿<statements xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://Y:/workspace/tools/REISchemas/REIData.xsd">
+  <statement name="EmailExists" connection="Common">
+    <param id="emailSpecified" type="String" required="true" />
+    <sql>
+      SELECT COUNT(*) AS 'result'
+      FROM dbo.AC_User a
+      JOIN dbo.People p ON a.UserId = p.UserId
+      JOIN dbo.ContactAddresses c ON p.PersonId = c.EntityId
+      WHERE ContactAddress = '<dynamic paramId="emailSpecified" />' AND
+      ContactAddressTypeCode = 1 AND
+      a.AccountDisabledDateTime IS NULL
+    </sql>
+  </statement>
+  <statement name="GetUserIds" connection="Common">
+    <param id="Emails" type="String" required="true" />
+    <sql>
+      SELECT c.ContactAddress, a.UserId, a.AccountDisabledDateTime, p.FirstName, p.MiddleName, p.LastName
+      FROM dbo.AC_User a
+      JOIN dbo.People p ON a.UserId = p.UserId
+      JOIN dbo.ContactAddresses c ON p.PersonId = c.EntityId
+      WHERE ContactAddress IN (<dynamic paramId="Emails" />) AND
+      ContactAddressTypeCode = 1 AND
+      ContactAddressPurposeCode = 1 -- Primary email
+      <!--a.AccountDisabledDateTime IS NULL-->
+    </sql>
+  </statement>
+</statements>

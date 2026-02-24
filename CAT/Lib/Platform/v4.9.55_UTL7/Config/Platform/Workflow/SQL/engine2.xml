@@ -1,0 +1,704 @@
+<statements>
+	<statement name="geDefinitionBasedtParticipant" connection="Workflow">
+		<param id="ACTIVITY_DEFINITION_ID" type="String" size="36" required="true"/>
+		<sql>
+			select cast(participant_id as varchar(36)) as id,
+					participant_type_id as typeID
+			from REL_ACTIVITY_PARTICIPANT rapr
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="rapr.activity_definition_id" paramId="ACTIVITY_DEFINITION_ID" />
+				</exp>
+			</where>
+		</sql>
+	</statement> 
+		
+	<statement name="getProcess" connection="Workflow">
+		<param id="rootProcInstId" type="String" size="36" />
+		<sql>
+		Select * 
+		from fact_process_instance process with (NOLOCK)
+			inner join fact_activity_instance activity with (NOLOCK)
+			on Process.Process_Instance_id=activity.Process_Instance_id
+		<where>
+			<exp op="or">
+				<exp op="=" dbField="Process.process_instance_id" paramId="rootProcInstId" />
+				<exp op="=" dbField="Process.root_process_instance_id" paramId="rootProcInstId" />
+			</exp>
+		</where>
+		order by process.Process_instance_id		
+		for XMl AUTO
+		
+		</sql>
+	</statement>
+	
+	<statement name="getContainerXml" connection="Workflow">
+		<param id="rootProcInstId" type="String" size="36" />
+		<sql>
+			Select 
+			1 as Tag,
+			NULL as Parent,
+			ContainerXmls.Container_XML as [ContainerXmls!1!ContainerXml!xmltext],
+			PROCESS_DEFINITION_ID as [ContainerXmls!1!Id]
+			from fact_process_instance ContainerXmls with (NOLOCK)
+			<where>
+				<exp op="and">
+					<exp op="or">
+						<exp op="=" dbField="ContainerXmls.process_instance_id" paramId="rootProcInstId" />
+						<exp op="=" dbField="ContainerXmls.Root_Process_Instance_id" paramId="rootProcInstId" />
+					</exp>
+					<exp>isnull(Container_XML,'') &lt;&gt; ''</exp>
+				</exp>
+			</where>
+
+			Union All 
+
+			Select 
+			1 as Tag,
+			NULL as Parent,
+			activity.Container_XML as [ContainerXmls!1!ContainerXml!xmltext],
+			activity.Activity_Definition_id as Id
+			from fact_process_instance Process with (NOLOCK)
+					inner join fact_activity_instance activity with (NOLOCK)
+					on Process.Process_Instance_id=activity.Process_Instance_id
+			<where>
+				<exp op="and">
+					<exp op="or">
+						<exp op="=" dbField="Process.process_instance_id" paramId="rootProcInstId" />
+						<exp op="=" dbField="Process.Root_Process_Instance_id" paramId="rootProcInstId" />
+					</exp>
+					<exp>isnull(activity.Container_XML,'') &lt;&gt; ''</exp>
+				</exp>
+			</where>
+			For XML EXPLICIT
+		</sql>
+	</statement>
+	
+	
+	<statement name="getDefinitions" connection="Workflow">
+		<sql>
+      Select
+      1 as Tag,
+      NULL as Parent,
+      process.PROCESS_DEFINITION_ID as [process!1!PROCESS_DEFINITION_ID],
+      process.IS_TEAM_ENABLED as [process!1!IS_TEAM_ENABLED],
+      process.PROCESS_DESC as [process!1!PROCESS_DESC],
+      process.AUTHOR_ID as [process!1!AUTHOR_ID],
+      process.VERSION as [process!1!VERSION],
+      process.EXTERNAL_RESOURCE_ID as [process!1!EXTERNAL_RESOURCE_ID],
+      process.PROCESS_TYPE_ID as [process!1!PROCESS_TYPE_ID],
+      process.RESPONSIBLE_PARTICIPANT_ID as [process!1!RESPONSIBLE_PARTICIPANT_ID],
+      process.ROOT_PROCESS_DEFINITION_ID as [process!1!ROOT_PROCESS_DEFINITION_ID],
+      NULL as [activity!2!ACTIVITY_DEFINITION_ID],
+      NULL as [activity!2!ACTIVITY_DESC],
+      NULL as [activity!2!ACTIVITY_IMPLEMENTATION_ID],
+      NULL as [activity!2!SUB_PROCESS_DEFINITION_ID],
+      NULL as [activity!2!LOOP_CONDITION!xmltext],
+      NULL as [activity!2!PRIORITY],
+      NULL as [activity!2!START_MODE_ID],
+      NULL as [activity!2!FINISH_MODE_ID],
+      NULL as [activity!2!AUTOMATED_CLASS_NAME],
+      NULL as [activity!2!TRANSITION_RESTRICtION_ID],
+      NULL as [activity!2!WORK_ITEM_LIMIT],
+      NULL as [activity!2!REQUIRED_WORK_ITEM_COUNT],
+      NULL as [activity!2!REQUIRED_ANCESTOR_COUNT],
+      NULL as [activity!2!TIME_LIMIT],
+      NULL as [activity!2!CLIENT_STATUS_MSG_XML],
+      NULL as [activity!2!TIME_EXPIRED_ACTIVITY_ID],
+      NULL as [transIn!3!TRANSITION_ID],
+      NULL as [transIn!3!TRANSITION_DESC],
+      NULL as [transIn!3!TO_ACTIVITY_ID],
+      NULL as [transIn!3!TRANSITION_TYPE_ID],
+      NULL as [transIn!3!CONDITIONS!xmltext],
+      NULL as [transIn!3!FROM_ACTIVITY_ID],
+      NULL as [transOut!4!TRANSITION_ID],
+      NULL as [transOut!4!TRANSITION_DESC],
+      NULL as [transOut!4!TO_ACTIVITY_ID],
+      NULL as [transOut!4!TRANSITION_TYPE_ID],
+      NULL as [transOut!4!CONDITIONS!xmltext],
+      NULL as [transOut!4!FROM_ACTIVITY_ID]
+
+      From LU_Process_definition process
+
+      UNION ALL
+
+      Select 2 as Tag,
+      1 as Parent,
+      process.PROCESS_DEFINITION_ID ,
+      process.IS_TEAM_ENABLED,
+      process.PROCESS_DESC,
+      process.AUTHOR_ID,
+      process.VERSION,
+      process.EXTERNAL_RESOURCE_ID,
+      process.PROCESS_TYPE_ID,
+      process.RESPONSIBLE_PARTICIPANT_ID,
+      process.ROOT_PROCESS_DEFINITION_ID,
+      activity.ACTIVITY_DEFINITION_ID,
+      activity.ACTIVITY_DESC,
+      activity.ACTIVITY_IMPLEMENTATION_ID,
+      activity.SUB_PROCESS_DEFINITION_ID,
+      activity.LOOP_CONDITION,
+      activity.PRIORITY,
+      activity.START_MODE_ID,
+      activity.FINISH_MODE_ID,
+      activity.AUTOMATED_CLASS_NAME,
+      activity.TRANSITION_RESTRICTION_ID,
+      activity.WORK_ITEM_LIMIT,
+      activity.REQUIRED_WORK_ITEM_COUNT,
+      activity.REQUIRED_ANCESTOR_COUNT,
+      activity.TIME_LIMIT,
+      activity.CLIENT_STATUS_MSG_XML,
+      activity.TIME_EXPIRED_ACTIVITY_ID,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL
+      FROM LU_Process_definition process Inner Join LU_Activity_definition Activity on process.Process_DEFINITION_ID=Activity.Process_DEFINITION_ID
+
+      UNION ALL
+
+      Select 3 as Tag,
+      2 as Parent,
+      process.PROCESS_DEFINITION_ID ,
+      process.IS_TEAM_ENABLED,
+      process.PROCESS_DESC,
+      process.AUTHOR_ID,
+      process.VERSION,
+      process.EXTERNAL_RESOURCE_ID,
+      process.PROCESS_TYPE_ID,
+      process.RESPONSIBLE_PARTICIPANT_ID,
+      process.ROOT_PROCESS_DEFINITION_ID,
+      activity.ACTIVITY_DEFINITION_ID,
+      activity.ACTIVITY_DESC,
+      activity.ACTIVITY_IMPLEMENTATION_ID,
+      activity.SUB_PROCESS_DEFINITION_ID,
+      activity.LOOP_CONDITION,
+      activity.PRIORITY,
+      activity.START_MODE_ID,
+      activity.FINISH_MODE_ID,
+      activity.AUTOMATED_CLASS_NAME,
+      activity.TRANSITION_RESTRICTION_ID,
+      activity.WORK_ITEM_LIMIT,
+      activity.REQUIRED_WORK_ITEM_COUNT,
+      activity.REQUIRED_ANCESTOR_COUNT,
+      activity.TIME_LIMIT,
+      activity.CLIENT_STATUS_MSG_XML,
+      activity.TIME_EXPIRED_ACTIVITY_ID,
+      transIn.TRANSITION_ID,
+      transIn.TRANSITION_DESC,
+      transIn.TO_ACTIVITY_ID,
+      transIn.TRANSITION_TYPE_ID,
+      transIn.CONDITION,
+      transIn.FROM_ACTIVITY_ID,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL
+
+      FROM LU_Process_definition process Inner Join LU_Activity_definition Activity on process.Process_DEFINITION_ID=Activity.Process_DEFINITION_ID
+      join LU_Transition transIn on transIn.To_Activity_Id=activity.Activity_definition_id and activity.Process_Definition_id=transIn.Process_Definition_id
+      UNION ALL
+
+      Select 4 as Tag,
+      2 as Parent,
+      process.PROCESS_DEFINITION_ID ,
+      process.IS_TEAM_ENABLED,
+      process.PROCESS_DESC,
+      process.AUTHOR_ID,
+      process.VERSION,
+      process.EXTERNAL_RESOURCE_ID,
+      process.PROCESS_TYPE_ID,
+      process.RESPONSIBLE_PARTICIPANT_ID,
+      process.ROOT_PROCESS_DEFINITION_ID,
+      activity.ACTIVITY_DEFINITION_ID,
+      activity.ACTIVITY_DESC,
+      activity.ACTIVITY_IMPLEMENTATION_ID,
+      activity.SUB_PROCESS_DEFINITION_ID,
+      activity.LOOP_CONDITION,
+      activity.PRIORITY,
+      activity.START_MODE_ID,
+      activity.FINISH_MODE_ID,
+      activity.AUTOMATED_CLASS_NAME,
+      activity.TRANSITION_RESTRICTION_ID,
+      activity.WORK_ITEM_LIMIT,
+      activity.REQUIRED_WORK_ITEM_COUNT,
+      activity.REQUIRED_ANCESTOR_COUNT,
+      activity.TIME_LIMIT,
+      activity.CLIENT_STATUS_MSG_XML,
+      activity.TIME_EXPIRED_ACTIVITY_ID,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL ,
+      NULL,
+      transIn.TRANSITION_ID,
+      transIn.TRANSITION_DESC,
+      transIn.TO_ACTIVITY_ID,
+      transIn.TRANSITION_TYPE_ID,
+      transIn.CONDITION,
+      transIn.FROM_ACTIVITY_ID
+      FROM LU_Process_definition process Inner Join LU_Activity_definition Activity on process.Process_DEFINITION_ID=Activity.Process_DEFINITION_ID
+      join LU_Transition transIn on transIn.from_Activity_Id=activity.Activity_definition_id and activity.Process_Definition_id=transIn.Process_Definition_id
+
+      ORDER BY [Process!1!PROCESS_DEFINITION_ID],[Activity!2!ACTIVITY_DEFINITION_ID],[transIn!3!TRANSITION_ID],[transOut!4!TRANSITION_ID]
+      FOR XML EXPLICIT
+    </sql>
+	</statement>
+
+
+	<statement name="getStateCount" connection="Workflow">
+		<param id="actInstId" type="String" size="36" />
+		<sql>
+			select count(Current_state_ID) as Count,Current_state_id
+			from FACT_WORK_ITEM fwi with (NOLOCK)
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fwi.activity_instance_id" paramId="actInstId" />
+					<exp>fwi.Current_state_id in (4,5,6, 7)</exp>
+				</exp>
+			</where>
+			Group By Current_state_id
+			Order By Current_state_id DESC
+		</sql>
+	</statement>
+
+
+
+	<statement name="process_NEW" connection="Workflow">
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" required="true" />
+		<param id="PROCESS_DEFINITION_ID" type="String" size="36" />
+		<param id="ROOT_PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into workflow.dbo.FACT_PROCESS_INSTANCE
+			<columns mode="insert">
+				<column dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+				<column dbField="process_definition_id" paramId="PROCESS_DEFINITION_ID" />
+				<column dbField="root_process_instance_id" paramId="ROOT_PROCESS_INSTANCE_ID" />
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="created_by" paramId="PASSED_USER_ID" />
+				<column dbField="create_datetime" paramId="currDatetime" />
+			</columns>
+		</sql>
+	</statement>
+	
+	
+	<statement name="process_UPDATE" connection="Workflow">
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" required="true" />
+		<param id="PROCESS_DEFINITION_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="CONTAINER_XML" type="String" size="2000" />
+		<param id="CLIENT_STATUS_MSG" type="String" size="100" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			update workflow.dbo.FACT_PROCESS_INSTANCE
+			<columns mode="update">
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="container_xml" paramId="CONTAINER_XML" />
+				<column dbField="client_status_msg" paramId="CLIENT_STATUS_MSG" />
+				<column dbField="updated_by" paramId="PASSED_USER_ID" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+					<exp op="=" dbField="process_definition_id" paramId="PROCESS_DEFINITION_ID" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	
+	<statement name="activity_NEW" connection="Workflow">
+		<param id="ACTIVITY_INSTANCE_ID" type="String" size="36" />
+		<param id="ACTIVITY_DEFINITION_ID" type="String" size="36" />
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="CONTAINER_XML" type="String" size="2000" />
+		<param id="CLIENT_STATUS_MSG" type="String" size="100" />
+		<param id="SUB_PROCESS_DEFINITION_ID" type="String" size="36" />
+		<param id="SUB_PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="PRIORITY" type="Int32" />
+		<param id="ACTIVITY_DESC" type="String" size="30" />
+		<param id="ACTIVITY_IMPLEMENTATION_ID" type="Int32" />
+		<param id="LOOP_CONDITION" type="String" size="2000" />
+		<param id="CLIENT_STATUS_MSG_XML" type="String" size="2000" />
+		<param id="START_MODE_ID" type="Int32" />
+		<param id="FINISH_MODE_ID" type="Int32" />
+		<param id="AUTOMATED_CLASS_NAME" type="String" size="30" />
+		<param id="TRANSITION_RESTRICTION_ID" type="Int32" />
+		<param id="WORK_ITEM_LIMIT" type="Int32" />
+		<param id="REQUIRED_WORK_ITEM_COUNT" type="Int32" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into workflow.dbo.FACT_ACTIVITY_INSTANCE
+			<columns mode="insert">
+				<column dbField="activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+				<column dbField="activity_definition_id" paramId="ACTIVITY_DEFINITION_ID" />
+				<column dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="container_xml" paramId="CONTAINER_XML" />
+				<column dbField="client_status_msg" paramId="CLIENT_STATUS_MSG" />
+				<column dbField="sub_process_definition_id" paramId="SUB_PROCESS_DEFINITION_ID" />
+				<column dbField="sub_process_instance_id" paramId="SUB_PROCESS_INSTANCE_ID" />
+				<column dbField="priority" paramId="PRIORITY" />
+				<column dbField="activity_desc" paramId="ACTIVITY_DESC" />
+				<column dbField="activity_implementation_id" paramId="ACTIVITY_IMPLEMENTATION_ID" />
+				<column dbField="loop_condition" paramId="LOOP_CONDITION" />
+				<column dbField="client_status_msg_xml" paramId="CLIENT_STATUS_MSG_XML" />
+				<column dbField="start_mode_id" paramId="START_MODE_ID" />
+				<column dbField="finish_mode_id" paramId="FINISH_MODE_ID" />
+				<column dbField="automated_class_name" paramId="AUTOMATED_CLASS_NAME" />
+				<column dbField="transition_restriction_id" paramId="TRANSITION_RESTRICTION_ID" />
+				<column dbField="work_item_limit" paramId="WORK_ITEM_LIMIT" />
+				<column dbField="required_work_item_count" paramId="REQUIRED_WORK_ITEM_COUNT" />
+				<column dbField="created_by" paramId="PASSED_USER_ID" />
+				<column dbField="create_datetime" paramId="currDatetime" />
+			</columns>;
+			insert into workflow.dbo.REL_ACTIVITY_PARTICIPANT_RUNTIME
+			(
+			activity_instance_id,
+			participant_id,
+			participant_type_id,
+			created_by,
+			create_datetime
+			)
+			select distinct fai.activity_instance_id,
+			rap.participant_id,
+			rap.participant_type_id,
+			<exp paramId="PASSED_USER_ID" />,
+			<exp paramId="currDatetime" />
+			from workflow.dbo.REL_ACTIVITY_PARTICIPANT rap
+			inner join workflow.dbo.FACT_ACTIVITY_INSTANCE fai on rap.activity_definition_id = fai.activity_definition_id
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="fai.process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+					<exp op="=" dbField="fai.activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	
+	<statement name="activity_UPDATE" connection="Workflow">
+		<param id="ACTIVITY_INSTANCE_ID" type="String" size="36" />
+		<param id="ACTIVITY_DEFINITION_ID" type="String" size="36" />
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="PROCESS_DEFINITION_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="PRIORITY" type="Int32" />
+		<param id="CONTAINER_XML" type="String" size="2000" />
+		<param id="CLIENT_STATUS_MSG" type="String" size="100" />
+		<param id="SUB_PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			update workflow.dbo.FACT_ACTIVITY_INSTANCE
+			<columns mode="update">
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="priority" paramId="PRIORITY" />
+				<column dbField="container_xml" paramId="CONTAINER_XML" />
+				<column dbField="client_status_msg" paramId="CLIENT_STATUS_MSG" />
+				<column dbField="sub_process_instance_id" paramId="SUB_PROCESS_INSTANCE_ID" />
+				<column dbField="updated_by" paramId="PASSED_USER_ID" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+					<exp op="=" dbField="ACTIVITY_DEFINITION_ID" paramId="ACTIVITY_DEFINITION_ID" />
+					<exp op="=" dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+					<exp op="=" dbField="process_definition_id" paramId="PROCESS_DEFINITION_ID" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	
+	<statement name="workItem_NEW" connection="Workflow">
+		<param id="WORK_ITEM_ID" type="String" size="36"/>
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="ACTIVITY_INSTANCE_ID" type="String" size="36" />
+		<param id="ASSIGNEE_ID" type="String" size="36" />
+    <param id="TEAM_ID" type="String" size="36" />
+		<param id="ROLE_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<sql>
+			insert into workflow.dbo.FACT_WORK_ITEM
+			<columns mode="insert">
+				<column dbField="work_item_id" paramId="WORK_ITEM_ID" />
+				<column dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+				<column dbField="activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+				<column dbField="assignee_id" paramId="ASSIGNEE_ID" />
+        <column dbField="team_id" paramId="TEAM_ID" />
+				<column dbField="role_id" paramId="ROLE_ID" />
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="latest_flag">1</column>
+				<column dbField="created_by" paramId="PASSED_USER_ID" />
+				<column dbField="create_datetime" paramId="currDatetime" />
+			</columns>
+
+		</sql>
+	</statement>
+	
+	
+	<statement name="workItem_UPDATE" connection="Workflow">
+		<param id="WORK_ITEM_ID" type="String" size="36" />
+		<param id="PROCESS_INSTANCE_ID" type="String" size="36" />
+		<param id="ACTIVITY_INSTANCE_ID" type="String" size="36" required="true"/>
+		<param id="ASSIGNEE_ID" type="String" size="36" />
+    <param id="TEAM_ID" type="String" size="36" />
+		<param id="ROLE_ID" type="String" size="36" />
+		<param id="CURRENT_STATE_ID" type="Int32" />
+		<param id="CONTAINER_XML" type="String" size="2000" />
+		<param id="COMMENT" type="String" size="4000"  default="-1"/>
+		<param id="LATEST_FLAG" type="Int32" />
+		<param id="USER_ACTION_DESC" type="String" size="100" />
+		<param id="PASSED_USER_ID" type="String" size="36" required="true" />
+		<param id="currDatetime" type="String" size="25" useCurrTime="true" />
+		<param id="RecordUserActionAtProcessLevel" type="String" />
+		
+		<sql>
+			<optional depends="RecordUserActionAtProcessLevel=='true'">
+				insert into FACT_USER_ACTIONS
+				(	USER_ACTION_ID,
+				PROCESS_INSTANCE_ID,
+				USER_ID,
+				ROLE_ID,
+				USER_ACTION_DESC,
+				COMMENT,
+				CREATE_DATETIME)
+				SELECT 	newid(),
+				isnull(b.root_process_instance_id,b.PROCESS_INSTANCE_ID),
+				a.Assignee_ID,
+				a.ROLE_ID,
+				<exp paramId="USER_ACTION_DESC" />,
+				case <exp paramId="COMMENT" /> when '-1' then '' else <exp paramId="COMMENT" /> end,
+				current_timestamp
+				from	fact_work_item a
+				inner join fact_process_instance b on a.process_instance_id = b.process_instance_id
+				<where>
+					<exp op="and">
+						latest_flag = 1
+						<exp op="=" dbField="a.work_item_id" paramId="WORK_ITEM_ID" />
+						<exp op="=" dbField="a.process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+						<exp op="=" dbField="a.activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+					</exp>
+				</where>
+				;
+			</optional>
+
+			update workflow.dbo.FACT_WORK_ITEM
+			<columns mode="update">
+				<column dbField="work_item_id" paramId="WORK_ITEM_ID" />
+				<column dbField="assignee_id" paramId="ASSIGNEE_ID" />
+        <column dbField="TEAM_ID" paramId="TEAM_ID" />
+				<column dbField="role_id" paramId="ROLE_ID" />
+				<column dbField="current_state_id" paramId="CURRENT_STATE_ID" />
+				<column dbField="container_xml" paramId="CONTAINER_XML" />
+				<column dbField="comment" paramId="COMMENT" />
+				<column dbField="latest_flag" paramId="LATEST_FLAG" />
+				<column dbField="user_action_desc" paramId="USER_ACTION_DESC" />
+				<column dbField="updated_by" paramId="PASSED_USER_ID" />
+				<column dbField="update_datetime" paramId="currDatetime" />
+			</columns>
+			<where>
+				<exp op="and">
+					<exp op="=" dbField="work_item_id" paramId="WORK_ITEM_ID" />
+					<exp op="=" dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+					<exp op="=" dbField="activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+				</exp>
+			</where>
+		</sql>
+	</statement>
+	
+	
+	<statement name="transIn_NEW" connection="Workflow">
+		<sql>
+			select 1
+		</sql>
+	</statement>
+
+
+	<statement name="transIn_UPDATE" connection="Workflow">
+		<sql>
+			select 1
+		</sql>
+	</statement>
+
+
+  <statement name="CreateWorkItem" connection="Workflow">
+    <param id="WORK_ITEM_ID" type="String" size="36" />
+    <param id="PROCESS_INSTANCE_ID" type="String" size="36" />
+    <param id="ACTIVITY_INSTANCE_ID" type="String" size="36" />
+    <param id="ASSIGNEE_ID" type="String" size="36" />
+    <param id="TEAM_ID" type="String" size="36" />
+    <param id="ROLE_ID" type="String" size="36" />
+    <param id="CURRENT_STATE_ID" type="Int16" />
+    <param id="LATEST_FLAG" type="Boolean" size="36" />
+    <param id="CREATE_DATETIME" type="DateTime" />
+    <param id="PASSED_USER_ID" type="String" size="36" required="true" />
+    <sql>
+      --<exp paramId="CURRENT_STATE_ID"/>
+      insert into workflow.dbo.FACT_WORK_ITEM
+      <columns mode="insert">
+        <column dbField="work_item_id" paramId="WORK_ITEM_ID" />
+        <column dbField="process_instance_id" paramId="PROCESS_INSTANCE_ID" />
+        <column dbField="activity_instance_id" paramId="ACTIVITY_INSTANCE_ID" />
+        <column dbField="assignee_id" paramId="ASSIGNEE_ID" />
+        <column dbField="TEAM_ID" paramId="TEAM_ID" />
+        <column dbField="role_id" paramId="ROLE_ID" />
+        <column dbField="CURRENT_STATE_ID" paramId="CURRENT_STATE_ID" />
+        <column dbField="latest_flag" paramId="LATEST_FLAG" />
+        <column dbField="created_by" paramId="PASSED_USER_ID" />
+        <column dbField="create_datetime" paramId="CREATE_DATETIME" />
+      </columns>
+
+    </sql>
+  </statement>
+
+    <statement name="PollMessageQueue" connection="Workflow">
+        <param id="MachineName" type="String"/>
+        <sql>
+            set nocount on;
+            declare @PollerIdentifier uniqueidentifier
+            set  @PollerIdentifier=newid()
+            
+            update wfEngine_Processing_Queue
+            <columns mode="update">
+                <column dbField="Processing_Engine_id">@PollerIdentifier</column>
+                <column dbField="Machine_Name" paramId="MachineName" />
+            </columns>
+            where Being_Processed_Flag is NULL and Start_Processing_time &lt;= current_timestamp;
+            set nocount off;
+
+            select distinct i.WORK_ITEM_ID as WORK_ITEM_ID,
+            cast(q.wf_Processing_Queue_Id as varchar(36)) wf_Processing_Queue_Id,
+            isnull(cast(q.root_process_instance_id as varchar(36)),'') root_process_instance_id,
+            isnull(cast(q.process_instance_id as varchar(36)),'') process_instance_id,
+            isnull(cast(q.activity_instance_id as varchar(36)),'') activity_instance_id,
+            ISNULL(q.Being_Processed_Flag,0) Being_Processed_Flag
+            from FACT_WORK_ITEM i inner join wfEngine_Processing_Queue q
+            on i.PROCESS_INSTANCE_ID=q.process_instance_id and i.ACTIVITY_INSTANCE_ID=q.activity_instance_id
+
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="q.Machine_Name" paramId="MachineName" />
+                    q.Processing_Engine_id=@PollerIdentifier and
+                    q.Being_Processed_Flag is NULL and q.Start_Processing_time &lt;= current_timestamp
+                </exp>
+            </where>
+        </sql>
+    </statement>
+
+    <statement name="DeleteMessage" connection="Workflow">        
+        <param id="Queue_Id" size="36" required="true"  />         
+        <sql>             
+            insert into Audit_Engine_Processing_Queue (
+            Audit_Processing_Queue_Id,
+            wf_Processing_Queue_Id,
+            root_process_instance_id,
+            process_instance_id,
+            activity_instance_id,
+            Processing_Engine_id,
+            Start_Processing_time,
+            create_Datetime,
+            Completed_datetime)
+            select newid(),
+            wf_Processing_Queue_Id,
+            root_process_instance_id,
+            process_instance_id,
+            activity_instance_id,
+            Processing_Engine_id,
+            Start_Processing_time,
+            create_Datetime,
+            getdate()
+            from wfEngine_Processing_Queue
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="wf_Processing_Queue_Id" paramId="Queue_Id" />
+                </exp>
+            </where>;
+            delete from wfEngine_Processing_Queue
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="wf_Processing_Queue_Id" paramId="Queue_Id" />
+                </exp>
+            </where>
+        </sql>
+    </statement>
+    
+    <statement name="ErrorMessage" connection="Workflow">		 
+		<param id="Queue_Id" size="36" required="true"  />		 	
+		<param id="Error_Reason" type="String" />		
+		 
+		<sql>
+			insert into wfEngine_Processing_Error(
+				Error_Processing_Queue_Id,
+				wf_Processing_Queue_Id,
+				root_process_instance_id,
+				process_instance_id,
+				activity_instance_id,
+				Processing_Engine_id,
+				Start_Processing_time,
+				create_Datetime,
+				Error_datetime,
+				Error_Number,
+				Error_Reason
+				)
+			select newid(),
+				wf_Processing_Queue_Id,
+				root_process_instance_id,
+				process_instance_id,
+				activity_instance_id,
+				Processing_Engine_id,
+				Start_Processing_time,
+				create_Datetime,
+				getdate(),
+				-1,
+				<exp paramId="Error_Reason" />
+			from wfEngine_Processing_Queue
+			<where>
+				<exp op="and">
+  				    <exp op="=" dbField="wf_Processing_Queue_Id" paramId="Queue_Id" />
+				</exp>
+			</where>;
+			delete from wfEngine_Processing_Queue
+			<where>
+				<exp op="and">					   
+  				    <exp op="=" dbField="wf_Processing_Queue_Id" paramId="Queue_Id" />
+				</exp>
+			</where>
+		</sql>		
+	</statement>
+
+    <statement name="GetActivityConfiguration" connection="Workflow">
+        <param id="ActivityDefinitionId" size="36" required="true"  />
+        <sql>
+            SELECT ActivityDefinitionId, ISNULL(AsyncMode,'') as AsyncMode, ISNULL(AsyncConditionXpath,'') as AsyncConditionXpath, ISNULL(ConfigXml,'') as ConfigXml FROM LU_ActivityDefinitionConfiguration
+            <where>
+                <exp op="and">
+                    <exp op="=" dbField="ActivityDefinitionId" paramId="ActivityDefinitionId" />
+                </exp>
+            </where> 
+        </sql>
+    </statement>
+    
+</statements>
