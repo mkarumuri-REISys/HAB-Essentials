@@ -309,7 +309,7 @@ copy-item -path "$appforhivqm" -destination $hivqmapppath -force
 # replace web.config in hab-hat
 write-host 'replace web.config for hab-hat solution'
 $webforhat = $solutionsetuppath + "webconfigs\hat\web.config"
-$hatwebpath = $basepath + "hab-hatsrc\hat.web"
+$hatwebpath = $basepath + "hab-hat\src\hat.web"
 copy-item -path "$webforhat" -destination $hatwebpath -force 
 
 ####################################################################################
