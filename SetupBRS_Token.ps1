@@ -13,69 +13,69 @@ $pfmlocal = "Y:\WorkSpace\"
 ######################################################
 # Please specify the branches for each BRS Solutions:
 
-$HabPlatformName = "HAB-Platformv4.18.10"
-$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.18.10"
-$HabPlatformBranch = "dev/DME/feature/Shiva-Copy"
+$HabPlatformName = "HAB-Platformv4.19.40"
+$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.19.40"
+$HabPlatformBranch = "dev/DME/feature/Tharun"
 
-$CATInfrastructure6Name = "CAT-Infrastructure6_prod"
-$CATInfrastructure6Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
-$CATInfrastructure6Branch = "releases/6.9.10"
+# $CATInfrastructure6Name = "CAT-Infrastructure6_prod"
+# $CATInfrastructure6Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
+# $CATInfrastructure6Branch = "releases/6.9.10"
 
-$CATInfrastructure7Name = "CAT-Infrastructure7_redesign"
-$CATInfrastructure7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
-$CATInfrastructure7Branch = "releases/7.11.0"
+# $CATInfrastructure7Name = "CAT-Infrastructure7_redesign"
+# $CATInfrastructure7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
+# $CATInfrastructure7Branch = "releases/7.11.0"
 
-$HABIntergation7Name = "HAB-Integration7_aetc"
-$HABIntergation7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration7Branch = "releases/7.8.0"
+# $HABIntergation7Name = "HAB-Integration7_aetc"
+# $HABIntergation7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration7Branch = "releases/7.8.0"
 
-$HABIntergation8Name = "HAB-Integration8_rsredesign"
-$HABIntergation8Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration8Branch = "dev/DME/8.24.0"
+# $HABIntergation8Name = "HAB-Integration8_rsredesign"
+# $HABIntergation8Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration8Branch = "dev/DME/8.24.0"
 
-$HABIntergation9Name = "HAB-Integration9_adr"
-$HABIntergation9Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration9Branch = "releases/9.10.0"
+# $HABIntergation9Name = "HAB-Integration9_adr"
+# $HABIntergation9Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration9Branch = "releases/9.10.0"
 
-$RSRName = "HAB-RSR"
-$RSRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-RSR"
-$RSRBranch = "dev/DME/16.26.0"
+# $RSRName = "HAB-RSR"
+# $RSRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-RSR"
+# $RSRBranch = "dev/DME/16.26.0"
 
-$PTRName = "HAB-PTR"
-$PTRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTR"
-$PTRBranch = "releases/9.5.0"
+# $PTRName = "HAB-PTR"
+# $PTRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTR"
+# $PTRBranch = "releases/9.5.0"
 
-$ADRName = "HAB-ADR"
-$ADRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-ADR"
-$ADRBranch = "releases/10.9.10"
+# $ADRName = "HAB-ADR"
+# $ADRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-ADR"
+# $ADRBranch = "releases/10.9.10"
 
-$AETCName = "HAB-AETC"
-$AETCUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-AETC"
-$AETCBranch = "releases/15.12.10"
+# $AETCName = "HAB-AETC"
+# $AETCUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-AETC"
+# $AETCBranch = "releases/15.12.10"
 
-$HATName = "HAB-HAT"
-$HATUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HAT"
-$HATBranch = "releases/4.16.0"
+# $HATName = "HAB-HAT"
+# $HATUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HAT"
+# $HATBranch = "releases/4.16.0"
 
-$WindowsServicesName = "HAB-WindowsServices"
-$WindowsServicesUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-WindowsServices"
-$WindowsServicesBranch = "releases/2.19.0"
+# $WindowsServicesName = "HAB-WindowsServices"
+# $WindowsServicesUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-WindowsServices"
+# $WindowsServicesBranch = "releases/2.19.0"
 
-$HIVQMName = "HAB-HIVQM"
-$HIVQMUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HIVQM"
-$HIVQMBranch = "releases/3.11.10"
+# $HIVQMName = "HAB-HIVQM"
+# $HIVQMUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HIVQM"
+# $HIVQMBranch = "releases/3.11.10"
 
-$EHBGatewayName = "CAT-EHBGateway"
-$EHBGatewayUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-EHBGateway"
-$EHBGatewayBranch = "dev/DME/feature/Mani"
+# $EHBGatewayName = "CAT-EHBGateway"
+# $EHBGatewayUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-EHBGateway"
+# $EHBGatewayBranch = "dev/DME/feature/Mani"
 
-$HABBRSServiceName = "HAB-BRSService"
-$HABBRSServiceUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-BRSService"
-$HABBRSServiceBranch = "master"
+# $HABBRSServiceName = "HAB-BRSService"
+# $HABBRSServiceUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-BRSService"
+# $HABBRSServiceBranch = "master"
 
-$HABPTRModernName = "HAB-PTRModern"
-$HABPTRModernUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTRModern"
-$HABPTRModernBranch = "master"
+# $HABPTRModernName = "HAB-PTRModern"
+# $HABPTRModernUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTRModern"
+# $HABPTRModernBranch = "master"
 ######################################################
 
 # 1. skip the verification of strong names
@@ -135,72 +135,72 @@ $MyPat = $Token
 $B64Pat = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$MyPat"))
 git config --global http."https://ehbads.hrsa.gov/".sslVerify false
 
-# HAB-Platform
-Write-Host "Checking $HabPlatformName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HabPlatformBranch $HabPlatformUrl $pfmlocal$HabPlatformName 
+# # HAB-Platform
+# Write-Host "Checking $HabPlatformName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HabPlatformBranch $HabPlatformUrl $pfmlocal$HabPlatformName 
 
-#CAT-Infrastructure6
-Write-Host "Checking $CATInfrastructure6Name into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $CATInfrastructure6Branch $CATInfrastructure6Url $pfmlocal$CATInfrastructure6Name
+# #CAT-Infrastructure6
+# Write-Host "Checking $CATInfrastructure6Name into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $CATInfrastructure6Branch $CATInfrastructure6Url $pfmlocal$CATInfrastructure6Name
 
-#CAT-Infrastructure7
-Write-Host "Checking $CATInfrastructure7Name into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $CATInfrastructure7Branch $CATInfrastructure7Url $pfmlocal$CATInfrastructure7Name
+# #CAT-Infrastructure7
+# Write-Host "Checking $CATInfrastructure7Name into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $CATInfrastructure7Branch $CATInfrastructure7Url $pfmlocal$CATInfrastructure7Name
 
-#HAB-Integration7
-Write-Host "Checking $HABIntergation7Name into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration7Branch $HABIntergation7Url $pfmlocal$HABIntergation7Name
+# #HAB-Integration7
+# Write-Host "Checking $HABIntergation7Name into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration7Branch $HABIntergation7Url $pfmlocal$HABIntergation7Name
 
-#HAB-Integration8
-Write-Host "Checking $HABIntergation8Name into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration8Branch $HABIntergation8Url $pfmlocal$HABIntergation8Name
+# #HAB-Integration8
+# Write-Host "Checking $HABIntergation8Name into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration8Branch $HABIntergation8Url $pfmlocal$HABIntergation8Name
 
-#HAB-Integration9
-Write-Host "Checking $HABIntergation9Name into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration9Branch $HABIntegration9Branch $HABIntergation9Url $pfmlocal$HABIntergation9Name
+# #HAB-Integration9
+# Write-Host "Checking $HABIntergation9Name into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HABIntegration9Branch $HABIntegration9Branch $HABIntergation9Url $pfmlocal$HABIntergation9Name
 
-# RSR
-Write-Host "Checking $RSRName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $RSRBranch $RSRUrl $pfmlocal$RSRName
+# # RSR
+# Write-Host "Checking $RSRName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $RSRBranch $RSRUrl $pfmlocal$RSRName
 
-# HAB-PTR
-Write-Host "Checking $PTRName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $PTRBranch $PTRUrl $pfmlocal$PTRName
+# # HAB-PTR
+# Write-Host "Checking $PTRName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $PTRBranch $PTRUrl $pfmlocal$PTRName
 
-# HAB-ADR
-Write-Host "Checking $ADRName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $ADRBranch $ADRUrl $pfmlocal$ADRName
+# # HAB-ADR
+# Write-Host "Checking $ADRName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $ADRBranch $ADRUrl $pfmlocal$ADRName
 
-# HAB-AETC
-Write-Host "Checking $AETCName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $AETCBranch $AETCUrl $pfmlocal$AETCName
+# # HAB-AETC
+# Write-Host "Checking $AETCName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $AETCBranch $AETCUrl $pfmlocal$AETCName
 
-# HAB-HAT
-Write-Host "Checking $HATName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HATBranch $HATUrl $pfmlocal$HATName
+# # HAB-HAT
+# Write-Host "Checking $HATName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HATBranch $HATUrl $pfmlocal$HATName
 
-# HAB-WindowsServices
-Write-Host "Checking $WindowsServicesName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $WindowsServicesBranch $WindowsServicesUrl $pfmlocal$WindowsServicesName
+# # HAB-WindowsServices
+# Write-Host "Checking $WindowsServicesName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $WindowsServicesBranch $WindowsServicesUrl $pfmlocal$WindowsServicesName
 
-# HIVQM
-Write-Host "Checking $HIVQMName into $pfmlocal..."
-git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HIVQMBranch $HIVQMUrl $pfmlocal$HIVQMName
+# # HIVQM
+# Write-Host "Checking $HIVQMName into $pfmlocal..."
+# git -c http.extraHeader="Authorization: Basic $B64Pat" clone -b $HIVQMBranch $HIVQMUrl $pfmlocal$HIVQMName
 
-# EHBGateway
-Write-Host "Checking $EHBGatewayName into $BasePath..."
-Set-Location $BasePath
-git clone -b $EHBGatewayBranch $EHBGatewayUrl $BasePath$EHBGatewayName
+# # EHBGateway
+# Write-Host "Checking $EHBGatewayName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $EHBGatewayBranch $EHBGatewayUrl $BasePath$EHBGatewayName
 
-# HABBRSService
-Write-Host "Checking $HABBRSServiceName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABBRSServiceBranch $HABBRSServiceUrl $BasePath$HABBRSServiceName
+# # HABBRSService
+# Write-Host "Checking $HABBRSServiceName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABBRSServiceBranch $HABBRSServiceUrl $BasePath$HABBRSServiceName
 
-# HABPTRModern
-Write-Host "Checking $HABPTRModernName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABPTRModernBranch $HABPTRModernUrl $BasePath$HABPTRModernName
+# # HABPTRModern
+# Write-Host "Checking $HABPTRModernName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABPTRModernBranch $HABPTRModernUrl $BasePath$HABPTRModernName
 
 $StopWatch.Stop()
 Write-Host 'Time elapsed for clone solutions ' $StopWatch.Elapsed
@@ -235,11 +235,11 @@ function buildSolution {
     [bool] $clean = $TRUE
   )
   PROCESS {
-    $msBuildExe = "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+    $msBuildExe = "C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Current\Bin\MSBuild.exe"
 
     if($nuget) {
         Write-Host "Restoring Nuget Packages" -foregroundcolor Green
-        C:/EHBs/HAB-Essentials/nuget.exe restore "$($path)"
+        Y:/WorkSpace/HAB-Essentials/nuget.exe restore "$($path)"
     }
 
     if($clean) {
@@ -289,6 +289,12 @@ Write-Host 'Replace web.config for HAB-HIVQM solution'
 $WebForHIVQM = $SolutionSetupPath + "WebConfigs\HIVQM\Web.config"
 $HIVQMWebPath = $pfmlocal + "HAB-HIVQM\src\HIVQM.Web"
 Copy-Item -Path "$WebForHIVQM" -Destination $HIVQMWebPath -Force 
+
+# # Replace App.config in HAB-HIVQM/
+# Write-Host 'Replace web.config for HAB-HIVQM solution'
+# $AppForHIVQM = $SolutionSetupPath + "WebConfigs\HIVQM\App.config"
+# $HIVQMAppPath = $pfmlocal + "HAB-HIVQM\src\HIVQMAsynchronousService"
+# Copy-Item -Path "$AppForHIVQM" -Destination $HIVQMAppPath -Force 
 
 ## Replace Web.config in CAT-EHBGateway
 #Write-Host 'Replace web.config for CAT-EHBGateway solution'
@@ -361,4 +367,4 @@ Copy-Item -Path "$logForHAT" -Destination $HATWebPath -Force
 
 ####################################################################################
 
-Write-Output "Setup started at $(Get-Date)"
+Write-Output "Setup completed at $(Get-Date)"

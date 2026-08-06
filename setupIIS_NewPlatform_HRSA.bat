@@ -15,7 +15,7 @@ set projectAetcHrsaPath=%projectRootPath%\HAB-AETC
 set projectEhbGatewayHrsaPath=%projectRootPath%\CAT-EHBGateway
 REM set projectRegLoginHrsaPath=%projectRootPath%\HAB-RegLogin
 
-set platformPath=%projectRootPath%\HAB-Platformv4.18.10\Platform\v4.18.10
+set platformPath=%projectRootPath%\HAB-Platformv4.19.40\Platform\v4.19.40
 set platformRsrHrsaPath=%platformPath%
 set platformPtrHrsaPath=%platformPath%
 set platformHatHrsaPath=%platformPath%

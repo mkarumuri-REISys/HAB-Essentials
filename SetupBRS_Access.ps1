@@ -11,73 +11,73 @@ $ToolPath = $SolutionSetupPath + "Executables"
 ######################################################
 # Please specify the branches for each BRS Solutions:
 
-$HabPlatformName = "HAB-Platformv4.18.10"
-$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.18.10"
-$HabPlatformBranch = "dev/DME/feature/Shiva-Copy"
+$HabPlatformName = "HAB-Platformv4.19.40"
+$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.19.40"
+$HabPlatformBranch = "dev/DME/feature/Tharun"
 
-$CATInfrastructure6Name = "CAT-Infrastructure6_prod"
-$CATInfrastructure6Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
-$CATInfrastructure6Branch = "releases/6.9.10"
+# $CATInfrastructure6Name = "CAT-Infrastructure6_prod"
+# $CATInfrastructure6Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
+# $CATInfrastructure6Branch = "releases/6.9.10"
 
-$CATInfrastructure7Name = "CAT-Infrastructure7_redesign"
-$CATInfrastructure7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
-$CATInfrastructure7Branch = "releases/7.11.0"
+# $CATInfrastructure7Name = "CAT-Infrastructure7_redesign"
+# $CATInfrastructure7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-Infrastructure"
+# $CATInfrastructure7Branch = "releases/7.11.0"
 
-$HABIntergation7Name = "HAB-Integration7_aetc"
-$HABIntergation7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration7Branch = "releases/7.8.0"
+# $HABIntergation7Name = "HAB-Integration7_aetc"
+# $HABIntergation7Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration7Branch = "releases/7.8.0"
 
-$HABIntergation8Name = "HAB-Integration8_rsredesign"
-$HABIntergation8Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration8Branch = "dev/DME/8.24.0"
+# $HABIntergation8Name = "HAB-Integration8_rsredesign"
+# $HABIntergation8Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration8Branch = "dev/DME/8.24.0"
 
-$HABIntergation9Name = "HAB-Integration9_adr"
-$HABIntergation9Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
-$HABIntegration9Branch = "releases/9.10.0"
+# $HABIntergation9Name = "HAB-Integration9_adr"
+# $HABIntergation9Url = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Integration"
+# $HABIntegration9Branch = "releases/9.10.0"
 
-$RSRName = "HAB-RSR"
-$RSRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-RSR"
-$RSRBranch = "dev/DME/16.26.0"
+# $RSRName = "HAB-RSR"
+# $RSRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-RSR"
+# $RSRBranch = "dev/DME/16.26.0"
 
-$PTRName = "HAB-PTR"
-$PTRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTR"
-$PTRBranch = "releases/9.5.0"
+# $PTRName = "HAB-PTR"
+# $PTRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTR"
+# $PTRBranch = "releases/9.5.0"
 
-$ADRName = "HAB-ADR"
-$ADRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-ADR"
-$ADRBranch = "releases/10.9.10"
+# $ADRName = "HAB-ADR"
+# $ADRUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-ADR"
+# $ADRBranch = "releases/10.9.10"
 
-$AETCName = "HAB-AETC"
-$AETCUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-AETC"
-$AETCBranch = "releases/15.12.10"
+# $AETCName = "HAB-AETC"
+# $AETCUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-AETC"
+# $AETCBranch = "releases/15.12.10"
 
-$HATName = "HAB-HAT"
-$HATUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HAT"
-$HATBranch = "releases/4.16.0"
+# $HATName = "HAB-HAT"
+# $HATUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HAT"
+# $HATBranch = "releases/4.16.0"
 
-$WindowsServicesName = "HAB-WindowsServices"
-$WindowsServicesUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-WindowsServices"
-$WindowsServicesBranch = "releases/2.19.0"
+# $WindowsServicesName = "HAB-WindowsServices"
+# $WindowsServicesUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-WindowsServices"
+# $WindowsServicesBranch = "releases/2.19.0"
 
-$HIVQMName = "HAB-HIVQM"
-$HIVQMUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HIVQM"
-$HIVQMBranch = "releases/3.11.10"
+# $HIVQMName = "HAB-HIVQM"
+# $HIVQMUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-HIVQM"
+# $HIVQMBranch = "releases/3.11.10"
 
-$EHBGatewayName = "CAT-EHBGateway"
-$EHBGatewayUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-EHBGateway"
-$EHBGatewayBranch = "dev/DME/feature/Mani"
+# $EHBGatewayName = "CAT-EHBGateway"
+# $EHBGatewayUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/CAT-EHBGateway"
+# $EHBGatewayBranch = "dev/DME/feature/Mani"
 
-$HABBRSServiceName = "HAB-BRSService"
-$HABBRSServiceUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-BRSService"
-$HABBRSServiceBranch = "master"
+# $HABBRSServiceName = "HAB-BRSService"
+# $HABBRSServiceUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-BRSService"
+# $HABBRSServiceBranch = "master"
 
-$HABPTRModernName = "HAB-PTRModern"
-$HABPTRModernUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTRModern"
-$HABPTRModernBranch = "master"
+# $HABPTRModernName = "HAB-PTRModern"
+# $HABPTRModernUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-PTRModern"
+# $HABPTRModernBranch = "master"
 ######################################################
 
 # 1. skip the verification of strong names
-$NETFXPath = "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools"
+$NETFXPath = "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools"
 if((Test-Path -Path $NETFXPath) -eq $False) {
     Write-Host "The path: $NETFXPath does not exist, please check again before proceeding." -ForegroundColor "Red"
     return;
@@ -121,101 +121,101 @@ Set-Location $SolutionSetupPath
 
 ####################################################################################
 
-# 6. clone project: CAT-Infrastructure/HAB-Integration/RSR/PTR/ADR/AETC/HAT/WindowsServices/HIVQM/EHBGateway
+# 6. clone project: CAT-Infrastructure/HAB-Integration/RSR/PTR/ADR/AETC/HAT/WindowsServices/HIVQM
 # Time elapsed for clone solutions  00:12:01.6985472
 
 $StopWatch = [Diagnostics.Stopwatch]::StartNew()
 
-# HAB-Platform
-Write-Host "Checking $HabPlatformName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HabPlatformBranch $HabPlatformUrl $BasePath$HabPlatformName
+# # HAB-Platform
+# Write-Host "Checking $HabPlatformName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HabPlatformBranch $HabPlatformUrl $BasePath$HabPlatformName
 
-#CAT-Infrastructure6
-Write-Host "Checking $CATInfrastructure6Name into $BasePath..."
-Set-Location $BasePath
-git clone -b $CATInfrastructure6Branch $CATInfrastructure6Url $BasePath$CATInfrastructure6Name
+# #CAT-Infrastructure6
+# Write-Host "Checking $CATInfrastructure6Name into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $CATInfrastructure6Branch $CATInfrastructure6Url $BasePath$CATInfrastructure6Name
 
-#CAT-Infrastructure7
-Write-Host "Checking $CATInfrastructure7Name into $BasePath..."
-Set-Location $BasePath
-git clone -b $CATInfrastructure7Branch $CATInfrastructure7Url $BasePath$CATInfrastructure7Name
+# #CAT-Infrastructure7
+# Write-Host "Checking $CATInfrastructure7Name into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $CATInfrastructure7Branch $CATInfrastructure7Url $BasePath$CATInfrastructure7Name
 
-#HAB-Integration7
-Write-Host "Checking $HABIntergation7Name into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABIntegration7Branch $HABIntergation7Url $BasePath$HABIntergation7Name
+# #HAB-Integration7
+# Write-Host "Checking $HABIntergation7Name into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABIntegration7Branch $HABIntergation7Url $BasePath$HABIntergation7Name
 
-#HAB-Integration8
-Write-Host "Checking $HABIntergation8Name into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABIntegration8Branch $HABIntergation8Url $BasePath$HABIntergation8Name
+# #HAB-Integration8
+# Write-Host "Checking $HABIntergation8Name into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABIntegration8Branch $HABIntergation8Url $BasePath$HABIntergation8Name
 
-#HAB-Integration9
-Write-Host "Checking $HABIntergation9Name into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABIntegration9Branch $HABIntergation9Url $BasePath$HABIntergation9Name
+# #HAB-Integration9
+# Write-Host "Checking $HABIntergation9Name into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABIntegration9Branch $HABIntergation9Url $BasePath$HABIntergation9Name
 
-# RSR
-Write-Host "Checking $RSRName into $BasePath..."
-Set-Location $BasePath
-git clone -b $RSRBranch $RSRUrl $BasePath$RSRName
+# # RSR
+# Write-Host "Checking $RSRName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $RSRBranch $RSRUrl $BasePath$RSRName
 
-# HAB-PTR
-Write-Host "Checking $PTRName into $BasePath..."
-Set-Location $BasePath
-git clone -b $PTRBranch $PTRUrl $BasePath$PTRName
+# # HAB-PTR
+# Write-Host "Checking $PTRName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $PTRBranch $PTRUrl $BasePath$PTRName
 
-# HAB-ADR
-Write-Host "Checking $ADRName into $BasePath..."
-Set-Location $BasePath
-git clone -b $ADRBranch $ADRUrl $BasePath$ADRName
+# # HAB-ADR
+# Write-Host "Checking $ADRName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $ADRBranch $ADRUrl $BasePath$ADRName
 
-# HAB-AETC
-Write-Host "Checking $AETCName into $BasePath..."
-Set-Location $BasePath
-git clone -b $AETCBranch $AETCUrl $BasePath$AETCName
+# # HAB-AETC
+# Write-Host "Checking $AETCName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $AETCBranch $AETCUrl $BasePath$AETCName
 
-# HAB-HAT
-Write-Host "Checking $HATName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HATBranch $HATUrl $BasePath$HATName
+# # HAB-HAT
+# Write-Host "Checking $HATName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HATBranch $HATUrl $BasePath$HATName
 
-# HAB-WindowsServices
-Write-Host "Checking $WindowsServicesName into $BasePath..."
-Set-Location $BasePath
-git clone -b $WindowsServicesBranch $WindowsServicesUrl $BasePath$WindowsServicesName
+# # HAB-WindowsServices
+# Write-Host "Checking $WindowsServicesName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $WindowsServicesBranch $WindowsServicesUrl $BasePath$WindowsServicesName
 
-# HIVQM
-Write-Host "Checking $HIVQMName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HIVQMBranch $HIVQMUrl $BasePath$HIVQMName
+# # HIVQM
+# Write-Host "Checking $HIVQMName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HIVQMBranch $HIVQMUrl $BasePath$HIVQMName
 
-# EHBGateway
-Write-Host "Checking $EHBGatewayName into $BasePath..."
-Set-Location $BasePath
-git clone -b $EHBGatewayBranch $EHBGatewayUrl $BasePath$EHBGatewayName
+# # EHBGateway
+# Write-Host "Checking $EHBGatewayName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $EHBGatewayBranch $EHBGatewayUrl $BasePath$EHBGatewayName
 
-# HABBRSService
-Write-Host "Checking $HABBRSServiceName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABBRSServiceBranch $HABBRSServiceUrl $BasePath$HABBRSServiceName
+# # HABBRSService
+# Write-Host "Checking $HABBRSServiceName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABBRSServiceBranch $HABBRSServiceUrl $BasePath$HABBRSServiceName
 
-# HABPTRModern
-Write-Host "Checking $HABPTRModernName into $BasePath..."
-Set-Location $BasePath
-git clone -b $HABPTRModernBranch $HABPTRModernUrl $BasePath$HABPTRModernName
+# # HABPTRModern
+# Write-Host "Checking $HABPTRModernName into $BasePath..."
+# Set-Location $BasePath
+# git clone -b $HABPTRModernBranch $HABPTRModernUrl $BasePath$HABPTRModernName
 
 $StopWatch.Stop()
 Write-Host 'Time elapsed for clone solutions ' $StopWatch.Elapsed
 
 ####################################################################################
 
-# 7. Copy PFM configuration folder
-Write-Host "Copying Platform configuration folder to $BasePath$HabPlatformName"
-$CATConfigPath = $SolutionSetupPath + "CAT\Lib\Platform\"
-$pfmConfigPath = $BasePath + $HabPlatformName
-Copy-Item -Path "$CATConfigPath" -Destination $pfmConfigPath -Recurse -Force 
+# # 7. Copy PFM configuration folder
+# Write-Host "Copying Platform configuration folder to $BasePath$HabPlatformName"
+# $CATConfigPath = $SolutionSetupPath + "CAT\Lib\Platform\"
+# $pfmConfigPath = $BasePath + $HabPlatformName
+# Copy-Item -Path "$CATConfigPath" -Destination $pfmConfigPath -Recurse -Force 
 
 ####################################################################################
 
@@ -239,11 +239,11 @@ function buildSolution {
     [bool] $clean = $TRUE
   )
   PROCESS {
-    $msBuildExe = "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+    $msBuildExe = "C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Current\Bin\MSBuild.exe"
 
     if($nuget) {
         Write-Host "Restoring Nuget Packages" -foregroundcolor Green
-        C:/EHBs/HAB-Essentials/nuget.exe restore "$($path)"
+        Y:/WorkSpace/HAB-Essentials/nuget.exe restore "$($path)"
     }
 
     if($clean) {
@@ -264,53 +264,53 @@ buildSolution $RSRsolutionPath
 
 # 10. Replace web.config across all solutions
 
-# Replace Web.config in RSR
-Write-Host 'Replace web.config for HAB-RSR solution'
-$WebForRSR = $SolutionSetupPath + "WebConfigs\RSR\Web.config"
-$RSRWebPath = $BasePath + "HAB-RSR\src\Rsr.Web"
-Copy-Item -Path "$WebForRSR" -Destination $RSRWebPath -Force 
+# replace web.config in rsr
+write-host 'replace web.config for hab-rsr solution'
+$webforrsr = $solutionsetuppath + "webconfigs\rsr\web.config"
+$rsrwebpath = $basepath + "hab-rsr\src\rsr.web"
+copy-item -path "$webforrsr" -destination $rsrwebpath -force 
 
-# Replace Web.config in HAB-ADR
-Write-Host 'Replace web.config for HAB-ADR solution'
-$WebForADR = $SolutionSetupPath + "WebConfigs\ADR\Web.config"
-$ADRWebPath = $BasePath + "HAB-ADR\src\Adr.Web"
-Copy-Item -Path "$WebForADR" -Destination $ADRWebPath -Force 
+# replace web.config in hab-adr
+write-host 'replace web.config for hab-adr solution'
+$webforadr = $solutionsetuppath + "webconfigs\adr\web.config"
+$adrwebpath = $basepath + "hab-adr\src\adr.web"
+copy-item -path "$webforadr" -destination $adrwebpath -force 
 
-# Replace Web.config in HAB-PTR
-Write-Host 'Replace web.config for HAB-PTR solution'
-$WebForPTR = $SolutionSetupPath + "WebConfigs\PTR\Web.config"
-$PTRWebPath = $BasePath + "HAB-PTR\src\PTR.Web"
-Copy-Item -Path "$WebForPTR" -Destination $PTRWebPath -Force 
+# replace web.config in hab-ptr
+write-host 'replace web.config for hab-ptr solution'
+$webforptr = $solutionsetuppath + "webconfigs\ptr\web.config"
+$ptrwebpath = $basepath + "hab-ptr\src\ptr.web"
+copy-item -path "$webforptr" -destination $ptrwebpath -force 
 
-# Replace Web.config in HAB-AETC
-Write-Host 'Replace web.config for HAB-AETC solution'
-$WebForAETC = $SolutionSetupPath + "WebConfigs\AETC\Web.config"
-$AETCWebPath = $BasePath + "HAB-AETC\src\Aetc.Web"
-Copy-Item -Path "$WebForAETC" -Destination $AETCWebPath -Force 
+# replace web.config in hab-aetc
+write-host 'replace web.config for hab-aetc solution'
+$webforaetc = $solutionsetuppath + "webconfigs\aetc\web.config"
+$aetcwebpath = $basepath + "hab-aetc\src\aetc.web"
+copy-item -path "$webforaetc" -destination $aetcwebpath -force 
 
-# Replace Web.config in HAB-HIVQM
-Write-Host 'Replace web.config for HAB-HIVQM solution'
-$WebForHIVQM = $SolutionSetupPath + "WebConfigs\HIVQM\Web.config"
-$HIVQMWebPath = $BasePath + "HAB-HIVQM\src\HIVQM.Web"
-Copy-Item -Path "$WebForHIVQM" -Destination $HIVQMWebPath -Force 
+# replace web.config in hab-hivqm
+write-host 'replace web.config for hab-hivqm solution'
+$webforhivqm = $solutionsetuppath + "webconfigs\hivqm\web.config"
+$hivqmwebpath = $basepath + "hab-hivqm\src\hivqm.web"
+copy-item -path "$webforhivqm" -destination $hivqmwebpath -force 
 
-# Replace App.config in HAB-HIVQM/
-Write-Host 'Replace web.config for HAB-HIVQM solution'
-$AppForHIVQM = $SolutionSetupPath + "WebConfigs\HIVQM\App.config"
-$HIVQMAppPath = $BasePath + "HAB-HIVQM\src\HIVQMAsynchronousService"
-Copy-Item -Path "$AppForHIVQM" -Destination $HIVQMAppPath -Force 
+# replace app.config in hab-hivqm/
+write-host 'replace web.config for hab-hivqm solution'
+$appforhivqm = $solutionsetuppath + "webconfigs\hivqm\app.config"
+$hivqmapppath = $basepath + "hab-hivqm\src\hivqmasynchronousservice"
+copy-item -path "$appforhivqm" -destination $hivqmapppath -force 
 
-## Replace Web.config in CAT-EHBGateway
-#Write-Host 'Replace web.config for CAT-EHBGateway solution'
-#$WebForEHBGateway = $SolutionSetupPath + "WebConfigs\EHBGateway\Web.config"
-#$EHBGatewayWebPath = $BasePath + "CAT-EHBGateway\src\EHBGateway.Web"
-#Copy-Item -Path "$WebForEHBGateway" -Destination $EHBGatewayWebPath -Force 
+## replace web.config in cat-ehbgateway
+#write-host 'replace web.config for cat-ehbgateway solution'
+#$webforehbgateway = $solutionsetuppath + "webconfigs\ehbgateway\web.config"
+#$ehbgatewaywebpath = $basepath + "cat-ehbgateway\src\ehbgateway.web"
+#copy-item -path "$webforehbgateway" -destination $ehbgatewaywebpath -force 
 
-# Replace Web.config in HAB-HAT
-Write-Host 'Replace web.config for HAB-HAT solution'
-$WebForHAT = $SolutionSetupPath + "WebConfigs\HAT\Web.config"
-$HATWebPath = $BasePath + "HAB-HATsrc\hat.Web"
-Copy-Item -Path "$WebForHAT" -Destination $HATWebPath -Force 
+# replace web.config in hab-hat
+write-host 'replace web.config for hab-hat solution'
+$webforhat = $solutionsetuppath + "webconfigs\hat\web.config"
+$hatwebpath = $basepath + "hab-hatsrc\hat.web"
+copy-item -path "$webforhat" -destination $hatwebpath -force 
 
 ####################################################################################
 
