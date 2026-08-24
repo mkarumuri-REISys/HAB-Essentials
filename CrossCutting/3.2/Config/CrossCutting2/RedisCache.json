@@ -1,0 +1,13 @@
+{
+    "redisCache": {
+        "enabled": false,
+        "serverName": "127.0.0.1",
+        "portNumber": 12000,
+        "allowAdmin": true,
+        "DBPassword": "#GemsUser1",
+        "enableSSL": true,
+        "SSLHostName": "*.reisystems.com",
+        "certificatePFXfilepath": "\\\\hrsafs.reisys.com\\Uploadedfiles\\Infrastructure\\reisystems_wildcard.pfx",
+        "certificatePFXpassword": "Ct77ys6dDO8GgB9xwq7MNw=="
+    }
+}
