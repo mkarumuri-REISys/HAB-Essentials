@@ -15,23 +15,13 @@ set projectAetcHrsaPath=%projectRootPath%\HAB-AETC
 set projectEhbGatewayHrsaPath=%projectRootPath%\CAT-EHBGateway
 REM set projectRegLoginHrsaPath=%projectRootPath%\HAB-RegLogin
 
-set platformPath=%projectRootPath%\HAB-Platformv4.19.40\Platform\v4.19.40
+set platformPath=%projectRootPath%\HAB-Platformv4.21.5\Platform\v4.21.5
 set platformRsrHrsaPath=%platformPath%
 set platformPtrHrsaPath=%platformPath%
 set platformHatHrsaPath=%platformPath%
 set platformHivqmHrsaPath=%platformPath%
 set platformAdrHrsaPath=%platformPath%
 set platformAetcHrsaPath=%platformPath%
-
-
-REM set projectPath=Y:\WorkSpace
-REM set platformPath=%projectPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformRsrHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformPtrHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformHatHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformHivqmHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformAdrHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
-REM set platformAetcHrsaPath=%projectRootPath%\HAB-Platformv4.9.55\Platform\v4.9.55
 
 REM HAB
 set RsrHrsaAppPath=%projectRsrHrsaPath%\src\Rsr.Web

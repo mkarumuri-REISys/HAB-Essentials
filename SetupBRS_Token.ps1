@@ -13,8 +13,8 @@ $pfmlocal = "Y:\WorkSpace\"
 ######################################################
 # Please specify the branches for each BRS Solutions:
 
-$HabPlatformName = "HAB-Platformv4.19.40"
-$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.19.40"
+$HabPlatformName = "HAB-Platformv4.21.5"
+$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.21.5"
 $HabPlatformBranch = "dev/DME/feature/Tharun"
 
 # $CATInfrastructure6Name = "CAT-Infrastructure6_prod"
@@ -79,7 +79,7 @@ $HabPlatformBranch = "dev/DME/feature/Tharun"
 ######################################################
 
 # 1. skip the verification of strong names
-$NETFXPath = "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools"
+$NETFXPath = "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools"
 if((Test-Path -Path $NETFXPath) -eq $False) {
     Write-Host "The path: $NETFXPath does not exist, please check again before proceeding." -ForegroundColor "Red"
     return;

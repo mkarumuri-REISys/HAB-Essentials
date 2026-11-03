@@ -11,8 +11,8 @@ $ToolPath = $SolutionSetupPath + "Executables"
 ######################################################
 # Please specify the branches for each BRS Solutions:
 
-$HabPlatformName = "HAB-Platformv4.19.40"
-$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.19.40"
+$HabPlatformName = "HAB-Platformv4.21.5"
+$HabPlatformUrl = "https://ehbads.hrsa.gov/ads/EHBs/EHBs/_git/HAB-Platformv4.21.5"
 $HabPlatformBranch = "dev/DME/feature/Tharun"
 
 # $CATInfrastructure6Name = "CAT-Infrastructure6_prod"
@@ -312,6 +312,24 @@ $webforhat = $solutionsetuppath + "webconfigs\hat\web.config"
 $hatwebpath = $basepath + "hab-hat\src\hat.web"
 copy-item -path "$webforhat" -destination $hatwebpath -force 
 
+# replace app.config in hab-adr\Adr.BatchPrintService
+write-host 'replace Adr.BatchPrintService\app.config for hab-adr solution'
+$webforadr = $solutionsetuppath + "webconfigs\adr\Adr.BatchPrintService\App.config"
+$adrwebpath = $basepath + "hab-adr\src\Adr.BatchPrintService"
+copy-item -path "$appforAdr.BatchPrintService" -destination $adrwebpath -force 
+
+# replace app.config in hab-adr\ADR.ValidationService
+write-host 'replace ADR.ValidationService\app.config for hab-adr solution'
+$webforadr = $solutionsetuppath + "webconfigs\adr\ADR.ValidationService\App.config"
+$adrwebpath = $basepath + "hab-adr\src\ADR.ValidationService"
+copy-item -path "$appforADR.ValidationService" -destination $adrwebpath -force 
+
+# replace app.config in hab-adr\Adr.XMLImportService
+write-host 'replace Adr.XMLImportService\app.config for hab-adr solution'
+$webforadr = $solutionsetuppath + "webconfigs\adr\Adr.XMLImportService\App.config"
+$adrwebpath = $basepath + "hab-adr\src\Adr.XMLImportService"
+copy-item -path "$appforAdr.XMLImportService" -destination $adrwebpath -force 
+
 ####################################################################################
 
 # 11. Replace log4net.config across all solutions
@@ -357,6 +375,24 @@ Write-Host 'Replace log4net.config for HAB-HAT solution'
 $logForHAT = $SolutionSetupPath + "log4netConfigs\HAT\log4net.config"
 $HATWebPath = $BasePath + "HAB-HAT\src\HAT.Web"
 Copy-Item -Path "$logForHAT" -Destination $HATWebPath -Force 
+
+# Replace log4net.config in HAB-ADR
+Write-Host 'Replace log4net.config for HAB-ADR solution'
+$logForADR = $SolutionSetupPath + "log4netConfigs\ADR\Adr.BatchPrintService\log4net.config"
+$ADRWebPath = $BasePath + "HAB-ADR\src\Adr.BatchPrintService"
+Copy-Item -Path "$logForAdr.BatchPrintService" -Destination $ADRWebPath -Force 
+
+# Replace log4net.config in HAB-ADR
+Write-Host 'Replace log4net.config for HAB-ADR solution'
+$logForADR = $SolutionSetupPath + "log4netConfigs\ADR\ADR.ValidationService\log4net.config"
+$ADRWebPath = $BasePath + "HAB-ADR\src\ADR.ValidationService"
+Copy-Item -Path "$logForADR.ValidationService" -Destination $ADRWebPath -Force 
+
+# Replace log4net.config in HAB-ADR
+Write-Host 'Replace log4net.config for HAB-ADR solution'
+$logForADR = $SolutionSetupPath + "log4netConfigs\ADR\Adr.XMLImportService\log4net.config"
+$ADRWebPath = $BasePath + "HAB-ADR\src\Adr.XMLImportService"
+Copy-Item -Path "$logForAdr.XMLImportService" -Destination $ADRWebPath -Force 
 #############To DO###############
 
 
